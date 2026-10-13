@@ -1,0 +1,275 @@
+{
+  "benchmark_version": "GEOLOCK-BM-v3.1-NGO11-FIXED",
+  "seed": 20260915,
+  "created_at": "2026-10-12T14:08:42.450273+00:00",
+  "fixture_timezone": "Asia/Kuala_Lumpur",
+  "fixture_epoch": "2026-11-01T00:00",
+  "operating_boxes": [
+    [
+      2.9606533021582733,
+      3.266408697841727,
+      101.60264830137962,
+      101.90885569862039
+    ],
+    [
+      3.056572302158273,
+      3.3623276978417267,
+      101.49637214350065,
+      101.80260785649935
+    ],
+    [
+      1.3817743021582733,
+      1.6875296978417265,
+      103.65451044686601,
+      103.960375553134
+    ],
+    [
+      2.9797073021582734,
+      3.285462697841727,
+      101.53044452332371,
+      101.83665747667628
+    ],
+    [
+      5.278406302158273,
+      5.584161697841727,
+      100.14873485204131,
+      100.45586914795868
+    ],
+    [
+      4.3894113021582735,
+      4.695166697841727,
+      100.92384962381037,
+      101.23056837618962
+    ],
+    [
+      4.096566302158274,
+      4.402321697841727,
+      103.25836786815933,
+      103.56496613184066
+    ],
+    [
+      2.976452302158273,
+      3.2822076978417267,
+      101.53865399910612,
+      101.84486600089389
+    ],
+    [
+      2.5685263021582734,
+      2.874281697841727,
+      101.78303169319965,
+      102.08913230680035
+    ],
+    [
+      3.659665302158273,
+      3.9654206978417266,
+      103.17229322361437,
+      103.47872677638561
+    ],
+    [
+      5.649441302158273,
+      5.955196697841727,
+      100.2205190177299,
+      100.5278489822701
+    ]
+  ],
+  "donor_max_straight_line_distance_to_reference_km": 30,
+  "claim_design": {
+    "independent_replay_scenarios": 150,
+    "possible_reused_initial_listings": true,
+    "minimum_eligible_identities": 2,
+    "eligibility_design_radius_km": 20,
+    "workers_are_requests_not_new_organisations": true,
+    "lease_recovery_positive_cases": 100,
+    "active_lease_cases": 25,
+    "distinct_replacement_identity_required": true,
+    "lease_selection_seed_offset": 81028
+  },
+  "route_sampling": {
+    "route_scenarios": 100,
+    "unique_direct_listings_per_scenario": 5,
+    "unique_across_route_scenarios": true,
+    "ngo_assignment": "round_robin_skipping_exhausted_catchments",
+    "profiles": [
+      "NORMAL",
+      "CAPACITY_PRESSURE",
+      "GEOGRAPHIC_SPREAD",
+      "CONNECTIVITY_STRESS"
+    ],
+    "candidate_distance_km": 15,
+    "seed_offset": 81029
+  },
+  "scenario_seed_semantics": "full generator seed 20260915; independently seeded lease and route selection; scenario_seed identifies independent replay, not seed used in sampling",
+  "thesis_alignment_status": "PENINSULAR_BOUNDARY_WITH_NGO_CATCHMENT_OPERATING_SUBSET",
+  "source_provenance": {
+    "population_district.csv": {
+      "source_url": "https://data.gov.my/data-catalogue/population_district",
+      "retrieved_date": null,
+      "licence": "CC BY 4.0",
+      "retrieval_status": "ORIGINAL_RETRIEVAL_DATE_NOT_SUPPLIED"
+    },
+    "malaysia-singapore-brunei.osm.pbf": {
+      "source_url": "https://download.geofabrik.de/asia/malaysia-singapore-brunei.html",
+      "retrieved_date": null,
+      "licence": "ODbL 1.0",
+      "retrieval_status": "ORIGINAL_RETRIEVAL_DATE_NOT_SUPPLIED"
+    },
+    "NGO_references.csv": {
+      "source_reference": "dataset/NGO_references.csv",
+      "source_url": null,
+      "retrieved_date": null,
+      "licence": null,
+      "retrieval_status": "UPSTREAM_PROVENANCE_NOT_SUPPLIED"
+    }
+  },
+  "scenario_type_counts": {
+    "HUB_RECOMMENDATION": 2000,
+    "HUB_RECOMMENDATION_VERIFICATION": 23,
+    "CLAIM_COORDINATION": 150,
+    "GEOFENCE_VERIFICATION": 100,
+    "LEASE_RECOVERY": 100,
+    "LEASE_ACTIVE_VERIFICATION": 25,
+    "HUB_AGGREGATION": 100,
+    "ROUTE_PLANNING": 100
+  },
+  "hub_shortlisting": {
+    "candidate_count": 8,
+    "preselection": "lowest Haversine distance, tie by hub ID",
+    "final_feasibility": "item, capacity, opening overlap, active flag and directed OSM road availability",
+    "evaluation_distance": "directed frozen OSM road distance; no straight-line fallback",
+    "caveat": "nearest eight by straight line may exclude some road-near alternatives"
+  },
+  "row_counts": {
+    "road_nodes": 3990,
+    "population_context": 11,
+    "locality_sampling": 23,
+    "ngo_references": 11,
+    "locations": 3991,
+    "donors": 3800,
+    "donations": 3800,
+    "hubs": 180,
+    "ngo_agents": 11,
+    "vehicles": 22,
+    "donation_hub_candidates": 20976,
+    "hub_batches": 100,
+    "hub_batch_members": 418,
+    "listings": 1178,
+    "scenarios": 2598,
+    "scenario_members": 22126,
+    "claim_initial_states": 125,
+    "road_distance_matrix": 70506,
+    "verification_cases": 8
+  },
+  "matrix_id": "OSM-DIRECTED-v3.0-NGO-REGIONS",
+  "generated_csv_sha256": {
+    "road_nodes": "3f52377c28298882a8091edc31d9450834124b25f30694629f24df37741f6ac2",
+    "population_context": "5b05a5f682ef95e74b7d5ddb675a70bf0a7e9910408c379d6e31c57d49e13416",
+    "locality_sampling": "08bcae54641b6fe4e78407557a0fcba76f799205eaeefc9e29c8fc9f4d3936a7",
+    "ngo_references": "6a386a3a7e78ec585aedbb35457538610c67cd7b17f2731d3706b1d3c9dc7b33",
+    "locations": "e38d418dfec7c947d1e3f53f29bced40e3f5ace1eaabfb3a3b5b76ab43f5739b",
+    "donors": "4df6ca415149c1c8cc3ac34e43a0340686cc207db2e46480d7c6aa1543974363",
+    "donations": "a051682e97d3ab28b3c26e1d10ffbcc9b0b00157ddfa5ae838df67b9ed67162a",
+    "hubs": "98b924ff4744aa6f295a707354a7280d23df7c0f9d0ae9fb965fd9e934c35597",
+    "ngo_agents": "aeffe33453c19f8f725e4b5a31e4f76de7c7e267e9de45dd7e7ad5ab99f37827",
+    "vehicles": "3f678ae275b9ade7b82cfca91517974190e10eaabbf2720e204861854098da8f",
+    "donation_hub_candidates": "7bf74253bdb3fc76f17ad197adcb9582eb76dc409de427ae3edb0740ca37acb7",
+    "hub_batches": "c9a42e2f68ad1f03142544ac2be11a998b95687c92c07999e2520a5cfc14d4cd",
+    "hub_batch_members": "dde47beeccd07ed6b8c62514be6ee1a05c7c0c8609b5f339cb96e5e005fde63b",
+    "listings": "49b4b1ab469e14d8a418ab1d255588c2457a3ac28f246b58eb6261228c29f5f0",
+    "scenarios": "ad3abc3bafbf4ca4af017d1511d560d0b622a380d11f19ca0beb76bd3259f30b",
+    "scenario_members": "96698b36bf94b774a703bcdc56875c21ff2b0e3499bb743c0c11f8c6e0c27ea3",
+    "claim_initial_states": "1ac14ccd011ca4e3b0885440878a3dcbd2a7e7ff8559156432612f69c6083901",
+    "road_distance_matrix": "dccfabe74dab67a389a3688375befcfe1d0760a90eb55d6eaff7e81656f12acc",
+    "verification_cases": "375788b386f57dcc91277cf99c12ab6d5d53ec856c607a327e00ba1cddb2c9a4"
+  },
+  "source_sha256": {
+    "population_district.csv": "694b4b506b0ee8771134e78d9f57e5f2dd5c5fcde5d9cb9ae2fa320823d57940",
+    "NGO_references.csv": "7c91ee2024f3320ce67f6b728545c5d08ff24d6b8fd7af056cca10f06bbe378c",
+    "malaysia-singapore-brunei.osm.pbf": "3576b2ef5c7f03e0f4a6ae7c2cb67730e14c06a427ef5712b7735f028d0e17ad"
+  },
+  "road_cache_sha256": {
+    "nodes": "a6d42f795724a35001cf82fe608645a0a64e03c82d1a9fe98c38f57bba24adef",
+    "edges": "2b8259ae87142b37f32f2d05c01447f23150cdf8328936e08d493258dcf94fa9",
+    "osm_hub_candidates": "50903ec7a9a750c22914da07c794555eeaa2b2f64072783b4e4730fe1ed90e8c"
+  },
+  "source_statement": "User supplied NGO names/status/coordinates; sources and operational capacities not independently verified.",
+  "population_filter": {
+    "date": "2025-01-01",
+    "sex": "both",
+    "age": "overall",
+    "ethnicity": "overall",
+    "source_unit": "thousands",
+    "converted_unit": "persons"
+  },
+  "geographic_scope": {
+    "thesis": "Peninsular Malaysia",
+    "generated_subset": "17km OSM windows around all 11 supplied NGO coordinates in Peninsular Malaysia",
+    "donor_anchors": "locality sampling using NGO/district proxies (not official polygons) and 30km NGO proximity",
+    "administrative_source": "nearest declared NGO/locality district proxy; NOT an official administrative boundary"
+  },
+  "generator_rules": {
+    "osm_amenities": [
+      "community_centre",
+      "townhall"
+    ],
+    "snap_radius_m": 500,
+    "donation_weight_range_kg": [
+      0.5,
+      30
+    ],
+    "boundary_weights_kg": [
+      9.9,
+      10,
+      10.1
+    ],
+    "hub_capacity_range_kg": [
+      50,
+      250
+    ],
+    "hub_load_fraction_max": 0.8,
+    "hub_reserved_fraction_max": 0.2,
+    "batch_min_items": 3,
+    "batch_max_items": 5,
+    "batch_max_weight_kg": 30,
+    "road_network": "directed; no straight-line fallback",
+    "handling_penalties": {
+      "clothing": 0.1,
+      "books": 0.2,
+      "electronics": 0.4,
+      "food": 0.6,
+      "appliances": 0.8,
+      "furniture": 1.0
+    },
+    "scenario_sampling_nearby_radius_km": 15,
+    "hub_shortlist_count": 8,
+    "hub_shortlist_preselection": "eight nearest by Haversine, tie hub ID; hard checks and ranking use frozen directed roads",
+    "route_listing_reuse_across_scenarios": false,
+    "reclaim_scenario_requires_distinct_eligible_ngo": true,
+    "reference_policy_weights": {
+      "distance": 0.45,
+      "utilisation": 0.2,
+      "capacity_pressure": 0.25,
+      "handling": 0.1
+    }
+  },
+  "exclusions": [
+    "train-validation-test split",
+    "baseline algorithm and scores",
+    "claim commits",
+    "pickup task creation",
+    "routing solutions",
+    "experiment worker count",
+    "lease duration configuration",
+    "route horizon",
+    "actual donor behaviour",
+    "real NGO operational capacity"
+  ],
+  "limitations": [
+    "district labels for sampled locations are nearest-locality approximations, not official polygon assignments",
+    "road extracts cover NGO catchment regions, not the full Peninsular Malaysia road network",
+    "hub amenity does not certify an approved donation drop-off site",
+    "eight-Haversine-nearest candidate shortlist is a bounded preselection, not a globally exhaustive road-network ranking",
+    "NGO reference status is copied from supplied CSV, not independently confirmed",
+    "1 OSM amenity candidates could not snap to selected road graph",
+    "synthetic operational attributes are not observed NGO or donor data"
+  ]
+}

@@ -1,0 +1,3801 @@
+donor_id,location_id,state,district
+DNR000001,LOC0000192,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000002,LOC0000193,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000003,LOC0000194,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000004,LOC0000195,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000005,LOC0000196,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000006,LOC0000197,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000007,LOC0000198,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000008,LOC0000199,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000009,LOC0000200,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000010,LOC0000201,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000011,LOC0000202,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000012,LOC0000203,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000013,LOC0000204,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000014,LOC0000205,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000015,LOC0000206,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000016,LOC0000207,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000017,LOC0000208,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000018,LOC0000209,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000019,LOC0000210,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000020,LOC0000211,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000021,LOC0000212,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000022,LOC0000213,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000023,LOC0000214,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000024,LOC0000215,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000025,LOC0000216,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000026,LOC0000217,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000027,LOC0000218,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000028,LOC0000219,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000029,LOC0000220,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000030,LOC0000221,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000031,LOC0000222,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000032,LOC0000223,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000033,LOC0000224,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000034,LOC0000225,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000035,LOC0000226,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000036,LOC0000227,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000037,LOC0000228,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000038,LOC0000229,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000039,LOC0000230,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000040,LOC0000231,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000041,LOC0000232,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000042,LOC0000233,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000043,LOC0000234,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000044,LOC0000235,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000045,LOC0000236,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000046,LOC0000237,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000047,LOC0000238,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000048,LOC0000239,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000049,LOC0000240,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000050,LOC0000241,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000051,LOC0000242,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000052,LOC0000243,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000053,LOC0000244,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000054,LOC0000245,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000055,LOC0000246,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000056,LOC0000247,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000057,LOC0000248,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000058,LOC0000249,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000059,LOC0000250,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000060,LOC0000251,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000061,LOC0000252,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000062,LOC0000253,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000063,LOC0000254,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000064,LOC0000255,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000065,LOC0000256,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000066,LOC0000257,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000067,LOC0000258,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000068,LOC0000259,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000069,LOC0000260,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000070,LOC0000261,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000071,LOC0000262,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000072,LOC0000263,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000073,LOC0000264,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000074,LOC0000265,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000075,LOC0000266,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000076,LOC0000267,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000077,LOC0000268,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000078,LOC0000269,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000079,LOC0000270,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000080,LOC0000271,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000081,LOC0000272,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000082,LOC0000273,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000083,LOC0000274,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000084,LOC0000275,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000085,LOC0000276,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000086,LOC0000277,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000087,LOC0000278,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000088,LOC0000279,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000089,LOC0000280,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000090,LOC0000281,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000091,LOC0000282,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000092,LOC0000283,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000093,LOC0000284,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000094,LOC0000285,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000095,LOC0000286,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000096,LOC0000287,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000097,LOC0000288,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000098,LOC0000289,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000099,LOC0000290,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000100,LOC0000291,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000101,LOC0000292,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000102,LOC0000293,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000103,LOC0000294,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000104,LOC0000295,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000105,LOC0000296,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000106,LOC0000297,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000107,LOC0000298,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000108,LOC0000299,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000109,LOC0000300,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000110,LOC0000301,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000111,LOC0000302,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000112,LOC0000303,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000113,LOC0000304,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000114,LOC0000305,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000115,LOC0000306,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000116,LOC0000307,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000117,LOC0000308,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000118,LOC0000309,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000119,LOC0000310,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000120,LOC0000311,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000121,LOC0000312,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000122,LOC0000313,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000123,LOC0000314,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000124,LOC0000315,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000125,LOC0000316,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000126,LOC0000317,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000127,LOC0000318,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000128,LOC0000319,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000129,LOC0000320,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000130,LOC0000321,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000131,LOC0000322,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000132,LOC0000323,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000133,LOC0000324,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000134,LOC0000325,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000135,LOC0000326,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000136,LOC0000327,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000137,LOC0000328,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000138,LOC0000329,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000139,LOC0000330,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000140,LOC0000331,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000141,LOC0000332,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000142,LOC0000333,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000143,LOC0000334,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000144,LOC0000335,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000145,LOC0000336,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000146,LOC0000337,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000147,LOC0000338,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000148,LOC0000339,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000149,LOC0000340,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000150,LOC0000341,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000151,LOC0000342,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000152,LOC0000343,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000153,LOC0000344,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000154,LOC0000345,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000155,LOC0000346,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000156,LOC0000347,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000157,LOC0000348,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000158,LOC0000349,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000159,LOC0000350,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000160,LOC0000351,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000161,LOC0000352,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000162,LOC0000353,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000163,LOC0000354,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000164,LOC0000355,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000165,LOC0000356,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000166,LOC0000357,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000167,LOC0000358,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000168,LOC0000359,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000169,LOC0000360,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000170,LOC0000361,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000171,LOC0000362,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000172,LOC0000363,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000173,LOC0000364,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000174,LOC0000365,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000175,LOC0000366,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000176,LOC0000367,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000177,LOC0000368,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000178,LOC0000369,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000179,LOC0000370,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000180,LOC0000371,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000181,LOC0000372,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000182,LOC0000373,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000183,LOC0000374,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000184,LOC0000375,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000185,LOC0000376,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000186,LOC0000377,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000187,LOC0000378,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000188,LOC0000379,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000189,LOC0000380,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000190,LOC0000381,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000191,LOC0000382,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000192,LOC0000383,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000193,LOC0000384,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000194,LOC0000385,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000195,LOC0000386,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000196,LOC0000387,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000197,LOC0000388,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000198,LOC0000389,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000199,LOC0000390,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000200,LOC0000391,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000201,LOC0000392,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000202,LOC0000393,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000203,LOC0000394,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000204,LOC0000395,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000205,LOC0000396,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000206,LOC0000397,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000207,LOC0000398,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000208,LOC0000399,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000209,LOC0000400,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000210,LOC0000401,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000211,LOC0000402,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000212,LOC0000403,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000213,LOC0000404,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000214,LOC0000405,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000215,LOC0000406,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000216,LOC0000407,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000217,LOC0000408,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000218,LOC0000409,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000219,LOC0000410,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000220,LOC0000411,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000221,LOC0000412,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000222,LOC0000413,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000223,LOC0000414,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000224,LOC0000415,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000225,LOC0000416,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000226,LOC0000417,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000227,LOC0000418,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000228,LOC0000419,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000229,LOC0000420,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000230,LOC0000421,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000231,LOC0000422,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000232,LOC0000423,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000233,LOC0000424,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000234,LOC0000425,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000235,LOC0000426,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000236,LOC0000427,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000237,LOC0000428,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000238,LOC0000429,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000239,LOC0000430,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000240,LOC0000431,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000241,LOC0000432,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000242,LOC0000433,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000243,LOC0000434,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000244,LOC0000435,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000245,LOC0000436,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000246,LOC0000437,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000247,LOC0000438,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000248,LOC0000439,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000249,LOC0000440,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000250,LOC0000441,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000251,LOC0000442,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000252,LOC0000443,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000253,LOC0000444,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000254,LOC0000445,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000255,LOC0000446,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000256,LOC0000447,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000257,LOC0000448,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000258,LOC0000449,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000259,LOC0000450,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000260,LOC0000451,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000261,LOC0000452,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000262,LOC0000453,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000263,LOC0000454,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000264,LOC0000455,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000265,LOC0000456,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000266,LOC0000457,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000267,LOC0000458,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000268,LOC0000459,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000269,LOC0000460,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000270,LOC0000461,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000271,LOC0000462,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000272,LOC0000463,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000273,LOC0000464,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000274,LOC0000465,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000275,LOC0000466,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000276,LOC0000467,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000277,LOC0000468,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000278,LOC0000469,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000279,LOC0000470,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000280,LOC0000471,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000281,LOC0000472,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000282,LOC0000473,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000283,LOC0000474,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000284,LOC0000475,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000285,LOC0000476,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000286,LOC0000477,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000287,LOC0000478,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000288,LOC0000479,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000289,LOC0000480,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000290,LOC0000481,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000291,LOC0000482,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000292,LOC0000483,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000293,LOC0000484,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000294,LOC0000485,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000295,LOC0000486,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000296,LOC0000487,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000297,LOC0000488,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000298,LOC0000489,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000299,LOC0000490,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000300,LOC0000491,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000301,LOC0000492,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000302,LOC0000493,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000303,LOC0000494,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000304,LOC0000495,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000305,LOC0000496,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000306,LOC0000497,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000307,LOC0000498,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000308,LOC0000499,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000309,LOC0000500,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000310,LOC0000501,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000311,LOC0000502,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000312,LOC0000503,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000313,LOC0000504,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000314,LOC0000505,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000315,LOC0000506,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000316,LOC0000507,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000317,LOC0000508,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000318,LOC0000509,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000319,LOC0000510,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000320,LOC0000511,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000321,LOC0000512,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000322,LOC0000513,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000323,LOC0000514,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000324,LOC0000515,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000325,LOC0000516,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000326,LOC0000517,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000327,LOC0000518,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000328,LOC0000519,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000329,LOC0000520,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000330,LOC0000521,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000331,LOC0000522,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000332,LOC0000523,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000333,LOC0000524,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000334,LOC0000525,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000335,LOC0000526,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000336,LOC0000527,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000337,LOC0000528,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000338,LOC0000529,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000339,LOC0000530,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000340,LOC0000531,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000341,LOC0000532,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000342,LOC0000533,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000343,LOC0000534,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000344,LOC0000535,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000345,LOC0000536,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000346,LOC0000537,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000347,LOC0000538,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000348,LOC0000539,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000349,LOC0000540,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000350,LOC0000541,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000351,LOC0000542,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000352,LOC0000543,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000353,LOC0000544,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000354,LOC0000545,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000355,LOC0000546,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000356,LOC0000547,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000357,LOC0000548,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000358,LOC0000549,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000359,LOC0000550,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000360,LOC0000551,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000361,LOC0000552,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000362,LOC0000553,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000363,LOC0000554,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000364,LOC0000555,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000365,LOC0000556,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000366,LOC0000557,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000367,LOC0000558,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000368,LOC0000559,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000369,LOC0000560,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000370,LOC0000561,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000371,LOC0000562,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000372,LOC0000563,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000373,LOC0000564,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000374,LOC0000565,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000375,LOC0000566,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000376,LOC0000567,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000377,LOC0000568,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000378,LOC0000569,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000379,LOC0000570,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000380,LOC0000571,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000381,LOC0000572,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000382,LOC0000573,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000383,LOC0000574,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000384,LOC0000575,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000385,LOC0000576,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000386,LOC0000577,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000387,LOC0000578,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000388,LOC0000579,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000389,LOC0000580,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000390,LOC0000581,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000391,LOC0000582,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000392,LOC0000583,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000393,LOC0000584,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000394,LOC0000585,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000395,LOC0000586,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000396,LOC0000587,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000397,LOC0000588,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000398,LOC0000589,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000399,LOC0000590,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000400,LOC0000591,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000401,LOC0000592,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000402,LOC0000593,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000403,LOC0000594,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000404,LOC0000595,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000405,LOC0000596,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000406,LOC0000597,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000407,LOC0000598,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000408,LOC0000599,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000409,LOC0000600,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000410,LOC0000601,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000411,LOC0000602,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000412,LOC0000603,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000413,LOC0000604,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000414,LOC0000605,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000415,LOC0000606,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000416,LOC0000607,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000417,LOC0000608,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000418,LOC0000609,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000419,LOC0000610,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000420,LOC0000611,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000421,LOC0000612,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000422,LOC0000613,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000423,LOC0000614,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000424,LOC0000615,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000425,LOC0000616,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000426,LOC0000617,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000427,LOC0000618,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000428,LOC0000619,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000429,LOC0000620,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000430,LOC0000621,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000431,LOC0000622,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000432,LOC0000623,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000433,LOC0000624,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000434,LOC0000625,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000435,LOC0000626,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000436,LOC0000627,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000437,LOC0000628,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000438,LOC0000629,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000439,LOC0000630,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000440,LOC0000631,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000441,LOC0000632,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000442,LOC0000633,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000443,LOC0000634,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000444,LOC0000635,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000445,LOC0000636,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000446,LOC0000637,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000447,LOC0000638,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000448,LOC0000639,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000449,LOC0000640,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000450,LOC0000641,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000451,LOC0000642,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000452,LOC0000643,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000453,LOC0000644,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000454,LOC0000645,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000455,LOC0000646,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000456,LOC0000647,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000457,LOC0000648,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000458,LOC0000649,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000459,LOC0000650,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000460,LOC0000651,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000461,LOC0000652,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000462,LOC0000653,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000463,LOC0000654,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000464,LOC0000655,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000465,LOC0000656,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000466,LOC0000657,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000467,LOC0000658,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000468,LOC0000659,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000469,LOC0000660,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000470,LOC0000661,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000471,LOC0000662,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000472,LOC0000663,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000473,LOC0000664,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000474,LOC0000665,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR000475,LOC0000666,Johor,Johor Bahru
+DNR000476,LOC0000667,Johor,Johor Bahru
+DNR000477,LOC0000668,Johor,Johor Bahru
+DNR000478,LOC0000669,Johor,Johor Bahru
+DNR000479,LOC0000670,Johor,Johor Bahru
+DNR000480,LOC0000671,Johor,Johor Bahru
+DNR000481,LOC0000672,Johor,Johor Bahru
+DNR000482,LOC0000673,Johor,Johor Bahru
+DNR000483,LOC0000674,Johor,Johor Bahru
+DNR000484,LOC0000675,Johor,Johor Bahru
+DNR000485,LOC0000676,Johor,Johor Bahru
+DNR000486,LOC0000677,Johor,Johor Bahru
+DNR000487,LOC0000678,Johor,Johor Bahru
+DNR000488,LOC0000679,Johor,Johor Bahru
+DNR000489,LOC0000680,Johor,Johor Bahru
+DNR000490,LOC0000681,Johor,Johor Bahru
+DNR000491,LOC0000682,Johor,Johor Bahru
+DNR000492,LOC0000683,Johor,Johor Bahru
+DNR000493,LOC0000684,Johor,Johor Bahru
+DNR000494,LOC0000685,Johor,Johor Bahru
+DNR000495,LOC0000686,Johor,Johor Bahru
+DNR000496,LOC0000687,Johor,Johor Bahru
+DNR000497,LOC0000688,Johor,Johor Bahru
+DNR000498,LOC0000689,Johor,Johor Bahru
+DNR000499,LOC0000690,Johor,Johor Bahru
+DNR000500,LOC0000691,Johor,Johor Bahru
+DNR000501,LOC0000692,Johor,Johor Bahru
+DNR000502,LOC0000693,Johor,Johor Bahru
+DNR000503,LOC0000694,Johor,Johor Bahru
+DNR000504,LOC0000695,Johor,Johor Bahru
+DNR000505,LOC0000696,Johor,Johor Bahru
+DNR000506,LOC0000697,Johor,Johor Bahru
+DNR000507,LOC0000698,Johor,Johor Bahru
+DNR000508,LOC0000699,Johor,Johor Bahru
+DNR000509,LOC0000700,Johor,Johor Bahru
+DNR000510,LOC0000701,Johor,Johor Bahru
+DNR000511,LOC0000702,Johor,Johor Bahru
+DNR000512,LOC0000703,Johor,Johor Bahru
+DNR000513,LOC0000704,Johor,Johor Bahru
+DNR000514,LOC0000705,Johor,Johor Bahru
+DNR000515,LOC0000706,Johor,Johor Bahru
+DNR000516,LOC0000707,Johor,Johor Bahru
+DNR000517,LOC0000708,Johor,Johor Bahru
+DNR000518,LOC0000709,Johor,Johor Bahru
+DNR000519,LOC0000710,Johor,Johor Bahru
+DNR000520,LOC0000711,Johor,Johor Bahru
+DNR000521,LOC0000712,Johor,Johor Bahru
+DNR000522,LOC0000713,Johor,Johor Bahru
+DNR000523,LOC0000714,Johor,Johor Bahru
+DNR000524,LOC0000715,Johor,Johor Bahru
+DNR000525,LOC0000716,Johor,Johor Bahru
+DNR000526,LOC0000717,Johor,Johor Bahru
+DNR000527,LOC0000718,Johor,Johor Bahru
+DNR000528,LOC0000719,Johor,Johor Bahru
+DNR000529,LOC0000720,Johor,Johor Bahru
+DNR000530,LOC0000721,Johor,Johor Bahru
+DNR000531,LOC0000722,Johor,Johor Bahru
+DNR000532,LOC0000723,Johor,Johor Bahru
+DNR000533,LOC0000724,Johor,Johor Bahru
+DNR000534,LOC0000725,Johor,Johor Bahru
+DNR000535,LOC0000726,Johor,Johor Bahru
+DNR000536,LOC0000727,Johor,Johor Bahru
+DNR000537,LOC0000728,Johor,Johor Bahru
+DNR000538,LOC0000729,Johor,Johor Bahru
+DNR000539,LOC0000730,Johor,Johor Bahru
+DNR000540,LOC0000731,Johor,Johor Bahru
+DNR000541,LOC0000732,Johor,Johor Bahru
+DNR000542,LOC0000733,Johor,Johor Bahru
+DNR000543,LOC0000734,Johor,Johor Bahru
+DNR000544,LOC0000735,Johor,Johor Bahru
+DNR000545,LOC0000736,Johor,Johor Bahru
+DNR000546,LOC0000737,Johor,Johor Bahru
+DNR000547,LOC0000738,Johor,Johor Bahru
+DNR000548,LOC0000739,Johor,Johor Bahru
+DNR000549,LOC0000740,Johor,Johor Bahru
+DNR000550,LOC0000741,Johor,Johor Bahru
+DNR000551,LOC0000742,Johor,Johor Bahru
+DNR000552,LOC0000743,Johor,Johor Bahru
+DNR000553,LOC0000744,Johor,Johor Bahru
+DNR000554,LOC0000745,Johor,Johor Bahru
+DNR000555,LOC0000746,Johor,Johor Bahru
+DNR000556,LOC0000747,Johor,Johor Bahru
+DNR000557,LOC0000748,Johor,Johor Bahru
+DNR000558,LOC0000749,Johor,Johor Bahru
+DNR000559,LOC0000750,Johor,Johor Bahru
+DNR000560,LOC0000751,Johor,Johor Bahru
+DNR000561,LOC0000752,Johor,Johor Bahru
+DNR000562,LOC0000753,Johor,Johor Bahru
+DNR000563,LOC0000754,Johor,Johor Bahru
+DNR000564,LOC0000755,Johor,Johor Bahru
+DNR000565,LOC0000756,Johor,Johor Bahru
+DNR000566,LOC0000757,Johor,Johor Bahru
+DNR000567,LOC0000758,Johor,Johor Bahru
+DNR000568,LOC0000759,Johor,Johor Bahru
+DNR000569,LOC0000760,Johor,Johor Bahru
+DNR000570,LOC0000761,Johor,Johor Bahru
+DNR000571,LOC0000762,Johor,Johor Bahru
+DNR000572,LOC0000763,Johor,Johor Bahru
+DNR000573,LOC0000764,Johor,Johor Bahru
+DNR000574,LOC0000765,Johor,Johor Bahru
+DNR000575,LOC0000766,Johor,Johor Bahru
+DNR000576,LOC0000767,Johor,Johor Bahru
+DNR000577,LOC0000768,Johor,Johor Bahru
+DNR000578,LOC0000769,Johor,Johor Bahru
+DNR000579,LOC0000770,Johor,Johor Bahru
+DNR000580,LOC0000771,Johor,Johor Bahru
+DNR000581,LOC0000772,Johor,Johor Bahru
+DNR000582,LOC0000773,Johor,Johor Bahru
+DNR000583,LOC0000774,Johor,Johor Bahru
+DNR000584,LOC0000775,Johor,Johor Bahru
+DNR000585,LOC0000776,Johor,Johor Bahru
+DNR000586,LOC0000777,Johor,Johor Bahru
+DNR000587,LOC0000778,Johor,Johor Bahru
+DNR000588,LOC0000779,Johor,Johor Bahru
+DNR000589,LOC0000780,Johor,Johor Bahru
+DNR000590,LOC0000781,Johor,Johor Bahru
+DNR000591,LOC0000782,Johor,Johor Bahru
+DNR000592,LOC0000783,Johor,Johor Bahru
+DNR000593,LOC0000784,Johor,Johor Bahru
+DNR000594,LOC0000785,Johor,Johor Bahru
+DNR000595,LOC0000786,Johor,Johor Bahru
+DNR000596,LOC0000787,Johor,Johor Bahru
+DNR000597,LOC0000788,Johor,Johor Bahru
+DNR000598,LOC0000789,Johor,Johor Bahru
+DNR000599,LOC0000790,Johor,Johor Bahru
+DNR000600,LOC0000791,Johor,Johor Bahru
+DNR000601,LOC0000792,Johor,Johor Bahru
+DNR000602,LOC0000793,Johor,Johor Bahru
+DNR000603,LOC0000794,Johor,Johor Bahru
+DNR000604,LOC0000795,Johor,Johor Bahru
+DNR000605,LOC0000796,Johor,Johor Bahru
+DNR000606,LOC0000797,Johor,Johor Bahru
+DNR000607,LOC0000798,Johor,Johor Bahru
+DNR000608,LOC0000799,Johor,Johor Bahru
+DNR000609,LOC0000800,Johor,Johor Bahru
+DNR000610,LOC0000801,Johor,Johor Bahru
+DNR000611,LOC0000802,Johor,Johor Bahru
+DNR000612,LOC0000803,Johor,Johor Bahru
+DNR000613,LOC0000804,Johor,Johor Bahru
+DNR000614,LOC0000805,Johor,Johor Bahru
+DNR000615,LOC0000806,Johor,Johor Bahru
+DNR000616,LOC0000807,Johor,Johor Bahru
+DNR000617,LOC0000808,Johor,Johor Bahru
+DNR000618,LOC0000809,Johor,Johor Bahru
+DNR000619,LOC0000810,Johor,Johor Bahru
+DNR000620,LOC0000811,Johor,Johor Bahru
+DNR000621,LOC0000812,Johor,Johor Bahru
+DNR000622,LOC0000813,Johor,Johor Bahru
+DNR000623,LOC0000814,Johor,Johor Bahru
+DNR000624,LOC0000815,Johor,Johor Bahru
+DNR000625,LOC0000816,Johor,Johor Bahru
+DNR000626,LOC0000817,Johor,Johor Bahru
+DNR000627,LOC0000818,Johor,Johor Bahru
+DNR000628,LOC0000819,Johor,Johor Bahru
+DNR000629,LOC0000820,Johor,Johor Bahru
+DNR000630,LOC0000821,Johor,Johor Bahru
+DNR000631,LOC0000822,Selangor,Petaling
+DNR000632,LOC0000823,Selangor,Petaling
+DNR000633,LOC0000824,Selangor,Petaling
+DNR000634,LOC0000825,Selangor,Petaling
+DNR000635,LOC0000826,Selangor,Petaling
+DNR000636,LOC0000827,Selangor,Petaling
+DNR000637,LOC0000828,Selangor,Petaling
+DNR000638,LOC0000829,Selangor,Petaling
+DNR000639,LOC0000830,Selangor,Petaling
+DNR000640,LOC0000831,Selangor,Petaling
+DNR000641,LOC0000832,Selangor,Petaling
+DNR000642,LOC0000833,Selangor,Petaling
+DNR000643,LOC0000834,Selangor,Petaling
+DNR000644,LOC0000835,Selangor,Petaling
+DNR000645,LOC0000836,Selangor,Petaling
+DNR000646,LOC0000837,Selangor,Petaling
+DNR000647,LOC0000838,Selangor,Petaling
+DNR000648,LOC0000839,Selangor,Petaling
+DNR000649,LOC0000840,Selangor,Petaling
+DNR000650,LOC0000841,Selangor,Petaling
+DNR000651,LOC0000842,Selangor,Petaling
+DNR000652,LOC0000843,Selangor,Petaling
+DNR000653,LOC0000844,Selangor,Petaling
+DNR000654,LOC0000845,Selangor,Petaling
+DNR000655,LOC0000846,Selangor,Petaling
+DNR000656,LOC0000847,Selangor,Petaling
+DNR000657,LOC0000848,Selangor,Petaling
+DNR000658,LOC0000849,Selangor,Petaling
+DNR000659,LOC0000850,Selangor,Petaling
+DNR000660,LOC0000851,Selangor,Petaling
+DNR000661,LOC0000852,Selangor,Petaling
+DNR000662,LOC0000853,Selangor,Petaling
+DNR000663,LOC0000854,Selangor,Petaling
+DNR000664,LOC0000855,Selangor,Petaling
+DNR000665,LOC0000856,Selangor,Petaling
+DNR000666,LOC0000857,Selangor,Petaling
+DNR000667,LOC0000858,Selangor,Petaling
+DNR000668,LOC0000859,Selangor,Petaling
+DNR000669,LOC0000860,Selangor,Petaling
+DNR000670,LOC0000861,Selangor,Petaling
+DNR000671,LOC0000862,Selangor,Petaling
+DNR000672,LOC0000863,Selangor,Petaling
+DNR000673,LOC0000864,Selangor,Petaling
+DNR000674,LOC0000865,Selangor,Petaling
+DNR000675,LOC0000866,Selangor,Petaling
+DNR000676,LOC0000867,Selangor,Petaling
+DNR000677,LOC0000868,Selangor,Petaling
+DNR000678,LOC0000869,Selangor,Petaling
+DNR000679,LOC0000870,Selangor,Petaling
+DNR000680,LOC0000871,Selangor,Petaling
+DNR000681,LOC0000872,Selangor,Petaling
+DNR000682,LOC0000873,Selangor,Petaling
+DNR000683,LOC0000874,Selangor,Petaling
+DNR000684,LOC0000875,Selangor,Petaling
+DNR000685,LOC0000876,Selangor,Petaling
+DNR000686,LOC0000877,Selangor,Petaling
+DNR000687,LOC0000878,Selangor,Petaling
+DNR000688,LOC0000879,Selangor,Petaling
+DNR000689,LOC0000880,Selangor,Petaling
+DNR000690,LOC0000881,Selangor,Petaling
+DNR000691,LOC0000882,Selangor,Petaling
+DNR000692,LOC0000883,Selangor,Petaling
+DNR000693,LOC0000884,Selangor,Petaling
+DNR000694,LOC0000885,Selangor,Petaling
+DNR000695,LOC0000886,Selangor,Petaling
+DNR000696,LOC0000887,Selangor,Petaling
+DNR000697,LOC0000888,Selangor,Petaling
+DNR000698,LOC0000889,Selangor,Petaling
+DNR000699,LOC0000890,Selangor,Petaling
+DNR000700,LOC0000891,Selangor,Petaling
+DNR000701,LOC0000892,Selangor,Petaling
+DNR000702,LOC0000893,Selangor,Petaling
+DNR000703,LOC0000894,Selangor,Petaling
+DNR000704,LOC0000895,Selangor,Petaling
+DNR000705,LOC0000896,Selangor,Petaling
+DNR000706,LOC0000897,Selangor,Petaling
+DNR000707,LOC0000898,Selangor,Petaling
+DNR000708,LOC0000899,Selangor,Petaling
+DNR000709,LOC0000900,Selangor,Petaling
+DNR000710,LOC0000901,Selangor,Petaling
+DNR000711,LOC0000902,Selangor,Petaling
+DNR000712,LOC0000903,Selangor,Petaling
+DNR000713,LOC0000904,Selangor,Petaling
+DNR000714,LOC0000905,Selangor,Petaling
+DNR000715,LOC0000906,Selangor,Petaling
+DNR000716,LOC0000907,Selangor,Petaling
+DNR000717,LOC0000908,Selangor,Petaling
+DNR000718,LOC0000909,Selangor,Petaling
+DNR000719,LOC0000910,Selangor,Petaling
+DNR000720,LOC0000911,Selangor,Petaling
+DNR000721,LOC0000912,Selangor,Petaling
+DNR000722,LOC0000913,Selangor,Petaling
+DNR000723,LOC0000914,Selangor,Petaling
+DNR000724,LOC0000915,Selangor,Petaling
+DNR000725,LOC0000916,Selangor,Petaling
+DNR000726,LOC0000917,Selangor,Petaling
+DNR000727,LOC0000918,Selangor,Petaling
+DNR000728,LOC0000919,Selangor,Petaling
+DNR000729,LOC0000920,Selangor,Petaling
+DNR000730,LOC0000921,Selangor,Petaling
+DNR000731,LOC0000922,Selangor,Petaling
+DNR000732,LOC0000923,Selangor,Petaling
+DNR000733,LOC0000924,Selangor,Petaling
+DNR000734,LOC0000925,Selangor,Petaling
+DNR000735,LOC0000926,Selangor,Petaling
+DNR000736,LOC0000927,Selangor,Petaling
+DNR000737,LOC0000928,Selangor,Petaling
+DNR000738,LOC0000929,Selangor,Petaling
+DNR000739,LOC0000930,Selangor,Petaling
+DNR000740,LOC0000931,Selangor,Petaling
+DNR000741,LOC0000932,Selangor,Petaling
+DNR000742,LOC0000933,Selangor,Petaling
+DNR000743,LOC0000934,Selangor,Petaling
+DNR000744,LOC0000935,Selangor,Petaling
+DNR000745,LOC0000936,Selangor,Petaling
+DNR000746,LOC0000937,Selangor,Petaling
+DNR000747,LOC0000938,Selangor,Petaling
+DNR000748,LOC0000939,Selangor,Petaling
+DNR000749,LOC0000940,Selangor,Petaling
+DNR000750,LOC0000941,Selangor,Petaling
+DNR000751,LOC0000942,Selangor,Petaling
+DNR000752,LOC0000943,Selangor,Petaling
+DNR000753,LOC0000944,Selangor,Petaling
+DNR000754,LOC0000945,Selangor,Petaling
+DNR000755,LOC0000946,Selangor,Petaling
+DNR000756,LOC0000947,Selangor,Petaling
+DNR000757,LOC0000948,Selangor,Petaling
+DNR000758,LOC0000949,Selangor,Petaling
+DNR000759,LOC0000950,Selangor,Petaling
+DNR000760,LOC0000951,Selangor,Petaling
+DNR000761,LOC0000952,Selangor,Petaling
+DNR000762,LOC0000953,Selangor,Petaling
+DNR000763,LOC0000954,Selangor,Petaling
+DNR000764,LOC0000955,Selangor,Petaling
+DNR000765,LOC0000956,Selangor,Petaling
+DNR000766,LOC0000957,Selangor,Petaling
+DNR000767,LOC0000958,Selangor,Petaling
+DNR000768,LOC0000959,Selangor,Petaling
+DNR000769,LOC0000960,Selangor,Petaling
+DNR000770,LOC0000961,Selangor,Petaling
+DNR000771,LOC0000962,Selangor,Petaling
+DNR000772,LOC0000963,Selangor,Petaling
+DNR000773,LOC0000964,Selangor,Petaling
+DNR000774,LOC0000965,Selangor,Petaling
+DNR000775,LOC0000966,Selangor,Petaling
+DNR000776,LOC0000967,Selangor,Petaling
+DNR000777,LOC0000968,Selangor,Petaling
+DNR000778,LOC0000969,Selangor,Petaling
+DNR000779,LOC0000970,Selangor,Petaling
+DNR000780,LOC0000971,Selangor,Petaling
+DNR000781,LOC0000972,Selangor,Petaling
+DNR000782,LOC0000973,Selangor,Petaling
+DNR000783,LOC0000974,Selangor,Petaling
+DNR000784,LOC0000975,Selangor,Petaling
+DNR000785,LOC0000976,Selangor,Petaling
+DNR000786,LOC0000977,Selangor,Petaling
+DNR000787,LOC0000978,Selangor,Petaling
+DNR000788,LOC0000979,Selangor,Petaling
+DNR000789,LOC0000980,Selangor,Petaling
+DNR000790,LOC0000981,Selangor,Petaling
+DNR000791,LOC0000982,Selangor,Petaling
+DNR000792,LOC0000983,Selangor,Petaling
+DNR000793,LOC0000984,Selangor,Petaling
+DNR000794,LOC0000985,Selangor,Petaling
+DNR000795,LOC0000986,Selangor,Petaling
+DNR000796,LOC0000987,Selangor,Petaling
+DNR000797,LOC0000988,Selangor,Petaling
+DNR000798,LOC0000989,Selangor,Petaling
+DNR000799,LOC0000990,Selangor,Petaling
+DNR000800,LOC0000991,Selangor,Petaling
+DNR000801,LOC0000992,Selangor,Petaling
+DNR000802,LOC0000993,Selangor,Petaling
+DNR000803,LOC0000994,Selangor,Petaling
+DNR000804,LOC0000995,Selangor,Petaling
+DNR000805,LOC0000996,Selangor,Petaling
+DNR000806,LOC0000997,Selangor,Petaling
+DNR000807,LOC0000998,Selangor,Petaling
+DNR000808,LOC0000999,Selangor,Petaling
+DNR000809,LOC0001000,Selangor,Petaling
+DNR000810,LOC0001001,Selangor,Petaling
+DNR000811,LOC0001002,Selangor,Petaling
+DNR000812,LOC0001003,Selangor,Petaling
+DNR000813,LOC0001004,Selangor,Petaling
+DNR000814,LOC0001005,Selangor,Petaling
+DNR000815,LOC0001006,Selangor,Petaling
+DNR000816,LOC0001007,Selangor,Petaling
+DNR000817,LOC0001008,Selangor,Petaling
+DNR000818,LOC0001009,Selangor,Petaling
+DNR000819,LOC0001010,Selangor,Petaling
+DNR000820,LOC0001011,Selangor,Petaling
+DNR000821,LOC0001012,Selangor,Petaling
+DNR000822,LOC0001013,Selangor,Petaling
+DNR000823,LOC0001014,Selangor,Petaling
+DNR000824,LOC0001015,Selangor,Petaling
+DNR000825,LOC0001016,Selangor,Petaling
+DNR000826,LOC0001017,Selangor,Petaling
+DNR000827,LOC0001018,Selangor,Petaling
+DNR000828,LOC0001019,Selangor,Petaling
+DNR000829,LOC0001020,Selangor,Petaling
+DNR000830,LOC0001021,Selangor,Petaling
+DNR000831,LOC0001022,Selangor,Petaling
+DNR000832,LOC0001023,Selangor,Petaling
+DNR000833,LOC0001024,Selangor,Petaling
+DNR000834,LOC0001025,Pulau Pinang,Timur Laut
+DNR000835,LOC0001026,Pulau Pinang,Timur Laut
+DNR000836,LOC0001027,Pulau Pinang,Timur Laut
+DNR000837,LOC0001028,Pulau Pinang,Timur Laut
+DNR000838,LOC0001029,Pulau Pinang,Timur Laut
+DNR000839,LOC0001030,Pulau Pinang,Timur Laut
+DNR000840,LOC0001031,Pulau Pinang,Timur Laut
+DNR000841,LOC0001032,Pulau Pinang,Timur Laut
+DNR000842,LOC0001033,Pulau Pinang,Timur Laut
+DNR000843,LOC0001034,Pulau Pinang,Timur Laut
+DNR000844,LOC0001035,Pulau Pinang,Timur Laut
+DNR000845,LOC0001036,Pulau Pinang,Timur Laut
+DNR000846,LOC0001037,Pulau Pinang,Timur Laut
+DNR000847,LOC0001038,Pulau Pinang,Timur Laut
+DNR000848,LOC0001039,Pulau Pinang,Timur Laut
+DNR000849,LOC0001040,Pulau Pinang,Timur Laut
+DNR000850,LOC0001041,Pulau Pinang,Timur Laut
+DNR000851,LOC0001042,Pulau Pinang,Timur Laut
+DNR000852,LOC0001043,Pulau Pinang,Timur Laut
+DNR000853,LOC0001044,Pulau Pinang,Timur Laut
+DNR000854,LOC0001045,Pulau Pinang,Timur Laut
+DNR000855,LOC0001046,Pulau Pinang,Timur Laut
+DNR000856,LOC0001047,Pulau Pinang,Timur Laut
+DNR000857,LOC0001048,Pulau Pinang,Timur Laut
+DNR000858,LOC0001049,Pulau Pinang,Timur Laut
+DNR000859,LOC0001050,Pulau Pinang,Timur Laut
+DNR000860,LOC0001051,Pulau Pinang,Timur Laut
+DNR000861,LOC0001052,Pulau Pinang,Timur Laut
+DNR000862,LOC0001053,Pulau Pinang,Timur Laut
+DNR000863,LOC0001054,Pulau Pinang,Timur Laut
+DNR000864,LOC0001055,Pulau Pinang,Timur Laut
+DNR000865,LOC0001056,Pulau Pinang,Timur Laut
+DNR000866,LOC0001057,Pulau Pinang,Timur Laut
+DNR000867,LOC0001058,Pulau Pinang,Timur Laut
+DNR000868,LOC0001059,Pulau Pinang,Timur Laut
+DNR000869,LOC0001060,Pulau Pinang,Timur Laut
+DNR000870,LOC0001061,Pulau Pinang,Timur Laut
+DNR000871,LOC0001062,Pulau Pinang,Timur Laut
+DNR000872,LOC0001063,Pulau Pinang,Timur Laut
+DNR000873,LOC0001064,Pulau Pinang,Timur Laut
+DNR000874,LOC0001065,Pulau Pinang,Timur Laut
+DNR000875,LOC0001066,Pulau Pinang,Timur Laut
+DNR000876,LOC0001067,Pulau Pinang,Timur Laut
+DNR000877,LOC0001068,Pulau Pinang,Timur Laut
+DNR000878,LOC0001069,Pulau Pinang,Timur Laut
+DNR000879,LOC0001070,Pulau Pinang,Timur Laut
+DNR000880,LOC0001071,Pulau Pinang,Timur Laut
+DNR000881,LOC0001072,Pulau Pinang,Timur Laut
+DNR000882,LOC0001073,Pulau Pinang,Timur Laut
+DNR000883,LOC0001074,Pulau Pinang,Timur Laut
+DNR000884,LOC0001075,Pulau Pinang,Timur Laut
+DNR000885,LOC0001076,Pulau Pinang,Timur Laut
+DNR000886,LOC0001077,Pulau Pinang,Timur Laut
+DNR000887,LOC0001078,Pulau Pinang,Timur Laut
+DNR000888,LOC0001079,Pulau Pinang,Timur Laut
+DNR000889,LOC0001080,Pulau Pinang,Timur Laut
+DNR000890,LOC0001081,Pulau Pinang,Timur Laut
+DNR000891,LOC0001082,Pulau Pinang,Timur Laut
+DNR000892,LOC0001083,Pulau Pinang,Timur Laut
+DNR000893,LOC0001084,Pulau Pinang,Timur Laut
+DNR000894,LOC0001085,Pulau Pinang,Timur Laut
+DNR000895,LOC0001086,Pulau Pinang,Timur Laut
+DNR000896,LOC0001087,Pulau Pinang,Timur Laut
+DNR000897,LOC0001088,Pulau Pinang,Timur Laut
+DNR000898,LOC0001089,Pulau Pinang,Timur Laut
+DNR000899,LOC0001090,Pulau Pinang,Timur Laut
+DNR000900,LOC0001091,Pulau Pinang,Timur Laut
+DNR000901,LOC0001092,Pulau Pinang,Timur Laut
+DNR000902,LOC0001093,Pulau Pinang,Timur Laut
+DNR000903,LOC0001094,Pulau Pinang,Timur Laut
+DNR000904,LOC0001095,Pulau Pinang,Timur Laut
+DNR000905,LOC0001096,Pulau Pinang,Timur Laut
+DNR000906,LOC0001097,Pulau Pinang,Timur Laut
+DNR000907,LOC0001098,Pulau Pinang,Timur Laut
+DNR000908,LOC0001099,Pulau Pinang,Timur Laut
+DNR000909,LOC0001100,Pulau Pinang,Timur Laut
+DNR000910,LOC0001101,Pulau Pinang,Timur Laut
+DNR000911,LOC0001102,Pulau Pinang,Timur Laut
+DNR000912,LOC0001103,Pulau Pinang,Timur Laut
+DNR000913,LOC0001104,Pulau Pinang,Timur Laut
+DNR000914,LOC0001105,Pulau Pinang,Timur Laut
+DNR000915,LOC0001106,Pulau Pinang,Timur Laut
+DNR000916,LOC0001107,Pulau Pinang,Timur Laut
+DNR000917,LOC0001108,Pulau Pinang,Timur Laut
+DNR000918,LOC0001109,Pulau Pinang,Timur Laut
+DNR000919,LOC0001110,Pulau Pinang,Timur Laut
+DNR000920,LOC0001111,Pulau Pinang,Timur Laut
+DNR000921,LOC0001112,Pulau Pinang,Timur Laut
+DNR000922,LOC0001113,Pulau Pinang,Timur Laut
+DNR000923,LOC0001114,Pulau Pinang,Timur Laut
+DNR000924,LOC0001115,Pulau Pinang,Timur Laut
+DNR000925,LOC0001116,Pulau Pinang,Timur Laut
+DNR000926,LOC0001117,Pulau Pinang,Timur Laut
+DNR000927,LOC0001118,Pulau Pinang,Timur Laut
+DNR000928,LOC0001119,Pulau Pinang,Timur Laut
+DNR000929,LOC0001120,Pulau Pinang,Timur Laut
+DNR000930,LOC0001121,Pulau Pinang,Timur Laut
+DNR000931,LOC0001122,Perak,Kinta
+DNR000932,LOC0001123,Perak,Kinta
+DNR000933,LOC0001124,Perak,Kinta
+DNR000934,LOC0001125,Perak,Kinta
+DNR000935,LOC0001126,Perak,Kinta
+DNR000936,LOC0001127,Perak,Kinta
+DNR000937,LOC0001128,Perak,Kinta
+DNR000938,LOC0001129,Perak,Kinta
+DNR000939,LOC0001130,Perak,Kinta
+DNR000940,LOC0001131,Perak,Kinta
+DNR000941,LOC0001132,Perak,Kinta
+DNR000942,LOC0001133,Perak,Kinta
+DNR000943,LOC0001134,Perak,Kinta
+DNR000944,LOC0001135,Perak,Kinta
+DNR000945,LOC0001136,Perak,Kinta
+DNR000946,LOC0001137,Perak,Kinta
+DNR000947,LOC0001138,Perak,Kinta
+DNR000948,LOC0001139,Perak,Kinta
+DNR000949,LOC0001140,Perak,Kinta
+DNR000950,LOC0001141,Perak,Kinta
+DNR000951,LOC0001142,Perak,Kinta
+DNR000952,LOC0001143,Perak,Kinta
+DNR000953,LOC0001144,Perak,Kinta
+DNR000954,LOC0001145,Perak,Kinta
+DNR000955,LOC0001146,Perak,Kinta
+DNR000956,LOC0001147,Perak,Kinta
+DNR000957,LOC0001148,Perak,Kinta
+DNR000958,LOC0001149,Perak,Kinta
+DNR000959,LOC0001150,Perak,Kinta
+DNR000960,LOC0001151,Perak,Kinta
+DNR000961,LOC0001152,Perak,Kinta
+DNR000962,LOC0001153,Perak,Kinta
+DNR000963,LOC0001154,Perak,Kinta
+DNR000964,LOC0001155,Perak,Kinta
+DNR000965,LOC0001156,Perak,Kinta
+DNR000966,LOC0001157,Perak,Kinta
+DNR000967,LOC0001158,Perak,Kinta
+DNR000968,LOC0001159,Perak,Kinta
+DNR000969,LOC0001160,Perak,Kinta
+DNR000970,LOC0001161,Perak,Kinta
+DNR000971,LOC0001162,Perak,Kinta
+DNR000972,LOC0001163,Perak,Kinta
+DNR000973,LOC0001164,Perak,Kinta
+DNR000974,LOC0001165,Perak,Kinta
+DNR000975,LOC0001166,Perak,Kinta
+DNR000976,LOC0001167,Perak,Kinta
+DNR000977,LOC0001168,Perak,Kinta
+DNR000978,LOC0001169,Perak,Kinta
+DNR000979,LOC0001170,Perak,Kinta
+DNR000980,LOC0001171,Perak,Kinta
+DNR000981,LOC0001172,Perak,Kinta
+DNR000982,LOC0001173,Perak,Kinta
+DNR000983,LOC0001174,Perak,Kinta
+DNR000984,LOC0001175,Perak,Kinta
+DNR000985,LOC0001176,Perak,Kinta
+DNR000986,LOC0001177,Perak,Kinta
+DNR000987,LOC0001178,Perak,Kinta
+DNR000988,LOC0001179,Perak,Kinta
+DNR000989,LOC0001180,Perak,Kinta
+DNR000990,LOC0001181,Perak,Kinta
+DNR000991,LOC0001182,Perak,Kinta
+DNR000992,LOC0001183,Perak,Kinta
+DNR000993,LOC0001184,Perak,Kinta
+DNR000994,LOC0001185,Perak,Kinta
+DNR000995,LOC0001186,Perak,Kinta
+DNR000996,LOC0001187,Perak,Kinta
+DNR000997,LOC0001188,Perak,Kinta
+DNR000998,LOC0001189,Perak,Kinta
+DNR000999,LOC0001190,Perak,Kinta
+DNR001000,LOC0001191,Perak,Kinta
+DNR001001,LOC0001192,Perak,Kinta
+DNR001002,LOC0001193,Perak,Kinta
+DNR001003,LOC0001194,Perak,Kinta
+DNR001004,LOC0001195,Perak,Kinta
+DNR001005,LOC0001196,Perak,Kinta
+DNR001006,LOC0001197,Perak,Kinta
+DNR001007,LOC0001198,Perak,Kinta
+DNR001008,LOC0001199,Perak,Kinta
+DNR001009,LOC0001200,Perak,Kinta
+DNR001010,LOC0001201,Perak,Kinta
+DNR001011,LOC0001202,Perak,Kinta
+DNR001012,LOC0001203,Perak,Kinta
+DNR001013,LOC0001204,Perak,Kinta
+DNR001014,LOC0001205,Perak,Kinta
+DNR001015,LOC0001206,Perak,Kinta
+DNR001016,LOC0001207,Perak,Kinta
+DNR001017,LOC0001208,Perak,Kinta
+DNR001018,LOC0001209,Perak,Kinta
+DNR001019,LOC0001210,Perak,Kinta
+DNR001020,LOC0001211,Perak,Kinta
+DNR001021,LOC0001212,Perak,Kinta
+DNR001022,LOC0001213,Perak,Kinta
+DNR001023,LOC0001214,Perak,Kinta
+DNR001024,LOC0001215,Perak,Kinta
+DNR001025,LOC0001216,Perak,Kinta
+DNR001026,LOC0001217,Perak,Kinta
+DNR001027,LOC0001218,Perak,Kinta
+DNR001028,LOC0001219,Perak,Kinta
+DNR001029,LOC0001220,Perak,Kinta
+DNR001030,LOC0001221,Perak,Kinta
+DNR001031,LOC0001222,Perak,Kinta
+DNR001032,LOC0001223,Perak,Kinta
+DNR001033,LOC0001224,Perak,Kinta
+DNR001034,LOC0001225,Perak,Kinta
+DNR001035,LOC0001226,Perak,Kinta
+DNR001036,LOC0001227,Perak,Kinta
+DNR001037,LOC0001228,Perak,Kinta
+DNR001038,LOC0001229,Perak,Kinta
+DNR001039,LOC0001230,Perak,Kinta
+DNR001040,LOC0001231,Perak,Kinta
+DNR001041,LOC0001232,Perak,Kinta
+DNR001042,LOC0001233,Perak,Kinta
+DNR001043,LOC0001234,Perak,Kinta
+DNR001044,LOC0001235,Perak,Kinta
+DNR001045,LOC0001236,Perak,Kinta
+DNR001046,LOC0001237,Perak,Kinta
+DNR001047,LOC0001238,Perak,Kinta
+DNR001048,LOC0001239,Perak,Kinta
+DNR001049,LOC0001240,Perak,Kinta
+DNR001050,LOC0001241,Perak,Kinta
+DNR001051,LOC0001242,Perak,Kinta
+DNR001052,LOC0001243,Perak,Kinta
+DNR001053,LOC0001244,Perak,Kinta
+DNR001054,LOC0001245,Perak,Kinta
+DNR001055,LOC0001246,Perak,Kinta
+DNR001056,LOC0001247,Perak,Kinta
+DNR001057,LOC0001248,Perak,Kinta
+DNR001058,LOC0001249,Perak,Kinta
+DNR001059,LOC0001250,Perak,Kinta
+DNR001060,LOC0001251,Perak,Kinta
+DNR001061,LOC0001252,Perak,Kinta
+DNR001062,LOC0001253,Perak,Kinta
+DNR001063,LOC0001254,Perak,Kinta
+DNR001064,LOC0001255,Perak,Kinta
+DNR001065,LOC0001256,Perak,Kinta
+DNR001066,LOC0001257,Perak,Kinta
+DNR001067,LOC0001258,Perak,Kinta
+DNR001068,LOC0001259,Perak,Kinta
+DNR001069,LOC0001260,Perak,Kinta
+DNR001070,LOC0001261,Perak,Kinta
+DNR001071,LOC0001262,Perak,Kinta
+DNR001072,LOC0001263,Perak,Kinta
+DNR001073,LOC0001264,Perak,Kinta
+DNR001074,LOC0001265,Perak,Kinta
+DNR001075,LOC0001266,Perak,Kinta
+DNR001076,LOC0001267,Perak,Kinta
+DNR001077,LOC0001268,Perak,Kinta
+DNR001078,LOC0001269,Perak,Kinta
+DNR001079,LOC0001270,Perak,Kinta
+DNR001080,LOC0001271,Perak,Kinta
+DNR001081,LOC0001272,Perak,Kinta
+DNR001082,LOC0001273,Perak,Kinta
+DNR001083,LOC0001274,Perak,Kinta
+DNR001084,LOC0001275,Perak,Kinta
+DNR001085,LOC0001276,Perak,Kinta
+DNR001086,LOC0001277,Perak,Kinta
+DNR001087,LOC0001278,Perak,Kinta
+DNR001088,LOC0001279,Perak,Kinta
+DNR001089,LOC0001280,Perak,Kinta
+DNR001090,LOC0001281,Terengganu,Kemaman
+DNR001091,LOC0001282,Terengganu,Kemaman
+DNR001092,LOC0001283,Terengganu,Kemaman
+DNR001093,LOC0001284,Terengganu,Kemaman
+DNR001094,LOC0001285,Terengganu,Kemaman
+DNR001095,LOC0001286,Terengganu,Kemaman
+DNR001096,LOC0001287,Terengganu,Kemaman
+DNR001097,LOC0001288,Terengganu,Kemaman
+DNR001098,LOC0001289,Terengganu,Kemaman
+DNR001099,LOC0001290,Terengganu,Kemaman
+DNR001100,LOC0001291,Terengganu,Kemaman
+DNR001101,LOC0001292,Terengganu,Kemaman
+DNR001102,LOC0001293,Terengganu,Kemaman
+DNR001103,LOC0001294,Terengganu,Kemaman
+DNR001104,LOC0001295,Terengganu,Kemaman
+DNR001105,LOC0001296,Terengganu,Kemaman
+DNR001106,LOC0001297,Terengganu,Kemaman
+DNR001107,LOC0001298,Terengganu,Kemaman
+DNR001108,LOC0001299,Terengganu,Kemaman
+DNR001109,LOC0001300,Terengganu,Kemaman
+DNR001110,LOC0001301,Terengganu,Kemaman
+DNR001111,LOC0001302,Terengganu,Kemaman
+DNR001112,LOC0001303,Terengganu,Kemaman
+DNR001113,LOC0001304,Terengganu,Kemaman
+DNR001114,LOC0001305,Terengganu,Kemaman
+DNR001115,LOC0001306,Terengganu,Kemaman
+DNR001116,LOC0001307,Terengganu,Kemaman
+DNR001117,LOC0001308,Terengganu,Kemaman
+DNR001118,LOC0001309,Terengganu,Kemaman
+DNR001119,LOC0001310,Terengganu,Kemaman
+DNR001120,LOC0001311,Terengganu,Kemaman
+DNR001121,LOC0001312,Terengganu,Kemaman
+DNR001122,LOC0001313,Terengganu,Kemaman
+DNR001123,LOC0001314,Terengganu,Kemaman
+DNR001124,LOC0001315,Terengganu,Kemaman
+DNR001125,LOC0001316,Terengganu,Kemaman
+DNR001126,LOC0001317,Terengganu,Kemaman
+DNR001127,LOC0001318,Terengganu,Kemaman
+DNR001128,LOC0001319,Terengganu,Kemaman
+DNR001129,LOC0001320,Terengganu,Kemaman
+DNR001130,LOC0001321,Terengganu,Kemaman
+DNR001131,LOC0001322,Terengganu,Kemaman
+DNR001132,LOC0001323,Terengganu,Kemaman
+DNR001133,LOC0001324,Terengganu,Kemaman
+DNR001134,LOC0001325,Terengganu,Kemaman
+DNR001135,LOC0001326,Terengganu,Kemaman
+DNR001136,LOC0001327,Terengganu,Kemaman
+DNR001137,LOC0001328,Terengganu,Kemaman
+DNR001138,LOC0001329,Terengganu,Kemaman
+DNR001139,LOC0001330,Terengganu,Kemaman
+DNR001140,LOC0001331,Terengganu,Kemaman
+DNR001141,LOC0001332,Terengganu,Kemaman
+DNR001142,LOC0001333,Terengganu,Kemaman
+DNR001143,LOC0001334,Terengganu,Kemaman
+DNR001144,LOC0001335,Terengganu,Kemaman
+DNR001145,LOC0001336,Terengganu,Kemaman
+DNR001146,LOC0001337,Terengganu,Kemaman
+DNR001147,LOC0001338,Terengganu,Kemaman
+DNR001148,LOC0001339,Terengganu,Kemaman
+DNR001149,LOC0001340,Terengganu,Kemaman
+DNR001150,LOC0001341,Terengganu,Kemaman
+DNR001151,LOC0001342,Terengganu,Kemaman
+DNR001152,LOC0001343,Terengganu,Kemaman
+DNR001153,LOC0001344,Terengganu,Kemaman
+DNR001154,LOC0001345,Terengganu,Kemaman
+DNR001155,LOC0001346,Terengganu,Kemaman
+DNR001156,LOC0001347,Terengganu,Kemaman
+DNR001157,LOC0001348,Terengganu,Kemaman
+DNR001158,LOC0001349,Terengganu,Kemaman
+DNR001159,LOC0001350,Terengganu,Kemaman
+DNR001160,LOC0001351,Terengganu,Kemaman
+DNR001161,LOC0001352,Terengganu,Kemaman
+DNR001162,LOC0001353,Terengganu,Kemaman
+DNR001163,LOC0001354,Terengganu,Kemaman
+DNR001164,LOC0001355,Terengganu,Kemaman
+DNR001165,LOC0001356,Terengganu,Kemaman
+DNR001166,LOC0001357,Terengganu,Kemaman
+DNR001167,LOC0001358,Terengganu,Kemaman
+DNR001168,LOC0001359,Terengganu,Kemaman
+DNR001169,LOC0001360,Terengganu,Kemaman
+DNR001170,LOC0001361,Terengganu,Kemaman
+DNR001171,LOC0001362,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001172,LOC0001363,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001173,LOC0001364,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001174,LOC0001365,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001175,LOC0001366,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001176,LOC0001367,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001177,LOC0001368,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001178,LOC0001369,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001179,LOC0001370,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001180,LOC0001371,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001181,LOC0001372,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001182,LOC0001373,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001183,LOC0001374,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001184,LOC0001375,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001185,LOC0001376,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001186,LOC0001377,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001187,LOC0001378,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001188,LOC0001379,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001189,LOC0001380,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001190,LOC0001381,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001191,LOC0001382,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001192,LOC0001383,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001193,LOC0001384,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001194,LOC0001385,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001195,LOC0001386,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001196,LOC0001387,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001197,LOC0001388,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001198,LOC0001389,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001199,LOC0001390,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001200,LOC0001391,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001201,LOC0001392,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001202,LOC0001393,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001203,LOC0001394,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001204,LOC0001395,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001205,LOC0001396,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001206,LOC0001397,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001207,LOC0001398,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001208,LOC0001399,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001209,LOC0001400,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001210,LOC0001401,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001211,LOC0001402,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001212,LOC0001403,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001213,LOC0001404,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001214,LOC0001405,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001215,LOC0001406,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001216,LOC0001407,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001217,LOC0001408,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001218,LOC0001409,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001219,LOC0001410,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001220,LOC0001411,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001221,LOC0001412,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001222,LOC0001413,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001223,LOC0001414,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001224,LOC0001415,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001225,LOC0001416,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001226,LOC0001417,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001227,LOC0001418,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001228,LOC0001419,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001229,LOC0001420,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001230,LOC0001421,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001231,LOC0001422,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001232,LOC0001423,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001233,LOC0001424,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001234,LOC0001425,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001235,LOC0001426,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001236,LOC0001427,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001237,LOC0001428,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001238,LOC0001429,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001239,LOC0001430,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001240,LOC0001431,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001241,LOC0001432,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001242,LOC0001433,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001243,LOC0001434,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001244,LOC0001435,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001245,LOC0001436,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001246,LOC0001437,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001247,LOC0001438,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001248,LOC0001439,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001249,LOC0001440,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001250,LOC0001441,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001251,LOC0001442,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001252,LOC0001443,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001253,LOC0001444,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001254,LOC0001445,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001255,LOC0001446,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001256,LOC0001447,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001257,LOC0001448,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001258,LOC0001449,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001259,LOC0001450,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001260,LOC0001451,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001261,LOC0001452,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001262,LOC0001453,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001263,LOC0001454,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001264,LOC0001455,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001265,LOC0001456,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001266,LOC0001457,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001267,LOC0001458,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001268,LOC0001459,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001269,LOC0001460,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001270,LOC0001461,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001271,LOC0001462,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001272,LOC0001463,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001273,LOC0001464,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001274,LOC0001465,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001275,LOC0001466,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001276,LOC0001467,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001277,LOC0001468,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001278,LOC0001469,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001279,LOC0001470,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001280,LOC0001471,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001281,LOC0001472,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001282,LOC0001473,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001283,LOC0001474,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001284,LOC0001475,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001285,LOC0001476,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001286,LOC0001477,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001287,LOC0001478,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001288,LOC0001479,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001289,LOC0001480,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001290,LOC0001481,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001291,LOC0001482,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001292,LOC0001483,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001293,LOC0001484,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001294,LOC0001485,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001295,LOC0001486,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001296,LOC0001487,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001297,LOC0001488,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001298,LOC0001489,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001299,LOC0001490,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001300,LOC0001491,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001301,LOC0001492,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001302,LOC0001493,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001303,LOC0001494,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001304,LOC0001495,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001305,LOC0001496,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001306,LOC0001497,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001307,LOC0001498,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001308,LOC0001499,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001309,LOC0001500,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001310,LOC0001501,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001311,LOC0001502,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001312,LOC0001503,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001313,LOC0001504,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001314,LOC0001505,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001315,LOC0001506,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001316,LOC0001507,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001317,LOC0001508,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001318,LOC0001509,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001319,LOC0001510,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001320,LOC0001511,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001321,LOC0001512,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001322,LOC0001513,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001323,LOC0001514,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001324,LOC0001515,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001325,LOC0001516,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001326,LOC0001517,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001327,LOC0001518,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001328,LOC0001519,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001329,LOC0001520,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001330,LOC0001521,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001331,LOC0001522,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001332,LOC0001523,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001333,LOC0001524,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001334,LOC0001525,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001335,LOC0001526,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001336,LOC0001527,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001337,LOC0001528,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001338,LOC0001529,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001339,LOC0001530,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001340,LOC0001531,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001341,LOC0001532,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001342,LOC0001533,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001343,LOC0001534,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001344,LOC0001535,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001345,LOC0001536,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001346,LOC0001537,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001347,LOC0001538,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001348,LOC0001539,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001349,LOC0001540,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001350,LOC0001541,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001351,LOC0001542,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001352,LOC0001543,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001353,LOC0001544,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001354,LOC0001545,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001355,LOC0001546,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001356,LOC0001547,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001357,LOC0001548,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001358,LOC0001549,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001359,LOC0001550,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001360,LOC0001551,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001361,LOC0001552,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001362,LOC0001553,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001363,LOC0001554,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001364,LOC0001555,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001365,LOC0001556,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001366,LOC0001557,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001367,LOC0001558,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001368,LOC0001559,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001369,LOC0001560,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001370,LOC0001561,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001371,LOC0001562,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001372,LOC0001563,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001373,LOC0001564,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001374,LOC0001565,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001375,LOC0001566,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001376,LOC0001567,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001377,LOC0001568,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001378,LOC0001569,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001379,LOC0001570,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001380,LOC0001571,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001381,LOC0001572,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001382,LOC0001573,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001383,LOC0001574,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001384,LOC0001575,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001385,LOC0001576,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001386,LOC0001577,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001387,LOC0001578,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001388,LOC0001579,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001389,LOC0001580,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001390,LOC0001581,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001391,LOC0001582,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001392,LOC0001583,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001393,LOC0001584,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001394,LOC0001585,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001395,LOC0001586,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001396,LOC0001587,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001397,LOC0001588,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001398,LOC0001589,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001399,LOC0001590,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001400,LOC0001591,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001401,LOC0001592,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001402,LOC0001593,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001403,LOC0001594,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001404,LOC0001595,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001405,LOC0001596,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001406,LOC0001597,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001407,LOC0001598,W.P. Kuala Lumpur,W.P. Kuala Lumpur
+DNR001408,LOC0001599,Negeri Sembilan,Seremban
+DNR001409,LOC0001600,Negeri Sembilan,Seremban
+DNR001410,LOC0001601,Negeri Sembilan,Seremban
+DNR001411,LOC0001602,Negeri Sembilan,Seremban
+DNR001412,LOC0001603,Negeri Sembilan,Seremban
+DNR001413,LOC0001604,Negeri Sembilan,Seremban
+DNR001414,LOC0001605,Negeri Sembilan,Seremban
+DNR001415,LOC0001606,Negeri Sembilan,Seremban
+DNR001416,LOC0001607,Negeri Sembilan,Seremban
+DNR001417,LOC0001608,Negeri Sembilan,Seremban
+DNR001418,LOC0001609,Negeri Sembilan,Seremban
+DNR001419,LOC0001610,Negeri Sembilan,Seremban
+DNR001420,LOC0001611,Negeri Sembilan,Seremban
+DNR001421,LOC0001612,Negeri Sembilan,Seremban
+DNR001422,LOC0001613,Negeri Sembilan,Seremban
+DNR001423,LOC0001614,Negeri Sembilan,Seremban
+DNR001424,LOC0001615,Negeri Sembilan,Seremban
+DNR001425,LOC0001616,Negeri Sembilan,Seremban
+DNR001426,LOC0001617,Negeri Sembilan,Seremban
+DNR001427,LOC0001618,Negeri Sembilan,Seremban
+DNR001428,LOC0001619,Negeri Sembilan,Seremban
+DNR001429,LOC0001620,Negeri Sembilan,Seremban
+DNR001430,LOC0001621,Negeri Sembilan,Seremban
+DNR001431,LOC0001622,Negeri Sembilan,Seremban
+DNR001432,LOC0001623,Negeri Sembilan,Seremban
+DNR001433,LOC0001624,Negeri Sembilan,Seremban
+DNR001434,LOC0001625,Negeri Sembilan,Seremban
+DNR001435,LOC0001626,Negeri Sembilan,Seremban
+DNR001436,LOC0001627,Negeri Sembilan,Seremban
+DNR001437,LOC0001628,Negeri Sembilan,Seremban
+DNR001438,LOC0001629,Negeri Sembilan,Seremban
+DNR001439,LOC0001630,Negeri Sembilan,Seremban
+DNR001440,LOC0001631,Negeri Sembilan,Seremban
+DNR001441,LOC0001632,Negeri Sembilan,Seremban
+DNR001442,LOC0001633,Negeri Sembilan,Seremban
+DNR001443,LOC0001634,Negeri Sembilan,Seremban
+DNR001444,LOC0001635,Negeri Sembilan,Seremban
+DNR001445,LOC0001636,Negeri Sembilan,Seremban
+DNR001446,LOC0001637,Negeri Sembilan,Seremban
+DNR001447,LOC0001638,Negeri Sembilan,Seremban
+DNR001448,LOC0001639,Negeri Sembilan,Seremban
+DNR001449,LOC0001640,Negeri Sembilan,Seremban
+DNR001450,LOC0001641,Negeri Sembilan,Seremban
+DNR001451,LOC0001642,Negeri Sembilan,Seremban
+DNR001452,LOC0001643,Negeri Sembilan,Seremban
+DNR001453,LOC0001644,Negeri Sembilan,Seremban
+DNR001454,LOC0001645,Negeri Sembilan,Seremban
+DNR001455,LOC0001646,Negeri Sembilan,Seremban
+DNR001456,LOC0001647,Negeri Sembilan,Seremban
+DNR001457,LOC0001648,Negeri Sembilan,Seremban
+DNR001458,LOC0001649,Negeri Sembilan,Seremban
+DNR001459,LOC0001650,Negeri Sembilan,Seremban
+DNR001460,LOC0001651,Negeri Sembilan,Seremban
+DNR001461,LOC0001652,Negeri Sembilan,Seremban
+DNR001462,LOC0001653,Negeri Sembilan,Seremban
+DNR001463,LOC0001654,Negeri Sembilan,Seremban
+DNR001464,LOC0001655,Negeri Sembilan,Seremban
+DNR001465,LOC0001656,Negeri Sembilan,Seremban
+DNR001466,LOC0001657,Negeri Sembilan,Seremban
+DNR001467,LOC0001658,Negeri Sembilan,Seremban
+DNR001468,LOC0001659,Negeri Sembilan,Seremban
+DNR001469,LOC0001660,Negeri Sembilan,Seremban
+DNR001470,LOC0001661,Negeri Sembilan,Seremban
+DNR001471,LOC0001662,Negeri Sembilan,Seremban
+DNR001472,LOC0001663,Negeri Sembilan,Seremban
+DNR001473,LOC0001664,Negeri Sembilan,Seremban
+DNR001474,LOC0001665,Negeri Sembilan,Seremban
+DNR001475,LOC0001666,Negeri Sembilan,Seremban
+DNR001476,LOC0001667,Negeri Sembilan,Seremban
+DNR001477,LOC0001668,Negeri Sembilan,Seremban
+DNR001478,LOC0001669,Negeri Sembilan,Seremban
+DNR001479,LOC0001670,Negeri Sembilan,Seremban
+DNR001480,LOC0001671,Negeri Sembilan,Seremban
+DNR001481,LOC0001672,Negeri Sembilan,Seremban
+DNR001482,LOC0001673,Negeri Sembilan,Seremban
+DNR001483,LOC0001674,Negeri Sembilan,Seremban
+DNR001484,LOC0001675,Negeri Sembilan,Seremban
+DNR001485,LOC0001676,Negeri Sembilan,Seremban
+DNR001486,LOC0001677,Negeri Sembilan,Seremban
+DNR001487,LOC0001678,Negeri Sembilan,Seremban
+DNR001488,LOC0001679,Negeri Sembilan,Seremban
+DNR001489,LOC0001680,Negeri Sembilan,Seremban
+DNR001490,LOC0001681,Negeri Sembilan,Seremban
+DNR001491,LOC0001682,Negeri Sembilan,Seremban
+DNR001492,LOC0001683,Negeri Sembilan,Seremban
+DNR001493,LOC0001684,Negeri Sembilan,Seremban
+DNR001494,LOC0001685,Negeri Sembilan,Seremban
+DNR001495,LOC0001686,Negeri Sembilan,Seremban
+DNR001496,LOC0001687,Negeri Sembilan,Seremban
+DNR001497,LOC0001688,Negeri Sembilan,Seremban
+DNR001498,LOC0001689,Negeri Sembilan,Seremban
+DNR001499,LOC0001690,Negeri Sembilan,Seremban
+DNR001500,LOC0001691,Negeri Sembilan,Seremban
+DNR001501,LOC0001692,Negeri Sembilan,Seremban
+DNR001502,LOC0001693,Negeri Sembilan,Seremban
+DNR001503,LOC0001694,Negeri Sembilan,Seremban
+DNR001504,LOC0001695,Negeri Sembilan,Seremban
+DNR001505,LOC0001696,Negeri Sembilan,Seremban
+DNR001506,LOC0001697,Negeri Sembilan,Seremban
+DNR001507,LOC0001698,Negeri Sembilan,Seremban
+DNR001508,LOC0001699,Negeri Sembilan,Seremban
+DNR001509,LOC0001700,Negeri Sembilan,Seremban
+DNR001510,LOC0001701,Negeri Sembilan,Seremban
+DNR001511,LOC0001702,Negeri Sembilan,Seremban
+DNR001512,LOC0001703,Negeri Sembilan,Seremban
+DNR001513,LOC0001704,Negeri Sembilan,Seremban
+DNR001514,LOC0001705,Negeri Sembilan,Seremban
+DNR001515,LOC0001706,Negeri Sembilan,Seremban
+DNR001516,LOC0001707,Negeri Sembilan,Seremban
+DNR001517,LOC0001708,Negeri Sembilan,Seremban
+DNR001518,LOC0001709,Negeri Sembilan,Seremban
+DNR001519,LOC0001710,Negeri Sembilan,Seremban
+DNR001520,LOC0001711,Negeri Sembilan,Seremban
+DNR001521,LOC0001712,Negeri Sembilan,Seremban
+DNR001522,LOC0001713,Negeri Sembilan,Seremban
+DNR001523,LOC0001714,Negeri Sembilan,Seremban
+DNR001524,LOC0001715,Negeri Sembilan,Seremban
+DNR001525,LOC0001716,Negeri Sembilan,Seremban
+DNR001526,LOC0001717,Negeri Sembilan,Seremban
+DNR001527,LOC0001718,Negeri Sembilan,Seremban
+DNR001528,LOC0001719,Negeri Sembilan,Seremban
+DNR001529,LOC0001720,Negeri Sembilan,Seremban
+DNR001530,LOC0001721,Negeri Sembilan,Seremban
+DNR001531,LOC0001722,Pahang,Kuantan
+DNR001532,LOC0001723,Pahang,Kuantan
+DNR001533,LOC0001724,Pahang,Kuantan
+DNR001534,LOC0001725,Pahang,Kuantan
+DNR001535,LOC0001726,Pahang,Kuantan
+DNR001536,LOC0001727,Pahang,Kuantan
+DNR001537,LOC0001728,Pahang,Kuantan
+DNR001538,LOC0001729,Pahang,Kuantan
+DNR001539,LOC0001730,Pahang,Kuantan
+DNR001540,LOC0001731,Pahang,Kuantan
+DNR001541,LOC0001732,Pahang,Kuantan
+DNR001542,LOC0001733,Pahang,Kuantan
+DNR001543,LOC0001734,Pahang,Kuantan
+DNR001544,LOC0001735,Pahang,Kuantan
+DNR001545,LOC0001736,Pahang,Kuantan
+DNR001546,LOC0001737,Pahang,Kuantan
+DNR001547,LOC0001738,Pahang,Kuantan
+DNR001548,LOC0001739,Pahang,Kuantan
+DNR001549,LOC0001740,Pahang,Kuantan
+DNR001550,LOC0001741,Pahang,Kuantan
+DNR001551,LOC0001742,Pahang,Kuantan
+DNR001552,LOC0001743,Pahang,Kuantan
+DNR001553,LOC0001744,Pahang,Kuantan
+DNR001554,LOC0001745,Pahang,Kuantan
+DNR001555,LOC0001746,Pahang,Kuantan
+DNR001556,LOC0001747,Pahang,Kuantan
+DNR001557,LOC0001748,Pahang,Kuantan
+DNR001558,LOC0001749,Pahang,Kuantan
+DNR001559,LOC0001750,Pahang,Kuantan
+DNR001560,LOC0001751,Pahang,Kuantan
+DNR001561,LOC0001752,Pahang,Kuantan
+DNR001562,LOC0001753,Pahang,Kuantan
+DNR001563,LOC0001754,Pahang,Kuantan
+DNR001564,LOC0001755,Pahang,Kuantan
+DNR001565,LOC0001756,Pahang,Kuantan
+DNR001566,LOC0001757,Pahang,Kuantan
+DNR001567,LOC0001758,Pahang,Kuantan
+DNR001568,LOC0001759,Pahang,Kuantan
+DNR001569,LOC0001760,Pahang,Kuantan
+DNR001570,LOC0001761,Pahang,Kuantan
+DNR001571,LOC0001762,Pahang,Kuantan
+DNR001572,LOC0001763,Pahang,Kuantan
+DNR001573,LOC0001764,Pahang,Kuantan
+DNR001574,LOC0001765,Pahang,Kuantan
+DNR001575,LOC0001766,Pahang,Kuantan
+DNR001576,LOC0001767,Pahang,Kuantan
+DNR001577,LOC0001768,Pahang,Kuantan
+DNR001578,LOC0001769,Pahang,Kuantan
+DNR001579,LOC0001770,Pahang,Kuantan
+DNR001580,LOC0001771,Pahang,Kuantan
+DNR001581,LOC0001772,Pahang,Kuantan
+DNR001582,LOC0001773,Pahang,Kuantan
+DNR001583,LOC0001774,Pahang,Kuantan
+DNR001584,LOC0001775,Pahang,Kuantan
+DNR001585,LOC0001776,Pahang,Kuantan
+DNR001586,LOC0001777,Pahang,Kuantan
+DNR001587,LOC0001778,Pahang,Kuantan
+DNR001588,LOC0001779,Pahang,Kuantan
+DNR001589,LOC0001780,Pahang,Kuantan
+DNR001590,LOC0001781,Pahang,Kuantan
+DNR001591,LOC0001782,Pahang,Kuantan
+DNR001592,LOC0001783,Pahang,Kuantan
+DNR001593,LOC0001784,Pahang,Kuantan
+DNR001594,LOC0001785,Pahang,Kuantan
+DNR001595,LOC0001786,Pahang,Kuantan
+DNR001596,LOC0001787,Pahang,Kuantan
+DNR001597,LOC0001788,Pahang,Kuantan
+DNR001598,LOC0001789,Pahang,Kuantan
+DNR001599,LOC0001790,Pahang,Kuantan
+DNR001600,LOC0001791,Pahang,Kuantan
+DNR001601,LOC0001792,Pahang,Kuantan
+DNR001602,LOC0001793,Pahang,Kuantan
+DNR001603,LOC0001794,Pahang,Kuantan
+DNR001604,LOC0001795,Pahang,Kuantan
+DNR001605,LOC0001796,Pahang,Kuantan
+DNR001606,LOC0001797,Pahang,Kuantan
+DNR001607,LOC0001798,Pahang,Kuantan
+DNR001608,LOC0001799,Pahang,Kuantan
+DNR001609,LOC0001800,Pahang,Kuantan
+DNR001610,LOC0001801,Pahang,Kuantan
+DNR001611,LOC0001802,Pahang,Kuantan
+DNR001612,LOC0001803,Pahang,Kuantan
+DNR001613,LOC0001804,Pahang,Kuantan
+DNR001614,LOC0001805,Pahang,Kuantan
+DNR001615,LOC0001806,Pahang,Kuantan
+DNR001616,LOC0001807,Pahang,Kuantan
+DNR001617,LOC0001808,Pahang,Kuantan
+DNR001618,LOC0001809,Pahang,Kuantan
+DNR001619,LOC0001810,Pahang,Kuantan
+DNR001620,LOC0001811,Pahang,Kuantan
+DNR001621,LOC0001812,Pahang,Kuantan
+DNR001622,LOC0001813,Pahang,Kuantan
+DNR001623,LOC0001814,Pahang,Kuantan
+DNR001624,LOC0001815,Pahang,Kuantan
+DNR001625,LOC0001816,Pahang,Kuantan
+DNR001626,LOC0001817,Pahang,Kuantan
+DNR001627,LOC0001818,Pahang,Kuantan
+DNR001628,LOC0001819,Pahang,Kuantan
+DNR001629,LOC0001820,Pahang,Kuantan
+DNR001630,LOC0001821,Kedah,Kuala Muda
+DNR001631,LOC0001822,Kedah,Kuala Muda
+DNR001632,LOC0001823,Kedah,Kuala Muda
+DNR001633,LOC0001824,Kedah,Kuala Muda
+DNR001634,LOC0001825,Kedah,Kuala Muda
+DNR001635,LOC0001826,Kedah,Kuala Muda
+DNR001636,LOC0001827,Kedah,Kuala Muda
+DNR001637,LOC0001828,Kedah,Kuala Muda
+DNR001638,LOC0001829,Kedah,Kuala Muda
+DNR001639,LOC0001830,Kedah,Kuala Muda
+DNR001640,LOC0001831,Kedah,Kuala Muda
+DNR001641,LOC0001832,Kedah,Kuala Muda
+DNR001642,LOC0001833,Kedah,Kuala Muda
+DNR001643,LOC0001834,Kedah,Kuala Muda
+DNR001644,LOC0001835,Kedah,Kuala Muda
+DNR001645,LOC0001836,Kedah,Kuala Muda
+DNR001646,LOC0001837,Kedah,Kuala Muda
+DNR001647,LOC0001838,Kedah,Kuala Muda
+DNR001648,LOC0001839,Kedah,Kuala Muda
+DNR001649,LOC0001840,Kedah,Kuala Muda
+DNR001650,LOC0001841,Kedah,Kuala Muda
+DNR001651,LOC0001842,Kedah,Kuala Muda
+DNR001652,LOC0001843,Kedah,Kuala Muda
+DNR001653,LOC0001844,Kedah,Kuala Muda
+DNR001654,LOC0001845,Kedah,Kuala Muda
+DNR001655,LOC0001846,Kedah,Kuala Muda
+DNR001656,LOC0001847,Kedah,Kuala Muda
+DNR001657,LOC0001848,Kedah,Kuala Muda
+DNR001658,LOC0001849,Kedah,Kuala Muda
+DNR001659,LOC0001850,Kedah,Kuala Muda
+DNR001660,LOC0001851,Kedah,Kuala Muda
+DNR001661,LOC0001852,Kedah,Kuala Muda
+DNR001662,LOC0001853,Kedah,Kuala Muda
+DNR001663,LOC0001854,Kedah,Kuala Muda
+DNR001664,LOC0001855,Kedah,Kuala Muda
+DNR001665,LOC0001856,Kedah,Kuala Muda
+DNR001666,LOC0001857,Kedah,Kuala Muda
+DNR001667,LOC0001858,Kedah,Kuala Muda
+DNR001668,LOC0001859,Kedah,Kuala Muda
+DNR001669,LOC0001860,Kedah,Kuala Muda
+DNR001670,LOC0001861,Kedah,Kuala Muda
+DNR001671,LOC0001862,Kedah,Kuala Muda
+DNR001672,LOC0001863,Kedah,Kuala Muda
+DNR001673,LOC0001864,Kedah,Kuala Muda
+DNR001674,LOC0001865,Kedah,Kuala Muda
+DNR001675,LOC0001866,Kedah,Kuala Muda
+DNR001676,LOC0001867,Kedah,Kuala Muda
+DNR001677,LOC0001868,Kedah,Kuala Muda
+DNR001678,LOC0001869,Kedah,Kuala Muda
+DNR001679,LOC0001870,Kedah,Kuala Muda
+DNR001680,LOC0001871,Kedah,Kuala Muda
+DNR001681,LOC0001872,Kedah,Kuala Muda
+DNR001682,LOC0001873,Kedah,Kuala Muda
+DNR001683,LOC0001874,Kedah,Kuala Muda
+DNR001684,LOC0001875,Kedah,Kuala Muda
+DNR001685,LOC0001876,Kedah,Kuala Muda
+DNR001686,LOC0001877,Kedah,Kuala Muda
+DNR001687,LOC0001878,Kedah,Kuala Muda
+DNR001688,LOC0001879,Kedah,Kuala Muda
+DNR001689,LOC0001880,Kedah,Kuala Muda
+DNR001690,LOC0001881,Kedah,Kuala Muda
+DNR001691,LOC0001882,Kedah,Kuala Muda
+DNR001692,LOC0001883,Kedah,Kuala Muda
+DNR001693,LOC0001884,Kedah,Kuala Muda
+DNR001694,LOC0001885,Kedah,Kuala Muda
+DNR001695,LOC0001886,Kedah,Kuala Muda
+DNR001696,LOC0001887,Kedah,Kuala Muda
+DNR001697,LOC0001888,Kedah,Kuala Muda
+DNR001698,LOC0001889,Kedah,Kuala Muda
+DNR001699,LOC0001890,Kedah,Kuala Muda
+DNR001700,LOC0001891,Kedah,Kuala Muda
+DNR001701,LOC0001892,Kedah,Kuala Muda
+DNR001702,LOC0001893,Kedah,Kuala Muda
+DNR001703,LOC0001894,Kedah,Kuala Muda
+DNR001704,LOC0001895,Kedah,Kuala Muda
+DNR001705,LOC0001896,Kedah,Kuala Muda
+DNR001706,LOC0001897,Kedah,Kuala Muda
+DNR001707,LOC0001898,Kedah,Kuala Muda
+DNR001708,LOC0001899,Kedah,Kuala Muda
+DNR001709,LOC0001900,Kedah,Kuala Muda
+DNR001710,LOC0001901,Kedah,Kuala Muda
+DNR001711,LOC0001902,Kedah,Kuala Muda
+DNR001712,LOC0001903,Kedah,Kuala Muda
+DNR001713,LOC0001904,Kedah,Kuala Muda
+DNR001714,LOC0001905,Kedah,Kuala Muda
+DNR001715,LOC0001906,Kedah,Kuala Muda
+DNR001716,LOC0001907,Kedah,Kuala Muda
+DNR001717,LOC0001908,Kedah,Kuala Muda
+DNR001718,LOC0001909,Kedah,Kuala Muda
+DNR001719,LOC0001910,Kedah,Kuala Muda
+DNR001720,LOC0001911,Kedah,Kuala Muda
+DNR001721,LOC0001912,Kedah,Kuala Muda
+DNR001722,LOC0001913,Kedah,Kuala Muda
+DNR001723,LOC0001914,Kedah,Kuala Muda
+DNR001724,LOC0001915,Kedah,Kuala Muda
+DNR001725,LOC0001916,Kedah,Kuala Muda
+DNR001726,LOC0001917,Kedah,Kuala Muda
+DNR001727,LOC0001918,Kedah,Kuala Muda
+DNR001728,LOC0001919,Kedah,Kuala Muda
+DNR001729,LOC0001920,Kedah,Kuala Muda
+DNR001730,LOC0001921,Kedah,Kuala Muda
+DNR001731,LOC0001922,Kedah,Kuala Muda
+DNR001732,LOC0001923,Kedah,Kuala Muda
+DNR001733,LOC0001924,Kedah,Kuala Muda
+DNR001734,LOC0001925,Kedah,Kuala Muda
+DNR001735,LOC0001926,Kedah,Kuala Muda
+DNR001736,LOC0001927,Kedah,Kuala Muda
+DNR001737,LOC0001928,Kedah,Kuala Muda
+DNR001738,LOC0001929,Kedah,Kuala Muda
+DNR001739,LOC0001930,Kedah,Kuala Muda
+DNR001740,LOC0001931,Kedah,Kuala Muda
+DNR001741,LOC0001932,Kedah,Kuala Muda
+DNR001742,LOC0001933,Kedah,Kuala Muda
+DNR001743,LOC0001934,Kedah,Kuala Muda
+DNR001744,LOC0001935,Kedah,Kuala Muda
+DNR001745,LOC0001936,Kedah,Kuala Muda
+DNR001746,LOC0001937,Kedah,Kuala Muda
+DNR001747,LOC0001938,Kedah,Kuala Muda
+DNR001748,LOC0001939,Kedah,Kuala Muda
+DNR001749,LOC0001940,Kedah,Kuala Muda
+DNR001750,LOC0001941,Kedah,Kuala Muda
+DNR001751,LOC0001942,Kedah,Kuala Muda
+DNR001752,LOC0001943,Kedah,Kuala Muda
+DNR001753,LOC0001944,Kedah,Kuala Muda
+DNR001754,LOC0001945,Kedah,Kuala Muda
+DNR001755,LOC0001946,Kedah,Kuala Muda
+DNR001756,LOC0001947,Kedah,Kuala Muda
+DNR001757,LOC0001948,Kedah,Kuala Muda
+DNR001758,LOC0001949,Kedah,Kuala Muda
+DNR001759,LOC0001950,Kedah,Kuala Muda
+DNR001760,LOC0001951,Kedah,Kuala Muda
+DNR001761,LOC0001952,Kedah,Kuala Muda
+DNR001762,LOC0001953,Kedah,Kuala Muda
+DNR001763,LOC0001954,Kedah,Kuala Muda
+DNR001764,LOC0001955,Kedah,Kuala Muda
+DNR001765,LOC0001956,Kedah,Kuala Muda
+DNR001766,LOC0001957,Kedah,Kuala Muda
+DNR001767,LOC0001958,Kedah,Kuala Muda
+DNR001768,LOC0001959,Kedah,Kuala Muda
+DNR001769,LOC0001960,Kedah,Kuala Muda
+DNR001770,LOC0001961,Kedah,Kuala Muda
+DNR001771,LOC0001962,Kedah,Kuala Muda
+DNR001772,LOC0001963,Kedah,Kuala Muda
+DNR001773,LOC0001964,Kedah,Kuala Muda
+DNR001774,LOC0001965,Kedah,Kuala Muda
+DNR001775,LOC0001966,Kedah,Kuala Muda
+DNR001776,LOC0001967,Kedah,Kuala Muda
+DNR001777,LOC0001968,Kedah,Kuala Muda
+DNR001778,LOC0001969,Kedah,Kuala Muda
+DNR001779,LOC0001970,Kedah,Kuala Muda
+DNR001780,LOC0001971,Kedah,Kuala Muda
+DNR001781,LOC0001972,Kedah,Kuala Muda
+DNR001782,LOC0001973,Kedah,Kuala Muda
+DNR001783,LOC0001974,Kedah,Kuala Muda
+DNR001784,LOC0001975,Kedah,Kuala Muda
+DNR001785,LOC0001976,Kedah,Kuala Muda
+DNR001786,LOC0001977,Kedah,Kuala Muda
+DNR001787,LOC0001978,Kedah,Kuala Muda
+DNR001788,LOC0001979,Kedah,Kuala Muda
+DNR001789,LOC0001980,Kedah,Kuala Muda
+DNR001790,LOC0001981,Kedah,Kuala Muda
+DNR001791,LOC0001982,Kedah,Kuala Muda
+DNR001792,LOC0001983,Kedah,Kuala Muda
+DNR001793,LOC0001984,Kedah,Kuala Muda
+DNR001794,LOC0001985,Kedah,Kuala Muda
+DNR001795,LOC0001986,Kedah,Kuala Muda
+DNR001796,LOC0001987,Kedah,Kuala Muda
+DNR001797,LOC0001988,Kedah,Kuala Muda
+DNR001798,LOC0001989,Kedah,Kuala Muda
+DNR001799,LOC0001990,Kedah,Kuala Muda
+DNR001800,LOC0001991,Kedah,Kuala Muda
+DNR001801,LOC0001992,Kedah,Kuala Muda
+DNR001802,LOC0001993,Kedah,Kuala Muda
+DNR001803,LOC0001994,Kedah,Kuala Muda
+DNR001804,LOC0001995,Kedah,Kuala Muda
+DNR001805,LOC0001996,Kedah,Kuala Muda
+DNR001806,LOC0001997,Kedah,Kuala Muda
+DNR001807,LOC0001998,Kedah,Kuala Muda
+DNR001808,LOC0001999,Kedah,Kuala Muda
+DNR001809,LOC0002000,Kedah,Kuala Muda
+DNR001810,LOC0002001,Kedah,Kuala Muda
+DNR001811,LOC0002002,Kedah,Kuala Muda
+DNR001812,LOC0002003,Kedah,Kuala Muda
+DNR001813,LOC0002004,Kedah,Kuala Muda
+DNR001814,LOC0002005,Kedah,Kuala Muda
+DNR001815,LOC0002006,Kedah,Kuala Muda
+DNR001816,LOC0002007,Kedah,Kuala Muda
+DNR001817,LOC0002008,Kedah,Kuala Muda
+DNR001818,LOC0002009,Kedah,Kuala Muda
+DNR001819,LOC0002010,Kedah,Kuala Muda
+DNR001820,LOC0002011,Kedah,Kuala Muda
+DNR001821,LOC0002012,Kedah,Kuala Muda
+DNR001822,LOC0002013,Kedah,Kuala Muda
+DNR001823,LOC0002014,Kedah,Kuala Muda
+DNR001824,LOC0002015,Kedah,Kuala Muda
+DNR001825,LOC0002016,Kedah,Kuala Muda
+DNR001826,LOC0002017,Kedah,Kuala Muda
+DNR001827,LOC0002018,Selangor,Petaling
+DNR001828,LOC0002019,Selangor,Petaling
+DNR001829,LOC0002020,Selangor,Petaling
+DNR001830,LOC0002021,Selangor,Petaling
+DNR001831,LOC0002022,Selangor,Petaling
+DNR001832,LOC0002023,Selangor,Petaling
+DNR001833,LOC0002024,Selangor,Petaling
+DNR001834,LOC0002025,Selangor,Petaling
+DNR001835,LOC0002026,Selangor,Petaling
+DNR001836,LOC0002027,Selangor,Petaling
+DNR001837,LOC0002028,Selangor,Petaling
+DNR001838,LOC0002029,Selangor,Petaling
+DNR001839,LOC0002030,Selangor,Petaling
+DNR001840,LOC0002031,Selangor,Petaling
+DNR001841,LOC0002032,Selangor,Petaling
+DNR001842,LOC0002033,Selangor,Petaling
+DNR001843,LOC0002034,Selangor,Petaling
+DNR001844,LOC0002035,Selangor,Petaling
+DNR001845,LOC0002036,Selangor,Petaling
+DNR001846,LOC0002037,Selangor,Petaling
+DNR001847,LOC0002038,Selangor,Petaling
+DNR001848,LOC0002039,Selangor,Petaling
+DNR001849,LOC0002040,Selangor,Petaling
+DNR001850,LOC0002041,Selangor,Petaling
+DNR001851,LOC0002042,Selangor,Petaling
+DNR001852,LOC0002043,Selangor,Petaling
+DNR001853,LOC0002044,Selangor,Petaling
+DNR001854,LOC0002045,Selangor,Petaling
+DNR001855,LOC0002046,Selangor,Petaling
+DNR001856,LOC0002047,Selangor,Petaling
+DNR001857,LOC0002048,Selangor,Petaling
+DNR001858,LOC0002049,Selangor,Petaling
+DNR001859,LOC0002050,Selangor,Petaling
+DNR001860,LOC0002051,Selangor,Petaling
+DNR001861,LOC0002052,Selangor,Petaling
+DNR001862,LOC0002053,Selangor,Petaling
+DNR001863,LOC0002054,Selangor,Petaling
+DNR001864,LOC0002055,Selangor,Petaling
+DNR001865,LOC0002056,Selangor,Petaling
+DNR001866,LOC0002057,Selangor,Petaling
+DNR001867,LOC0002058,Selangor,Petaling
+DNR001868,LOC0002059,Selangor,Petaling
+DNR001869,LOC0002060,Selangor,Petaling
+DNR001870,LOC0002061,Selangor,Petaling
+DNR001871,LOC0002062,Selangor,Petaling
+DNR001872,LOC0002063,Selangor,Petaling
+DNR001873,LOC0002064,Selangor,Petaling
+DNR001874,LOC0002065,Selangor,Petaling
+DNR001875,LOC0002066,Selangor,Petaling
+DNR001876,LOC0002067,Selangor,Petaling
+DNR001877,LOC0002068,Selangor,Petaling
+DNR001878,LOC0002069,Selangor,Petaling
+DNR001879,LOC0002070,Selangor,Petaling
+DNR001880,LOC0002071,Selangor,Petaling
+DNR001881,LOC0002072,Selangor,Petaling
+DNR001882,LOC0002073,Selangor,Petaling
+DNR001883,LOC0002074,Selangor,Petaling
+DNR001884,LOC0002075,Selangor,Petaling
+DNR001885,LOC0002076,Selangor,Petaling
+DNR001886,LOC0002077,Selangor,Petaling
+DNR001887,LOC0002078,Selangor,Petaling
+DNR001888,LOC0002079,Selangor,Petaling
+DNR001889,LOC0002080,Selangor,Petaling
+DNR001890,LOC0002081,Selangor,Petaling
+DNR001891,LOC0002082,Selangor,Petaling
+DNR001892,LOC0002083,Selangor,Petaling
+DNR001893,LOC0002084,Selangor,Petaling
+DNR001894,LOC0002085,Selangor,Petaling
+DNR001895,LOC0002086,Selangor,Petaling
+DNR001896,LOC0002087,Selangor,Petaling
+DNR001897,LOC0002088,Selangor,Petaling
+DNR001898,LOC0002089,Selangor,Petaling
+DNR001899,LOC0002090,Selangor,Petaling
+DNR001900,LOC0002091,Selangor,Petaling
+DNR001901,LOC0002092,Selangor,Petaling
+DNR001902,LOC0002093,Selangor,Petaling
+DNR001903,LOC0002094,Selangor,Petaling
+DNR001904,LOC0002095,Selangor,Petaling
+DNR001905,LOC0002096,Selangor,Petaling
+DNR001906,LOC0002097,Selangor,Petaling
+DNR001907,LOC0002098,Selangor,Petaling
+DNR001908,LOC0002099,Selangor,Petaling
+DNR001909,LOC0002100,Selangor,Petaling
+DNR001910,LOC0002101,Selangor,Petaling
+DNR001911,LOC0002102,Selangor,Petaling
+DNR001912,LOC0002103,Selangor,Petaling
+DNR001913,LOC0002104,Selangor,Petaling
+DNR001914,LOC0002105,Selangor,Petaling
+DNR001915,LOC0002106,Selangor,Petaling
+DNR001916,LOC0002107,Selangor,Petaling
+DNR001917,LOC0002108,Selangor,Petaling
+DNR001918,LOC0002109,Selangor,Petaling
+DNR001919,LOC0002110,Selangor,Petaling
+DNR001920,LOC0002111,Selangor,Petaling
+DNR001921,LOC0002112,Selangor,Petaling
+DNR001922,LOC0002113,Selangor,Petaling
+DNR001923,LOC0002114,Selangor,Petaling
+DNR001924,LOC0002115,Selangor,Petaling
+DNR001925,LOC0002116,Selangor,Petaling
+DNR001926,LOC0002117,Selangor,Petaling
+DNR001927,LOC0002118,Selangor,Petaling
+DNR001928,LOC0002119,Selangor,Petaling
+DNR001929,LOC0002120,Selangor,Petaling
+DNR001930,LOC0002121,Selangor,Petaling
+DNR001931,LOC0002122,Selangor,Petaling
+DNR001932,LOC0002123,Selangor,Petaling
+DNR001933,LOC0002124,Selangor,Petaling
+DNR001934,LOC0002125,Selangor,Petaling
+DNR001935,LOC0002126,Selangor,Petaling
+DNR001936,LOC0002127,Selangor,Petaling
+DNR001937,LOC0002128,Selangor,Petaling
+DNR001938,LOC0002129,Selangor,Petaling
+DNR001939,LOC0002130,Selangor,Petaling
+DNR001940,LOC0002131,Selangor,Petaling
+DNR001941,LOC0002132,Selangor,Petaling
+DNR001942,LOC0002133,Selangor,Petaling
+DNR001943,LOC0002134,Selangor,Petaling
+DNR001944,LOC0002135,Selangor,Petaling
+DNR001945,LOC0002136,Selangor,Petaling
+DNR001946,LOC0002137,Selangor,Petaling
+DNR001947,LOC0002138,Selangor,Petaling
+DNR001948,LOC0002139,Selangor,Petaling
+DNR001949,LOC0002140,Selangor,Petaling
+DNR001950,LOC0002141,Selangor,Petaling
+DNR001951,LOC0002142,Selangor,Petaling
+DNR001952,LOC0002143,Selangor,Petaling
+DNR001953,LOC0002144,Selangor,Petaling
+DNR001954,LOC0002145,Selangor,Petaling
+DNR001955,LOC0002146,Selangor,Petaling
+DNR001956,LOC0002147,Selangor,Petaling
+DNR001957,LOC0002148,Selangor,Petaling
+DNR001958,LOC0002149,Selangor,Petaling
+DNR001959,LOC0002150,Selangor,Petaling
+DNR001960,LOC0002151,Selangor,Petaling
+DNR001961,LOC0002152,Selangor,Petaling
+DNR001962,LOC0002153,Selangor,Petaling
+DNR001963,LOC0002154,Selangor,Petaling
+DNR001964,LOC0002155,Selangor,Petaling
+DNR001965,LOC0002156,Selangor,Petaling
+DNR001966,LOC0002157,Selangor,Petaling
+DNR001967,LOC0002158,Selangor,Petaling
+DNR001968,LOC0002159,Selangor,Petaling
+DNR001969,LOC0002160,Selangor,Petaling
+DNR001970,LOC0002161,Selangor,Petaling
+DNR001971,LOC0002162,Selangor,Petaling
+DNR001972,LOC0002163,Selangor,Petaling
+DNR001973,LOC0002164,Selangor,Petaling
+DNR001974,LOC0002165,Selangor,Petaling
+DNR001975,LOC0002166,Selangor,Petaling
+DNR001976,LOC0002167,Selangor,Petaling
+DNR001977,LOC0002168,Selangor,Petaling
+DNR001978,LOC0002169,Selangor,Petaling
+DNR001979,LOC0002170,Selangor,Petaling
+DNR001980,LOC0002171,Selangor,Petaling
+DNR001981,LOC0002172,Selangor,Petaling
+DNR001982,LOC0002173,Selangor,Petaling
+DNR001983,LOC0002174,Selangor,Petaling
+DNR001984,LOC0002175,Selangor,Petaling
+DNR001985,LOC0002176,Selangor,Petaling
+DNR001986,LOC0002177,Selangor,Petaling
+DNR001987,LOC0002178,Selangor,Petaling
+DNR001988,LOC0002179,Selangor,Petaling
+DNR001989,LOC0002180,Selangor,Petaling
+DNR001990,LOC0002181,Selangor,Petaling
+DNR001991,LOC0002182,Selangor,Petaling
+DNR001992,LOC0002183,Selangor,Petaling
+DNR001993,LOC0002184,Selangor,Petaling
+DNR001994,LOC0002185,Selangor,Petaling
+DNR001995,LOC0002186,Selangor,Petaling
+DNR001996,LOC0002187,Selangor,Petaling
+DNR001997,LOC0002188,Selangor,Petaling
+DNR001998,LOC0002189,Selangor,Petaling
+DNR001999,LOC0002190,Selangor,Petaling
+DNR002000,LOC0002191,Selangor,Petaling
+DNR002001,LOC0002192,Selangor,Petaling
+DNR002002,LOC0002193,Selangor,Petaling
+DNR002003,LOC0002194,Selangor,Petaling
+DNR002004,LOC0002195,Selangor,Petaling
+DNR002005,LOC0002196,Selangor,Petaling
+DNR002006,LOC0002197,Selangor,Petaling
+DNR002007,LOC0002198,Selangor,Petaling
+DNR002008,LOC0002199,Selangor,Petaling
+DNR002009,LOC0002200,Selangor,Petaling
+DNR002010,LOC0002201,Selangor,Petaling
+DNR002011,LOC0002202,Selangor,Petaling
+DNR002012,LOC0002203,Selangor,Petaling
+DNR002013,LOC0002204,Selangor,Petaling
+DNR002014,LOC0002205,Selangor,Petaling
+DNR002015,LOC0002206,Selangor,Petaling
+DNR002016,LOC0002207,Selangor,Petaling
+DNR002017,LOC0002208,Selangor,Petaling
+DNR002018,LOC0002209,Selangor,Petaling
+DNR002019,LOC0002210,Selangor,Petaling
+DNR002020,LOC0002211,Selangor,Petaling
+DNR002021,LOC0002212,Selangor,Petaling
+DNR002022,LOC0002213,Selangor,Petaling
+DNR002023,LOC0002214,Selangor,Petaling
+DNR002024,LOC0002215,Selangor,Petaling
+DNR002025,LOC0002216,Selangor,Petaling
+DNR002026,LOC0002217,Selangor,Petaling
+DNR002027,LOC0002218,Selangor,Petaling
+DNR002028,LOC0002219,Selangor,Petaling
+DNR002029,LOC0002220,Selangor,Petaling
+DNR002030,LOC0002221,Selangor,Petaling
+DNR002031,LOC0002222,Selangor,Petaling
+DNR002032,LOC0002223,Selangor,Petaling
+DNR002033,LOC0002224,Selangor,Petaling
+DNR002034,LOC0002225,Selangor,Petaling
+DNR002035,LOC0002226,Selangor,Petaling
+DNR002036,LOC0002227,Selangor,Petaling
+DNR002037,LOC0002228,Selangor,Petaling
+DNR002038,LOC0002229,Selangor,Petaling
+DNR002039,LOC0002230,Selangor,Petaling
+DNR002040,LOC0002231,Selangor,Petaling
+DNR002041,LOC0002232,Selangor,Petaling
+DNR002042,LOC0002233,Selangor,Petaling
+DNR002043,LOC0002234,Selangor,Petaling
+DNR002044,LOC0002235,Selangor,Petaling
+DNR002045,LOC0002236,Selangor,Petaling
+DNR002046,LOC0002237,Selangor,Petaling
+DNR002047,LOC0002238,Selangor,Petaling
+DNR002048,LOC0002239,Selangor,Petaling
+DNR002049,LOC0002240,Selangor,Petaling
+DNR002050,LOC0002241,Selangor,Petaling
+DNR002051,LOC0002242,Selangor,Petaling
+DNR002052,LOC0002243,Selangor,Petaling
+DNR002053,LOC0002244,Selangor,Petaling
+DNR002054,LOC0002245,Selangor,Petaling
+DNR002055,LOC0002246,Selangor,Petaling
+DNR002056,LOC0002247,Selangor,Petaling
+DNR002057,LOC0002248,Selangor,Petaling
+DNR002058,LOC0002249,Selangor,Petaling
+DNR002059,LOC0002250,Selangor,Petaling
+DNR002060,LOC0002251,Selangor,Petaling
+DNR002061,LOC0002252,Selangor,Petaling
+DNR002062,LOC0002253,Selangor,Petaling
+DNR002063,LOC0002254,Selangor,Petaling
+DNR002064,LOC0002255,Selangor,Petaling
+DNR002065,LOC0002256,Selangor,Petaling
+DNR002066,LOC0002257,Selangor,Petaling
+DNR002067,LOC0002258,Selangor,Petaling
+DNR002068,LOC0002259,Selangor,Petaling
+DNR002069,LOC0002260,Selangor,Petaling
+DNR002070,LOC0002261,Selangor,Petaling
+DNR002071,LOC0002262,Selangor,Petaling
+DNR002072,LOC0002263,Selangor,Petaling
+DNR002073,LOC0002264,Selangor,Petaling
+DNR002074,LOC0002265,Selangor,Petaling
+DNR002075,LOC0002266,Selangor,Petaling
+DNR002076,LOC0002267,Selangor,Petaling
+DNR002077,LOC0002268,Selangor,Petaling
+DNR002078,LOC0002269,Selangor,Petaling
+DNR002079,LOC0002270,Selangor,Petaling
+DNR002080,LOC0002271,Selangor,Petaling
+DNR002081,LOC0002272,Selangor,Petaling
+DNR002082,LOC0002273,Selangor,Petaling
+DNR002083,LOC0002274,Selangor,Petaling
+DNR002084,LOC0002275,Selangor,Petaling
+DNR002085,LOC0002276,Selangor,Petaling
+DNR002086,LOC0002277,Selangor,Petaling
+DNR002087,LOC0002278,Selangor,Petaling
+DNR002088,LOC0002279,Selangor,Petaling
+DNR002089,LOC0002280,Selangor,Petaling
+DNR002090,LOC0002281,Selangor,Petaling
+DNR002091,LOC0002282,Selangor,Petaling
+DNR002092,LOC0002283,Selangor,Petaling
+DNR002093,LOC0002284,Selangor,Petaling
+DNR002094,LOC0002285,Selangor,Petaling
+DNR002095,LOC0002286,Selangor,Petaling
+DNR002096,LOC0002287,Selangor,Petaling
+DNR002097,LOC0002288,Selangor,Petaling
+DNR002098,LOC0002289,Selangor,Petaling
+DNR002099,LOC0002290,Selangor,Petaling
+DNR002100,LOC0002291,Selangor,Petaling
+DNR002101,LOC0002292,Selangor,Petaling
+DNR002102,LOC0002293,Selangor,Petaling
+DNR002103,LOC0002294,Selangor,Petaling
+DNR002104,LOC0002295,Selangor,Petaling
+DNR002105,LOC0002296,Selangor,Petaling
+DNR002106,LOC0002297,Selangor,Petaling
+DNR002107,LOC0002298,Selangor,Petaling
+DNR002108,LOC0002299,Selangor,Petaling
+DNR002109,LOC0002300,Selangor,Petaling
+DNR002110,LOC0002301,Selangor,Petaling
+DNR002111,LOC0002302,Selangor,Petaling
+DNR002112,LOC0002303,Selangor,Petaling
+DNR002113,LOC0002304,Selangor,Petaling
+DNR002114,LOC0002305,Selangor,Petaling
+DNR002115,LOC0002306,Selangor,Petaling
+DNR002116,LOC0002307,Selangor,Petaling
+DNR002117,LOC0002308,Selangor,Petaling
+DNR002118,LOC0002309,Selangor,Petaling
+DNR002119,LOC0002310,Selangor,Petaling
+DNR002120,LOC0002311,Selangor,Petaling
+DNR002121,LOC0002312,Selangor,Petaling
+DNR002122,LOC0002313,Selangor,Petaling
+DNR002123,LOC0002314,Selangor,Petaling
+DNR002124,LOC0002315,Selangor,Petaling
+DNR002125,LOC0002316,Selangor,Petaling
+DNR002126,LOC0002317,Selangor,Petaling
+DNR002127,LOC0002318,Selangor,Petaling
+DNR002128,LOC0002319,Selangor,Petaling
+DNR002129,LOC0002320,Selangor,Petaling
+DNR002130,LOC0002321,Selangor,Petaling
+DNR002131,LOC0002322,Selangor,Petaling
+DNR002132,LOC0002323,Selangor,Petaling
+DNR002133,LOC0002324,Selangor,Petaling
+DNR002134,LOC0002325,Selangor,Petaling
+DNR002135,LOC0002326,Selangor,Petaling
+DNR002136,LOC0002327,Selangor,Petaling
+DNR002137,LOC0002328,Selangor,Petaling
+DNR002138,LOC0002329,Selangor,Petaling
+DNR002139,LOC0002330,Selangor,Petaling
+DNR002140,LOC0002331,Selangor,Petaling
+DNR002141,LOC0002332,Selangor,Petaling
+DNR002142,LOC0002333,Selangor,Petaling
+DNR002143,LOC0002334,Selangor,Petaling
+DNR002144,LOC0002335,Selangor,Petaling
+DNR002145,LOC0002336,Selangor,Petaling
+DNR002146,LOC0002337,Selangor,Petaling
+DNR002147,LOC0002338,Selangor,Petaling
+DNR002148,LOC0002339,Selangor,Petaling
+DNR002149,LOC0002340,Selangor,Petaling
+DNR002150,LOC0002341,Selangor,Petaling
+DNR002151,LOC0002342,Selangor,Petaling
+DNR002152,LOC0002343,Selangor,Petaling
+DNR002153,LOC0002344,Selangor,Petaling
+DNR002154,LOC0002345,Selangor,Petaling
+DNR002155,LOC0002346,Selangor,Petaling
+DNR002156,LOC0002347,Selangor,Petaling
+DNR002157,LOC0002348,Selangor,Petaling
+DNR002158,LOC0002349,Selangor,Petaling
+DNR002159,LOC0002350,Selangor,Petaling
+DNR002160,LOC0002351,Selangor,Petaling
+DNR002161,LOC0002352,Selangor,Petaling
+DNR002162,LOC0002353,Selangor,Petaling
+DNR002163,LOC0002354,Selangor,Petaling
+DNR002164,LOC0002355,Selangor,Petaling
+DNR002165,LOC0002356,Selangor,Petaling
+DNR002166,LOC0002357,Selangor,Petaling
+DNR002167,LOC0002358,Selangor,Petaling
+DNR002168,LOC0002359,Selangor,Petaling
+DNR002169,LOC0002360,Selangor,Petaling
+DNR002170,LOC0002361,Selangor,Petaling
+DNR002171,LOC0002362,Selangor,Petaling
+DNR002172,LOC0002363,Selangor,Petaling
+DNR002173,LOC0002364,Selangor,Petaling
+DNR002174,LOC0002365,Selangor,Petaling
+DNR002175,LOC0002366,Selangor,Petaling
+DNR002176,LOC0002367,Selangor,Petaling
+DNR002177,LOC0002368,Selangor,Petaling
+DNR002178,LOC0002369,Selangor,Petaling
+DNR002179,LOC0002370,Selangor,Petaling
+DNR002180,LOC0002371,Selangor,Petaling
+DNR002181,LOC0002372,Selangor,Petaling
+DNR002182,LOC0002373,Selangor,Petaling
+DNR002183,LOC0002374,Selangor,Petaling
+DNR002184,LOC0002375,Selangor,Petaling
+DNR002185,LOC0002376,Selangor,Petaling
+DNR002186,LOC0002377,Selangor,Petaling
+DNR002187,LOC0002378,Selangor,Petaling
+DNR002188,LOC0002379,Selangor,Petaling
+DNR002189,LOC0002380,Selangor,Petaling
+DNR002190,LOC0002381,Selangor,Petaling
+DNR002191,LOC0002382,Selangor,Petaling
+DNR002192,LOC0002383,Selangor,Petaling
+DNR002193,LOC0002384,Selangor,Petaling
+DNR002194,LOC0002385,Selangor,Petaling
+DNR002195,LOC0002386,Selangor,Petaling
+DNR002196,LOC0002387,Selangor,Petaling
+DNR002197,LOC0002388,Selangor,Petaling
+DNR002198,LOC0002389,Selangor,Petaling
+DNR002199,LOC0002390,Selangor,Petaling
+DNR002200,LOC0002391,Selangor,Petaling
+DNR002201,LOC0002392,Selangor,Petaling
+DNR002202,LOC0002393,Selangor,Petaling
+DNR002203,LOC0002394,Selangor,Petaling
+DNR002204,LOC0002395,Selangor,Petaling
+DNR002205,LOC0002396,Selangor,Petaling
+DNR002206,LOC0002397,Selangor,Petaling
+DNR002207,LOC0002398,Selangor,Petaling
+DNR002208,LOC0002399,Selangor,Petaling
+DNR002209,LOC0002400,Selangor,Petaling
+DNR002210,LOC0002401,Selangor,Petaling
+DNR002211,LOC0002402,Selangor,Petaling
+DNR002212,LOC0002403,Selangor,Petaling
+DNR002213,LOC0002404,Selangor,Petaling
+DNR002214,LOC0002405,Selangor,Petaling
+DNR002215,LOC0002406,Selangor,Petaling
+DNR002216,LOC0002407,Selangor,Petaling
+DNR002217,LOC0002408,Selangor,Petaling
+DNR002218,LOC0002409,Selangor,Petaling
+DNR002219,LOC0002410,Selangor,Petaling
+DNR002220,LOC0002411,Selangor,Petaling
+DNR002221,LOC0002412,Selangor,Petaling
+DNR002222,LOC0002413,Selangor,Petaling
+DNR002223,LOC0002414,Selangor,Petaling
+DNR002224,LOC0002415,Selangor,Petaling
+DNR002225,LOC0002416,Selangor,Petaling
+DNR002226,LOC0002417,Selangor,Petaling
+DNR002227,LOC0002418,Selangor,Petaling
+DNR002228,LOC0002419,Selangor,Petaling
+DNR002229,LOC0002420,Selangor,Petaling
+DNR002230,LOC0002421,Selangor,Petaling
+DNR002231,LOC0002422,Selangor,Petaling
+DNR002232,LOC0002423,Selangor,Petaling
+DNR002233,LOC0002424,Selangor,Petaling
+DNR002234,LOC0002425,Selangor,Petaling
+DNR002235,LOC0002426,Selangor,Petaling
+DNR002236,LOC0002427,Selangor,Petaling
+DNR002237,LOC0002428,Selangor,Petaling
+DNR002238,LOC0002429,Selangor,Petaling
+DNR002239,LOC0002430,Selangor,Petaling
+DNR002240,LOC0002431,Selangor,Petaling
+DNR002241,LOC0002432,Selangor,Petaling
+DNR002242,LOC0002433,Selangor,Petaling
+DNR002243,LOC0002434,Selangor,Petaling
+DNR002244,LOC0002435,Selangor,Petaling
+DNR002245,LOC0002436,Selangor,Petaling
+DNR002246,LOC0002437,Selangor,Petaling
+DNR002247,LOC0002438,Selangor,Petaling
+DNR002248,LOC0002439,Selangor,Petaling
+DNR002249,LOC0002440,Selangor,Petaling
+DNR002250,LOC0002441,Selangor,Petaling
+DNR002251,LOC0002442,Selangor,Petaling
+DNR002252,LOC0002443,Selangor,Petaling
+DNR002253,LOC0002444,Selangor,Petaling
+DNR002254,LOC0002445,Selangor,Petaling
+DNR002255,LOC0002446,Selangor,Petaling
+DNR002256,LOC0002447,Selangor,Petaling
+DNR002257,LOC0002448,Selangor,Petaling
+DNR002258,LOC0002449,Selangor,Petaling
+DNR002259,LOC0002450,Selangor,Petaling
+DNR002260,LOC0002451,Selangor,Petaling
+DNR002261,LOC0002452,Selangor,Petaling
+DNR002262,LOC0002453,Selangor,Petaling
+DNR002263,LOC0002454,Selangor,Petaling
+DNR002264,LOC0002455,Selangor,Petaling
+DNR002265,LOC0002456,Selangor,Petaling
+DNR002266,LOC0002457,Selangor,Petaling
+DNR002267,LOC0002458,Selangor,Petaling
+DNR002268,LOC0002459,Selangor,Petaling
+DNR002269,LOC0002460,Selangor,Petaling
+DNR002270,LOC0002461,Selangor,Petaling
+DNR002271,LOC0002462,Selangor,Petaling
+DNR002272,LOC0002463,Selangor,Petaling
+DNR002273,LOC0002464,Selangor,Petaling
+DNR002274,LOC0002465,Selangor,Petaling
+DNR002275,LOC0002466,Selangor,Petaling
+DNR002276,LOC0002467,Selangor,Petaling
+DNR002277,LOC0002468,Selangor,Petaling
+DNR002278,LOC0002469,Selangor,Petaling
+DNR002279,LOC0002470,Selangor,Petaling
+DNR002280,LOC0002471,Selangor,Ulu Langat
+DNR002281,LOC0002472,Selangor,Ulu Langat
+DNR002282,LOC0002473,Selangor,Ulu Langat
+DNR002283,LOC0002474,Selangor,Ulu Langat
+DNR002284,LOC0002475,Selangor,Ulu Langat
+DNR002285,LOC0002476,Selangor,Ulu Langat
+DNR002286,LOC0002477,Selangor,Ulu Langat
+DNR002287,LOC0002478,Selangor,Ulu Langat
+DNR002288,LOC0002479,Selangor,Ulu Langat
+DNR002289,LOC0002480,Selangor,Ulu Langat
+DNR002290,LOC0002481,Selangor,Ulu Langat
+DNR002291,LOC0002482,Selangor,Ulu Langat
+DNR002292,LOC0002483,Selangor,Ulu Langat
+DNR002293,LOC0002484,Selangor,Ulu Langat
+DNR002294,LOC0002485,Selangor,Ulu Langat
+DNR002295,LOC0002486,Selangor,Ulu Langat
+DNR002296,LOC0002487,Selangor,Ulu Langat
+DNR002297,LOC0002488,Selangor,Ulu Langat
+DNR002298,LOC0002489,Selangor,Ulu Langat
+DNR002299,LOC0002490,Selangor,Ulu Langat
+DNR002300,LOC0002491,Selangor,Ulu Langat
+DNR002301,LOC0002492,Selangor,Ulu Langat
+DNR002302,LOC0002493,Selangor,Ulu Langat
+DNR002303,LOC0002494,Selangor,Ulu Langat
+DNR002304,LOC0002495,Selangor,Ulu Langat
+DNR002305,LOC0002496,Selangor,Ulu Langat
+DNR002306,LOC0002497,Selangor,Ulu Langat
+DNR002307,LOC0002498,Selangor,Ulu Langat
+DNR002308,LOC0002499,Selangor,Ulu Langat
+DNR002309,LOC0002500,Selangor,Ulu Langat
+DNR002310,LOC0002501,Selangor,Ulu Langat
+DNR002311,LOC0002502,Selangor,Ulu Langat
+DNR002312,LOC0002503,Selangor,Ulu Langat
+DNR002313,LOC0002504,Selangor,Ulu Langat
+DNR002314,LOC0002505,Selangor,Ulu Langat
+DNR002315,LOC0002506,Selangor,Ulu Langat
+DNR002316,LOC0002507,Selangor,Ulu Langat
+DNR002317,LOC0002508,Selangor,Ulu Langat
+DNR002318,LOC0002509,Selangor,Ulu Langat
+DNR002319,LOC0002510,Selangor,Ulu Langat
+DNR002320,LOC0002511,Selangor,Ulu Langat
+DNR002321,LOC0002512,Selangor,Ulu Langat
+DNR002322,LOC0002513,Selangor,Ulu Langat
+DNR002323,LOC0002514,Selangor,Ulu Langat
+DNR002324,LOC0002515,Selangor,Ulu Langat
+DNR002325,LOC0002516,Selangor,Ulu Langat
+DNR002326,LOC0002517,Selangor,Ulu Langat
+DNR002327,LOC0002518,Selangor,Ulu Langat
+DNR002328,LOC0002519,Selangor,Ulu Langat
+DNR002329,LOC0002520,Selangor,Ulu Langat
+DNR002330,LOC0002521,Selangor,Ulu Langat
+DNR002331,LOC0002522,Selangor,Ulu Langat
+DNR002332,LOC0002523,Selangor,Ulu Langat
+DNR002333,LOC0002524,Selangor,Ulu Langat
+DNR002334,LOC0002525,Selangor,Ulu Langat
+DNR002335,LOC0002526,Selangor,Ulu Langat
+DNR002336,LOC0002527,Selangor,Ulu Langat
+DNR002337,LOC0002528,Selangor,Ulu Langat
+DNR002338,LOC0002529,Selangor,Ulu Langat
+DNR002339,LOC0002530,Selangor,Ulu Langat
+DNR002340,LOC0002531,Selangor,Ulu Langat
+DNR002341,LOC0002532,Selangor,Ulu Langat
+DNR002342,LOC0002533,Selangor,Ulu Langat
+DNR002343,LOC0002534,Selangor,Ulu Langat
+DNR002344,LOC0002535,Selangor,Ulu Langat
+DNR002345,LOC0002536,Selangor,Ulu Langat
+DNR002346,LOC0002537,Selangor,Ulu Langat
+DNR002347,LOC0002538,Selangor,Ulu Langat
+DNR002348,LOC0002539,Selangor,Ulu Langat
+DNR002349,LOC0002540,Selangor,Ulu Langat
+DNR002350,LOC0002541,Selangor,Ulu Langat
+DNR002351,LOC0002542,Selangor,Ulu Langat
+DNR002352,LOC0002543,Selangor,Ulu Langat
+DNR002353,LOC0002544,Selangor,Ulu Langat
+DNR002354,LOC0002545,Selangor,Ulu Langat
+DNR002355,LOC0002546,Selangor,Ulu Langat
+DNR002356,LOC0002547,Selangor,Ulu Langat
+DNR002357,LOC0002548,Selangor,Ulu Langat
+DNR002358,LOC0002549,Selangor,Ulu Langat
+DNR002359,LOC0002550,Selangor,Ulu Langat
+DNR002360,LOC0002551,Selangor,Ulu Langat
+DNR002361,LOC0002552,Selangor,Ulu Langat
+DNR002362,LOC0002553,Selangor,Ulu Langat
+DNR002363,LOC0002554,Selangor,Ulu Langat
+DNR002364,LOC0002555,Selangor,Ulu Langat
+DNR002365,LOC0002556,Selangor,Ulu Langat
+DNR002366,LOC0002557,Selangor,Ulu Langat
+DNR002367,LOC0002558,Selangor,Ulu Langat
+DNR002368,LOC0002559,Selangor,Ulu Langat
+DNR002369,LOC0002560,Selangor,Ulu Langat
+DNR002370,LOC0002561,Selangor,Ulu Langat
+DNR002371,LOC0002562,Selangor,Ulu Langat
+DNR002372,LOC0002563,Selangor,Ulu Langat
+DNR002373,LOC0002564,Selangor,Ulu Langat
+DNR002374,LOC0002565,Selangor,Ulu Langat
+DNR002375,LOC0002566,Selangor,Ulu Langat
+DNR002376,LOC0002567,Selangor,Ulu Langat
+DNR002377,LOC0002568,Selangor,Ulu Langat
+DNR002378,LOC0002569,Selangor,Ulu Langat
+DNR002379,LOC0002570,Selangor,Ulu Langat
+DNR002380,LOC0002571,Selangor,Ulu Langat
+DNR002381,LOC0002572,Selangor,Ulu Langat
+DNR002382,LOC0002573,Selangor,Ulu Langat
+DNR002383,LOC0002574,Selangor,Ulu Langat
+DNR002384,LOC0002575,Selangor,Ulu Langat
+DNR002385,LOC0002576,Selangor,Ulu Langat
+DNR002386,LOC0002577,Selangor,Ulu Langat
+DNR002387,LOC0002578,Selangor,Ulu Langat
+DNR002388,LOC0002579,Selangor,Ulu Langat
+DNR002389,LOC0002580,Selangor,Ulu Langat
+DNR002390,LOC0002581,Selangor,Ulu Langat
+DNR002391,LOC0002582,Selangor,Ulu Langat
+DNR002392,LOC0002583,Selangor,Ulu Langat
+DNR002393,LOC0002584,Selangor,Ulu Langat
+DNR002394,LOC0002585,Selangor,Ulu Langat
+DNR002395,LOC0002586,Selangor,Ulu Langat
+DNR002396,LOC0002587,Selangor,Ulu Langat
+DNR002397,LOC0002588,Selangor,Ulu Langat
+DNR002398,LOC0002589,Selangor,Ulu Langat
+DNR002399,LOC0002590,Selangor,Ulu Langat
+DNR002400,LOC0002591,Selangor,Ulu Langat
+DNR002401,LOC0002592,Selangor,Ulu Langat
+DNR002402,LOC0002593,Selangor,Ulu Langat
+DNR002403,LOC0002594,Selangor,Ulu Langat
+DNR002404,LOC0002595,Selangor,Ulu Langat
+DNR002405,LOC0002596,Selangor,Ulu Langat
+DNR002406,LOC0002597,Selangor,Ulu Langat
+DNR002407,LOC0002598,Selangor,Ulu Langat
+DNR002408,LOC0002599,Selangor,Ulu Langat
+DNR002409,LOC0002600,Selangor,Ulu Langat
+DNR002410,LOC0002601,Selangor,Ulu Langat
+DNR002411,LOC0002602,Selangor,Ulu Langat
+DNR002412,LOC0002603,Selangor,Ulu Langat
+DNR002413,LOC0002604,Selangor,Ulu Langat
+DNR002414,LOC0002605,Selangor,Ulu Langat
+DNR002415,LOC0002606,Selangor,Ulu Langat
+DNR002416,LOC0002607,Selangor,Ulu Langat
+DNR002417,LOC0002608,Selangor,Ulu Langat
+DNR002418,LOC0002609,Selangor,Ulu Langat
+DNR002419,LOC0002610,Selangor,Ulu Langat
+DNR002420,LOC0002611,Selangor,Ulu Langat
+DNR002421,LOC0002612,Selangor,Ulu Langat
+DNR002422,LOC0002613,Selangor,Ulu Langat
+DNR002423,LOC0002614,Selangor,Ulu Langat
+DNR002424,LOC0002615,Selangor,Ulu Langat
+DNR002425,LOC0002616,Selangor,Ulu Langat
+DNR002426,LOC0002617,Selangor,Ulu Langat
+DNR002427,LOC0002618,Selangor,Ulu Langat
+DNR002428,LOC0002619,Selangor,Ulu Langat
+DNR002429,LOC0002620,Selangor,Ulu Langat
+DNR002430,LOC0002621,Selangor,Ulu Langat
+DNR002431,LOC0002622,Selangor,Ulu Langat
+DNR002432,LOC0002623,Selangor,Ulu Langat
+DNR002433,LOC0002624,Selangor,Ulu Langat
+DNR002434,LOC0002625,Selangor,Ulu Langat
+DNR002435,LOC0002626,Selangor,Ulu Langat
+DNR002436,LOC0002627,Selangor,Ulu Langat
+DNR002437,LOC0002628,Selangor,Ulu Langat
+DNR002438,LOC0002629,Selangor,Ulu Langat
+DNR002439,LOC0002630,Selangor,Ulu Langat
+DNR002440,LOC0002631,Selangor,Ulu Langat
+DNR002441,LOC0002632,Selangor,Ulu Langat
+DNR002442,LOC0002633,Selangor,Ulu Langat
+DNR002443,LOC0002634,Selangor,Ulu Langat
+DNR002444,LOC0002635,Selangor,Ulu Langat
+DNR002445,LOC0002636,Selangor,Ulu Langat
+DNR002446,LOC0002637,Selangor,Ulu Langat
+DNR002447,LOC0002638,Selangor,Ulu Langat
+DNR002448,LOC0002639,Selangor,Ulu Langat
+DNR002449,LOC0002640,Selangor,Ulu Langat
+DNR002450,LOC0002641,Selangor,Ulu Langat
+DNR002451,LOC0002642,Selangor,Ulu Langat
+DNR002452,LOC0002643,Selangor,Ulu Langat
+DNR002453,LOC0002644,Selangor,Ulu Langat
+DNR002454,LOC0002645,Selangor,Ulu Langat
+DNR002455,LOC0002646,Selangor,Ulu Langat
+DNR002456,LOC0002647,Selangor,Ulu Langat
+DNR002457,LOC0002648,Selangor,Ulu Langat
+DNR002458,LOC0002649,Selangor,Ulu Langat
+DNR002459,LOC0002650,Selangor,Ulu Langat
+DNR002460,LOC0002651,Selangor,Ulu Langat
+DNR002461,LOC0002652,Selangor,Ulu Langat
+DNR002462,LOC0002653,Selangor,Ulu Langat
+DNR002463,LOC0002654,Selangor,Ulu Langat
+DNR002464,LOC0002655,Selangor,Ulu Langat
+DNR002465,LOC0002656,Selangor,Ulu Langat
+DNR002466,LOC0002657,Selangor,Ulu Langat
+DNR002467,LOC0002658,Selangor,Ulu Langat
+DNR002468,LOC0002659,Selangor,Ulu Langat
+DNR002469,LOC0002660,Selangor,Ulu Langat
+DNR002470,LOC0002661,Selangor,Ulu Langat
+DNR002471,LOC0002662,Selangor,Ulu Langat
+DNR002472,LOC0002663,Selangor,Ulu Langat
+DNR002473,LOC0002664,Selangor,Ulu Langat
+DNR002474,LOC0002665,Selangor,Ulu Langat
+DNR002475,LOC0002666,Selangor,Ulu Langat
+DNR002476,LOC0002667,Selangor,Ulu Langat
+DNR002477,LOC0002668,Selangor,Ulu Langat
+DNR002478,LOC0002669,Selangor,Ulu Langat
+DNR002479,LOC0002670,Selangor,Ulu Langat
+DNR002480,LOC0002671,Selangor,Ulu Langat
+DNR002481,LOC0002672,Selangor,Ulu Langat
+DNR002482,LOC0002673,Selangor,Ulu Langat
+DNR002483,LOC0002674,Selangor,Ulu Langat
+DNR002484,LOC0002675,Selangor,Ulu Langat
+DNR002485,LOC0002676,Selangor,Ulu Langat
+DNR002486,LOC0002677,Selangor,Ulu Langat
+DNR002487,LOC0002678,Selangor,Ulu Langat
+DNR002488,LOC0002679,Selangor,Ulu Langat
+DNR002489,LOC0002680,Selangor,Ulu Langat
+DNR002490,LOC0002681,Selangor,Ulu Langat
+DNR002491,LOC0002682,Selangor,Ulu Langat
+DNR002492,LOC0002683,Selangor,Ulu Langat
+DNR002493,LOC0002684,Selangor,Ulu Langat
+DNR002494,LOC0002685,Selangor,Ulu Langat
+DNR002495,LOC0002686,Selangor,Ulu Langat
+DNR002496,LOC0002687,Selangor,Ulu Langat
+DNR002497,LOC0002688,Selangor,Ulu Langat
+DNR002498,LOC0002689,Selangor,Ulu Langat
+DNR002499,LOC0002690,Selangor,Ulu Langat
+DNR002500,LOC0002691,Selangor,Ulu Langat
+DNR002501,LOC0002692,Selangor,Ulu Langat
+DNR002502,LOC0002693,Selangor,Ulu Langat
+DNR002503,LOC0002694,Selangor,Ulu Langat
+DNR002504,LOC0002695,Selangor,Ulu Langat
+DNR002505,LOC0002696,Selangor,Ulu Langat
+DNR002506,LOC0002697,Selangor,Ulu Langat
+DNR002507,LOC0002698,Selangor,Ulu Langat
+DNR002508,LOC0002699,Selangor,Ulu Langat
+DNR002509,LOC0002700,Selangor,Ulu Langat
+DNR002510,LOC0002701,Selangor,Ulu Langat
+DNR002511,LOC0002702,Selangor,Ulu Langat
+DNR002512,LOC0002703,Selangor,Ulu Langat
+DNR002513,LOC0002704,Selangor,Ulu Langat
+DNR002514,LOC0002705,Selangor,Ulu Langat
+DNR002515,LOC0002706,Selangor,Ulu Langat
+DNR002516,LOC0002707,Selangor,Ulu Langat
+DNR002517,LOC0002708,Selangor,Ulu Langat
+DNR002518,LOC0002709,Selangor,Ulu Langat
+DNR002519,LOC0002710,Selangor,Ulu Langat
+DNR002520,LOC0002711,Selangor,Ulu Langat
+DNR002521,LOC0002712,Selangor,Ulu Langat
+DNR002522,LOC0002713,Selangor,Ulu Langat
+DNR002523,LOC0002714,Selangor,Ulu Langat
+DNR002524,LOC0002715,Selangor,Ulu Langat
+DNR002525,LOC0002716,Selangor,Ulu Langat
+DNR002526,LOC0002717,Selangor,Ulu Langat
+DNR002527,LOC0002718,Selangor,Ulu Langat
+DNR002528,LOC0002719,Selangor,Ulu Langat
+DNR002529,LOC0002720,Selangor,Ulu Langat
+DNR002530,LOC0002721,Selangor,Ulu Langat
+DNR002531,LOC0002722,Selangor,Ulu Langat
+DNR002532,LOC0002723,Selangor,Ulu Langat
+DNR002533,LOC0002724,Selangor,Ulu Langat
+DNR002534,LOC0002725,Selangor,Ulu Langat
+DNR002535,LOC0002726,Selangor,Ulu Langat
+DNR002536,LOC0002727,Selangor,Ulu Langat
+DNR002537,LOC0002728,Selangor,Ulu Langat
+DNR002538,LOC0002729,Selangor,Ulu Langat
+DNR002539,LOC0002730,Selangor,Ulu Langat
+DNR002540,LOC0002731,Selangor,Ulu Langat
+DNR002541,LOC0002732,Selangor,Ulu Langat
+DNR002542,LOC0002733,Selangor,Ulu Langat
+DNR002543,LOC0002734,Selangor,Ulu Langat
+DNR002544,LOC0002735,Selangor,Ulu Langat
+DNR002545,LOC0002736,Selangor,Ulu Langat
+DNR002546,LOC0002737,Selangor,Ulu Langat
+DNR002547,LOC0002738,Selangor,Ulu Langat
+DNR002548,LOC0002739,Selangor,Ulu Langat
+DNR002549,LOC0002740,Selangor,Ulu Langat
+DNR002550,LOC0002741,Selangor,Ulu Langat
+DNR002551,LOC0002742,Selangor,Ulu Langat
+DNR002552,LOC0002743,Selangor,Ulu Langat
+DNR002553,LOC0002744,Selangor,Ulu Langat
+DNR002554,LOC0002745,Selangor,Ulu Langat
+DNR002555,LOC0002746,Selangor,Ulu Langat
+DNR002556,LOC0002747,Selangor,Ulu Langat
+DNR002557,LOC0002748,Selangor,Ulu Langat
+DNR002558,LOC0002749,Selangor,Ulu Langat
+DNR002559,LOC0002750,Selangor,Ulu Langat
+DNR002560,LOC0002751,Selangor,Ulu Langat
+DNR002561,LOC0002752,Selangor,Ulu Langat
+DNR002562,LOC0002753,Selangor,Ulu Langat
+DNR002563,LOC0002754,Selangor,Ulu Langat
+DNR002564,LOC0002755,Selangor,Ulu Langat
+DNR002565,LOC0002756,Selangor,Ulu Langat
+DNR002566,LOC0002757,Selangor,Ulu Langat
+DNR002567,LOC0002758,Selangor,Ulu Langat
+DNR002568,LOC0002759,Selangor,Ulu Langat
+DNR002569,LOC0002760,Selangor,Ulu Langat
+DNR002570,LOC0002761,Selangor,Ulu Langat
+DNR002571,LOC0002762,Selangor,Ulu Langat
+DNR002572,LOC0002763,Selangor,Ulu Langat
+DNR002573,LOC0002764,Selangor,Ulu Langat
+DNR002574,LOC0002765,Selangor,Ulu Langat
+DNR002575,LOC0002766,Selangor,Ulu Langat
+DNR002576,LOC0002767,Selangor,Ulu Langat
+DNR002577,LOC0002768,Selangor,Ulu Langat
+DNR002578,LOC0002769,Selangor,Ulu Langat
+DNR002579,LOC0002770,Selangor,Ulu Langat
+DNR002580,LOC0002771,Selangor,Ulu Langat
+DNR002581,LOC0002772,Selangor,Ulu Langat
+DNR002582,LOC0002773,Selangor,Ulu Langat
+DNR002583,LOC0002774,Selangor,Ulu Langat
+DNR002584,LOC0002775,Selangor,Ulu Langat
+DNR002585,LOC0002776,Selangor,Ulu Langat
+DNR002586,LOC0002777,Selangor,Ulu Langat
+DNR002587,LOC0002778,Selangor,Ulu Langat
+DNR002588,LOC0002779,Selangor,Ulu Langat
+DNR002589,LOC0002780,Selangor,Ulu Langat
+DNR002590,LOC0002781,Selangor,Ulu Langat
+DNR002591,LOC0002782,Selangor,Ulu Langat
+DNR002592,LOC0002783,Selangor,Ulu Langat
+DNR002593,LOC0002784,Selangor,Ulu Langat
+DNR002594,LOC0002785,Selangor,Ulu Langat
+DNR002595,LOC0002786,Selangor,Ulu Langat
+DNR002596,LOC0002787,Selangor,Ulu Langat
+DNR002597,LOC0002788,Selangor,Ulu Langat
+DNR002598,LOC0002789,Selangor,Ulu Langat
+DNR002599,LOC0002790,Selangor,Ulu Langat
+DNR002600,LOC0002791,Selangor,Ulu Langat
+DNR002601,LOC0002792,Selangor,Gombak
+DNR002602,LOC0002793,Selangor,Gombak
+DNR002603,LOC0002794,Selangor,Gombak
+DNR002604,LOC0002795,Selangor,Gombak
+DNR002605,LOC0002796,Selangor,Gombak
+DNR002606,LOC0002797,Selangor,Gombak
+DNR002607,LOC0002798,Selangor,Gombak
+DNR002608,LOC0002799,Selangor,Gombak
+DNR002609,LOC0002800,Selangor,Gombak
+DNR002610,LOC0002801,Selangor,Gombak
+DNR002611,LOC0002802,Selangor,Gombak
+DNR002612,LOC0002803,Selangor,Gombak
+DNR002613,LOC0002804,Selangor,Gombak
+DNR002614,LOC0002805,Selangor,Gombak
+DNR002615,LOC0002806,Selangor,Gombak
+DNR002616,LOC0002807,Selangor,Gombak
+DNR002617,LOC0002808,Selangor,Gombak
+DNR002618,LOC0002809,Selangor,Gombak
+DNR002619,LOC0002810,Selangor,Gombak
+DNR002620,LOC0002811,Selangor,Gombak
+DNR002621,LOC0002812,Selangor,Gombak
+DNR002622,LOC0002813,Selangor,Gombak
+DNR002623,LOC0002814,Selangor,Gombak
+DNR002624,LOC0002815,Selangor,Gombak
+DNR002625,LOC0002816,Selangor,Gombak
+DNR002626,LOC0002817,Selangor,Gombak
+DNR002627,LOC0002818,Selangor,Gombak
+DNR002628,LOC0002819,Selangor,Gombak
+DNR002629,LOC0002820,Selangor,Gombak
+DNR002630,LOC0002821,Selangor,Gombak
+DNR002631,LOC0002822,Selangor,Gombak
+DNR002632,LOC0002823,Selangor,Gombak
+DNR002633,LOC0002824,Selangor,Gombak
+DNR002634,LOC0002825,Selangor,Gombak
+DNR002635,LOC0002826,Selangor,Gombak
+DNR002636,LOC0002827,Selangor,Gombak
+DNR002637,LOC0002828,Selangor,Gombak
+DNR002638,LOC0002829,Selangor,Gombak
+DNR002639,LOC0002830,Selangor,Gombak
+DNR002640,LOC0002831,Selangor,Gombak
+DNR002641,LOC0002832,Selangor,Gombak
+DNR002642,LOC0002833,Selangor,Gombak
+DNR002643,LOC0002834,Selangor,Gombak
+DNR002644,LOC0002835,Selangor,Gombak
+DNR002645,LOC0002836,Selangor,Gombak
+DNR002646,LOC0002837,Selangor,Gombak
+DNR002647,LOC0002838,Selangor,Gombak
+DNR002648,LOC0002839,Selangor,Gombak
+DNR002649,LOC0002840,Selangor,Gombak
+DNR002650,LOC0002841,Selangor,Gombak
+DNR002651,LOC0002842,Selangor,Gombak
+DNR002652,LOC0002843,Selangor,Gombak
+DNR002653,LOC0002844,Selangor,Gombak
+DNR002654,LOC0002845,Selangor,Gombak
+DNR002655,LOC0002846,Selangor,Gombak
+DNR002656,LOC0002847,Selangor,Gombak
+DNR002657,LOC0002848,Selangor,Gombak
+DNR002658,LOC0002849,Selangor,Gombak
+DNR002659,LOC0002850,Selangor,Gombak
+DNR002660,LOC0002851,Selangor,Gombak
+DNR002661,LOC0002852,Selangor,Gombak
+DNR002662,LOC0002853,Selangor,Gombak
+DNR002663,LOC0002854,Selangor,Gombak
+DNR002664,LOC0002855,Selangor,Gombak
+DNR002665,LOC0002856,Selangor,Gombak
+DNR002666,LOC0002857,Selangor,Gombak
+DNR002667,LOC0002858,Selangor,Gombak
+DNR002668,LOC0002859,Selangor,Gombak
+DNR002669,LOC0002860,Selangor,Gombak
+DNR002670,LOC0002861,Selangor,Gombak
+DNR002671,LOC0002862,Selangor,Gombak
+DNR002672,LOC0002863,Selangor,Gombak
+DNR002673,LOC0002864,Selangor,Gombak
+DNR002674,LOC0002865,Selangor,Gombak
+DNR002675,LOC0002866,Selangor,Gombak
+DNR002676,LOC0002867,Selangor,Gombak
+DNR002677,LOC0002868,Selangor,Gombak
+DNR002678,LOC0002869,Selangor,Gombak
+DNR002679,LOC0002870,Selangor,Gombak
+DNR002680,LOC0002871,Selangor,Gombak
+DNR002681,LOC0002872,Selangor,Gombak
+DNR002682,LOC0002873,Selangor,Gombak
+DNR002683,LOC0002874,Selangor,Gombak
+DNR002684,LOC0002875,Selangor,Gombak
+DNR002685,LOC0002876,Selangor,Gombak
+DNR002686,LOC0002877,Selangor,Gombak
+DNR002687,LOC0002878,Selangor,Gombak
+DNR002688,LOC0002879,Selangor,Gombak
+DNR002689,LOC0002880,Selangor,Gombak
+DNR002690,LOC0002881,Selangor,Gombak
+DNR002691,LOC0002882,Selangor,Gombak
+DNR002692,LOC0002883,Selangor,Gombak
+DNR002693,LOC0002884,Selangor,Gombak
+DNR002694,LOC0002885,Selangor,Gombak
+DNR002695,LOC0002886,Selangor,Gombak
+DNR002696,LOC0002887,Selangor,Gombak
+DNR002697,LOC0002888,Selangor,Gombak
+DNR002698,LOC0002889,Selangor,Gombak
+DNR002699,LOC0002890,Selangor,Gombak
+DNR002700,LOC0002891,Selangor,Gombak
+DNR002701,LOC0002892,Selangor,Gombak
+DNR002702,LOC0002893,Selangor,Gombak
+DNR002703,LOC0002894,Selangor,Gombak
+DNR002704,LOC0002895,Selangor,Gombak
+DNR002705,LOC0002896,Selangor,Gombak
+DNR002706,LOC0002897,Selangor,Gombak
+DNR002707,LOC0002898,Selangor,Gombak
+DNR002708,LOC0002899,Selangor,Gombak
+DNR002709,LOC0002900,Selangor,Gombak
+DNR002710,LOC0002901,Selangor,Gombak
+DNR002711,LOC0002902,Selangor,Gombak
+DNR002712,LOC0002903,Selangor,Gombak
+DNR002713,LOC0002904,Selangor,Gombak
+DNR002714,LOC0002905,Selangor,Gombak
+DNR002715,LOC0002906,Selangor,Gombak
+DNR002716,LOC0002907,Selangor,Gombak
+DNR002717,LOC0002908,Selangor,Gombak
+DNR002718,LOC0002909,Selangor,Gombak
+DNR002719,LOC0002910,Selangor,Gombak
+DNR002720,LOC0002911,Selangor,Gombak
+DNR002721,LOC0002912,Selangor,Gombak
+DNR002722,LOC0002913,Selangor,Gombak
+DNR002723,LOC0002914,Selangor,Gombak
+DNR002724,LOC0002915,Selangor,Gombak
+DNR002725,LOC0002916,Selangor,Gombak
+DNR002726,LOC0002917,Selangor,Gombak
+DNR002727,LOC0002918,Selangor,Gombak
+DNR002728,LOC0002919,Selangor,Gombak
+DNR002729,LOC0002920,Selangor,Gombak
+DNR002730,LOC0002921,Selangor,Gombak
+DNR002731,LOC0002922,Selangor,Gombak
+DNR002732,LOC0002923,Selangor,Gombak
+DNR002733,LOC0002924,Selangor,Gombak
+DNR002734,LOC0002925,Selangor,Gombak
+DNR002735,LOC0002926,Selangor,Gombak
+DNR002736,LOC0002927,Selangor,Gombak
+DNR002737,LOC0002928,Selangor,Gombak
+DNR002738,LOC0002929,Selangor,Gombak
+DNR002739,LOC0002930,Selangor,Gombak
+DNR002740,LOC0002931,Selangor,Gombak
+DNR002741,LOC0002932,Selangor,Gombak
+DNR002742,LOC0002933,Selangor,Gombak
+DNR002743,LOC0002934,Selangor,Gombak
+DNR002744,LOC0002935,Selangor,Gombak
+DNR002745,LOC0002936,Selangor,Gombak
+DNR002746,LOC0002937,Selangor,Gombak
+DNR002747,LOC0002938,Selangor,Gombak
+DNR002748,LOC0002939,Selangor,Gombak
+DNR002749,LOC0002940,Selangor,Gombak
+DNR002750,LOC0002941,Selangor,Gombak
+DNR002751,LOC0002942,Selangor,Gombak
+DNR002752,LOC0002943,Selangor,Gombak
+DNR002753,LOC0002944,Selangor,Gombak
+DNR002754,LOC0002945,Selangor,Gombak
+DNR002755,LOC0002946,Selangor,Gombak
+DNR002756,LOC0002947,Selangor,Gombak
+DNR002757,LOC0002948,Selangor,Gombak
+DNR002758,LOC0002949,Selangor,Gombak
+DNR002759,LOC0002950,Selangor,Gombak
+DNR002760,LOC0002951,Selangor,Gombak
+DNR002761,LOC0002952,Selangor,Gombak
+DNR002762,LOC0002953,Selangor,Gombak
+DNR002763,LOC0002954,Selangor,Gombak
+DNR002764,LOC0002955,Selangor,Gombak
+DNR002765,LOC0002956,Selangor,Gombak
+DNR002766,LOC0002957,Selangor,Gombak
+DNR002767,LOC0002958,Selangor,Gombak
+DNR002768,LOC0002959,Selangor,Gombak
+DNR002769,LOC0002960,Selangor,Gombak
+DNR002770,LOC0002961,Selangor,Gombak
+DNR002771,LOC0002962,Selangor,Gombak
+DNR002772,LOC0002963,Selangor,Gombak
+DNR002773,LOC0002964,Selangor,Gombak
+DNR002774,LOC0002965,Selangor,Gombak
+DNR002775,LOC0002966,Selangor,Gombak
+DNR002776,LOC0002967,Selangor,Gombak
+DNR002777,LOC0002968,Selangor,Gombak
+DNR002778,LOC0002969,Selangor,Gombak
+DNR002779,LOC0002970,Selangor,Gombak
+DNR002780,LOC0002971,Selangor,Gombak
+DNR002781,LOC0002972,Selangor,Gombak
+DNR002782,LOC0002973,Selangor,Gombak
+DNR002783,LOC0002974,Selangor,Gombak
+DNR002784,LOC0002975,Selangor,Gombak
+DNR002785,LOC0002976,Selangor,Gombak
+DNR002786,LOC0002977,Selangor,Gombak
+DNR002787,LOC0002978,Selangor,Gombak
+DNR002788,LOC0002979,Selangor,Gombak
+DNR002789,LOC0002980,Selangor,Gombak
+DNR002790,LOC0002981,Selangor,Gombak
+DNR002791,LOC0002982,Selangor,Gombak
+DNR002792,LOC0002983,Selangor,Gombak
+DNR002793,LOC0002984,Selangor,Gombak
+DNR002794,LOC0002985,Selangor,Gombak
+DNR002795,LOC0002986,Selangor,Gombak
+DNR002796,LOC0002987,Selangor,Gombak
+DNR002797,LOC0002988,Selangor,Gombak
+DNR002798,LOC0002989,Selangor,Gombak
+DNR002799,LOC0002990,Selangor,Gombak
+DNR002800,LOC0002991,Selangor,Gombak
+DNR002801,LOC0002992,Selangor,Gombak
+DNR002802,LOC0002993,Selangor,Gombak
+DNR002803,LOC0002994,Selangor,Gombak
+DNR002804,LOC0002995,Selangor,Gombak
+DNR002805,LOC0002996,Selangor,Gombak
+DNR002806,LOC0002997,Selangor,Gombak
+DNR002807,LOC0002998,Selangor,Gombak
+DNR002808,LOC0002999,Selangor,Gombak
+DNR002809,LOC0003000,Selangor,Gombak
+DNR002810,LOC0003001,Selangor,Gombak
+DNR002811,LOC0003002,Selangor,Gombak
+DNR002812,LOC0003003,Selangor,Gombak
+DNR002813,LOC0003004,Selangor,Gombak
+DNR002814,LOC0003005,Selangor,Gombak
+DNR002815,LOC0003006,Selangor,Gombak
+DNR002816,LOC0003007,Selangor,Gombak
+DNR002817,LOC0003008,Selangor,Gombak
+DNR002818,LOC0003009,Selangor,Gombak
+DNR002819,LOC0003010,Selangor,Gombak
+DNR002820,LOC0003011,Selangor,Gombak
+DNR002821,LOC0003012,Selangor,Gombak
+DNR002822,LOC0003013,Selangor,Gombak
+DNR002823,LOC0003014,Selangor,Gombak
+DNR002824,LOC0003015,Selangor,Gombak
+DNR002825,LOC0003016,Selangor,Gombak
+DNR002826,LOC0003017,Selangor,Gombak
+DNR002827,LOC0003018,Selangor,Gombak
+DNR002828,LOC0003019,Selangor,Gombak
+DNR002829,LOC0003020,Selangor,Gombak
+DNR002830,LOC0003021,Selangor,Gombak
+DNR002831,LOC0003022,Selangor,Gombak
+DNR002832,LOC0003023,Selangor,Gombak
+DNR002833,LOC0003024,Selangor,Gombak
+DNR002834,LOC0003025,Selangor,Gombak
+DNR002835,LOC0003026,Selangor,Gombak
+DNR002836,LOC0003027,Selangor,Gombak
+DNR002837,LOC0003028,Selangor,Gombak
+DNR002838,LOC0003029,Selangor,Gombak
+DNR002839,LOC0003030,Selangor,Gombak
+DNR002840,LOC0003031,Selangor,Gombak
+DNR002841,LOC0003032,Selangor,Gombak
+DNR002842,LOC0003033,Selangor,Gombak
+DNR002843,LOC0003034,Selangor,Gombak
+DNR002844,LOC0003035,Selangor,Gombak
+DNR002845,LOC0003036,Selangor,Gombak
+DNR002846,LOC0003037,Selangor,Gombak
+DNR002847,LOC0003038,Selangor,Gombak
+DNR002848,LOC0003039,Selangor,Gombak
+DNR002849,LOC0003040,Selangor,Gombak
+DNR002850,LOC0003041,Selangor,Gombak
+DNR002851,LOC0003042,Selangor,Gombak
+DNR002852,LOC0003043,Selangor,Gombak
+DNR002853,LOC0003044,Selangor,Gombak
+DNR002854,LOC0003045,Selangor,Gombak
+DNR002855,LOC0003046,Selangor,Gombak
+DNR002856,LOC0003047,Selangor,Gombak
+DNR002857,LOC0003048,Selangor,Gombak
+DNR002858,LOC0003049,Selangor,Gombak
+DNR002859,LOC0003050,Selangor,Gombak
+DNR002860,LOC0003051,Selangor,Gombak
+DNR002861,LOC0003052,Selangor,Gombak
+DNR002862,LOC0003053,Selangor,Gombak
+DNR002863,LOC0003054,Selangor,Gombak
+DNR002864,LOC0003055,Selangor,Gombak
+DNR002865,LOC0003056,Selangor,Gombak
+DNR002866,LOC0003057,Selangor,Gombak
+DNR002867,LOC0003058,Selangor,Gombak
+DNR002868,LOC0003059,Selangor,Gombak
+DNR002869,LOC0003060,Selangor,Gombak
+DNR002870,LOC0003061,Selangor,Gombak
+DNR002871,LOC0003062,Selangor,Gombak
+DNR002872,LOC0003063,Selangor,Gombak
+DNR002873,LOC0003064,Selangor,Gombak
+DNR002874,LOC0003065,Selangor,Gombak
+DNR002875,LOC0003066,Selangor,Gombak
+DNR002876,LOC0003067,Selangor,Gombak
+DNR002877,LOC0003068,Selangor,Gombak
+DNR002878,LOC0003069,Selangor,Gombak
+DNR002879,LOC0003070,Selangor,Gombak
+DNR002880,LOC0003071,Selangor,Gombak
+DNR002881,LOC0003072,Selangor,Gombak
+DNR002882,LOC0003073,Selangor,Gombak
+DNR002883,LOC0003074,Selangor,Gombak
+DNR002884,LOC0003075,Selangor,Gombak
+DNR002885,LOC0003076,Selangor,Gombak
+DNR002886,LOC0003077,Selangor,Gombak
+DNR002887,LOC0003078,Selangor,Gombak
+DNR002888,LOC0003079,Selangor,Gombak
+DNR002889,LOC0003080,Selangor,Gombak
+DNR002890,LOC0003081,Selangor,Gombak
+DNR002891,LOC0003082,Selangor,Gombak
+DNR002892,LOC0003083,Selangor,Gombak
+DNR002893,LOC0003084,Selangor,Gombak
+DNR002894,LOC0003085,Selangor,Gombak
+DNR002895,LOC0003086,Selangor,Gombak
+DNR002896,LOC0003087,Selangor,Gombak
+DNR002897,LOC0003088,Selangor,Gombak
+DNR002898,LOC0003089,Selangor,Gombak
+DNR002899,LOC0003090,Selangor,Gombak
+DNR002900,LOC0003091,Selangor,Gombak
+DNR002901,LOC0003092,Selangor,Gombak
+DNR002902,LOC0003093,Selangor,Gombak
+DNR002903,LOC0003094,Selangor,Gombak
+DNR002904,LOC0003095,Selangor,Gombak
+DNR002905,LOC0003096,Selangor,Gombak
+DNR002906,LOC0003097,Selangor,Gombak
+DNR002907,LOC0003098,Selangor,Gombak
+DNR002908,LOC0003099,Selangor,Gombak
+DNR002909,LOC0003100,Selangor,Gombak
+DNR002910,LOC0003101,Selangor,Gombak
+DNR002911,LOC0003102,Selangor,Gombak
+DNR002912,LOC0003103,Selangor,Gombak
+DNR002913,LOC0003104,Selangor,Gombak
+DNR002914,LOC0003105,Selangor,Gombak
+DNR002915,LOC0003106,Selangor,Gombak
+DNR002916,LOC0003107,Selangor,Gombak
+DNR002917,LOC0003108,Selangor,Gombak
+DNR002918,LOC0003109,Selangor,Gombak
+DNR002919,LOC0003110,Selangor,Gombak
+DNR002920,LOC0003111,Selangor,Gombak
+DNR002921,LOC0003112,Selangor,Gombak
+DNR002922,LOC0003113,Selangor,Gombak
+DNR002923,LOC0003114,Selangor,Gombak
+DNR002924,LOC0003115,Selangor,Gombak
+DNR002925,LOC0003116,Selangor,Gombak
+DNR002926,LOC0003117,Selangor,Gombak
+DNR002927,LOC0003118,Selangor,Gombak
+DNR002928,LOC0003119,Selangor,Gombak
+DNR002929,LOC0003120,Selangor,Gombak
+DNR002930,LOC0003121,Selangor,Gombak
+DNR002931,LOC0003122,Selangor,Gombak
+DNR002932,LOC0003123,Selangor,Gombak
+DNR002933,LOC0003124,Selangor,Gombak
+DNR002934,LOC0003125,Selangor,Gombak
+DNR002935,LOC0003126,Selangor,Gombak
+DNR002936,LOC0003127,Selangor,Gombak
+DNR002937,LOC0003128,Selangor,Gombak
+DNR002938,LOC0003129,Johor,Johor Bahru
+DNR002939,LOC0003130,Johor,Johor Bahru
+DNR002940,LOC0003131,Johor,Johor Bahru
+DNR002941,LOC0003132,Johor,Johor Bahru
+DNR002942,LOC0003133,Johor,Johor Bahru
+DNR002943,LOC0003134,Johor,Johor Bahru
+DNR002944,LOC0003135,Johor,Johor Bahru
+DNR002945,LOC0003136,Johor,Johor Bahru
+DNR002946,LOC0003137,Johor,Johor Bahru
+DNR002947,LOC0003138,Johor,Johor Bahru
+DNR002948,LOC0003139,Johor,Johor Bahru
+DNR002949,LOC0003140,Johor,Johor Bahru
+DNR002950,LOC0003141,Johor,Johor Bahru
+DNR002951,LOC0003142,Johor,Johor Bahru
+DNR002952,LOC0003143,Johor,Johor Bahru
+DNR002953,LOC0003144,Johor,Johor Bahru
+DNR002954,LOC0003145,Johor,Johor Bahru
+DNR002955,LOC0003146,Johor,Johor Bahru
+DNR002956,LOC0003147,Johor,Johor Bahru
+DNR002957,LOC0003148,Johor,Johor Bahru
+DNR002958,LOC0003149,Johor,Johor Bahru
+DNR002959,LOC0003150,Johor,Johor Bahru
+DNR002960,LOC0003151,Johor,Johor Bahru
+DNR002961,LOC0003152,Johor,Johor Bahru
+DNR002962,LOC0003153,Johor,Johor Bahru
+DNR002963,LOC0003154,Johor,Johor Bahru
+DNR002964,LOC0003155,Johor,Johor Bahru
+DNR002965,LOC0003156,Johor,Johor Bahru
+DNR002966,LOC0003157,Johor,Johor Bahru
+DNR002967,LOC0003158,Johor,Johor Bahru
+DNR002968,LOC0003159,Johor,Johor Bahru
+DNR002969,LOC0003160,Johor,Johor Bahru
+DNR002970,LOC0003161,Johor,Johor Bahru
+DNR002971,LOC0003162,Johor,Johor Bahru
+DNR002972,LOC0003163,Johor,Johor Bahru
+DNR002973,LOC0003164,Johor,Johor Bahru
+DNR002974,LOC0003165,Johor,Johor Bahru
+DNR002975,LOC0003166,Johor,Johor Bahru
+DNR002976,LOC0003167,Johor,Johor Bahru
+DNR002977,LOC0003168,Johor,Johor Bahru
+DNR002978,LOC0003169,Johor,Johor Bahru
+DNR002979,LOC0003170,Johor,Johor Bahru
+DNR002980,LOC0003171,Johor,Johor Bahru
+DNR002981,LOC0003172,Johor,Johor Bahru
+DNR002982,LOC0003173,Johor,Johor Bahru
+DNR002983,LOC0003174,Johor,Johor Bahru
+DNR002984,LOC0003175,Johor,Johor Bahru
+DNR002985,LOC0003176,Johor,Johor Bahru
+DNR002986,LOC0003177,Johor,Johor Bahru
+DNR002987,LOC0003178,Johor,Johor Bahru
+DNR002988,LOC0003179,Johor,Johor Bahru
+DNR002989,LOC0003180,Johor,Johor Bahru
+DNR002990,LOC0003181,Johor,Johor Bahru
+DNR002991,LOC0003182,Johor,Johor Bahru
+DNR002992,LOC0003183,Johor,Johor Bahru
+DNR002993,LOC0003184,Johor,Johor Bahru
+DNR002994,LOC0003185,Johor,Johor Bahru
+DNR002995,LOC0003186,Johor,Johor Bahru
+DNR002996,LOC0003187,Johor,Johor Bahru
+DNR002997,LOC0003188,Johor,Johor Bahru
+DNR002998,LOC0003189,Johor,Johor Bahru
+DNR002999,LOC0003190,Johor,Johor Bahru
+DNR003000,LOC0003191,Johor,Johor Bahru
+DNR003001,LOC0003192,Johor,Johor Bahru
+DNR003002,LOC0003193,Johor,Johor Bahru
+DNR003003,LOC0003194,Johor,Johor Bahru
+DNR003004,LOC0003195,Johor,Johor Bahru
+DNR003005,LOC0003196,Johor,Johor Bahru
+DNR003006,LOC0003197,Johor,Johor Bahru
+DNR003007,LOC0003198,Johor,Johor Bahru
+DNR003008,LOC0003199,Johor,Johor Bahru
+DNR003009,LOC0003200,Johor,Johor Bahru
+DNR003010,LOC0003201,Johor,Johor Bahru
+DNR003011,LOC0003202,Johor,Johor Bahru
+DNR003012,LOC0003203,Johor,Johor Bahru
+DNR003013,LOC0003204,Johor,Johor Bahru
+DNR003014,LOC0003205,Johor,Johor Bahru
+DNR003015,LOC0003206,Johor,Johor Bahru
+DNR003016,LOC0003207,Johor,Johor Bahru
+DNR003017,LOC0003208,Johor,Johor Bahru
+DNR003018,LOC0003209,Johor,Johor Bahru
+DNR003019,LOC0003210,Johor,Johor Bahru
+DNR003020,LOC0003211,Johor,Johor Bahru
+DNR003021,LOC0003212,Johor,Johor Bahru
+DNR003022,LOC0003213,Johor,Johor Bahru
+DNR003023,LOC0003214,Johor,Johor Bahru
+DNR003024,LOC0003215,Johor,Johor Bahru
+DNR003025,LOC0003216,Johor,Johor Bahru
+DNR003026,LOC0003217,Johor,Johor Bahru
+DNR003027,LOC0003218,Johor,Johor Bahru
+DNR003028,LOC0003219,Johor,Johor Bahru
+DNR003029,LOC0003220,Johor,Johor Bahru
+DNR003030,LOC0003221,Johor,Johor Bahru
+DNR003031,LOC0003222,Johor,Johor Bahru
+DNR003032,LOC0003223,Johor,Johor Bahru
+DNR003033,LOC0003224,Johor,Johor Bahru
+DNR003034,LOC0003225,Johor,Johor Bahru
+DNR003035,LOC0003226,Johor,Johor Bahru
+DNR003036,LOC0003227,Johor,Johor Bahru
+DNR003037,LOC0003228,Johor,Johor Bahru
+DNR003038,LOC0003229,Johor,Johor Bahru
+DNR003039,LOC0003230,Johor,Johor Bahru
+DNR003040,LOC0003231,Johor,Johor Bahru
+DNR003041,LOC0003232,Johor,Johor Bahru
+DNR003042,LOC0003233,Johor,Johor Bahru
+DNR003043,LOC0003234,Johor,Johor Bahru
+DNR003044,LOC0003235,Johor,Johor Bahru
+DNR003045,LOC0003236,Johor,Johor Bahru
+DNR003046,LOC0003237,Johor,Johor Bahru
+DNR003047,LOC0003238,Johor,Johor Bahru
+DNR003048,LOC0003239,Johor,Johor Bahru
+DNR003049,LOC0003240,Johor,Johor Bahru
+DNR003050,LOC0003241,Johor,Johor Bahru
+DNR003051,LOC0003242,Johor,Johor Bahru
+DNR003052,LOC0003243,Johor,Johor Bahru
+DNR003053,LOC0003244,Johor,Johor Bahru
+DNR003054,LOC0003245,Johor,Johor Bahru
+DNR003055,LOC0003246,Johor,Johor Bahru
+DNR003056,LOC0003247,Johor,Johor Bahru
+DNR003057,LOC0003248,Johor,Johor Bahru
+DNR003058,LOC0003249,Johor,Johor Bahru
+DNR003059,LOC0003250,Johor,Johor Bahru
+DNR003060,LOC0003251,Johor,Johor Bahru
+DNR003061,LOC0003252,Johor,Johor Bahru
+DNR003062,LOC0003253,Johor,Johor Bahru
+DNR003063,LOC0003254,Johor,Johor Bahru
+DNR003064,LOC0003255,Johor,Johor Bahru
+DNR003065,LOC0003256,Johor,Johor Bahru
+DNR003066,LOC0003257,Johor,Johor Bahru
+DNR003067,LOC0003258,Johor,Johor Bahru
+DNR003068,LOC0003259,Johor,Johor Bahru
+DNR003069,LOC0003260,Johor,Johor Bahru
+DNR003070,LOC0003261,Johor,Johor Bahru
+DNR003071,LOC0003262,Johor,Johor Bahru
+DNR003072,LOC0003263,Johor,Johor Bahru
+DNR003073,LOC0003264,Johor,Johor Bahru
+DNR003074,LOC0003265,Johor,Johor Bahru
+DNR003075,LOC0003266,Johor,Johor Bahru
+DNR003076,LOC0003267,Johor,Johor Bahru
+DNR003077,LOC0003268,Johor,Johor Bahru
+DNR003078,LOC0003269,Johor,Johor Bahru
+DNR003079,LOC0003270,Johor,Johor Bahru
+DNR003080,LOC0003271,Johor,Johor Bahru
+DNR003081,LOC0003272,Johor,Johor Bahru
+DNR003082,LOC0003273,Johor,Johor Bahru
+DNR003083,LOC0003274,Johor,Johor Bahru
+DNR003084,LOC0003275,Johor,Johor Bahru
+DNR003085,LOC0003276,Johor,Johor Bahru
+DNR003086,LOC0003277,Johor,Johor Bahru
+DNR003087,LOC0003278,Johor,Johor Bahru
+DNR003088,LOC0003279,Johor,Johor Bahru
+DNR003089,LOC0003280,Johor,Johor Bahru
+DNR003090,LOC0003281,Johor,Johor Bahru
+DNR003091,LOC0003282,Johor,Johor Bahru
+DNR003092,LOC0003283,Johor,Johor Bahru
+DNR003093,LOC0003284,Johor,Johor Bahru
+DNR003094,LOC0003285,Johor,Johor Bahru
+DNR003095,LOC0003286,Johor,Johor Bahru
+DNR003096,LOC0003287,Johor,Johor Bahru
+DNR003097,LOC0003288,Johor,Johor Bahru
+DNR003098,LOC0003289,Johor,Johor Bahru
+DNR003099,LOC0003290,Johor,Johor Bahru
+DNR003100,LOC0003291,Johor,Johor Bahru
+DNR003101,LOC0003292,Johor,Johor Bahru
+DNR003102,LOC0003293,Johor,Johor Bahru
+DNR003103,LOC0003294,Johor,Johor Bahru
+DNR003104,LOC0003295,Johor,Johor Bahru
+DNR003105,LOC0003296,Johor,Johor Bahru
+DNR003106,LOC0003297,Johor,Johor Bahru
+DNR003107,LOC0003298,Johor,Johor Bahru
+DNR003108,LOC0003299,Johor,Johor Bahru
+DNR003109,LOC0003300,Johor,Johor Bahru
+DNR003110,LOC0003301,Johor,Johor Bahru
+DNR003111,LOC0003302,Johor,Johor Bahru
+DNR003112,LOC0003303,Johor,Johor Bahru
+DNR003113,LOC0003304,Johor,Johor Bahru
+DNR003114,LOC0003305,Johor,Johor Bahru
+DNR003115,LOC0003306,Johor,Johor Bahru
+DNR003116,LOC0003307,Johor,Johor Bahru
+DNR003117,LOC0003308,Johor,Johor Bahru
+DNR003118,LOC0003309,Johor,Johor Bahru
+DNR003119,LOC0003310,Johor,Johor Bahru
+DNR003120,LOC0003311,Johor,Johor Bahru
+DNR003121,LOC0003312,Johor,Johor Bahru
+DNR003122,LOC0003313,Johor,Johor Bahru
+DNR003123,LOC0003314,Johor,Johor Bahru
+DNR003124,LOC0003315,Johor,Johor Bahru
+DNR003125,LOC0003316,Johor,Johor Bahru
+DNR003126,LOC0003317,Johor,Johor Bahru
+DNR003127,LOC0003318,Johor,Johor Bahru
+DNR003128,LOC0003319,Johor,Johor Bahru
+DNR003129,LOC0003320,Johor,Johor Bahru
+DNR003130,LOC0003321,Johor,Johor Bahru
+DNR003131,LOC0003322,Johor,Johor Bahru
+DNR003132,LOC0003323,Johor,Johor Bahru
+DNR003133,LOC0003324,Johor,Johor Bahru
+DNR003134,LOC0003325,Johor,Johor Bahru
+DNR003135,LOC0003326,Johor,Johor Bahru
+DNR003136,LOC0003327,Johor,Johor Bahru
+DNR003137,LOC0003328,Johor,Johor Bahru
+DNR003138,LOC0003329,Johor,Johor Bahru
+DNR003139,LOC0003330,Johor,Johor Bahru
+DNR003140,LOC0003331,Johor,Johor Bahru
+DNR003141,LOC0003332,Johor,Johor Bahru
+DNR003142,LOC0003333,Johor,Johor Bahru
+DNR003143,LOC0003334,Johor,Johor Bahru
+DNR003144,LOC0003335,Johor,Johor Bahru
+DNR003145,LOC0003336,Johor,Johor Bahru
+DNR003146,LOC0003337,Johor,Johor Bahru
+DNR003147,LOC0003338,Johor,Johor Bahru
+DNR003148,LOC0003339,Johor,Johor Bahru
+DNR003149,LOC0003340,Johor,Johor Bahru
+DNR003150,LOC0003341,Johor,Johor Bahru
+DNR003151,LOC0003342,Johor,Johor Bahru
+DNR003152,LOC0003343,Johor,Johor Bahru
+DNR003153,LOC0003344,Johor,Johor Bahru
+DNR003154,LOC0003345,Johor,Johor Bahru
+DNR003155,LOC0003346,Johor,Johor Bahru
+DNR003156,LOC0003347,Johor,Johor Bahru
+DNR003157,LOC0003348,Johor,Johor Bahru
+DNR003158,LOC0003349,Johor,Johor Bahru
+DNR003159,LOC0003350,Johor,Johor Bahru
+DNR003160,LOC0003351,Johor,Johor Bahru
+DNR003161,LOC0003352,Johor,Johor Bahru
+DNR003162,LOC0003353,Johor,Johor Bahru
+DNR003163,LOC0003354,Johor,Johor Bahru
+DNR003164,LOC0003355,Johor,Johor Bahru
+DNR003165,LOC0003356,Johor,Johor Bahru
+DNR003166,LOC0003357,Johor,Johor Bahru
+DNR003167,LOC0003358,Johor,Johor Bahru
+DNR003168,LOC0003359,Johor,Johor Bahru
+DNR003169,LOC0003360,Johor,Johor Bahru
+DNR003170,LOC0003361,Johor,Johor Bahru
+DNR003171,LOC0003362,Johor,Johor Bahru
+DNR003172,LOC0003363,Johor,Johor Bahru
+DNR003173,LOC0003364,Johor,Johor Bahru
+DNR003174,LOC0003365,Johor,Johor Bahru
+DNR003175,LOC0003366,Johor,Johor Bahru
+DNR003176,LOC0003367,Johor,Johor Bahru
+DNR003177,LOC0003368,Johor,Johor Bahru
+DNR003178,LOC0003369,Johor,Johor Bahru
+DNR003179,LOC0003370,Johor,Johor Bahru
+DNR003180,LOC0003371,Johor,Johor Bahru
+DNR003181,LOC0003372,Johor,Johor Bahru
+DNR003182,LOC0003373,Johor,Johor Bahru
+DNR003183,LOC0003374,Johor,Johor Bahru
+DNR003184,LOC0003375,Johor,Johor Bahru
+DNR003185,LOC0003376,Johor,Johor Bahru
+DNR003186,LOC0003377,Johor,Johor Bahru
+DNR003187,LOC0003378,Johor,Johor Bahru
+DNR003188,LOC0003379,Johor,Johor Bahru
+DNR003189,LOC0003380,Johor,Johor Bahru
+DNR003190,LOC0003381,Johor,Johor Bahru
+DNR003191,LOC0003382,Johor,Johor Bahru
+DNR003192,LOC0003383,Johor,Johor Bahru
+DNR003193,LOC0003384,Johor,Johor Bahru
+DNR003194,LOC0003385,Johor,Johor Bahru
+DNR003195,LOC0003386,Johor,Johor Bahru
+DNR003196,LOC0003387,Johor,Johor Bahru
+DNR003197,LOC0003388,Johor,Johor Bahru
+DNR003198,LOC0003389,Johor,Johor Bahru
+DNR003199,LOC0003390,Johor,Johor Bahru
+DNR003200,LOC0003391,Johor,Johor Bahru
+DNR003201,LOC0003392,Johor,Johor Bahru
+DNR003202,LOC0003393,Johor,Johor Bahru
+DNR003203,LOC0003394,Johor,Johor Bahru
+DNR003204,LOC0003395,Johor,Johor Bahru
+DNR003205,LOC0003396,Johor,Johor Bahru
+DNR003206,LOC0003397,Johor,Johor Bahru
+DNR003207,LOC0003398,Johor,Johor Bahru
+DNR003208,LOC0003399,Johor,Johor Bahru
+DNR003209,LOC0003400,Johor,Johor Bahru
+DNR003210,LOC0003401,Johor,Johor Bahru
+DNR003211,LOC0003402,Johor,Johor Bahru
+DNR003212,LOC0003403,Johor,Johor Bahru
+DNR003213,LOC0003404,Johor,Johor Bahru
+DNR003214,LOC0003405,Johor,Johor Bahru
+DNR003215,LOC0003406,Johor,Johor Bahru
+DNR003216,LOC0003407,Johor,Johor Bahru
+DNR003217,LOC0003408,Johor,Johor Bahru
+DNR003218,LOC0003409,Johor,Johor Bahru
+DNR003219,LOC0003410,Johor,Johor Bahru
+DNR003220,LOC0003411,Johor,Johor Bahru
+DNR003221,LOC0003412,Johor,Johor Bahru
+DNR003222,LOC0003413,Johor,Johor Bahru
+DNR003223,LOC0003414,Johor,Johor Bahru
+DNR003224,LOC0003415,Johor,Johor Bahru
+DNR003225,LOC0003416,Johor,Johor Bahru
+DNR003226,LOC0003417,Johor,Johor Bahru
+DNR003227,LOC0003418,Johor,Johor Bahru
+DNR003228,LOC0003419,Johor,Johor Bahru
+DNR003229,LOC0003420,Johor,Johor Bahru
+DNR003230,LOC0003421,Johor,Johor Bahru
+DNR003231,LOC0003422,Johor,Johor Bahru
+DNR003232,LOC0003423,Johor,Johor Bahru
+DNR003233,LOC0003424,Johor,Johor Bahru
+DNR003234,LOC0003425,Johor,Johor Bahru
+DNR003235,LOC0003426,Johor,Johor Bahru
+DNR003236,LOC0003427,Johor,Johor Bahru
+DNR003237,LOC0003428,Johor,Johor Bahru
+DNR003238,LOC0003429,Johor,Johor Bahru
+DNR003239,LOC0003430,Johor,Johor Bahru
+DNR003240,LOC0003431,Johor,Johor Bahru
+DNR003241,LOC0003432,Johor,Johor Bahru
+DNR003242,LOC0003433,Johor,Johor Bahru
+DNR003243,LOC0003434,Johor,Johor Bahru
+DNR003244,LOC0003435,Johor,Johor Bahru
+DNR003245,LOC0003436,Johor,Johor Bahru
+DNR003246,LOC0003437,Johor,Johor Bahru
+DNR003247,LOC0003438,Johor,Johor Bahru
+DNR003248,LOC0003439,Johor,Johor Bahru
+DNR003249,LOC0003440,Johor,Johor Bahru
+DNR003250,LOC0003441,Johor,Johor Bahru
+DNR003251,LOC0003442,Johor,Johor Bahru
+DNR003252,LOC0003443,Johor,Johor Bahru
+DNR003253,LOC0003444,Johor,Johor Bahru
+DNR003254,LOC0003445,Johor,Johor Bahru
+DNR003255,LOC0003446,Johor,Johor Bahru
+DNR003256,LOC0003447,Johor,Johor Bahru
+DNR003257,LOC0003448,Johor,Johor Bahru
+DNR003258,LOC0003449,Johor,Johor Bahru
+DNR003259,LOC0003450,Johor,Johor Bahru
+DNR003260,LOC0003451,Johor,Johor Bahru
+DNR003261,LOC0003452,Johor,Johor Bahru
+DNR003262,LOC0003453,Johor,Johor Bahru
+DNR003263,LOC0003454,Johor,Johor Bahru
+DNR003264,LOC0003455,Johor,Johor Bahru
+DNR003265,LOC0003456,Johor,Johor Bahru
+DNR003266,LOC0003457,Johor,Johor Bahru
+DNR003267,LOC0003458,Johor,Johor Bahru
+DNR003268,LOC0003459,Johor,Johor Bahru
+DNR003269,LOC0003460,Johor,Johor Bahru
+DNR003270,LOC0003461,Johor,Johor Bahru
+DNR003271,LOC0003462,Johor,Johor Bahru
+DNR003272,LOC0003463,Johor,Johor Bahru
+DNR003273,LOC0003464,Johor,Johor Bahru
+DNR003274,LOC0003465,Johor,Johor Bahru
+DNR003275,LOC0003466,Johor,Johor Bahru
+DNR003276,LOC0003467,Johor,Johor Bahru
+DNR003277,LOC0003468,Johor,Johor Bahru
+DNR003278,LOC0003469,Johor,Johor Bahru
+DNR003279,LOC0003470,Johor,Johor Bahru
+DNR003280,LOC0003471,Johor,Johor Bahru
+DNR003281,LOC0003472,Johor,Johor Bahru
+DNR003282,LOC0003473,Johor,Johor Bahru
+DNR003283,LOC0003474,Johor,Johor Bahru
+DNR003284,LOC0003475,Johor,Johor Bahru
+DNR003285,LOC0003476,Johor,Johor Bahru
+DNR003286,LOC0003477,Johor,Johor Bahru
+DNR003287,LOC0003478,Johor,Johor Bahru
+DNR003288,LOC0003479,Johor,Johor Bahru
+DNR003289,LOC0003480,Johor,Johor Bahru
+DNR003290,LOC0003481,Johor,Johor Bahru
+DNR003291,LOC0003482,Johor,Johor Bahru
+DNR003292,LOC0003483,Johor,Johor Bahru
+DNR003293,LOC0003484,Johor,Johor Bahru
+DNR003294,LOC0003485,Johor,Johor Bahru
+DNR003295,LOC0003486,Johor,Johor Bahru
+DNR003296,LOC0003487,Johor,Johor Bahru
+DNR003297,LOC0003488,Johor,Johor Bahru
+DNR003298,LOC0003489,Johor,Johor Bahru
+DNR003299,LOC0003490,Johor,Johor Bahru
+DNR003300,LOC0003491,Johor,Johor Bahru
+DNR003301,LOC0003492,Johor,Johor Bahru
+DNR003302,LOC0003493,Johor,Johor Bahru
+DNR003303,LOC0003494,Johor,Johor Bahru
+DNR003304,LOC0003495,Johor,Johor Bahru
+DNR003305,LOC0003496,Johor,Johor Bahru
+DNR003306,LOC0003497,Johor,Johor Bahru
+DNR003307,LOC0003498,Johor,Johor Bahru
+DNR003308,LOC0003499,Johor,Johor Bahru
+DNR003309,LOC0003500,Johor,Johor Bahru
+DNR003310,LOC0003501,Johor,Johor Bahru
+DNR003311,LOC0003502,Johor,Johor Bahru
+DNR003312,LOC0003503,Johor,Johor Bahru
+DNR003313,LOC0003504,Johor,Johor Bahru
+DNR003314,LOC0003505,Johor,Johor Bahru
+DNR003315,LOC0003506,Johor,Johor Bahru
+DNR003316,LOC0003507,Johor,Johor Bahru
+DNR003317,LOC0003508,Johor,Johor Bahru
+DNR003318,LOC0003509,Johor,Johor Bahru
+DNR003319,LOC0003510,Johor,Johor Bahru
+DNR003320,LOC0003511,Johor,Johor Bahru
+DNR003321,LOC0003512,Johor,Johor Bahru
+DNR003322,LOC0003513,Johor,Johor Bahru
+DNR003323,LOC0003514,Johor,Johor Bahru
+DNR003324,LOC0003515,Johor,Johor Bahru
+DNR003325,LOC0003516,Johor,Johor Bahru
+DNR003326,LOC0003517,Johor,Johor Bahru
+DNR003327,LOC0003518,Johor,Johor Bahru
+DNR003328,LOC0003519,Johor,Johor Bahru
+DNR003329,LOC0003520,Johor,Johor Bahru
+DNR003330,LOC0003521,Johor,Johor Bahru
+DNR003331,LOC0003522,Johor,Johor Bahru
+DNR003332,LOC0003523,Johor,Johor Bahru
+DNR003333,LOC0003524,Johor,Johor Bahru
+DNR003334,LOC0003525,Johor,Johor Bahru
+DNR003335,LOC0003526,Johor,Johor Bahru
+DNR003336,LOC0003527,Negeri Sembilan,Seremban
+DNR003337,LOC0003528,Negeri Sembilan,Seremban
+DNR003338,LOC0003529,Negeri Sembilan,Seremban
+DNR003339,LOC0003530,Negeri Sembilan,Seremban
+DNR003340,LOC0003531,Negeri Sembilan,Seremban
+DNR003341,LOC0003532,Negeri Sembilan,Seremban
+DNR003342,LOC0003533,Negeri Sembilan,Seremban
+DNR003343,LOC0003534,Negeri Sembilan,Seremban
+DNR003344,LOC0003535,Negeri Sembilan,Seremban
+DNR003345,LOC0003536,Negeri Sembilan,Seremban
+DNR003346,LOC0003537,Negeri Sembilan,Seremban
+DNR003347,LOC0003538,Negeri Sembilan,Seremban
+DNR003348,LOC0003539,Negeri Sembilan,Seremban
+DNR003349,LOC0003540,Negeri Sembilan,Seremban
+DNR003350,LOC0003541,Negeri Sembilan,Seremban
+DNR003351,LOC0003542,Negeri Sembilan,Seremban
+DNR003352,LOC0003543,Negeri Sembilan,Seremban
+DNR003353,LOC0003544,Negeri Sembilan,Seremban
+DNR003354,LOC0003545,Negeri Sembilan,Seremban
+DNR003355,LOC0003546,Negeri Sembilan,Seremban
+DNR003356,LOC0003547,Negeri Sembilan,Seremban
+DNR003357,LOC0003548,Negeri Sembilan,Seremban
+DNR003358,LOC0003549,Negeri Sembilan,Seremban
+DNR003359,LOC0003550,Negeri Sembilan,Seremban
+DNR003360,LOC0003551,Negeri Sembilan,Seremban
+DNR003361,LOC0003552,Negeri Sembilan,Seremban
+DNR003362,LOC0003553,Negeri Sembilan,Seremban
+DNR003363,LOC0003554,Negeri Sembilan,Seremban
+DNR003364,LOC0003555,Negeri Sembilan,Seremban
+DNR003365,LOC0003556,Negeri Sembilan,Seremban
+DNR003366,LOC0003557,Negeri Sembilan,Seremban
+DNR003367,LOC0003558,Negeri Sembilan,Seremban
+DNR003368,LOC0003559,Negeri Sembilan,Seremban
+DNR003369,LOC0003560,Negeri Sembilan,Seremban
+DNR003370,LOC0003561,Negeri Sembilan,Seremban
+DNR003371,LOC0003562,Negeri Sembilan,Seremban
+DNR003372,LOC0003563,Negeri Sembilan,Seremban
+DNR003373,LOC0003564,Negeri Sembilan,Seremban
+DNR003374,LOC0003565,Negeri Sembilan,Seremban
+DNR003375,LOC0003566,Negeri Sembilan,Seremban
+DNR003376,LOC0003567,Negeri Sembilan,Seremban
+DNR003377,LOC0003568,Negeri Sembilan,Seremban
+DNR003378,LOC0003569,Negeri Sembilan,Seremban
+DNR003379,LOC0003570,Negeri Sembilan,Seremban
+DNR003380,LOC0003571,Negeri Sembilan,Seremban
+DNR003381,LOC0003572,Negeri Sembilan,Seremban
+DNR003382,LOC0003573,Negeri Sembilan,Seremban
+DNR003383,LOC0003574,Negeri Sembilan,Seremban
+DNR003384,LOC0003575,Negeri Sembilan,Seremban
+DNR003385,LOC0003576,Negeri Sembilan,Seremban
+DNR003386,LOC0003577,Negeri Sembilan,Seremban
+DNR003387,LOC0003578,Negeri Sembilan,Seremban
+DNR003388,LOC0003579,Negeri Sembilan,Seremban
+DNR003389,LOC0003580,Negeri Sembilan,Seremban
+DNR003390,LOC0003581,Negeri Sembilan,Seremban
+DNR003391,LOC0003582,Negeri Sembilan,Seremban
+DNR003392,LOC0003583,Negeri Sembilan,Seremban
+DNR003393,LOC0003584,Negeri Sembilan,Seremban
+DNR003394,LOC0003585,Negeri Sembilan,Seremban
+DNR003395,LOC0003586,Negeri Sembilan,Seremban
+DNR003396,LOC0003587,Negeri Sembilan,Seremban
+DNR003397,LOC0003588,Negeri Sembilan,Seremban
+DNR003398,LOC0003589,Negeri Sembilan,Seremban
+DNR003399,LOC0003590,Negeri Sembilan,Seremban
+DNR003400,LOC0003591,Negeri Sembilan,Seremban
+DNR003401,LOC0003592,Negeri Sembilan,Seremban
+DNR003402,LOC0003593,Negeri Sembilan,Seremban
+DNR003403,LOC0003594,Negeri Sembilan,Seremban
+DNR003404,LOC0003595,Negeri Sembilan,Seremban
+DNR003405,LOC0003596,Negeri Sembilan,Seremban
+DNR003406,LOC0003597,Negeri Sembilan,Seremban
+DNR003407,LOC0003598,Negeri Sembilan,Seremban
+DNR003408,LOC0003599,Negeri Sembilan,Seremban
+DNR003409,LOC0003600,Negeri Sembilan,Seremban
+DNR003410,LOC0003601,Negeri Sembilan,Seremban
+DNR003411,LOC0003602,Negeri Sembilan,Seremban
+DNR003412,LOC0003603,Negeri Sembilan,Seremban
+DNR003413,LOC0003604,Negeri Sembilan,Seremban
+DNR003414,LOC0003605,Negeri Sembilan,Seremban
+DNR003415,LOC0003606,Negeri Sembilan,Seremban
+DNR003416,LOC0003607,Negeri Sembilan,Seremban
+DNR003417,LOC0003608,Negeri Sembilan,Seremban
+DNR003418,LOC0003609,Negeri Sembilan,Seremban
+DNR003419,LOC0003610,Negeri Sembilan,Seremban
+DNR003420,LOC0003611,Negeri Sembilan,Seremban
+DNR003421,LOC0003612,Negeri Sembilan,Seremban
+DNR003422,LOC0003613,Negeri Sembilan,Seremban
+DNR003423,LOC0003614,Negeri Sembilan,Seremban
+DNR003424,LOC0003615,Negeri Sembilan,Seremban
+DNR003425,LOC0003616,Negeri Sembilan,Seremban
+DNR003426,LOC0003617,Negeri Sembilan,Seremban
+DNR003427,LOC0003618,Negeri Sembilan,Seremban
+DNR003428,LOC0003619,Negeri Sembilan,Seremban
+DNR003429,LOC0003620,Negeri Sembilan,Seremban
+DNR003430,LOC0003621,Negeri Sembilan,Seremban
+DNR003431,LOC0003622,Negeri Sembilan,Seremban
+DNR003432,LOC0003623,Negeri Sembilan,Seremban
+DNR003433,LOC0003624,Negeri Sembilan,Seremban
+DNR003434,LOC0003625,Negeri Sembilan,Seremban
+DNR003435,LOC0003626,Negeri Sembilan,Seremban
+DNR003436,LOC0003627,Negeri Sembilan,Seremban
+DNR003437,LOC0003628,Negeri Sembilan,Seremban
+DNR003438,LOC0003629,Negeri Sembilan,Seremban
+DNR003439,LOC0003630,Negeri Sembilan,Seremban
+DNR003440,LOC0003631,Negeri Sembilan,Seremban
+DNR003441,LOC0003632,Negeri Sembilan,Seremban
+DNR003442,LOC0003633,Negeri Sembilan,Seremban
+DNR003443,LOC0003634,Negeri Sembilan,Seremban
+DNR003444,LOC0003635,Negeri Sembilan,Seremban
+DNR003445,LOC0003636,Negeri Sembilan,Seremban
+DNR003446,LOC0003637,Negeri Sembilan,Seremban
+DNR003447,LOC0003638,Negeri Sembilan,Seremban
+DNR003448,LOC0003639,Negeri Sembilan,Seremban
+DNR003449,LOC0003640,Negeri Sembilan,Seremban
+DNR003450,LOC0003641,Perak,Kinta
+DNR003451,LOC0003642,Perak,Kinta
+DNR003452,LOC0003643,Perak,Kinta
+DNR003453,LOC0003644,Perak,Kinta
+DNR003454,LOC0003645,Perak,Kinta
+DNR003455,LOC0003646,Perak,Kinta
+DNR003456,LOC0003647,Perak,Kinta
+DNR003457,LOC0003648,Perak,Kinta
+DNR003458,LOC0003649,Perak,Kinta
+DNR003459,LOC0003650,Perak,Kinta
+DNR003460,LOC0003651,Perak,Kinta
+DNR003461,LOC0003652,Perak,Kinta
+DNR003462,LOC0003653,Perak,Kinta
+DNR003463,LOC0003654,Perak,Kinta
+DNR003464,LOC0003655,Perak,Kinta
+DNR003465,LOC0003656,Perak,Kinta
+DNR003466,LOC0003657,Perak,Kinta
+DNR003467,LOC0003658,Perak,Kinta
+DNR003468,LOC0003659,Perak,Kinta
+DNR003469,LOC0003660,Perak,Kinta
+DNR003470,LOC0003661,Perak,Kinta
+DNR003471,LOC0003662,Perak,Kinta
+DNR003472,LOC0003663,Perak,Kinta
+DNR003473,LOC0003664,Perak,Kinta
+DNR003474,LOC0003665,Perak,Kinta
+DNR003475,LOC0003666,Perak,Kinta
+DNR003476,LOC0003667,Perak,Kinta
+DNR003477,LOC0003668,Perak,Kinta
+DNR003478,LOC0003669,Perak,Kinta
+DNR003479,LOC0003670,Perak,Kinta
+DNR003480,LOC0003671,Perak,Kinta
+DNR003481,LOC0003672,Perak,Kinta
+DNR003482,LOC0003673,Perak,Kinta
+DNR003483,LOC0003674,Perak,Kinta
+DNR003484,LOC0003675,Perak,Kinta
+DNR003485,LOC0003676,Perak,Kinta
+DNR003486,LOC0003677,Perak,Kinta
+DNR003487,LOC0003678,Perak,Kinta
+DNR003488,LOC0003679,Perak,Kinta
+DNR003489,LOC0003680,Perak,Kinta
+DNR003490,LOC0003681,Perak,Kinta
+DNR003491,LOC0003682,Perak,Kinta
+DNR003492,LOC0003683,Perak,Kinta
+DNR003493,LOC0003684,Perak,Kinta
+DNR003494,LOC0003685,Perak,Kinta
+DNR003495,LOC0003686,Perak,Kinta
+DNR003496,LOC0003687,Perak,Kinta
+DNR003497,LOC0003688,Perak,Kinta
+DNR003498,LOC0003689,Perak,Kinta
+DNR003499,LOC0003690,Perak,Kinta
+DNR003500,LOC0003691,Perak,Kinta
+DNR003501,LOC0003692,Perak,Kinta
+DNR003502,LOC0003693,Perak,Kinta
+DNR003503,LOC0003694,Perak,Kinta
+DNR003504,LOC0003695,Perak,Kinta
+DNR003505,LOC0003696,Perak,Kinta
+DNR003506,LOC0003697,Perak,Kinta
+DNR003507,LOC0003698,Perak,Kinta
+DNR003508,LOC0003699,Perak,Kinta
+DNR003509,LOC0003700,Perak,Kinta
+DNR003510,LOC0003701,Perak,Kinta
+DNR003511,LOC0003702,Perak,Kinta
+DNR003512,LOC0003703,Perak,Kinta
+DNR003513,LOC0003704,Perak,Kinta
+DNR003514,LOC0003705,Perak,Kinta
+DNR003515,LOC0003706,Perak,Kinta
+DNR003516,LOC0003707,Perak,Kinta
+DNR003517,LOC0003708,Perak,Kinta
+DNR003518,LOC0003709,Perak,Kinta
+DNR003519,LOC0003710,Perak,Kinta
+DNR003520,LOC0003711,Perak,Kinta
+DNR003521,LOC0003712,Perak,Kinta
+DNR003522,LOC0003713,Perak,Kinta
+DNR003523,LOC0003714,Perak,Kinta
+DNR003524,LOC0003715,Perak,Kinta
+DNR003525,LOC0003716,Perak,Kinta
+DNR003526,LOC0003717,Perak,Kinta
+DNR003527,LOC0003718,Perak,Kinta
+DNR003528,LOC0003719,Perak,Kinta
+DNR003529,LOC0003720,Perak,Kinta
+DNR003530,LOC0003721,Perak,Kinta
+DNR003531,LOC0003722,Perak,Kinta
+DNR003532,LOC0003723,Perak,Kinta
+DNR003533,LOC0003724,Perak,Kinta
+DNR003534,LOC0003725,Perak,Kinta
+DNR003535,LOC0003726,Perak,Kinta
+DNR003536,LOC0003727,Perak,Kinta
+DNR003537,LOC0003728,Perak,Kinta
+DNR003538,LOC0003729,Perak,Kinta
+DNR003539,LOC0003730,Perak,Kinta
+DNR003540,LOC0003731,Perak,Kinta
+DNR003541,LOC0003732,Perak,Kinta
+DNR003542,LOC0003733,Perak,Kinta
+DNR003543,LOC0003734,Perak,Kinta
+DNR003544,LOC0003735,Perak,Kinta
+DNR003545,LOC0003736,Perak,Kinta
+DNR003546,LOC0003737,Perak,Kinta
+DNR003547,LOC0003738,Perak,Kinta
+DNR003548,LOC0003739,Perak,Kinta
+DNR003549,LOC0003740,Perak,Kinta
+DNR003550,LOC0003741,Perak,Kinta
+DNR003551,LOC0003742,Perak,Kinta
+DNR003552,LOC0003743,Perak,Kinta
+DNR003553,LOC0003744,Perak,Kinta
+DNR003554,LOC0003745,Perak,Kinta
+DNR003555,LOC0003746,Perak,Kinta
+DNR003556,LOC0003747,Perak,Kinta
+DNR003557,LOC0003748,Perak,Kinta
+DNR003558,LOC0003749,Perak,Kinta
+DNR003559,LOC0003750,Perak,Kinta
+DNR003560,LOC0003751,Perak,Kinta
+DNR003561,LOC0003752,Perak,Kinta
+DNR003562,LOC0003753,Perak,Kinta
+DNR003563,LOC0003754,Perak,Kinta
+DNR003564,LOC0003755,Perak,Kinta
+DNR003565,LOC0003756,Perak,Kinta
+DNR003566,LOC0003757,Perak,Kinta
+DNR003567,LOC0003758,Perak,Kinta
+DNR003568,LOC0003759,Perak,Kinta
+DNR003569,LOC0003760,Perak,Kinta
+DNR003570,LOC0003761,Perak,Kinta
+DNR003571,LOC0003762,Perak,Kinta
+DNR003572,LOC0003763,Perak,Kinta
+DNR003573,LOC0003764,Perak,Kinta
+DNR003574,LOC0003765,Perak,Kinta
+DNR003575,LOC0003766,Perak,Kinta
+DNR003576,LOC0003767,Perak,Kinta
+DNR003577,LOC0003768,Perak,Kinta
+DNR003578,LOC0003769,Perak,Kinta
+DNR003579,LOC0003770,Perak,Kinta
+DNR003580,LOC0003771,Perak,Kinta
+DNR003581,LOC0003772,Perak,Kinta
+DNR003582,LOC0003773,Perak,Kinta
+DNR003583,LOC0003774,Perak,Kinta
+DNR003584,LOC0003775,Perak,Kinta
+DNR003585,LOC0003776,Perak,Kinta
+DNR003586,LOC0003777,Perak,Kinta
+DNR003587,LOC0003778,Perak,Kinta
+DNR003588,LOC0003779,Perak,Kinta
+DNR003589,LOC0003780,Perak,Kinta
+DNR003590,LOC0003781,Perak,Kinta
+DNR003591,LOC0003782,Perak,Kinta
+DNR003592,LOC0003783,Perak,Kinta
+DNR003593,LOC0003784,Perak,Kinta
+DNR003594,LOC0003785,Perak,Kinta
+DNR003595,LOC0003786,Perak,Kinta
+DNR003596,LOC0003787,Perak,Kinta
+DNR003597,LOC0003788,Perak,Kinta
+DNR003598,LOC0003789,Perak,Kinta
+DNR003599,LOC0003790,Perak,Kinta
+DNR003600,LOC0003791,Perak,Kinta
+DNR003601,LOC0003792,Perak,Kinta
+DNR003602,LOC0003793,Perak,Kinta
+DNR003603,LOC0003794,Perak,Kinta
+DNR003604,LOC0003795,Perak,Kinta
+DNR003605,LOC0003796,Pulau Pinang,Timur Laut
+DNR003606,LOC0003797,Pulau Pinang,Timur Laut
+DNR003607,LOC0003798,Pulau Pinang,Timur Laut
+DNR003608,LOC0003799,Pulau Pinang,Timur Laut
+DNR003609,LOC0003800,Pulau Pinang,Timur Laut
+DNR003610,LOC0003801,Pulau Pinang,Timur Laut
+DNR003611,LOC0003802,Pulau Pinang,Timur Laut
+DNR003612,LOC0003803,Pulau Pinang,Timur Laut
+DNR003613,LOC0003804,Pulau Pinang,Timur Laut
+DNR003614,LOC0003805,Pulau Pinang,Timur Laut
+DNR003615,LOC0003806,Pulau Pinang,Timur Laut
+DNR003616,LOC0003807,Pulau Pinang,Timur Laut
+DNR003617,LOC0003808,Pulau Pinang,Timur Laut
+DNR003618,LOC0003809,Pulau Pinang,Timur Laut
+DNR003619,LOC0003810,Pulau Pinang,Timur Laut
+DNR003620,LOC0003811,Pulau Pinang,Timur Laut
+DNR003621,LOC0003812,Pulau Pinang,Timur Laut
+DNR003622,LOC0003813,Pulau Pinang,Timur Laut
+DNR003623,LOC0003814,Pulau Pinang,Timur Laut
+DNR003624,LOC0003815,Pulau Pinang,Timur Laut
+DNR003625,LOC0003816,Pulau Pinang,Timur Laut
+DNR003626,LOC0003817,Pulau Pinang,Timur Laut
+DNR003627,LOC0003818,Pulau Pinang,Timur Laut
+DNR003628,LOC0003819,Pulau Pinang,Timur Laut
+DNR003629,LOC0003820,Pulau Pinang,Timur Laut
+DNR003630,LOC0003821,Pulau Pinang,Timur Laut
+DNR003631,LOC0003822,Pulau Pinang,Timur Laut
+DNR003632,LOC0003823,Pulau Pinang,Timur Laut
+DNR003633,LOC0003824,Pulau Pinang,Timur Laut
+DNR003634,LOC0003825,Pulau Pinang,Timur Laut
+DNR003635,LOC0003826,Pulau Pinang,Timur Laut
+DNR003636,LOC0003827,Pulau Pinang,Timur Laut
+DNR003637,LOC0003828,Pulau Pinang,Timur Laut
+DNR003638,LOC0003829,Pulau Pinang,Timur Laut
+DNR003639,LOC0003830,Pulau Pinang,Timur Laut
+DNR003640,LOC0003831,Pulau Pinang,Timur Laut
+DNR003641,LOC0003832,Pulau Pinang,Timur Laut
+DNR003642,LOC0003833,Pulau Pinang,Timur Laut
+DNR003643,LOC0003834,Pulau Pinang,Timur Laut
+DNR003644,LOC0003835,Pulau Pinang,Timur Laut
+DNR003645,LOC0003836,Pulau Pinang,Timur Laut
+DNR003646,LOC0003837,Pulau Pinang,Timur Laut
+DNR003647,LOC0003838,Pulau Pinang,Timur Laut
+DNR003648,LOC0003839,Pulau Pinang,Timur Laut
+DNR003649,LOC0003840,Pulau Pinang,Timur Laut
+DNR003650,LOC0003841,Pulau Pinang,Timur Laut
+DNR003651,LOC0003842,Pulau Pinang,Timur Laut
+DNR003652,LOC0003843,Pulau Pinang,Timur Laut
+DNR003653,LOC0003844,Pulau Pinang,Timur Laut
+DNR003654,LOC0003845,Pulau Pinang,Timur Laut
+DNR003655,LOC0003846,Pulau Pinang,Timur Laut
+DNR003656,LOC0003847,Pulau Pinang,Timur Laut
+DNR003657,LOC0003848,Pulau Pinang,Timur Laut
+DNR003658,LOC0003849,Pulau Pinang,Timur Laut
+DNR003659,LOC0003850,Pulau Pinang,Timur Laut
+DNR003660,LOC0003851,Pulau Pinang,Timur Laut
+DNR003661,LOC0003852,Pulau Pinang,Timur Laut
+DNR003662,LOC0003853,Pulau Pinang,Timur Laut
+DNR003663,LOC0003854,Pulau Pinang,Timur Laut
+DNR003664,LOC0003855,Pulau Pinang,Timur Laut
+DNR003665,LOC0003856,Pulau Pinang,Timur Laut
+DNR003666,LOC0003857,Pulau Pinang,Timur Laut
+DNR003667,LOC0003858,Pulau Pinang,Timur Laut
+DNR003668,LOC0003859,Pulau Pinang,Timur Laut
+DNR003669,LOC0003860,Pulau Pinang,Timur Laut
+DNR003670,LOC0003861,Pulau Pinang,Timur Laut
+DNR003671,LOC0003862,Pulau Pinang,Timur Laut
+DNR003672,LOC0003863,Pulau Pinang,Timur Laut
+DNR003673,LOC0003864,Pulau Pinang,Timur Laut
+DNR003674,LOC0003865,Pulau Pinang,Timur Laut
+DNR003675,LOC0003866,Pulau Pinang,Timur Laut
+DNR003676,LOC0003867,Pulau Pinang,Timur Laut
+DNR003677,LOC0003868,Pulau Pinang,Timur Laut
+DNR003678,LOC0003869,Pulau Pinang,Timur Laut
+DNR003679,LOC0003870,Pulau Pinang,Timur Laut
+DNR003680,LOC0003871,Pulau Pinang,Timur Laut
+DNR003681,LOC0003872,Pulau Pinang,Timur Laut
+DNR003682,LOC0003873,Pulau Pinang,Timur Laut
+DNR003683,LOC0003874,Pulau Pinang,Timur Laut
+DNR003684,LOC0003875,Pulau Pinang,Timur Laut
+DNR003685,LOC0003876,Pulau Pinang,Timur Laut
+DNR003686,LOC0003877,Pulau Pinang,Timur Laut
+DNR003687,LOC0003878,Pulau Pinang,Timur Laut
+DNR003688,LOC0003879,Pulau Pinang,Timur Laut
+DNR003689,LOC0003880,Pulau Pinang,Timur Laut
+DNR003690,LOC0003881,Pulau Pinang,Timur Laut
+DNR003691,LOC0003882,Pulau Pinang,Timur Laut
+DNR003692,LOC0003883,Pulau Pinang,Timur Laut
+DNR003693,LOC0003884,Pulau Pinang,Timur Laut
+DNR003694,LOC0003885,Pulau Pinang,Timur Laut
+DNR003695,LOC0003886,Pulau Pinang,Timur Laut
+DNR003696,LOC0003887,Pulau Pinang,Timur Laut
+DNR003697,LOC0003888,Pulau Pinang,Timur Laut
+DNR003698,LOC0003889,Pulau Pinang,Timur Laut
+DNR003699,LOC0003890,Pulau Pinang,Timur Laut
+DNR003700,LOC0003891,Pulau Pinang,Timur Laut
+DNR003701,LOC0003892,Pulau Pinang,Timur Laut
+DNR003702,LOC0003893,Pahang,Kuantan
+DNR003703,LOC0003894,Pahang,Kuantan
+DNR003704,LOC0003895,Pahang,Kuantan
+DNR003705,LOC0003896,Pahang,Kuantan
+DNR003706,LOC0003897,Pahang,Kuantan
+DNR003707,LOC0003898,Pahang,Kuantan
+DNR003708,LOC0003899,Pahang,Kuantan
+DNR003709,LOC0003900,Pahang,Kuantan
+DNR003710,LOC0003901,Pahang,Kuantan
+DNR003711,LOC0003902,Pahang,Kuantan
+DNR003712,LOC0003903,Pahang,Kuantan
+DNR003713,LOC0003904,Pahang,Kuantan
+DNR003714,LOC0003905,Pahang,Kuantan
+DNR003715,LOC0003906,Pahang,Kuantan
+DNR003716,LOC0003907,Pahang,Kuantan
+DNR003717,LOC0003908,Pahang,Kuantan
+DNR003718,LOC0003909,Pahang,Kuantan
+DNR003719,LOC0003910,Pahang,Kuantan
+DNR003720,LOC0003911,Pahang,Kuantan
+DNR003721,LOC0003912,Pahang,Kuantan
+DNR003722,LOC0003913,Pahang,Kuantan
+DNR003723,LOC0003914,Pahang,Kuantan
+DNR003724,LOC0003915,Pahang,Kuantan
+DNR003725,LOC0003916,Pahang,Kuantan
+DNR003726,LOC0003917,Pahang,Kuantan
+DNR003727,LOC0003918,Pahang,Kuantan
+DNR003728,LOC0003919,Pahang,Kuantan
+DNR003729,LOC0003920,Pahang,Kuantan
+DNR003730,LOC0003921,Pahang,Kuantan
+DNR003731,LOC0003922,Pahang,Kuantan
+DNR003732,LOC0003923,Pahang,Kuantan
+DNR003733,LOC0003924,Pahang,Kuantan
+DNR003734,LOC0003925,Pahang,Kuantan
+DNR003735,LOC0003926,Pahang,Kuantan
+DNR003736,LOC0003927,Pahang,Kuantan
+DNR003737,LOC0003928,Pahang,Kuantan
+DNR003738,LOC0003929,Pahang,Kuantan
+DNR003739,LOC0003930,Pahang,Kuantan
+DNR003740,LOC0003931,Pahang,Kuantan
+DNR003741,LOC0003932,Pahang,Kuantan
+DNR003742,LOC0003933,Pahang,Kuantan
+DNR003743,LOC0003934,Pahang,Kuantan
+DNR003744,LOC0003935,Pahang,Kuantan
+DNR003745,LOC0003936,Pahang,Kuantan
+DNR003746,LOC0003937,Pahang,Kuantan
+DNR003747,LOC0003938,Pahang,Kuantan
+DNR003748,LOC0003939,Pahang,Kuantan
+DNR003749,LOC0003940,Pahang,Kuantan
+DNR003750,LOC0003941,Pahang,Kuantan
+DNR003751,LOC0003942,Pahang,Kuantan
+DNR003752,LOC0003943,Pahang,Kuantan
+DNR003753,LOC0003944,Pahang,Kuantan
+DNR003754,LOC0003945,Pahang,Kuantan
+DNR003755,LOC0003946,Pahang,Kuantan
+DNR003756,LOC0003947,Pahang,Kuantan
+DNR003757,LOC0003948,Pahang,Kuantan
+DNR003758,LOC0003949,Pahang,Kuantan
+DNR003759,LOC0003950,Pahang,Kuantan
+DNR003760,LOC0003951,Pahang,Kuantan
+DNR003761,LOC0003952,Pahang,Kuantan
+DNR003762,LOC0003953,Pahang,Kuantan
+DNR003763,LOC0003954,Pahang,Kuantan
+DNR003764,LOC0003955,Pahang,Kuantan
+DNR003765,LOC0003956,Pahang,Kuantan
+DNR003766,LOC0003957,Pahang,Kuantan
+DNR003767,LOC0003958,Pahang,Kuantan
+DNR003768,LOC0003959,Pahang,Kuantan
+DNR003769,LOC0003960,Pahang,Kuantan
+DNR003770,LOC0003961,Pahang,Kuantan
+DNR003771,LOC0003962,Pahang,Kuantan
+DNR003772,LOC0003963,Pahang,Kuantan
+DNR003773,LOC0003964,Pahang,Kuantan
+DNR003774,LOC0003965,Pahang,Kuantan
+DNR003775,LOC0003966,Pahang,Kuantan
+DNR003776,LOC0003967,Pahang,Kuantan
+DNR003777,LOC0003968,Pahang,Kuantan
+DNR003778,LOC0003969,Pahang,Kuantan
+DNR003779,LOC0003970,Pahang,Kuantan
+DNR003780,LOC0003971,Pahang,Kuantan
+DNR003781,LOC0003972,Pahang,Kuantan
+DNR003782,LOC0003973,Pahang,Kuantan
+DNR003783,LOC0003974,Pahang,Kuantan
+DNR003784,LOC0003975,Pahang,Kuantan
+DNR003785,LOC0003976,Pahang,Kuantan
+DNR003786,LOC0003977,Pahang,Kuantan
+DNR003787,LOC0003978,Pahang,Kuantan
+DNR003788,LOC0003979,Pahang,Kuantan
+DNR003789,LOC0003980,Pahang,Kuantan
+DNR003790,LOC0003981,Pahang,Kuantan
+DNR003791,LOC0003982,Pahang,Kuantan
+DNR003792,LOC0003983,Pahang,Kuantan
+DNR003793,LOC0003984,Pahang,Kuantan
+DNR003794,LOC0003985,Pahang,Kuantan
+DNR003795,LOC0003986,Pahang,Kuantan
+DNR003796,LOC0003987,Pahang,Kuantan
+DNR003797,LOC0003988,Pahang,Kuantan
+DNR003798,LOC0003989,Pahang,Kuantan
+DNR003799,LOC0003990,Pahang,Kuantan
+DNR003800,LOC0003991,Pahang,Kuantan

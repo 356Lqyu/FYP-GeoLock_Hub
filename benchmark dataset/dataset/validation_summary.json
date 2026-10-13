@@ -1,0 +1,31 @@
+{
+  "ngo_count": 11,
+  "mapped_ngo_count": 11,
+  "scenario_type_counts": {
+    "HUB_RECOMMENDATION": 2000,
+    "HUB_RECOMMENDATION_VERIFICATION": 23,
+    "CLAIM_COORDINATION": 150,
+    "GEOFENCE_VERIFICATION": 100,
+    "LEASE_RECOVERY": 100,
+    "LEASE_ACTIVE_VERIFICATION": 25,
+    "HUB_AGGREGATION": 100,
+    "ROUTE_PLANNING": 100
+  },
+  "recommendation_feasible_groups": 2622,
+  "no_feasible_small_donations": 23,
+  "route_unavailable_candidate_pairs": 453,
+  "claim_input_states": {
+    "EXPIRED": 100,
+    "ACTIVE": 25
+  },
+  "batch_member_duplicates": 0,
+  "hub_capacity_violations": 0,
+  "referential_integrity_passed": true,
+  "unwanted_origin_fields_excluded": true,
+  "distinct_route_listing_memberships": 500,
+  "lease_recovery_with_replacement": 100,
+  "lease_active_with_replacement": 25,
+  "route_reused_listing_count": 0,
+  "route_scenarios": 100,
+  "hub_shortlist_size": 8
+}

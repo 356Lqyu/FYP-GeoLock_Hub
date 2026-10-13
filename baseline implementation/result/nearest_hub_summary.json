@@ -1,0 +1,39 @@
+{
+  "groups": 2023,
+  "recommended": 2000,
+  "no_feasible_hub": 23,
+  "ranking_metric_groups": 2000,
+  "top_k": 3,
+  "top1_agreement": 0.7015,
+  "topk_coverage": 0.9765,
+  "ndcg_at_3": 0.9689617682640895,
+  "ndcg_groups": 2000,
+  "degenerate_reference_groups": 0,
+  "verification_groups": 23,
+  "verification_no_recommendation_count": 23,
+  "method": "nearest",
+  "seed": null,
+  "benchmark_version": "GEOLOCK-BM-v3.1-NGO11-FIXED",
+  "matrix_id": "OSM-DIRECTED-v3.0-NGO-REGIONS",
+  "scope": "scenarios",
+  "dataset_dir": "C:\\Users\\User\\Downloads\\geolock hub\\benchmark dataset\\dataset",
+  "evaluation_status": "EXPLORATORY_ALL_INPUTS",
+  "selected_scenario_ids": null,
+  "input_sha256": {
+    "donations.csv": "a051682e97d3ab28b3c26e1d10ffbcc9b0b00157ddfa5ae838df67b9ed67162a",
+    "donors.csv": "4df6ca415149c1c8cc3ac34e43a0340686cc207db2e46480d7c6aa1543974363",
+    "hubs.csv": "98b924ff4744aa6f295a707354a7280d23df7c0f9d0ae9fb965fd9e934c35597",
+    "locations.csv": "e38d418dfec7c947d1e3f53f29bced40e3f5ace1eaabfb3a3b5b76ab43f5739b",
+    "donation_hub_candidates.csv": "7bf74253bdb3fc76f17ad197adcb9582eb76dc409de427ae3edb0740ca37acb7",
+    "road_distance_matrix.csv": "dccfabe74dab67a389a3688375befcfe1d0760a90eb55d6eaff7e81656f12acc",
+    "generation_manifest.json": "28ecccb207ce496df83eab960166a7b2163620135513687f53b26d63628f35ab",
+    "scenarios.csv": "ad3abc3bafbf4ca4af017d1511d560d0b622a380d11f19ca0beb76bd3259f30b",
+    "scenario_members.csv": "96698b36bf94b774a703bcdc56875c21ff2b0e3499bb743c0c11f8c6e0c27ea3"
+  },
+  "runner_sha256": {
+    "nearest_hub_baseline.py": "91c6447140bfa43509e63e1cf7509c811a4e532910a620a08b00ab8976de060f"
+  },
+  "python_version": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+  "independent_frozen_state": true,
+  "candidate_scope": "Supplied shortlist only; not a global search over every hub"
+}

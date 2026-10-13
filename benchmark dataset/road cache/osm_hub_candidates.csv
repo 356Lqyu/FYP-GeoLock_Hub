@@ -1,0 +1,796 @@
+osm_type,osm_id,amenity,name,latitude,longitude
+node,1681026497,townhall,Dewan Serbaguna Lengkok Kanan,3.7920482000000004,103.30049020000001
+node,1681098841,community_centre,Dewan Serbaguna,3.79895,103.30451000000001
+node,1720399650,townhall,Pejabat Tanah & Daerah Hulu Langat,2.9549373,101.7576102
+node,2299105274,townhall,Holland-Bukit Panjang Town Council (Bangkit Office),1.3790836000000002,103.772897
+node,2368212710,townhall,Majlis Peperiksaan Malaysia,3.2606729000000003,101.6537404
+node,2589199577,townhall,Pejabat Penghulu Mukim Gurun,5.802091600000001,100.47990290000001
+node,2707369854,community_centre,Dewan MBSA Kampong Subang,3.1515652000000003,101.53373970000001
+node,2990751442,community_centre,Aljunied Community Centre,1.3548845,103.889667
+node,2990751443,community_centre,Bishan North Community Centre,1.3586015,103.84553430000001
+node,2990751444,community_centre,Bukit Gombak Community Centre,1.3639965,103.7527407
+node,2990751450,community_centre,Hwi Yoh Community Centre,1.3737636000000002,103.8739271
+node,2990751457,community_centre,Rivervale Community Centre,1.3933659,103.90201320000001
+node,2990751460,community_centre,Sengkang Community Club,1.3928356000000002,103.8938986
+node,2990751463,community_centre,Woodgrove Community Centre,1.4318561,103.7853201
+node,3223118547,community_centre,Vocational Training Opportunity Centre,3.1429883000000003,101.70178220000001
+node,3789207261,community_centre,Pusat Internet 1 Malaysia,5.8574953,100.4552877
+node,4221906809,community_centre,Dewan Serbaguna Taman Bidara,3.2417749000000002,101.640032
+node,4225363789,community_centre,Perumahan Padang Permai,3.8596675,103.25618680000001
+node,4228108389,community_centre,Pusat Tahfiz Ad Dinniah,3.2649826,101.67910250000001
+node,4229223190,community_centre,Teratak Pak Jol,5.6553044,100.5085803
+node,4237540692,community_centre,pandan height condo,3.1088136000000004,101.73829970000001
+node,4312479910,community_centre,College Heights Golden Resorts ,2.8419093,101.85194890000001
+node,4428361989,community_centre,Asia Community Service Stepping Stone,5.3083119000000005,100.20306140000001
+node,4459118427,community_centre,Teen Challenge Singapore,1.37222,103.7016566
+node,4462742923,community_centre,Pusat Rukun Tetangga Taman Bertam Indah,5.5270378000000004,100.43590800000001
+node,4466583447,townhall,FRIM Auditorium,3.2345703,101.63153700000001
+node,4578666792,community_centre,Kompleks Sukan Dan Komuniti Serendah,3.3650684,101.603452
+node,4706286211,townhall,Dewan Dato' Nazir,3.1118674000000004,101.81471930000001
+node,4712134721,community_centre,Dewan Masyarakat Taman Sri Sentosa,3.0750466000000003,101.65409380000001
+node,4712281131,community_centre,Bukit Gombak Neighbourhood Centre,1.3586722,103.75132710000001
+node,4715896506,community_centre,Dewan Serbaguna Sungai Way,3.0866757000000002,101.62084800000001
+node,4730571662,community_centre,Dewan Angsana,3.0914002000000003,101.50692000000001
+node,4734085633,community_centre,Balai Masyarakat Taman Kinrara,3.0693152,101.6461841
+node,4756642406,community_centre,Dewan Serbaguna Seksyen 7,2.967165,101.7759906
+node,4761264423,community_centre,Community Library,3.1406343000000003,101.63093160000001
+node,4780345227,community_centre,Kelab Sultan Sulaiman,3.1616690000000003,101.70114240000001
+node,4823899621,community_centre,Iglesia ni cristo,3.1270876000000003,101.7305316
+node,4901562030,townhall,Dewan Masyarakat Angsana,3.0442813,101.6029881
+node,4986962824,community_centre,Community Hall,3.2040480000000002,101.7357161
+node,4993715936,community_centre,Nee Soon Central Community Centre,1.4278019000000002,103.83630840000001
+node,5269222021,community_centre,Pesuruhjaya Sumpah Seri Kembangan,3.0303661,101.69302250000001
+node,5337303706,community_centre,Pusat KOSPEN Kampung Seberang Jaya,5.9723421000000005,100.35228810000001
+node,5337303717,community_centre,Pusat Internet 1Malaysia,5.9724922000000005,100.35199510000001
+node,5408550521,community_centre,Pusat Komuniti Bukit Bandaraya,3.1384084000000003,101.65903030000001
+node,5526616424,community_centre,,3.0239196,101.66997160000001
+node,5789023282,community_centre,,3.0313281,101.6987297
+node,5845587089,townhall,Dewan MBSA Alam Budiman,3.1432157000000003,101.48024620000001
+node,6164944387,community_centre,Tenaga Nasional berhad Kemaman,4.2327315,103.42474990000001
+node,6243521706,community_centre,dewan raya taman cempaka,1.5170795000000001,103.70022770000001
+node,6333577840,community_centre,Dewan Persatuan Pendidikan Akhlak Lip Seang Kor,5.6490267,100.49561250000001
+node,6376933485,community_centre,Dewan Serbaguna Presint 9,2.9395989,101.6754272
+node,6424649510,community_centre,Balai Raya Sungai Tiram,1.5850471000000002,103.88039060000001
+node,6424649544,community_centre,Dewan Komuniti Bandar Bistari Perdana,1.5041838,103.9497934
+node,6565323909,community_centre,,1.507149,103.7562972
+node,6624627638,community_centre,Dewan Sivik Gong Limau,4.240982000000001,103.4142534
+node,6641565785,community_centre,International Libya Islamic Call Society,3.1790742,101.68355000000001
+node,6728957534,community_centre,Residents' Committee Centre,1.3615475000000001,103.9401756
+node,6813925385,community_centre,Bedok Reservoir Punggol Harmony RC,1.3753021,103.89687210000001
+node,6984465202,community_centre,Rccg Power Dose Usj 21,3.025112,101.5812198
+node,7252153778,townhall,Majlis Daerah Yan,5.7946925,100.37186720000001
+node,7309205453,community_centre,RUANG by Think City,3.1467854,101.6960552
+node,7377228286,community_centre,Dewan Serbaguna Al Mukhlisin,3.0629726,101.7417382
+node,7634756656,community_centre,Pusat Operasi KRT/SRS Taman Mutiara Tanjung / Teratai,5.2689049,100.4357142
+node,7709379885,community_centre,M.R.O - Refugees Community,3.1377674,101.712479
+node,8448403906,community_centre,Sengkang Family Service Centre @206B,1.3871461,103.89680240000001
+node,8481691713,community_centre,Compassvale Cape Residents' Network,1.3979504,103.89646660000001
+node,8481909309,community_centre,Sengkang West Zone K CC,1.3957604000000001,103.8882269
+node,8482037451,community_centre,Sengkang West Zone L CC,1.3984050000000001,103.88861100000001
+node,8482240481,community_centre,Morning Star Sengkang,1.3934908000000001,103.89440450000001
+node,8548247952,community_centre,Glory Centre Community Services Association,1.3778375,103.8913282
+node,8548247960,community_centre,Angsana RC @ Sengkang South,1.3775502000000002,103.88958380000001
+node,8548286642,community_centre,Acacia @ Sengkang South,1.3753123,103.8883876
+node,8548481853,community_centre,MWS Covenant Family Service Centre Hougang,1.3697046000000002,103.8845747
+node,8934945752,community_centre,Punggol BayVue Residents' Network,1.4121436,103.8979137
+node,9107306803,community_centre,Balai Rakyat Taman Sri Pinang,5.4078265000000005,100.3233627
+node,9131382557,community_centre,Balai Rakyat Batu Lanchang,5.3904362,100.3062996
+node,9271020817,community_centre,Kompleks Perdanasiswa,3.1204210000000003,101.65572780000001
+node,9457446345,townhall,Ang Mo Kio Town Council (Avenue 1 Office),1.3646513,103.84848520000001
+node,9488525626,community_centre,Pusat Rukun Tetangga & Tabika Perpaduan Kampung Melayu,5.399999,100.28597210000001
+node,9529272075,community_centre,"Pusat Khidmat, Komunit dan Aktiviti KRT/SRS Taman Taiping dan Jalan Temenggong",4.585517,101.0804475
+node,9872403220,community_centre,Sengkang Family Service Centre,1.3890717000000001,103.8973868
+node,9877771268,community_centre,Compassvale Mast Residents' Network,1.3901751,103.8945549
+node,9887277744,community_centre,Compassvale Haven Residents' Committee,1.3920627,103.90001290000001
+node,9924564350,community_centre,Compassvale Vista Residents' Committee,1.3874844000000002,103.8997386
+node,9931656615,community_centre,Bedok Reservoir - Punggol Vale RC,1.3724095,103.8886609
+node,9954715128,community_centre,Punggol Gems Residents' Network,1.4026675000000002,103.9014116
+node,10036274324,community_centre,Compassvale Ancilla Residents' Committee,1.3854729000000001,103.8929014
+node,10036337914,community_centre,Bedok Reservoir-Punggol Crest Residents' Committee,1.3733856,103.8912945
+node,10052838708,community_centre,Balai Raya Kampung Jaya Gading,3.7511118000000003,103.211014
+node,10053393744,community_centre,Punggol Parc Terraces Residents' Network,1.4111773,103.90075990000001
+node,10065636166,community_centre,Bethesda Care Senior Activity Centre,1.3982014,103.89589860000001
+node,10067873306,community_centre,Sengkang West Zone E Residents' Network,1.3934732,103.88636050000001
+node,10092066245,community_centre,Warung Makan Sahabat,3.1659231,101.695746
+node,10130781902,community_centre,One Punggol Community Club,1.4088759000000002,103.9052875
+node,10142723342,community_centre,Life Community,1.3898736,103.8882336
+node,10237496503,community_centre,Pusat Kommuniti Taman Desa,3.102767,101.6843678
+node,10250038069,community_centre,Giatmara Subang,3.2099264,101.57150960000001
+node,10672498093,community_centre,Pusat Pembelajaran Komuniti,3.1662212000000003,101.6975838
+node,10694270705,community_centre,Gardens Ville Multipurpose Hall,5.336461300000001,100.2710248
+node,10698603751,community_centre,,5.3321663,100.2744734
+node,10739639446,community_centre,ATM Global,3.1707031000000003,101.6955022
+node,10770530845,community_centre,Pusat Khidmat Rantau Terengganu,3.1633757,101.7056981
+node,10926214689,community_centre,Pusat Aktiviti Rukun Tetangga (KRT) Kg. Padang,3.1653712,101.7142247
+node,11012000799,community_centre,Ang Mo Kio-Hougang Rainforrest Centre,1.3705106,103.8822018
+node,11015790580,community_centre,Bedok Reservoir-Punggol Heights,1.3744457,103.8942561
+node,11019796418,community_centre,Compassvale Aspella,1.3828072,103.8946343
+node,11019796429,community_centre,Buangkok Community Centre,1.3822728000000002,103.8926052
+node,11147304006,townhall,Dewan Orang Ramai Sri Mentiga.,3.7877448,103.27726360000001
+node,11199286959,community_centre,Dewan Atria Damansara Jaya,3.1269922,101.61699770000001
+node,11292513381,community_centre,Sanggar Bimbingan Kampung Bharu,3.1640619,101.70086420000001
+node,11340950708,townhall,Dewan Serbaguna Seremban Putra,2.7500838,101.97053620000001
+node,11377807438,community_centre,Rukun Tetangga Kawasan Taman Lian Hoe,3.0934344,101.67658750000001
+node,11505370709,community_centre,Kingdomcity KL Hub,3.0213303000000002,101.5803863
+node,11536460839,community_centre,Dewan Orang Ramai Pedas,2.6273599,102.06104420000001
+node,11675740370,community_centre,China Cultural Centre,3.1562827,101.7052141
+node,11703282969,community_centre,Forest Valley Hall,3.0500951,101.79407780000001
+node,11759519745,community_centre,Russian Centre Of Science & Culture,3.1593417,101.7253555
+node,11777894143,community_centre,Pusat Komuniti KRT Kampong Atas A & B,3.165591,101.70867720000001
+node,11853336618,community_centre,Community Hall 1,5.3365171,100.26559
+node,11941292129,community_centre,Bethel Centre,3.0480633000000004,101.62246080000001
+node,12018185013,community_centre,Balai Rakyat Taman Tun Sardon,5.3693912,100.30563910000001
+node,12029507354,community_centre,PARC Hub,3.0819680000000003,101.60069730000001
+node,12066565866,community_centre,Pertubuhan Warga Emas Kampung Baru Kundang,3.2795787,101.51452970000001
+node,12066633240,community_centre,Bekas Kelab Sukan Pekerja Lombong (Dewan MCA),3.3170692,101.4709102
+node,12192488882,community_centre,Majlis Pengurusan Komuniti Kampung (MPKK) Taman West Jelutong,5.399219400000001,100.3207249
+node,12377577835,townhall,D'Buana Hall,3.0787015,101.6371259
+node,12484115114,community_centre,Pusat Rukun Tetangga Chan Sow Lin,3.1224996000000003,101.7131202
+node,12520542371,community_centre,Cassia Hall Bangi,2.9345142,101.7482253
+node,12548896927,townhall,Majlis Perbandaran Sungai Petani (MPSPK),5.6439518,100.4866648
+node,12555786441,community_centre,Dewan Kampung Orang Asli Hulu Kuang,3.2632961000000003,101.58191140000001
+node,12556183008,community_centre,"Yunus Emre Enstitüsü, Kuala Lumpur Turkish Cultural Centre",3.1494187,101.7352965
+node,12565520928,community_centre,YWCA Penang,5.4062301,100.30288230000001
+node,12600982955,community_centre,Pusat Kegiatan Komuniti Jawatankuasa Kemajuan dan Keselamatan Kampung Delima Mukim Batu WPKL,3.2072778000000004,101.670957
+node,12836259129,community_centre,TI Belen,5.4048164000000005,100.3004147
+node,12913965426,community_centre,,5.3680905,100.4639398
+node,12918947592,community_centre,Shah alam rumah kebajikan wargamas  charis,3.033624,101.5256775
+node,12951200950,community_centre,Gisb Holdings,3.3316235,101.5346162
+node,13014889960,community_centre,Persatuan Hexiang Zhuang Qigong Kedah Tengah,5.7264001,100.50827500000001
+node,13027802669,community_centre,Balai Masyarakat MBSJ MPP Zon3 USJ17,3.0333522000000004,101.57943940000001
+node,13038496596,community_centre,Kereta Sewa Smart Rawang,3.3348107000000002,101.51897980000001
+node,13245218991,community_centre,Sandalwood Ballroom,3.0513563,101.8510517
+node,13245218993,community_centre,Glass House,3.0517444,101.8510669
+node,13245218994,community_centre,Functional Rooms,3.0518852,101.850941
+node,13245218995,community_centre,Botanical Ballroom,3.0519496000000004,101.85064340000001
+node,13375383695,community_centre,Adab Youth Garage,2.9443434,101.7697502
+node,13378194303,community_centre,The Pocket,3.1269194000000002,101.7107338
+node,13390518220,community_centre,王政道礼堂,2.7283453,101.9408387
+node,13392076499,community_centre,Ng Ah Choo Multipurpose Hall,2.9864626000000003,101.792934
+node,13394365100,community_centre,Jaz & Ro Auditorium,3.0581487000000003,101.59239210000001
+node,13403671586,community_centre,马来西亚华社研究中心思源讲堂,3.1389999000000004,101.6980863
+node,13403671587,community_centre,吉隆坡暨雪兰莪中华大会堂丹斯里颜清文礼堂,3.1393091,101.6979762
+node,13428966973,community_centre,剧艺文化实验剧场,3.2307238000000003,101.69054700000001
+node,13428966982,community_centre,竺摩礼堂,3.1392266,101.76535510000001
+node,13428966986,community_centre,拿督林水明大礼堂,3.1990312000000003,101.70504460000001
+node,13429686434,community_centre,卧佛殿,2.9958394000000004,101.52646890000001
+node,13429686467,community_centre,曾双财、陈春兰夫妇冷气大礼堂,2.9958512,101.7912062
+node,13476685634,community_centre,芙蓉统一宴会厅,2.7197059,101.91954480000001
+node,13502977037,community_centre,陈万吉活动中心,3.1387151,101.7134132
+node,13504547285,community_centre,Pusat Komuniti Taman Koperasi Polis 2,3.2215697000000003,101.69234320000001
+node,13505843459,community_centre,Pusat Rukun Tetangga Daerah Brickfields,3.1340922,101.6904001
+node,13577408814,community_centre,陈锦龙礼堂,3.1287637000000004,101.73369330000001
+node,13577408816,community_centre,洪细弟礼堂,3.1287830000000003,101.73365430000001
+node,13597925447,community_centre,Gerakan Belia 4B Malaysia,3.1380037,101.6842081
+node,13598464146,townhall,Dewan Serbaguna BSP,2.9413408000000003,101.59290370000001
+node,13666356554,community_centre,Persatuan Penduduk Taman Air Panas,3.1899781000000003,101.7098411
+node,13709913699,community_centre,Tan Sri Lee Kong Chain Hall,3.130787,101.6903896
+node,13758435527,community_centre,Pusat Maklumat Dan Pembelajaran Sepanjang Hayat,3.1452575,101.7099625
+node,13895074832,community_centre,丹斯里古润金局绅大讲堂,3.0045215,101.7262151
+node,13938559706,community_centre,Tan Yew Sing Auditorium,3.0744342000000002,101.59095930000001
+node,13938559710,community_centre,Tan Yew Sing Multipurpose Hall,2.8122196,101.75819050000001
+node,14003525911,community_centre,Rumah Api,3.1303919000000002,101.75360160000001
+way,23046194,community_centre,Dewan MBSA,3.04738608,101.50303822000001
+way,26818379,townhall,Majlis Bandaraya Shah Alam,3.073348975,101.5194861625
+way,27754964,townhall,Menara MBPJ,3.099213911111111,101.6450053888889
+way,38926925,community_centre,Dewan JKKK Paya Terubong,5.380227855555557,100.27643644444444
+way,48953897,community_centre,Canberra Community Club,1.445035451111111,103.81966619555557
+way,105599122,community_centre,Hougang Community Club,1.3647099,103.89247196363637
+way,117055162,community_centre,,1.355008585,103.85006978999999
+way,117227120,community_centre,Ang Mo Kio Community Centre,1.3667277222222223,103.84084793888888
+way,122497655,community_centre,Dewan Serbaguna Alam Damai,3.0579776461538466,101.74545941538463
+way,122504468,community_centre,Pusat Komuniti Bukit Cheras,3.0712544142857143,101.7476483857143
+way,125490424,community_centre,Woodlands Community Club,1.4397843750000001,103.788209225
+way,133751216,townhall,Majlis Perbandaran Sepang,2.9339210882352944,101.64556750588235
+way,139100500,community_centre,Dewan Sivik,3.096761381818182,101.64533631818182
+way,140007962,community_centre,Dewan Serbaguna Seksyen 5,3.086774772727273,101.66261127272728
+way,144066955,community_centre,Pusat Komuniti Lembah Pantai,3.103696815,101.66157923
+way,153581954,community_centre,Cheng San Community Club,1.3720719333333333,103.84938984444446
+way,153581955,community_centre,AMK 3G Centre,1.371760005882353,103.84905225882353
+way,154249621,community_centre,Marsiling Community Club,1.4406993866666666,103.77361409333335
+way,157191379,community_centre,Dewan Komuniti Jalan SS7/28,3.1046291200000002,101.5940476
+way,158228643,community_centre,Yio Chu Kang Community Club,1.3814170000000001,103.84134408
+way,159322531,community_centre,Dewan MBIP Taman Univrsiti,1.54085866,103.63310848
+way,163785428,community_centre,Hong Kah North Community Club,1.3591705333333335,103.74948508888889
+way,168665091,community_centre,Dewan Serbaguna MBSJ Seri Kembangan,3.02221946,101.70538234
+way,168831037,community_centre,Dewan Serbaguna Taman Ehsan,3.2197212200000003,101.62056486000002
+way,169225666,community_centre,Kebun Baru Community Club,1.3730405300000001,103.83752645
+way,169984632,community_centre,Punggol Community Club,1.3742433407407408,103.89200581111112
+way,170732420,community_centre,Pasir Ris Elias Community Club,1.3784584750000002,103.942550225
+way,173370320,townhall,Dewan Serbaguna Kampung Kopok Baru,1.5137304333333335,103.92481531111112
+way,173574712,community_centre,Punggol 21 Community Club,1.39354245,103.91359176666667
+way,173724934,community_centre,Nee Soon East Community Club,1.4306105235294118,103.83856991176471
+way,175179311,community_centre,Tampines Central Community Club,1.3554773363636363,103.93447179090909
+way,176174505,community_centre,Zhenghua Community Club,1.386670988235294,103.77177397941176
+way,177444777,community_centre,Dewan Orang Ramai ,3.2556449,101.5258359
+way,182024585,community_centre,Senja-Cashew Community Centre,1.381606225,103.76471043500001
+way,184015391,community_centre,Dewan Serbaguna Bandar Sri Damansara,3.19410248,101.61747786000001
+way,187888833,townhall,Majlis Bandaraya Johor Bahru,1.4560559863636364,103.76088857272727
+way,189021410,community_centre,Woodlands Galaxy Community Club,1.4390752,103.80248858750001
+way,189380112,community_centre,Fuchun Community Club,1.4294616162162164,103.77494687837839
+way,193486032,community_centre,Dewan Kenanga,3.0051925600000002,101.55999106000002
+way,194099530,community_centre,City Hall,2.991430077777778,101.55990615555555
+way,211466376,community_centre,Balai Masyarakat Puchong Jaya,3.053223784615385,101.62430255384616
+way,212646804,community_centre,Dewan Serbaguna MBSJ,3.05783676,101.62442150000001
+way,213638990,community_centre,Pasir Ris East Community Club,1.3684923800000002,103.95944512000001
+way,222505960,townhall,Majlis Bandaraya Subang Jaya,3.051488734883721,101.58237134418604
+way,232556004,townhall,Menara Aqabah (Majlis Bandaraya Pasir Gudang),1.4670321800000001,103.9022132
+way,233022891,community_centre,Chua Chu Kang Community Club,1.381318353846154,103.75192061794873
+way,233027327,community_centre,Bukit Panjang Community Club,1.3763481263157895,103.77077693157895
+way,233340408,community_centre,,3.056954166666667,101.6365810888889
+way,233341077,community_centre,Dewan Masyarakat Taman Bukit Kuchai,3.0563914,101.6394003
+way,233472271,townhall,Multipurpose Hall,3.052253133333333,101.64391384000001
+way,233756426,community_centre,Yew Tee Community Club,1.3948093545454545,103.74481608181819
+way,239060324,community_centre,Dewan Orangramai Baginda Jaya,2.9646858000000003,101.73352206000001
+way,256675836,community_centre,SS 3 Community Hall,3.094663471428572,101.60935657142856
+way,262847278,community_centre,Pusat Komuniti Taman Tun Dr Ismail,3.1482189600000003,101.62222163999999
+way,264448072,community_centre,Tampines North Community Club,1.3572010647058823,103.94662240000001
+way,270791017,community_centre,Dewan MPKK Kampung Herriot,5.427112242857143,100.31753515714286
+way,274224760,community_centre,,5.30204404,100.26955226
+way,275431077,community_centre,Dewan Sungai Gelugor,5.366121177777778,100.31106675555556
+way,277749104,community_centre,Life Hope Center,5.4013874,100.30358425714287
+way,278141617,community_centre,Persatuan Penduduk Taman Free School,5.403047085714285,100.3103836857143
+way,278178923,community_centre,Dewan Serbaguna Chai Leng Park,5.38609432,100.39288316000001
+way,279488034,community_centre,Dewan Apartment Permata O-T,5.37090914,100.42950678000001
+way,281244670,community_centre,Dewan Orang Ramai Taman Pelangi,5.3444579,100.42510750000001
+way,282436987,community_centre,Dewan Komuniti Jalan Assumption,5.395628,100.37367078000001
+way,282453489,townhall,Dewan Dato Haji Ahmad Badawi,5.408519440000001,100.36936988
+way,283723593,community_centre,Paya Lebar Kovan Community Club,1.3577550684210526,103.88630917894737
+way,287211189,townhall,Pejabat Majlis Bandaraya Iskandar Puteri,1.537441375,103.6623223625
+way,289018328,townhall,Majlis Bandaraya Ipoh,4.59886335,101.089987175
+way,295364237,community_centre,Dewan Komuniti 1Malaysia Chemor,4.72185915,101.12088732500001
+way,295367531,community_centre,Anchorvale Community Club,1.3970307166666667,103.88667135000001
+way,295367650,community_centre,The Serangoon CC,1.370078995652174,103.87412432173915
+way,312022331,community_centre,Dewan Bunga Kertas,3.1044234600000005,101.55665748000001
+way,323488616,community_centre,Persatuan Penduduk-Penduduk Taman Desa,3.101393742857143,101.68321814285716
+way,354324979,community_centre,Dewan Orang Ramai Taman Mutiara,5.362698311111111,100.44500382222222
+way,360641362,community_centre,Dewan Serbaguna Taman Nirwana,3.1433173400000003,101.75360326
+way,368252385,community_centre,Dewan Sri Tebrau,1.4877805333333334,103.77085656666668
+way,370667922,community_centre,Balai Raya Kg. Setanggi,1.5030112800000002,103.76729804000001
+way,371917226,community_centre,Dewan Masjid Sultan Abdul Halim,5.65126396,100.52096338000001
+way,383391563,community_centre,Balai Raya Kg.Ubi Baru,1.5196091090909092,103.75901332727273
+way,385199799,community_centre,Dewan Orang Ramai Taman Bayu Mutiara,5.3460250333333335,100.43559690000001
+way,385210035,community_centre,Dewan Taman Sentul Jaya,5.32119078,100.44094308000001
+way,385213565,community_centre,Dewan Orang Ramai Taman BM Utama,5.33027596,100.46027956
+way,385227657,community_centre,,5.3265629400000005,100.48116302000001
+way,385951645,community_centre,Dewan Sri Bagan Jermal (MPKK Kampung Simpah dan Dewan Badminton),5.43185154,100.38317298000001
+way,385951646,community_centre,Pusat Belia Bagan Jermal,5.431809320000001,100.38346576
+way,386119679,community_centre,Dewan Serbaguna SS1,3.09848572,101.61711284
+way,390023257,community_centre,Keat Hong Community Club,1.3841907500000001,103.74505672857143
+way,392997573,community_centre,Dewan Beramai MBSA Seksyen 17-A,3.0417330750000002,101.500847225
+way,394392111,community_centre,Dewan Orang Ramai Kota Kemuning,2.985051053846154,101.5321813846154
+way,395035217,townhall,Dewan Tun Dr. Ismail,1.4770737555555558,103.7424276
+way,399967811,community_centre,Dewan Raya Kg. Baru Rangkaian Ungku Mohsin,1.5129994000000002,103.74034906666667
+way,401422667,community_centre,,3.1963863600000004,101.56829076
+way,403561853,community_centre,Dewan Persatuan Penganut Fong Sun Si,3.7759034714285713,103.23783672857144
+way,405044909,townhall,Dewan Serbaguna Taman RInting,1.4875710444444445,103.86757012222223
+way,419895971,community_centre,,5.34468332,100.47272894
+way,419895991,community_centre,,5.3437064,100.47882100000001
+way,420532136,community_centre,,5.35440454,100.47944162
+way,421433345,community_centre,,5.353616960000001,100.45712512000001
+way,427557567,townhall,Dewan Sivik,4.426433640000001,103.45116438
+way,432515093,community_centre,Hillview Community Club,1.361990717647059,103.76428645882353
+way,436578504,community_centre,,1.4966700800000001,103.8113806
+way,449730770,townhall,Dewan Alwi,3.2360414681818184,101.62955841363637
+way,452169558,community_centre,Dewan Alamanda Seksyen 20,3.05316796,101.53793792000002
+way,452169805,community_centre,Dewan Besar Tanjung Seksyen 19,3.0494251,101.53236481111111
+way,453478299,community_centre,ACE The Place CC,1.427474142857143,103.79229408095237
+way,454422541,community_centre,Dewan Bukit Jelutong,3.1060018,101.5236102263158
+way,460320453,community_centre,,3.087694105882353,101.51832382352941
+way,461656024,community_centre,,3.006287366666667,101.69305451111111
+way,461933234,community_centre,Dewan Gerakan Masyarakat Guar Perahu,5.4309838444444445,100.47046371111111
+way,466118940,community_centre,,3.0041933800000002,101.68982404
+way,466653496,community_centre,Centre for Malay World & Islamic Civilisation,3.1453898214285716,101.67112574285716
+way,472582533,community_centre,Dewan MPS Taman Gombak,3.2286201000000005,101.7014189
+way,475459813,community_centre,,3.1668561818181824,101.73455801818181
+way,477897343,community_centre,,1.37771978,103.94380614000002
+way,477897357,community_centre,,1.3787408,103.94114746
+way,477897358,community_centre,,1.37801196,103.94108582000001
+way,478258895,community_centre,Dewan Kalamandapam,3.1335380400000004,101.69331666000001
+way,480979931,community_centre,Balai Raya Tamera,3.11459616,101.60731622
+way,481140164,community_centre,Dewan Sri Iskandar,3.17950574,101.74159286000001
+way,481152970,community_centre,Dewan Serbaguna Taman Setiawangsa,3.181716055555556,101.74480864444445
+way,481183444,community_centre,Dewan Serbaguna MBPJ SS5A/15,3.09588118,101.60404356000001
+way,483325726,community_centre,Dewan Serbaguna Kuarters KLIA,2.7696819800000005,101.76097572
+way,490668930,community_centre,,3.00498947826087,101.5197078826087
+way,490668935,community_centre,,3.0045944714285717,101.51982260000001
+way,492964161,community_centre,Midlands Convention Centre,3.068326976923077,101.48735233076924
+way,494441406,community_centre,Dewan Serbaguna Taman Desa Bakti,3.241413577777778,101.65860324444445
+way,495045226,community_centre,Balai Raya Kampung Kuala Lukut,2.569202666666667,101.80027401666668
+way,495546956,community_centre,Dewan Springhill,2.6131388545454546,101.8718310818182
+way,495731340,community_centre,Dewan Taman Kelab Tuanku,2.6503567400000003,101.90432080000001
+way,495772480,community_centre,Dewan Kampung Seri Mambau,2.668578066666667,101.91694863333333
+way,495772567,community_centre,Dewan Orang Ramai Taman Angsamas,2.6502756125,101.92390300000001
+way,496320044,community_centre,Dewan Orang Ramai Kampung Felda Sendayan,2.674402185714286,101.84413782857143
+way,497048307,community_centre,Dewan Masyarakat Taman Sri Manja,3.0744810500000006,101.64215135
+way,499411611,community_centre,Dewan Serbaguna Presint 8,2.939099592857143,101.68180773571429
+way,502734401,community_centre,Dewna Serbaguna Bandar Utama,3.149203810526316,101.60944803684211
+way,505024881,community_centre,Dewan Kampung Pasir,5.853060333333334,100.45842961666666
+way,505080631,community_centre,Dewan Orang Ramai Kampung Titi Batu,5.863231020000001,100.43487928
+way,505212759,community_centre,Kampung Admiralty,1.4397738458333336,103.80071203749999
+way,505313164,community_centre,,5.336468040000001,100.48030956
+way,505313214,community_centre,,5.340307940000001,100.48138992
+way,509676487,community_centre,Sunway Semenyih Resort Club,2.9710743,101.84338738888889
+way,515589532,community_centre,Dewan Raja Muda Musa,3.0798125,101.49309632
+way,516269730,townhall,Dewan Serbaguna Taman Impianku,3.865834916666667,103.25083501666667
+way,516547759,community_centre,Tapak Ekspo Seberang Jaya,5.401176755,100.404947895
+way,516893744,community_centre,Dewan Serbaguna Pejabat Tanah dan Daerah Seberang Perai Tengah,5.354358266666668,100.45268771666667
+way,523755126,community_centre,Dewan Ng Yam Huat 黄炎发礼堂,5.356993130769231,100.44738922307693
+way,529559640,community_centre,Dewan Majlis Bandaraya Seremban,2.7231329879999997,101.94016556000001
+way,537748998,community_centre,Dewan Serbaguna Seksyen 7,3.0689459888888893,101.48554768888889
+way,542987772,townhall,Kompleks Pentadbiran Daerah Perak Tengah,4.363800688888889,100.95616033333334
+way,542987959,community_centre,Dewan Serbaguna Seri Iskandar,4.3654894,100.95570059473685
+way,543358731,community_centre,Dewan Orang Ramai Tronoh,4.424259520000001,100.98701606
+way,543779832,community_centre,The Lighthouse,1.402077377777778,103.89957085555557
+way,543806657,community_centre,,3.15069994,101.77171312
+way,543921377,community_centre,Dewan Beringin,3.240056,101.69895260000001
+way,543937287,community_centre,Dewan MPSP Desa Damai,5.36305294,100.44098272000001
+way,544117998,townhall,,3.2203978857142856,101.70007201428572
+way,544118001,community_centre,,3.2204494625,101.6998862625
+way,544118019,community_centre,Dewan Changkat Desa,3.22285916,101.69766692
+way,544118020,community_centre,Pusat Komuniti Gombak,3.2270981285714284,101.70316592857144
+way,544118021,community_centre,,3.2308065800000003,101.70268926000001
+way,544483577,townhall,Majlis Bandaraya Seremban,2.705455822222222,101.95989505555556
+way,544491647,community_centre,Dewan Taman Melati,3.2215811375000003,101.7237994875
+way,545296697,community_centre,Anjung Rahmat,3.2287226538461544,101.71250450000001
+way,545699159,community_centre,Dewan Dato' Ahmad Razali,3.14973976,101.76328286
+way,545949747,community_centre,,2.9495985,101.84675192
+way,546157330,community_centre,Bidara Community,2.70925274,101.95825746
+way,546157356,community_centre,Dewan Dato' Haji Maideen,2.7227321800000004,101.97535968000001
+way,546702609,community_centre,Dewan Serbaguna Taman Melati Impian,3.2189822111111113,101.71867492222222
+way,546702612,community_centre,Dewan Masyarakat,3.2197216888888893,101.71961733333335
+way,548612584,community_centre,Dewan Datin Zaleha,3.2298414200000005,101.71267696
+way,548927949,community_centre,Dewan Orang Ramai Taman Bukit Mewah,2.9802853888888894,101.8035883
+way,549907663,community_centre,Dewan Masyarakat Kampung Baru Salak Selatan,3.0847638777777777,101.71355587777778
+way,550601984,community_centre,Pusat Komuniti Bukit Damansara,3.1502973541666672,101.65751665
+way,551373295,community_centre,Dewan Indera Mahkota 2,3.8184867200000006,103.29193804000002
+way,552377757,community_centre,Dewan Serbaguna Taman Maluri,3.1435521555555557,101.73201551111111
+way,553076389,community_centre,Balai Raya Taman Marida,2.6968412600000002,101.97980728000002
+way,554816497,community_centre,Dewan Serbaguna Indera Mahkota,3.8313971000000007,103.30579854444446
+way,556277533,townhall,Majlis Bandaraya Kuantan,3.7975262142857145,103.32204076666667
+way,557083161,community_centre,Dewan Serbaguna Seksyen 2,3.20978408,101.73619084
+way,559242780,community_centre,Dewan Serbaguna Taman Segar,3.0954528600000004,101.74673084000001
+way,562620729,community_centre,Dewan Taman Cendana,1.4883779400000001,103.9139592
+way,568194908,community_centre,Dewan,2.81707094,101.7865888
+way,568538133,community_centre,Dewan Besar Sungai Dua,5.450428220000001,100.43484552000001
+way,568686028,community_centre,Dewan Seri Siantan,3.2461790200000005,101.67352268
+way,575773448,community_centre,,3.1872079,101.63092076000001
+way,577206007,community_centre,,2.724931885714286,101.99684414285716
+way,579720816,community_centre,,3.1937387240000006,101.626554832
+way,579880368,community_centre,,3.776437422222222,103.23470648888889
+way,579880369,community_centre,,3.776716266666667,103.2354634888889
+way,580589299,community_centre,Dewan Serbaguna PJS 2C/6,3.0796208800000002,101.63562464000002
+way,580764833,community_centre,Pusat Perkhidmatan Jawatankuasa Kemajuan & Keselamatan Kampung Baru Ampang,3.1383418882352943,101.7666309
+way,581758535,community_centre,Dewan Jenjarum MBSA,3.07670754,101.52939486
+way,581826879,community_centre,Dewan Akasia,3.0800456200000004,101.47756704000001
+way,588911467,community_centre,,3.0920532400000003,101.7123586
+way,590227784,community_centre,Dewan Serbaguna Kampung Cheras Baru,3.10815494,101.74379406
+way,591502989,community_centre,Dewan Serbaguna Inderapura,3.75159542,103.26604512000002
+way,605040905,community_centre,Balai Penghulu Mukim Labu,2.755214866666667,101.82410894444445
+way,605054153,community_centre,Balai Raya,2.757612223076923,101.82095667692307
+way,605254835,community_centre,,3.01087505,101.66416797500001
+way,605254836,community_centre,,3.01125204,101.66424780000001
+way,606238597,community_centre,Dewan Perdana Felda,3.169986502702703,101.72061445675676
+way,607759764,townhall,Pejabat Daerah dan Tanah Seberang Perai Utara,5.514394983333333,100.43624795000001
+way,609578878,community_centre,Dewan MBSA Kg. Sg. Kandis,3.0311010923076926,101.48820714615385
+way,613636393,community_centre,Freemason Hall,3.062598810344828,101.66947788965518
+way,614368158,community_centre,,3.1435520666666665,101.5373070888889
+way,615783829,community_centre,Taman Seremban Jaya Community Hall,2.6826371333333334,101.96891036666668
+way,627681993,community_centre,Dewan Persatuan Penduduk Halaman Mayang,5.315767383333333,100.28510571666668
+way,629601857,townhall,Majlis Bandaraya Seberang Perai - Cawangan Seberang Perai Tengah,5.355780738888889,100.45107449444444
+way,639973572,townhall,Dewan Taman Nusa Damai,1.5062961600000002,103.90210134000002
+way,649596015,community_centre,,5.317892214285714,100.48059534285714
+way,652391973,community_centre,Kawasan Taman Baru JKKK Jalan Hussein Onn,5.39624698,100.40736864
+way,654179561,community_centre,Dewan MBSA Seksyen 13,3.0839369800000003,101.53994728
+way,660087676,community_centre,Dewan Pinang Seksyen 8,3.045106077777778,101.52042323333335
+way,660087957,community_centre,Dewan Teratai MBSA Seksyen 19,3.04901466,101.5322654
+way,662567727,community_centre,Balai Raya Taman Sri Mawar,2.69478244,101.97144652
+way,662568284,community_centre,Balai Raya Flat Senawang 1,2.690849,101.98509098333334
+way,662580902,community_centre,Balai Raya Kg. Baru Rasah,2.70050794,101.93272088
+way,666044552,community_centre,Dewan MPKK Alma/Bukit Minyak,5.330088514285714,100.47893501428572
+way,667619788,community_centre,,1.5090533375000001,103.63258907500001
+way,667619789,community_centre,,1.5085707300000002,103.63262857
+way,670662059,community_centre,Dewan MBQSJ,3.0747112333333337,101.5882556777778
+way,672317496,community_centre,,1.4684415555555557,103.66026455555556
+way,673315141,community_centre,Dewan Serbaguna Perkampungan Juru,5.315162900000001,100.44338386666668
+way,673315178,community_centre,Dewan MPKK Taman Mangga Juru,5.3124913000000005,100.4403886
+way,676990964,community_centre,Dewan Taman Pasir Putih,1.4703982000000002,103.9410001
+way,678351000,community_centre,Dewan Persatuan Penduduk Taman Mega Perai,5.379768960000001,100.39864784000001
+way,681580929,community_centre,Setia Eco Park Multipurpose Hall,3.104849666666667,101.47741813333334
+way,681603080,community_centre,Dewan Komuniti Tunku Puteri Intan Safinaz,5.58123778,100.34800652
+way,682116186,community_centre,,5.3561269199999995,100.44312026000001
+way,682116205,community_centre,,5.3533987000000005,100.44285384000001
+way,682283316,community_centre,,5.5907327,100.44833942000001
+way,682433842,community_centre,Dewan Vila Lagenda,5.35459302,100.44200470000001
+way,682433878,community_centre,,5.37221462,100.42201464000001
+way,683186049,community_centre,,5.609848400000001,100.45996132
+way,683306272,community_centre,,3.19090154,101.71702964
+way,683308828,community_centre,Dewan Serbaguna Ayer Panas,3.1895945800000005,101.71728186
+way,683530657,community_centre,,5.6364778200000005,100.49600170000001
+way,683865661,community_centre,,5.68310836,100.49216150000001
+way,683955045,community_centre,,5.686204160000001,100.36766448
+way,689272308,community_centre,Dewan Orang Ramai Rapat Setia,4.57079996,101.12637764000002
+way,690697561,community_centre,Fook Tat Chee Hall,4.56961658,101.12041836
+way,690979694,community_centre,Kawasan Rukun Tetangga Taman Jaya & Taman Kuari,5.3543278,100.47170338000001
+way,694965658,community_centre,Dewan Serbaguna Taman Perumahan Rakyat (PPR) Tok Suboh,5.325930333333334,100.45972126666668
+way,699022632,community_centre,Dewan Bankuasi Carsem,4.573964480000001,101.10379748
+way,699534735,community_centre,Dewan Eria,2.9873956444444447,101.53602577777778
+way,699816420,community_centre,,3.1957653571428573,101.71075537142858
+way,705549142,community_centre,Kompleks Rakan Muda,4.2019028800000005,103.42383934
+way,705578457,community_centre,Dewan Sri Amar,4.22985276,103.42601262000001
+way,707180754,community_centre,Persatuan Penduduk Rumah Pangsa P.D.C.,5.40645516,100.33315474000001
+way,708502257,community_centre,Dewan Serbaguna Komuniti Orang Asli KM24 Gombak,3.295156422222222,101.73206165555557
+way,713089766,community_centre,Dewan Orang Ramai Gunung Rapat,4.573980342857142,101.11885642857143
+way,718381189,townhall,Dewan Masyarakat,2.7828740400000003,101.99311716000001
+way,723292140,community_centre,,2.70277862,101.98059352
+way,724658237,community_centre,,3.13005974,101.72969006000001
+way,725051635,community_centre,Dewan Orang Ramai Ampang Baru,4.587042990909091,101.13161366363637
+way,725367433,community_centre,Marymount Community Club,1.3614553055555556,103.84141962777778
+way,733476539,community_centre,Taman Johor Jaya Hall,1.5389189142857145,103.80270091428572
+way,736724930,community_centre,Dewan The Grand,2.57860192,101.84114886
+way,745471554,community_centre,Dewan Dato' Madi,5.794900707692308,100.37080191538462
+way,747323677,community_centre,Kawasan Rukun Tetangga Rapat Setia Baru,4.57548518,101.13311708
+way,749766127,community_centre,Dewan Serbaguna Taman Mawar,1.4726167588235295,103.89569945294119
+way,749780209,community_centre,,1.47480638,103.89737128000002
+way,750992379,community_centre,Tengah Community Centre,1.3568544954545454,103.73471575454546
+way,751009907,community_centre,Dewan Orang Ramai Kg Seri Ampang,4.58150428,101.12859372
+way,753320931,community_centre,Dewan Dato Ahmad Said,4.57998148,101.11645928
+way,753495748,community_centre,Dewan Orang Ramai Kampung Bercham,4.641074166666667,101.12895384444444
+way,753495749,community_centre,巴占睦邻计划委员会,4.641071760000001,101.12911644
+way,754774333,community_centre,Dewan Orang Ramai Kg Baru Salak South,3.0896940400000004,101.70312534000001
+way,755430191,community_centre,Dewan Serbaguna Puchong Utama,2.9854669333333335,101.60833284444445
+way,755885415,community_centre,,4.5260404,101.07232097777779
+way,756327372,community_centre,Dewan Komuniti Taman Cempaka,4.59395424,101.12943792000002
+way,760149574,community_centre,Dewan Orang Ramai Kg. Simee,4.6163047375,101.1079012
+way,761435772,community_centre,Dewan Tawas,4.64811696,101.09996692000001
+way,762435635,community_centre,Pusat Komuniti Parlimen Tambun Taman Desa Tambun,4.603417228571429,101.1450253857143
+way,762775532,townhall,Dewan Komuniti Kampung Batu 11 Cheras,3.0436262400000005,101.773611
+way,765127965,community_centre,Dewan Orang Ramai Jelapang,4.638014144444444,101.06427034444444
+way,768410969,townhall,Dewan Orang Ramai Taman Putra Prima,2.9766849800000004,101.592888
+way,769264311,community_centre,Pusat Komuniti Beringin,3.218910175,101.6645815
+way,776196720,community_centre,Dewan Komuniti Pekan Ampang,3.1445028200000005,101.76311714
+way,779103275,townhall,Dewan Raya Taman Desa Skudai,1.5386161555555558,103.63450781111112
+way,783065825,community_centre,Dewan Serbaguna Puchong Batu 14,2.99728434,101.62010368000001
+way,787839622,community_centre,,3.24180468,101.63998904
+way,792771577,community_centre,积善多元化礼堂,3.206706990909091,101.6641337090909
+way,793835990,community_centre,Dewan Orang Ramai Taman Batu Permai,3.2065408666666673,101.67697261666667
+way,793847560,community_centre,Dewan Taman Mastiara,3.215167445454546,101.6742733090909
+way,797165708,community_centre,Dewan Orang Ramai Taman Pasir Indah,5.429337711111112,100.42994501111112
+way,798341346,community_centre,,3.3009117000000003,101.52134892000001
+way,804547445,community_centre,Dewan Serbaguna Seksyen 1 Wangsa Maju,3.20267092,101.72973102
+way,804713587,community_centre,Dewan Serbaguna Keramat Jaya 2,3.167866945454546,101.72281080909092
+way,804844338,community_centre,Dewan Serbaguna Perumahan Awam Desa Rejang,3.189227428571429,101.7311786
+way,804853617,community_centre,Pangsapuri Sri Permata Club House,3.0828369636363635,101.5318917909091
+way,804934132,community_centre,Persatuan Kebudayaan dan Sukan Fu Joh Seah Ipoh,4.573919816666667,101.08853651666668
+way,804934149,community_centre,Pusat Serbaguna Gereja Methodist Cina Pasir Pinji,4.57562274,101.08533236000001
+way,804934150,community_centre,Rukun Tetangga Pasir Pinji,4.575440485714286,101.0856327
+way,805915449,community_centre,Dewan Orang Ramai Taman Perwira,2.744118211111111,101.97166732222223
+way,808765963,community_centre,Dewan JKKK Taman Chai Leng,5.393064533333334,100.39011215000001
+way,809191697,community_centre,Bangunan JKKK Permatang Pauh,5.40927615,100.41392301666667
+way,809924922,community_centre,Community Hall,5.3167466615384615,100.26407558461538
+way,809957290,community_centre,Dewan Orang Ramai Taman Cendana,5.314942822222223,100.42797031111111
+way,810545545,community_centre,Dewan Gerakan Masyarakat Kampung Tradisi Pekan Darat,5.4592170200000005,100.40052784000001
+way,813768404,community_centre,,5.3466868666666665,100.45783728333333
+way,815136343,community_centre,,5.498553920000001,100.42849282
+way,815789743,community_centre,Dewan Gerakan Desa Wawasan Kampung Baru Alma,5.342664142857143,100.46538997142856
+way,815790193,community_centre,,3.2031647888888894,101.5954606777778
+way,816725938,community_centre,,5.481562171428572,100.4600779
+way,816793118,community_centre,,5.455706071428572,100.44371094285715
+way,817332421,community_centre,Dewan Orang Ramai (2) Taman Seri Indah,5.50210024,100.43355880000001
+way,819108397,community_centre,Dewan Masyarakat Taman Medan Idaman,3.21096948,101.71152786
+way,820509821,community_centre,Balai Masyarakat PJS 7,3.0662004400000002,101.61608386
+way,823054652,community_centre,,3.24862046,101.55453262
+way,823503456,community_centre,,3.36564688,101.6025817
+way,826046500,community_centre,"Dewan KRT Suadamai, Bandar Tun Hussein Onn",3.0549068714285714,101.75602637142858
+way,826053096,community_centre,Seri Kasih,3.03646852,101.75949676000002
+way,826053097,community_centre,Dewan Komuniti Suakasih,3.03258532,101.75664394
+way,826493878,community_centre,,3.09139072,101.75272246
+way,826493917,community_centre,Pusat Rukun Tetangga Taman Segar,3.08768528,101.74626722000001
+way,826582684,community_centre,JKKK Kampung Batu 9 Cheras,3.0750754111111114,101.7684756
+way,827853159,community_centre,Persatuan Penduduk Taman Makok,5.363069025000001,100.44716716250001
+way,827853181,community_centre,,5.3529134,100.445101
+way,828474406,community_centre,,2.98268658,101.60718706
+way,828482763,community_centre,Dewan Serbaguna MBSJ,3.03754516,101.64195334000001
+way,849084843,community_centre,Dewan Dato Azman Mahalan,4.373261820000001,101.15648166000001
+way,857052014,community_centre,Dewan Muafakat Johor,1.5499357142857144,103.74384641428571
+way,860930328,community_centre,Dewan Orang Ramai,4.530245942857143,101.12631601428572
+way,861125401,community_centre,,3.107641327777778,101.47782966111112
+way,865842237,community_centre,Dewan Orang Ramai Kg. Rapat Jaya,4.56598458,101.10490072
+way,866265880,community_centre,,3.0972907600000004,101.47029010000001
+way,872193024,community_centre,Dewan Kamunting,3.03282401,101.54043633
+way,872856406,community_centre,,5.285482780000001,100.28084954
+way,874629155,community_centre,Dewan Serbaguna MBSJ Putra Heights,2.98495202,101.56308396
+way,877475658,community_centre,,1.4876408800000003,103.6368001
+way,877879240,community_centre,,1.62790344,103.62987722
+way,877904500,community_centre,Dewan Community Damansara Damai,3.1929008800000003,101.58830824
+way,879169197,community_centre,Dewan Bunga Raya,4.52623026,101.08472152
+way,879181736,community_centre,Rukun Tetangga Taman Klebang Jaya,4.67699842,101.11647616
+way,884020596,townhall,Dewan Serbaguna MBSJ USJ 7,3.04772458,101.59365002000001
+way,884251332,community_centre,,3.0750436272727275,101.56140208181819
+way,884272762,community_centre,Dewan Serbaguna PJS 4/19,3.07494578,101.62820334
+way,885833728,community_centre,Dewan K.I.A,4.597091557142858,101.0692283
+way,886638250,community_centre,,5.330572557142858,100.48246335714286
+way,886858468,community_centre,Kompleks 3C MBSJ,3.0726203333333335,101.59771423333335
+way,888675034,community_centre,,2.7449388555555556,101.96082737777778
+way,894481590,community_centre,Dewan Bandar Seri Alam,1.4964956285714286,103.88127695714286
+way,895770031,community_centre,Dewan Anggerik,3.0901733,101.58229266000001
+way,899677942,community_centre,Dewan Pulai 27A,3.0092927222222223,101.56667574444445
+way,903723827,community_centre,Dewan Milenium,5.514479557142857,100.43736997142858
+way,907089124,community_centre,Dewan Serbaguna MPK,3.8589266,103.36587078
+way,908945977,community_centre,Dewan MBSA Seksyen U8,3.111549628571429,101.53690081428572
+way,909886005,community_centre,Rivervale Community Club,1.3850551166666667,103.90239030833334
+way,910422250,community_centre,Dewan Refelsia,3.1716760400000004,101.51436392000001
+way,910422251,community_centre,Dewan Refelsia,3.1714986000000005,101.51417402000001
+way,911067227,community_centre,Dewan Serbaguna U16/1,3.1688224375000003,101.51057715
+way,913147467,community_centre,,3.1044500000000004,101.60059348000001
+way,919619878,community_centre,Dewan Komuniti Kg. Baru Balakong,3.02792218,101.74759676000001
+way,921647466,community_centre,Dewan Serbaguna Kg. Manjoi,4.617553281818182,101.07193856363637
+way,922331601,community_centre,,3.28762496,101.51192902
+way,926515649,community_centre,"Dewan S.R.J.K.(C) Phui Ying, Simpang Pulai",4.531098683333333,101.12804595
+way,928091125,community_centre,广圣岩礼堂,4.52988682,101.12315746000002
+way,929090797,community_centre,Dewan Serbaguna Damansara Utama,3.13457132,101.61912602000001
+way,929622742,community_centre,Balai Raya Tanjung Lumpur,3.80271446,103.34088833999999
+way,933672451,community_centre,,3.2078604000000004,101.57827738571429
+way,934908405,community_centre,Dewan Serbaguna Taman SPPK,4.554907955555556,101.07964732222223
+way,937952877,community_centre,Dewan Komuniti Taman Bersatu,4.535195900000001,101.12349200000001
+way,940924583,community_centre,Dewan Orang Ramai Buntong,4.593663940000001,101.0644759
+way,940924584,community_centre,Persatuan Faedah Bersama Kg Baru Guntong,4.593994100000001,101.06426638
+way,942773680,community_centre,,4.62786594,101.11320996
+way,942858238,community_centre,KT Ballroom KWE Shah Alam,3.0355271285714287,101.52230147142858
+way,944333427,community_centre,"Dewan Serbaguna MBSJ, Putra Permai",2.99919146,101.66608676000001
+way,946769414,community_centre,,3.2172896000000004,101.72058389090911
+way,947048944,community_centre,,3.1890209,101.7229648
+way,948248823,community_centre,Pusat Komuniti Setiawangsa,3.1783673727272728,101.75257298181819
+way,948248839,community_centre,Dewan Serbaguna AU5,3.2009339199999998,101.75705126
+way,948414659,community_centre,Dewan Komuniti BU 11,3.1258131600000003,101.60387290000001
+way,948622726,community_centre,Dewan Serbagunaan Taman Cempaka,3.13836224,101.74629376
+way,952484477,community_centre,,5.346199914285714,100.47017544285714
+way,952674835,community_centre,,5.2819171,100.47300556
+way,955908333,community_centre,,1.5798570600000001,103.80372494000001
+way,959898655,community_centre,,5.3851397400000005,100.47719922000002
+way,962941895,community_centre,Community Centre,3.195913966666667,101.67020766666667
+way,965674611,community_centre,,3.8427758833333336,103.33578773333335
+way,966167315,community_centre,,3.00822094,101.62516614
+way,966945515,community_centre,Kompleks Komuniti Muhibbah,3.0624984625000002,101.659434625
+way,978918597,community_centre,Persatuan Penduduk-penduduk Rumah Pangsa People's Court,5.4169486000000004,100.33352860000001
+way,981902625,community_centre,Dewan Orang Awam Taman Free School,5.404662071428571,100.31158718571429
+way,982215295,community_centre,Dewan Orang Ramai Sri Melor,3.15298778,101.76812620000001
+way,982215364,community_centre,Dewan Orang Ramai PKNS Kg. Melayu Tambahan,3.1518622400000003,101.76599100000001
+way,982352001,community_centre,Dewan Datuk Tahir Karim,3.1533238800000003,101.76315444000001
+way,983142736,community_centre,Dewan Masyarakat Taman Koperasi Jelutong,5.395660820000001,100.31134206
+way,983512565,community_centre,,4.649046233333333,101.06903683333333
+way,985087878,community_centre,Balai Rakyat Jalan Patani,5.40890454,100.32220045333334
+way,985087879,community_centre,Dewan Taman Harapan,5.4089233,100.32531288
+way,988176412,community_centre,Taman Sri Nibong Residents' Association,5.332512960000001,100.30202574
+way,988472038,community_centre,MPKK Island Glades,5.380785928571429,100.29956554285715
+way,989355112,community_centre,Zhenghua-Senja Square RC,1.3861820666666667,103.76318640000001
+way,1004855520,community_centre,Dewan Serbaguna Bukit Serdang,3.04306052,101.69035894000001
+way,1009848184,community_centre,Dewan Kuala Garing,3.3175536800000005,101.57044656000001
+way,1013985308,community_centre,,5.398188380000001,100.31226388000002
+way,1026302573,community_centre,Dewan Serbaguna DBKL Jinjang Utara,3.2088861000000004,101.66045571428572
+way,1027098936,community_centre,Dewan Komuniti Taman Aston Timur,5.36809638,100.46509874
+way,1027102707,community_centre,,5.428511980000001,100.47697838000002
+way,1027284691,community_centre,,5.34584192,100.43134944
+way,1027330605,community_centre,Dewan MPKK Jalan Heng Choon Thian,5.4025194800000005,100.37005448
+way,1027468409,community_centre,,5.53176352,100.47201074
+way,1027625212,community_centre,Pusat Komuniti Desa Singkir Laut,5.729126857142858,100.36598352857143
+way,1029277757,community_centre,Balai Masyarakat,3.02772086,101.70365510000002
+way,1029277931,community_centre,,3.02680768,101.70171702
+way,1029365072,community_centre,Dewan Serbaguna Bandar Baru Tambun,4.61447376,101.13946696000001
+way,1029976821,community_centre,,3.0161835200000002,101.70754638000001
+way,1029976826,community_centre,,3.02051014,101.70873904
+way,1029976863,community_centre,,3.0191129500000002,101.70815263333334
+way,1030845395,community_centre,,3.02158842,101.70280542
+way,1032444577,community_centre,Dewan Masyarakat Lintang Minden,5.3598839,100.29641546
+way,1037487362,community_centre,,3.044535918181819,101.74868670909092
+way,1039362589,community_centre,Dewan Orang Ramai Taman Mega Jaya,3.1112655444444446,101.76328081111112
+way,1039521673,community_centre,Pusat Komuniti Kempas,1.5329419,103.71501914444444
+way,1039521675,community_centre,Dewan Raya Kempas Baru,1.5322509800000002,103.71459604000002
+way,1039571193,community_centre,Dewan Orang Ramai Permatang Pasir,5.410261414285714,100.46247091428573
+way,1039571203,community_centre,Dewan JKKK Mukim 13 Kampung Padang Menora,5.449431055555555,100.47288983333334
+way,1043388276,community_centre,Balai Masyarakat MPP Zon 23,3.0220120400000003,101.71550892
+way,1049881905,community_centre,,2.9938942,101.6696559888889
+way,1052658170,community_centre,Dewan Dato' Azrat Gull,3.2058418,101.67172453333335
+way,1056365661,community_centre,Balai Masyarakat Taman Puchong Perdana,3.0064213842105265,101.60207381578948
+way,1056365832,community_centre,,3.012014722222222,101.60176487777778
+way,1056365947,community_centre,,3.012690561538462,101.60553030769232
+way,1056590316,community_centre,,3.0067952692307696,101.59675914615386
+way,1056590376,community_centre,,3.0108526,101.6001627909091
+way,1056600768,community_centre,Balai Masyarakat,3.0344884,101.6237926
+way,1057678553,community_centre,Pusat Rukun Tetangga Taman Tun Sardon,5.37152802,100.30212344000002
+way,1058153556,community_centre,Dewan Serbaguna MBSJ,2.9889984000000003,101.6311361
+way,1059495590,community_centre,,2.99802836,101.66423656
+way,1059495591,community_centre,,2.9840207666666667,101.66067201111112
+way,1062555809,community_centre,Majestic Hall,2.54648526,101.80150202000002
+way,1065692161,community_centre,,2.98259548,101.54020022
+way,1066688584,community_centre,Balai Rakyat Cantonment,5.43189465,100.31218474
+way,1066840941,community_centre,Pusat Komuniti Kg Bukit Angkat,2.99660084,101.77060138
+way,1068067577,community_centre,Dewan Desa KEDA Singkir Badong,5.722830011111111,100.39027644444445
+way,1068428791,community_centre,Dewan Serbaguna Taman Kinrara Seksyen 1,3.06770704,101.64997524
+way,1073053214,community_centre,Dewan Orang Ramai Taman Cheras Jaya,3.0175330000000002,101.76209682000001
+way,1073815679,community_centre,Dewan Komuniti Taman Midah,3.100687177777778,101.72981222222224
+way,1074141207,community_centre,Dewan Komuniti Taman Impian Ehsan,3.01991704,101.75352304
+way,1075630002,community_centre,Pusat Komuniti Taman Ekoflora,1.5897546411764707,103.75225814117647
+way,1077384975,community_centre,Dewan Serbaguna Sri Serdang,3.0139259600000003,101.71882698
+way,1079160687,community_centre,Eco Spring Clubhouse,1.5893005400000002,103.76346993
+way,1081390923,community_centre,Dewan Perbandaran MPAJ,3.1217452555555556,101.75087324444445
+way,1082125915,community_centre,Regent Hall,2.559665766666667,101.81223030000001
+way,1084420545,community_centre,Dewan Serbaguna Kampung Tersusun Tawas Tambahan,4.648243600000001,101.09192128000001
+way,1085315879,townhall,Blok H,3.3514326199999998,101.81780566
+way,1085482197,townhall,Dewan Serbaguna Bukit Tinggi,3.355931745454546,101.81613790909091
+way,1087122231,community_centre,Dewan Persatuan Penduduk Rumah Teres Dan Town House Taman Segambut (SPPK),3.181129190909091,101.65968485454546
+way,1087664673,community_centre,Balai Raya Taman Cheras Perdana,3.04109754,101.76429502
+way,1087921701,community_centre,Dewan Komuniti Serendah,3.364813485714286,101.60289752857145
+way,1088974690,community_centre,Dewan Gandhi,5.64417958,100.49641679999999
+way,1089426875,townhall,Balai Raya Kampung Baru Pajam,2.8457726800000005,101.84584542
+way,1089831029,community_centre,Pusat Komuniti Sentul Perdana,3.184051666666667,101.69617523333334
+way,1090149159,community_centre,Pusat Komuniti Sri Petaling,3.0673235,101.68823966
+way,1090149163,community_centre,Dewan Serbaguna Taman Sri Endah,3.06420796,101.6882067
+way,1095423464,community_centre,MPKK Sungai Nibong Pantai,5.34072284,100.30313668
+way,1095571351,community_centre,Dewan Orang Ramai Tanjung Rambutan,4.670857871428572,101.15674611428572
+way,1101300581,community_centre,Dewan Orang Ramai Taman Asoka Mantin,2.81520766,101.90747556000001
+way,1101757852,community_centre,"Dewan Kuala Jalan Baru, Balik Pulau",5.357322411111111,100.20338581111112
+way,1104387187,community_centre,Dewan MPAJ Cheras Baru,3.1081768800000003,101.751566
+way,1104890337,community_centre,Dewan Orang Ramai AU1A/2,3.17055912,101.73648332
+way,1105989052,community_centre,Dewan Masyarakat Taman Segar,3.0899453400000003,101.74435376000001
+way,1106384765,community_centre,Dewan Serbaguna PJS 1/35,3.0781421800000004,101.65325596
+way,1107327058,community_centre,Balai Raya Taman MBSB,3.8205388500000006,103.297166795
+way,1110441895,community_centre,Dewan Cempaka MPKJ,3.0155354400000003,101.79337342
+way,1110578776,community_centre,Dewan Bunga Matahari,3.1799048466666666,101.54135322666667
+way,1111261647,community_centre,,3.24214616,101.66106996
+way,1111261652,community_centre,,3.236132485714286,101.66379481428571
+way,1111261659,community_centre,Dewan Yayasan Kepong Kampung Melayu FRIM Kepong,3.231356975,101.64076740000002
+way,1111261668,community_centre,,3.23235338,101.65353294
+way,1112741782,townhall,Dewan Bandaraya Kuala Lumpur,3.152817133333334,101.69410381666667
+way,1117844414,community_centre,Dewan Komuniti MPKj @ Jalan Reko,2.9753900200000003,101.78942958
+way,1120139073,community_centre,Kompleks Kemudahan Masyarakat Orang Asli Desa Temuan Bukit Lanjan,3.16810638,101.60349690000001
+way,1121159139,community_centre,Dewan Mawar,3.07615432,101.49937870000001
+way,1124672925,community_centre,,3.0737442,101.48877902000001
+way,1125146410,community_centre,Dewan Tulip Seksyen 32 Shah Alam,3.001725653846154,101.50484447692308
+way,1125413779,community_centre,Balairaya Putra Perdana,2.9426746,101.6209599888889
+way,1126815142,community_centre,,3.08782206,101.50998918000002
+way,1126850270,community_centre,,3.04868818,101.49063744
+way,1136637130,community_centre,,3.3281548200000004,101.57878956
+way,1136664744,townhall,Majlis Perbandaran Selayang Cawangan Rawang,3.3248086625,101.5785039375
+way,1136710736,community_centre,,3.0203547,101.6995708
+way,1136947557,community_centre,Dewan Komuniti Sungai Chua,2.98964628,101.77410782000001
+way,1137733382,community_centre,Dewanraya Jalan Rawa,1.4725001000000002,103.66817836666668
+way,1138195518,community_centre,,2.9841329,101.77663212000002
+way,1147656829,community_centre,Rumah Charis Community Point,5.337553781818182,100.26960923636365
+way,1149561206,community_centre,Dewan Serbaguna Taman Salak Jaya,3.0934551000000003,101.70477601428571
+way,1149561210,community_centre,Dewan Orang Ramai Taman Salak Jaya,3.0942414090909094,101.70388331818184
+way,1151924981,community_centre,Pejabat JKP Zon 12,3.139000588888889,101.7728074
+way,1152377889,community_centre,Pejabat Ahli Majlis JKP MPAJ Zon 3,3.20251482,101.75117408000001
+way,1152718670,community_centre,Pusat Penang2030 KADUN Air Putih,5.410412460000001,100.29988372
+way,1155801660,community_centre,Dean MPAJ Kampung Ampang Indah,3.13775896,101.784149
+way,1163354605,community_centre,Balairaya Kampung Chempaka,3.116219,101.59939567142858
+way,1164368321,community_centre,Dewan Orang Ramai Taman Bukit Permai,3.1072681000000006,101.75924146666667
+way,1164545570,community_centre,Balai Raya Kampung Sungai Raya,3.0674448400000003,101.77163846
+way,1164855733,community_centre,Dewan Taman Mesra,3.0138767200000003,101.77804726000001
+way,1176205028,community_centre,"Dewan Komuniti Kampung Batu 9, Cheras",3.072912411111111,101.77250662222224
+way,1178247880,community_centre,Persatuan Penduduk Desa Bunga Raya,2.99110142,101.7836358
+way,1182388533,community_centre,Balai Kommuniti Anggerik,1.5480676000000002,103.80206805
+way,1182441099,community_centre,Kawasan Rukun Tetangga Seksyen 7 Bandar Sungai Long,3.04981088,101.79912448000002
+way,1182469103,community_centre,Dewan Taman Desa Jaya,1.55465412,103.80663818000001
+way,1185465747,community_centre,Chettiars Hall,3.1759437,101.68778384000001
+way,1185588516,community_centre,Dewan Wawasan Kampung Siam,5.359594742857143,100.43302777142857
+way,1186239252,community_centre,,2.9428591400000004,101.7637232
+way,1188917141,community_centre,Dewan Saujana Utama,3.2066593923076923,101.47843394615386
+way,1193295886,community_centre,"Dewan Serbaguna Fasa 1E, Bandar Tun Razak",3.0827734,101.72224194
+way,1196371045,community_centre,,2.9630446400000006,101.66678702000002
+way,1196503635,community_centre,Dewan MPKK Island Park,5.39639202,100.30181266000001
+way,1202264857,community_centre,Dewan Komuniti Taman Muda,3.1164656444444443,101.75996874444445
+way,1204067143,community_centre,Pusat Aktiviti Rukun Tetangga / Tabika Perpaduan Taman Sri Nasib,5.421818833333334,100.39270351111112
+way,1204116518,community_centre,Balai Raya Kampung Cheras Baru,3.1127217384615387,101.7511963
+way,1205207938,community_centre,,1.4028548076923077,103.9133099923077
+way,1205730797,community_centre,Dewan Komuniti Taman Seraya,3.1173062200000006,101.76126992
+way,1206031489,community_centre,Balai Komuniti Persatuan Penduduk Taman Sri Langat,2.9739266800000004,101.78775222
+way,1214501527,community_centre,Dewan Orang Ramai Taman Putra,3.118885736363637,101.76463089090909
+way,1215530501,community_centre,Balai Masyarakat MBSJ Kampung Sri Aman,2.9849904200000004,101.58761180000002
+way,1218406763,community_centre,Foresta Club House,1.5796128600000001,103.75671384
+way,1218961911,community_centre,Dewan Serbaguna MPAJ AU2,3.17514086,101.74810094
+way,1218961918,community_centre,Balai Tan Sri Zulhasnan Rafique,3.1786965800000004,101.74711040000001
+way,1219541650,community_centre,Rumah & Balai Penghulu,3.134732381818182,101.60748754545456
+way,1219814498,community_centre,Pusat Pendidikan Komuniti Desa Temuan Bukit Lanjan,3.1690360111111113,101.6038518
+way,1220215940,community_centre,Laman Bestari AU3,3.18524572,101.75528510000001
+way,1221569295,community_centre,Dewan MBSA Seksyen 23,3.0450764571428572,101.52956538571429
+way,1221806468,community_centre,Dewan Beringin,3.0415904166666667,101.51998086666667
+way,1221806495,community_centre,Dewan Dahlia MBSA Seksyen 24,3.038313122222222,101.519885
+way,1221973355,community_centre,,3.036065028571429,101.52253727142859
+way,1222192790,community_centre,Dewan Orang Ramai Taman Seri Raya,3.1230075800000003,101.76803394000001
+way,1222192798,community_centre,,3.1235408400000004,101.77180876
+way,1224964421,community_centre,Majlis Perwakilan Penduduk Zon 9,3.03531045,101.53140200000001
+way,1226965468,community_centre,KRT Taman Desa Setapak,3.20598515,101.73375585000001
+way,1229748315,community_centre,Dewan Cendana 27B,3.025915857142857,101.57086947142857
+way,1229883196,community_centre,Dewan MBSA Seksyen 27,3.01861512,101.56349168
+way,1231284946,community_centre,Dewan Serbaguna Kampung Malaysia Tambahan,3.078329346153846,101.70743367692309
+way,1231284963,community_centre,Dewan Muafakat Kg. Malaysia Tambahan,3.075339369230769,101.70747657692309
+way,1231330757,community_centre,Persatuan Penduduk Kg Malaysia Raya,3.075843781818182,101.70555521818183
+way,1232404344,community_centre,Balairaya Kampung Paya Jaras Tengah,3.2018736333333333,101.54635775000001
+way,1232404347,community_centre,Dewan MBSA Kampung Paya Jaras U19,3.20085556,101.54574634000001
+way,1232857245,community_centre,Pusat Komuniti Wanita DUN Hulu Kelang,3.1702986777777777,101.7387523888889
+way,1234674679,community_centre,Dewan Serbaguna Taman Dato' Hormat,3.07776935,101.60480175
+way,1235995819,community_centre,Pusat Kegiatan Kampung Hujung Pasir,3.1604370714285714,101.70411142857144
+way,1238543053,community_centre,Pusat Komuniti DJROA,3.128743885714286,101.62135218571429
+way,1240505158,townhall,Menara Majlis Perbandaran Selayang,3.2536039142857147,101.65352544285714
+way,1240938500,community_centre,Dewan Serbaguna Jalan Medan 12,3.073254641176471,101.63607368235296
+way,1246391764,community_centre,Dewan Orang Ramai Kampung Paya,3.1635745428571433,101.70785995714287
+way,1250233548,community_centre,Montana Clubhouse,1.58200778,103.75550034
+way,1251953262,community_centre,Balai Raya Taman Cuepacs,3.0811200000000003,101.762399
+way,1253417731,community_centre,,1.4764761857142858,103.87241871428571
+way,1253610859,community_centre,Dewan Orang Ramai Bukit Bandaraya,3.0956955000000006,101.48933051428571
+way,1259323840,community_centre,Balai & Kediaman Penghulu Mukim Sungai Buloh 1,3.213447223529412,101.5345977
+way,1260572620,community_centre,Dewan Terbuka Kawasan Perkelahan,4.703779,101.07535372000001
+way,1262235474,community_centre,Dewan Serbaguna MPKK Kampung Baru Batu Caves,3.23704558,101.6763321
+way,1268727451,community_centre,Dewan MCA Taman Seri Melati,3.242385742857143,101.65362461428572
+way,1270323948,community_centre,Pusat Rukun Tetangga Kawasan Lebuh Sandilands,5.40566346,100.32907026000001
+way,1277872917,community_centre,Dewan Komuniti Putra Perdana,2.9500879,101.61870371818182
+way,1279663027,community_centre,,3.1643742142857145,101.71043497142857
+way,1282812890,community_centre,Persatuan Muhibbah dan Kebajikan Penghuni-Penghuni Taman Cheras,3.1019530800000004,101.74300934
+way,1296580990,community_centre,Pusat Rukun Tetangga Taman Kajang Utama,2.9709681733333335,101.79349068666667
+way,1299186734,community_centre,Persatuan Penduduk Taman Kaya / Springfield,3.1898167454545456,101.68548272727274
+way,1306736522,community_centre,Dewan Muhibbah,5.453323485714286,100.43673341428573
+way,1307033972,community_centre,Dewan Komuniti Merbau Kudung,5.45466402,100.44072654
+way,1307694511,community_centre,,2.95717992,101.77978632
+way,1307994202,community_centre,,5.30139266,100.47756050000001
+way,1308448989,community_centre,Persatuan Penduduk Taman Tambun Jaya,5.275145366666667,100.46600334444446
+way,1308476448,community_centre,,5.317611080000001,100.44201496000001
+way,1308735144,community_centre,Dewan Rekreasi Yayasan Pendidikan Cheras,3.132103966666667,101.71919215555556
+way,1309072122,community_centre,Persatuan Pembangunan Masyarakat India Pantai Dalam,3.1078778,101.66809380000001
+way,1311560849,community_centre,Pusat Komuniti Kospen,3.1095249000000003,101.66983614
+way,1312808214,community_centre,Dewan Serbaguna P. Angamuthu,3.10928758,101.67075798
+way,1313441075,community_centre,Dewan Komuniti Taman Kota Cheras,3.0654631200000004,101.767035
+way,1320432947,community_centre,Dewan Komuniti Cina Kemaman,4.224757861538462,103.42231847692308
+way,1323371317,community_centre,Nee Soon South CC,1.4151337473684211,103.83496606315789
+way,1325495864,community_centre,Dewan Khidmat Masyarakat Kampung Puah,3.19464344,101.70099236000001
+way,1325599540,community_centre,,3.1407790222222225,101.74784617777779
+way,1331530550,community_centre,,3.1082771,101.67139888
+way,1333679691,community_centre,,3.125557666666667,101.76886340000001
+way,1338989848,community_centre,Persatuan Penduduk Taman Ehsan Kuala Lumpur,3.2203544666666666,101.62671682222224
+way,1339784945,community_centre,Taman Bimbingan Kanak-Kanak Sri Taman Baru,3.1286829,101.77383436666668
+way,1340501386,community_centre,Dewan Orang Ramai MPKK Kampung Ampang Campuran,3.13142668,101.77222118
+way,1359279071,community_centre,Dewan Komuniti Taman Dagang Jaya,3.135394942857143,101.77664854285715
+way,1363113830,community_centre,Balairaya PJS 20/11,3.0788764800000004,101.62744774000001
+way,1363321738,community_centre,Balai Raya Kampung Bukit Raya,3.0802947200000004,101.78559124
+way,1363459684,community_centre,,3.1020795400000005,101.80679232000001
+way,1363509920,community_centre,,3.1634262800000004,101.88652056000001
+way,1363857610,community_centre,MPKK Perwira,5.29891754,100.47534734000001
+way,1370788404,community_centre,Dewan Kampung Bemban,4.45590508,101.01115652000001
+way,1371024280,community_centre,Dewan Bandaran Gopeng,4.469597340000001,101.1652815
+way,1382344315,community_centre,Balai Raya Kampung Amar Penghulu,2.8921099000000003,102.02692624000001
+way,1382438861,community_centre,Balairaya JKKK Kampung Ulu Klawang,2.897036716666667,102.02960193333332
+way,1382783288,community_centre,Balai JPKK Kampung Melayu Batu 16 Rawang,3.3059021714285715,101.59543082857144
+way,1382783297,community_centre,Dewan Serbaguna Kampung Melayu Batu 16 Rawang,3.30584998,101.59472096
+way,1386545173,community_centre,Dewan Masyarakat Taman Gembira,3.0833287,101.68725774
+way,1387172704,community_centre,Dewan Komuniti MPKj @ Pekan Bangi,2.9012350500000004,101.78007300000002
+way,1389253776,community_centre,Persatuan Penduduk Penduduk Kampung Tasik Ampang,3.132549472727273,101.78156410000001
+way,1389748232,community_centre,,3.2499955000000003,101.66684304285715
+way,1392539057,community_centre,N4 Courtyard,1.4244114500000002,103.84674408000001
+way,1408244260,community_centre,Dewan Masyarakat Penduduk Taman Kepong,3.20241082,101.64021816
+way,1409226156,community_centre,,2.971939985714286,101.51468424285714
+way,1421506107,community_centre,Dewan Orang Ramai Kampung Sungai Sering,3.1991087800000004,101.78010302000001
+way,1421506109,community_centre,Dewan Ramly Ahmad,3.2023996444444447,101.78069953333335
+way,1426807063,community_centre,Dewan Ukay Perdana,3.1989737000000003,101.77609568
+way,1427939450,community_centre,Young Womens' Christian Association of Kuala Lumpur,3.143016858333334,101.701854525
+way,1433244989,community_centre,Dewan Komuniti Taman Muda Fasa 1,3.1213641800000005,101.75677554
+way,1434319854,community_centre,,3.8012438600000005,103.26767826
+way,1449326801,community_centre,Persatuan Penduduk Taman Daya,3.22222698,101.6364396
+way,1452811811,community_centre,Dewan Kg Permatang Rawa,5.5641779,100.36492150000001
+way,1453003266,community_centre,Dewan KPIP,1.53108646,103.63054644000002
+way,1453258614,community_centre,,5.48916274,100.46913950000001
+way,1453409734,community_centre,Dewan Serbaguna Kampung Setol,5.4752455285714285,100.42797784285715
+way,1458426891,community_centre,Dewan Komuniti Seksyen 2,2.94353048,101.77152294
+way,1458628225,community_centre,"Dewan Kerayong, Taman Sri Muda",3.0314329200000003,101.53989912
+way,1460203057,community_centre,Pusat Rukun Tetangga Continental Park / Happy Garden 'A' & Happy Garden 'B',3.0889044400000003,101.68160932
+way,1461798312,community_centre,Pusat Rukun Tetangga Kepong Baru C,3.19996224,101.64382126000001
+way,1463368047,community_centre,,1.5916774076923077,103.64339661538462
+way,1470167571,community_centre,Dewan Orang Ramai Balok,3.93586792,103.36999288
+way,1478851221,community_centre,Seri Budaya,3.1752449454545455,101.58419592727273
+way,1489042112,community_centre,Pusat Sebaran Maklumat Nasional,3.9372532222222225,103.37586294444445
+way,1494561138,community_centre,Persatuan Penduduk Taman Kajang Jaya,2.9790095,101.79525660000002
+way,1505608086,community_centre,Dewan Ukhuwah,3.135033088888889,101.7447064
+way,1527482726,community_centre,Balai Raya Kg. Denai Aman,1.52112894,103.71928244
+way,1528552213,community_centre,Balai Raya Kampung Gaing Baru,2.6195746800000004,102.06433012
+way,1528969262,community_centre,,1.5262229,103.71617446
+way,1529327187,community_centre,Rumah Komuniti AADK Daerah Gombak,3.2373413,101.67941543333333
+way,1529352775,community_centre,Balai Raya Kampung Sepri,2.6346355800000003,102.0813277
