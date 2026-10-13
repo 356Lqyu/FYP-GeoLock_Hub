@@ -1,64 +1,94 @@
-# FYP – GeoLock Hub System
-GeoLock Hub is a mobile application designed to improve donation coordination among NGOs by reducing duplicate pickup claims and improving local resource allocation. The system integrates geolocation-based recommendations, atomic claim locking, and community collection hubs to support efficient donation management.
+# GeoLock Hub
 
-## Project structure
-- 
+GeoLock Hub is a multi-NGO donation coordination system designed to prevent duplicate pickup claims, enforce service-area eligibility, and improve collection efficiency through community hub aggregation and route planning.
+
+This repository contains the benchmark data generation and reproducible baseline implementations used to evaluate the coordination logic described in the GeoLock Hub project report and supervision notes.
+
+## Project focus
+
+The project is built around the following idea: donation coordination must be both operationally realistic and auditable.
+
+Key goals:
+- verify whether a donation is within an NGO's service area
+- prevent concurrent NGOs from claiming the same donation
+- enforce atomic claim logic and lease expiry/recovery rules
+- aggregate scattered donations into suitable community hubs
+- generate feasible pickup routes and compare alternative policies
+- evaluate the system using a repeatable benchmark rather than ad hoc examples
+
+The project explicitly separates:
+- deterministic authority functions, which must be correctness-critical and not delegated to AI
+- AI-assisted advisory functions, which can rank feasible options within a validated decision boundary
+
+## Repository structure
+
+- `benchmark dataset/` — benchmark generation inputs, generated dataset tables, and the reusable scenario data used by the experiments
+- `baseline implementation/` — standalone baseline scripts and result exports used for comparison
+- `pubic dataset/` — public reference dataset used for the geographic context
+- `README.md` — project overview and usage notes
+- `MF.md` — concise methodology / feature summary
+
+## Core architecture principles
+
+### 1. Deterministic authority boundary
+The project treats donation validity, claim success, service-area checks, expiry/recovery, route feasibility, and duplicate assignment as deterministic system responsibilities. These rules must be enforced by the coordination logic and database state transitions, not by model-generated decisions.
+
+### 2. AI-assisted advisory layer
+AI can help rank valid hub or pickup options once a deterministic feasible set has already been established. It should never bypass geofencing, override claim protection, create invalid donations, or assign a donation to a second NGO.
+
+### 3. Protected claim management
+The project implements and evaluates atomic claim behavior to guarantee that only one NGO can successfully claim a donation at a time. Concurrency tests check duplicate request handling, expired lease behavior, and the inability to leave conflicting states.
+
+### 4. Lease and recovery lifecycle
+Each claim is expected to have a bounded lease. Recovery logic is needed for stale or incomplete pickups so that expired claims do not permanently block replacement attempts.
+
+### 5. Hub aggregation and routing
+The system evaluates both hub-based coordination and downstream route planning. The purpose is not to merely visualize a map, but to measure whether aggregation and routing reduce distance or improve task execution under the same frozen scenario constraints.
 
 ## Setup
 
-### 1. Install Dependencies
-
-Install the required Python dependencies using:
+Create a Python environment and install the required dependencies.
 
 ```bash
-pip install -r requirements.txt
+python -m pip install -r "benchmark dataset/source code/requirements.txt"
 ```
 
-## Baseline
+## Running the benchmark baselines
 
-This repository contains the baseline methods used for comparison with the proposed GeoLock Hub approach.
+The baseline implementation is intentionally modular. Each script reads the frozen benchmark dataset, runs a single policy, and writes its own CSV/JSON output.
 
-### 1. Coordination Baselines
-
-- Manual Non-Atomic Claim Processing
-- Atomic Direct Household Pickup
-
-### 2. Hub Selection Baselines
-
-- Random Hub Selection Baseline
-- Nearest Hub Baseline
-- Rule-Based Cost Selection Baseline
-
-### 3. Pickup Cost Prediction Baseline
-
-- Rule-Based Cost Estimation
-
-## Running the Baselines
-
-### 1. Run Individual Baseline
-
-To run each baseline individually, use the corresponding Python script.
-
-For example:
+### Hub recommendation baselines
 
 ```bash
-python baseline/nearest_hub_baseline.py
+python "baseline implementation/source code/nearest_hub_baseline.py"
+python "baseline implementation/source code/random_hub_baseline.py" --seed 42
 ```
 
-Other baseline scripts can be executed using the same format.
+These scripts evaluate different feasible-hub selection strategies using the frozen recommendation scenarios.
 
-### 2. Run All Baselines
-
-To run all baseline experiments:
+### Coordination and route baselines
 
 ```bash
-python baseline/run_all_baselines.py
+python "baseline implementation/source code/non_atomic_claim_baseline.py"
+python "baseline implementation/source code/protected_claim_without_lease_recovery_baseline.py"
+python "baseline implementation/source code/direct_household_pickup_baseline.py"
+python "baseline implementation/source code/nearest_next_baseline.py"
+python "baseline implementation/source code/fcfs_baseline.py"
 ```
 
-## Reproducibility
+Each script writes scenario-specific result files under `baseline implementation/result` and retains the benchmark inputs unchanged.
 
-The baseline implementations use the benchmark dataset and Python dependencies provided in this repository.
+## Benchmark and reproducibility notes
 
-The baseline methods are implemented to support reproducible evaluation and comparison with the proposed GeoLock Hub approach.
+The dataset and scripts are designed to support reproducible evaluation:
+- frozen scenario selection
+- deterministic seeded baselines
+- fixed benchmark generation version and matrix IDs
+- comparison against the same benchmark conditions across policies
+- explicit handling of no-feasible-hub outcomes
 
-Detailed methodology, baseline justification, evaluation metrics, experimental procedures, and results are documented in the FYP report.
+The project report and supervision notes emphasize that the system should be judged by whether it delivers protected claim correctness, safe expiry recovery, hub aggregation value, route efficiency, and AI ranking improvements within a deterministic eligibility boundary.
+
+## Related documentation
+
+For a concise summary of the project methodology and the architecture decisions described in the review materials, see [MF.md](MF.md).
