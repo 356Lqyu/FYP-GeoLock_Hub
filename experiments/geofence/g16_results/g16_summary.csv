@@ -1,0 +1,10 @@
+trial,listing_id,requests,successes,conflicts,errors,db_ok,pass,winner
+C2-R1,f958e7cb-afcc-419d-9411-2b89660fa2b7,2,1,1,0,True,True,ngo2@test.com
+C2-R2,f6e7b2c3-79d4-4d5d-85b1-4ebeefebd7a9,2,1,1,0,True,True,ngo2@test.com
+C2-R3,89821f7c-1d82-4a57-8144-d1c949e0a28c,2,1,1,0,True,True,ngo2@test.com
+C10-R1,d1d12014-3615-4d0b-834f-ea5d2e784801,10,1,9,0,True,True,ngo1@test.com
+C10-R2,624c049a-7780-4ef4-96ae-6b5bdc5b2649,10,1,9,0,True,True,ngo2@test.com
+C10-R3,5c2f6228-71c9-4cdf-afc2-f5e32e389c30,10,1,9,0,True,True,ngo1@test.com
+C50-R1,38da26a4-0616-418b-adc4-67f0ac681da7,50,1,49,0,True,True,ngo2@test.com
+C50-R2,6c55496a-da04-42be-ae5e-2b1213901b1a,50,1,49,0,True,True,ngo1@test.com
+C50-R3,e990dc0f-c661-4f89-8114-5f512ae2e7ec,50,1,49,0,True,True,ngo2@test.com
