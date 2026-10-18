@@ -2,14 +2,17 @@
 
 Required environment variables:
   GEOLOCK_TEST_SUPABASE_URL
+  GEOLOCK_TEST_ISOLATED_CONFIRMATION=I_CONFIRM_DISPOSABLE_DEV_PROJECT
+  GEOLOCK_TEST_ALLOWED_PROJECT_REFS=exact-disposable-project-ref
   GEOLOCK_TEST_PUBLISHABLE_KEY
   GEOLOCK_TEST_SERVICE_ROLE_KEY
   GEOLOCK_TEST_NGO_JWT_TOKENS  JSON array of 50 eligible NGO access tokens
   GEOLOCK_TEST_LISTING_IDS     JSON array of 3 distinct AVAILABLE listing UUIDs
 
-Do not point this at the shared/live Supabase project. The project reference is
-explicitly blocked below. This script uses the service-role key only from the
-test process environment to verify the committed active-claim count.
+Do not point this at the shared/live Supabase project. The exact project
+reference must be explicitly allowlisted and the disposable-project guard
+must be set. This script uses a service-role JWT only from the test process
+environment to verify the committed active-claim count.
 """
 
 from __future__ import annotations
@@ -22,8 +25,10 @@ import urllib.error
 import urllib.parse
 import urllib.request
 import uuid
+from urllib.parse import urlparse
 
 BLOCKED_PROJECT_REF = "mffccmlimmbrgasgfnnq"
+CONFIRMATION = "I_CONFIRM_DISPOSABLE_DEV_PROJECT"
 COUNTS = (2, 10, 50)
 
 
@@ -48,9 +53,24 @@ def request_json(url: str, headers: dict[str, str], payload: object | None = Non
 
 
 def main() -> int:
+    if required("GEOLOCK_TEST_ISOLATED_CONFIRMATION") != CONFIRMATION:
+        raise RuntimeError("Refusing to run without disposable development-project confirmation.")
     base_url = required("GEOLOCK_TEST_SUPABASE_URL").rstrip("/")
-    if BLOCKED_PROJECT_REF in base_url:
+    if urlparse(base_url).scheme != "https":
+        raise RuntimeError("Development Supabase URL must use HTTPS.")
+    host = urlparse(base_url).hostname or ""
+    suffix = ".supabase.co"
+    if not host.endswith(suffix):
+        raise RuntimeError("Use canonical https://<project-ref>.supabase.co URL.")
+    project_ref = host[:-len(suffix)]
+    allowed = {part.strip() for part in required("GEOLOCK_TEST_ALLOWED_PROJECT_REFS").split(",") if part.strip()}
+    if project_ref == BLOCKED_PROJECT_REF or project_ref not in allowed:
         raise RuntimeError("Refusing to run against the shared/live GeoLock Hub project.")
+    inherited_url = os.environ.get("SUPABASE_URL", "").strip()
+    if inherited_url:
+        inherited_host = urlparse(inherited_url).hostname or ""
+        if not inherited_host.endswith(suffix) or inherited_host[:-len(suffix)] != project_ref:
+            raise RuntimeError("Inherited SUPABASE_URL points to a different project; refusing to run.")
     publishable_key = required("GEOLOCK_TEST_PUBLISHABLE_KEY")
     service_role_key = required("GEOLOCK_TEST_SERVICE_ROLE_KEY")
     tokens = json.loads(required("GEOLOCK_TEST_NGO_JWT_TOKENS"))

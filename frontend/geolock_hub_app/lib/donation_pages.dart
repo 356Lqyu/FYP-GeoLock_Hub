@@ -383,16 +383,18 @@ class _HubOperationsPageState extends State<HubOperationsPage> {
     if (entered == null) return;
     setState(() => _busy = true);
     try {
-      await _db.rpc(
+      final receipt = await _db.rpc(
         'confirm_hub_receipt',
         params: {
           'p_reservation': reservation['reservation_id'],
           'p_received_weight': entered,
         },
       );
-      final updated = await _load();
+      if (receipt == null || receipt.toString().trim().isEmpty) {
+        throw const FormatException('The database did not confirm hub receipt.');
+      }
       if (mounted) {
-        setState(() => _data = Future.value(updated));
+        setState(() => _data = _load());
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(const SnackBar(content: Text('Hub receipt committed.')));
@@ -797,6 +799,159 @@ class _HubOperationsPageState extends State<HubOperationsPage> {
   );
 }
 
+class MyReconciliationCasesPage extends StatefulWidget {
+  const MyReconciliationCasesPage({super.key});
+  @override
+  State<MyReconciliationCasesPage> createState() =>
+      _MyReconciliationCasesPageState();
+}
+
+class _MyReconciliationCasesPageState extends State<MyReconciliationCasesPage> {
+  late Future<List<Map<String, dynamic>>> _cases = _load();
+  bool _busy = false;
+
+  Future<List<Map<String, dynamic>>> _load() async {
+    final response = await _db.rpc('get_my_reconciliation_cases');
+    if (response is! List) {
+      throw const FormatException('Invalid reconciliation inbox response.');
+    }
+    return response
+        .map((row) => Map<String, dynamic>.from(row as Map))
+        .toList();
+  }
+
+  Future<void> _submit(Map<String, dynamic> row, bool handoverConfirmed) async {
+    final caseId = row['case_id'].toString();
+    final choice = handoverConfirmed ? 'yes' : 'no';
+    final prefs = await SharedPreferences.getInstance();
+    final key = 'geolock_reconcile_${_db.auth.currentUser?.id}_${caseId}_$choice';
+    final requestId = prefs.getString(key) ?? const Uuid().v4();
+    await prefs.setString(key, requestId);
+    setState(() => _busy = true);
+    try {
+      final response = await _db.rpc(
+        'submit_claim_reconciliation',
+        params: {
+          'p_claim': row['claim_id'],
+          'p_handover_confirmed': handoverConfirmed,
+          'p_request': requestId,
+        },
+      );
+      if (response is! Map) {
+        throw const FormatException('Reconciliation outcome missing.');
+      }
+      final result = Map<String, dynamic>.from(response);
+      if (result['outcome'] == null) {
+        throw const FormatException('Reconciliation outcome is missing.');
+      }
+      await prefs.remove(key);
+      List<Map<String, dynamic>>? refreshed;
+      Object? refreshError;
+      try {
+        refreshed = await _load();
+      } catch (error) {
+        refreshError = error;
+      }
+      if (!mounted) return;
+      if (refreshed != null) {
+        setState(() => _cases = Future.value(refreshed));
+      } else {
+        setState(() => _cases = _load());
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            '${result['outcome']}: ${result['reason_code'] ?? 'Evidence recorded'}'
+            '${refreshError == null ? '' : ' (case refresh failed; retry refresh)'}',
+          ),
+        ),
+      );
+    } catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'No result was confirmed. Retry will reuse request $requestId. $error',
+            ),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    appBar: AppBar(title: const Text('Handover Reconciliation')),
+    body: FutureBuilder<List<Map<String, dynamic>>>(
+      future: _cases,
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text('Reconciliation cases unavailable: ${snapshot.error}'),
+                TextButton(
+                  onPressed: () => setState(() => _cases = _load()),
+                  child: const Text('Retry'),
+                ),
+              ],
+            ),
+          );
+        }
+        if (!snapshot.hasData) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        final rows = snapshot.data!;
+        if (rows.isEmpty) {
+          return const Center(child: Text('No handover cases require your response.'));
+        }
+        return ListView.builder(
+          padding: const EdgeInsets.all(12),
+          itemCount: rows.length,
+          itemBuilder: (context, index) {
+            final row = rows[index];
+            final open = row['case_status'] == 'OPEN';
+            return Card(
+              child: Padding(
+                padding: const EdgeInsets.all(14),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Case ${row['case_id']}', style: Theme.of(context).textTheme.titleMedium),
+                    Text('${row['source_type']} · ${row['case_status']}'),
+                    Text('Claim ${row['claim_id']} · opened ${row['opened_at']}'),
+                    const SizedBox(height: 8),
+                    Text(open
+                        ? 'Confirm whether the physical handover occurred. The NGO and donor or hub administrator must submit matching answers.'
+                        : 'This case needs trusted manual review. Your response will not change the pickup or listing state.'),
+                    if (open)
+                      Wrap(
+                        spacing: 8,
+                        children: [
+                          FilledButton.tonal(
+                            onPressed: _busy ? null : () => _submit(row, true),
+                            child: const Text('Handover occurred'),
+                          ),
+                          OutlinedButton(
+                            onPressed: _busy ? null : () => _submit(row, false),
+                            child: const Text('No handover'),
+                          ),
+                        ],
+                      ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    ),
+  );
+}
+
 class _MyClaimsPageState extends State<MyClaimsPage> {
   late Future<List<Map<String, dynamic>>> _claims = _load();
   bool _busy = false;
@@ -822,10 +977,7 @@ class _MyClaimsPageState extends State<MyClaimsPage> {
           params: {'p_claim': claimId, 'p_handover_confirmed': true},
         );
       } else {
-        await _db.rpc(
-          'confirm_delivery',
-          params: {'p_claim': claimId, 'p_delivery_confirmed': true},
-        );
+        throw ArgumentError.value(operation, 'operation', 'Unsupported action');
       }
       final refreshed = await _load();
       if (!mounted) return;
@@ -844,29 +996,128 @@ class _MyClaimsPageState extends State<MyClaimsPage> {
     }
   }
 
-  Future<void> _release(String claimId) async {
+  Future<void> _cancelClaim(String claimId) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Cancel this claim?'),
+        content: const Text(
+          'The database will allow cancellation only before pickup starts and while the claim lease is valid. Route activity or uncertain handover requires reconciliation.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Keep claim'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Cancel claim'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+    final prefs = await SharedPreferences.getInstance();
+    final key = 'geolock_cancel_claim_${_db.auth.currentUser?.id}_$claimId';
+    final requestId = prefs.getString(key) ?? const Uuid().v4();
+    await prefs.setString(key, requestId);
     setState(() => _busy = true);
     try {
       final response = await _db.rpc(
-        'release_claim',
-        params: {'p_claim': claimId, 'p_reason': 'NGO_RELEASE'},
+        'cancel_claim',
+        params: {'p_claim': claimId, 'p_request': requestId},
       );
       if (response is! Map) {
-        throw const FormatException('Release outcome missing.');
+        throw const FormatException('Cancellation outcome missing.');
       }
       final result = Map<String, dynamic>.from(response);
-      final refreshed = await _load();
+      if (result['outcome'] == null) {
+        throw const FormatException('Claim cancellation outcome is missing.');
+      }
+      if (result['outcome'] == 'SUCCESS' || result['outcome'] == 'REJECTED') {
+        await prefs.remove(key);
+      }
+      List<Map<String, dynamic>>? refreshed;
+      Object? refreshError;
+      try {
+        refreshed = await _load();
+      } catch (error) {
+        refreshError = error;
+      }
       if (!mounted) return;
-      setState(() => _claims = Future.value(refreshed));
+      if (refreshed != null) {
+        setState(() => _claims = Future.value(refreshed));
+      } else {
+        setState(() => _claims = _load());
+      }
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('${result['outcome']}: ${result['reason_code'] ?? ''}'),
+          content: Text(
+            'Claim ${result['outcome']}: ${result['reason_code'] ?? ''}'
+            '${refreshError == null ? '' : ' (history refresh failed; pull to refresh)'}',
+          ),
         ),
       );
     } catch (error) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Release was not confirmed: $error')),
+          SnackBar(content: Text('Claim cancellation was not confirmed. Retry will reuse request $requestId. $error')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  Future<void> _submitReconciliation(String claimId, bool handoverConfirmed) async {
+    final choice = handoverConfirmed ? 'yes' : 'no';
+    final prefs = await SharedPreferences.getInstance();
+    final key = 'geolock_reconcile_${_db.auth.currentUser?.id}_${claimId}_$choice';
+    final requestId = prefs.getString(key) ?? const Uuid().v4();
+    await prefs.setString(key, requestId);
+    setState(() => _busy = true);
+    try {
+      final response = await _db.rpc(
+        'submit_claim_reconciliation',
+        params: {
+          'p_claim': claimId,
+          'p_handover_confirmed': handoverConfirmed,
+          'p_request': requestId,
+        },
+      );
+      if (response is! Map) {
+        throw const FormatException('Reconciliation outcome missing.');
+      }
+      final result = Map<String, dynamic>.from(response);
+      if (result['outcome'] == null) {
+        throw const FormatException('Reconciliation outcome is missing.');
+      }
+      await prefs.remove(key);
+      List<Map<String, dynamic>>? refreshed;
+      Object? refreshError;
+      try {
+        refreshed = await _load();
+      } catch (error) {
+        refreshError = error;
+      }
+      if (!mounted) return;
+      if (refreshed != null) {
+        setState(() => _claims = Future.value(refreshed));
+      } else {
+        setState(() => _claims = _load());
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            '${result['outcome']}: ${result['reason_code'] ?? ''}'
+            '${refreshError == null ? '' : ' (status refresh failed; pull to refresh)'}',
+          ),
+        ),
+      );
+    } catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Reconciliation was not confirmed; retry will reuse request $requestId. $error')),
         );
       }
     } finally {
@@ -979,7 +1230,7 @@ class _MyClaimsPageState extends State<MyClaimsPage> {
                       Wrap(
                         spacing: 8,
                         children: [
-                          if (active && task != 'DISPATCHED')
+                          if (active && (task == 'CONFIRMED' || task == 'PLANNED'))
                             OutlinedButton(
                               onPressed: _busy
                                   ? null
@@ -1004,18 +1255,22 @@ class _MyClaimsPageState extends State<MyClaimsPage> {
                                   : () => _run(claimId, 'COMPLETE_PICKUP'),
                               child: const Text('Confirm Handover'),
                             ),
-                          if (status == 'COMPLETED')
-                            FilledButton.tonal(
-                              onPressed: _busy
-                                  ? null
-                                  : () => _run(claimId, 'CONFIRM_DELIVERY'),
-                              child: const Text('Confirm Delivery'),
-                            ),
-                          if (active && task != 'DISPATCHED')
+                          if (active && task == 'CONFIRMED')
                             TextButton(
-                              onPressed: _busy ? null : () => _release(claimId),
-                              child: const Text('Release Claim'),
+                              onPressed: _busy ? null : () => _cancelClaim(claimId),
+                              child: const Text('Cancel Claim'),
                             ),
+                          if (status == 'RECONCILIATION_REQUIRED') ...[
+                            FilledButton.tonal(
+                              onPressed: _busy ? null : () => _submitReconciliation(claimId, true),
+                              child: const Text('Confirm handover'),
+                            ),
+                            OutlinedButton(
+                              onPressed: _busy ? null : () => _submitReconciliation(claimId, false),
+                              child: const Text('Confirm no handover'),
+                            ),
+                            const Text('Both the NGO and donor or hub administrator must submit matching evidence. Some pickup-started cases remain under trusted review.'),
+                          ],
                           TextButton.icon(
                             onPressed: () => _audit(claimId),
                             icon: const Icon(Icons.history),
@@ -2014,6 +2269,11 @@ class _DonationDetailPageState extends State<DonationDetailPage> {
         if (donation['donation_id'].toString() == widget.donationId) {
           detail['primary_image_path'] = donation['primary_image_path'];
           detail['inventory_status'] = donation['inventory_status'];
+          // The dashboard RPC computes reservation expiry using database time.
+          // Use it for UI wording and re-selection; the reservation RPC remains
+          // authoritative if a request races expiry after this read.
+          detail['reservation_effective_status'] =
+              donation['reservation_effective_status'];
           if (imageRows.isEmpty && donation['primary_image_path'] != null) {
             imageRows = [
               {
@@ -2078,13 +2338,24 @@ class _DonationDetailPageState extends State<DonationDetailPage> {
         'reserve_hub_capacity',
         params: {'p_donation': widget.donationId, 'p_hub': selected['hub_id']},
       );
+      final reservationId = reservation?.toString().trim() ?? '';
+      if (reservationId.isEmpty) {
+        throw const FormatException(
+          'The database did not confirm a hub reservation.',
+        );
+      }
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Hub reservation confirmed: $reservation')),
-      );
       setState(() => _detail = _load());
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Hub reservation committed. You may deliver to this hub.'),
+        ),
+      );
     } catch (error) {
       if (mounted) {
+        // A failed RPC may race with expiry, cancellation, or capacity changes.
+        // Refresh authoritative state before inviting the donor to retry.
+        setState(() => _detail = _load());
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Hub reservation failed: $error')),
         );
@@ -2172,9 +2443,11 @@ class _DonationDetailPageState extends State<DonationDetailPage> {
         final latestReservation = reservations.isEmpty
             ? null
             : reservations.first;
-        final latestReservationStatus =
+        final latestReservationStatus = d['reservation_effective_status'] ??
             latestReservation?['effective_status'] ??
-            latestReservation?['status'];
+            (latestReservation?['status'] == 'ACTIVE'
+                ? 'STATUS_UNVERIFIED'
+                : latestReservation?['status']);
         final hasReceipt = reservations.any(
           (reservation) => reservation['receipt_status'] != null,
         );
@@ -2196,8 +2469,7 @@ class _DonationDetailPageState extends State<DonationDetailPage> {
                     hubHistoryIsClear &&
                     (latestReservationStatus == 'ACTIVE' ||
                         latestReservationStatus == 'EXPIRED')));
-        final needsHub =
-            d['collection_path'] == 'HUB_COLLECTION' &&
+        final needsHub = d['collection_path'] == 'HUB_COLLECTION' &&
             (d['status'] == 'VALIDATED' ||
                 (d['status'] == 'HUB_ASSIGNED' &&
                     latestReservationStatus == 'EXPIRED'));
@@ -2223,7 +2495,10 @@ class _DonationDetailPageState extends State<DonationDetailPage> {
             const SizedBox(height: 12),
             _detailRow(
               'Current state',
-              d['status'] == 'HUB_ASSIGNED' &&
+              d['status'] == 'VALIDATED' &&
+                      d['collection_path'] == 'HUB_COLLECTION'
+                  ? 'Awaiting Hub Selection'
+                  : d['status'] == 'HUB_ASSIGNED' &&
                       latestReservationStatus == 'EXPIRED'
                   ? 'Hub reservation expired — choose another hub'
                   : d['status'] == 'HUB_ASSIGNED' &&

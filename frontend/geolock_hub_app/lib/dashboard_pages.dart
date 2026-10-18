@@ -293,7 +293,7 @@ class _DonorHomePageState extends State<DonorHomePage> {
                 )
                 .length;
             final completed = rows
-                .where((d) => d['donation_status'] == 'DELIVERED')
+                .where((d) => d['donation_status'] == 'COLLECTED')
                 .length;
             return Column(
               children: [
@@ -319,7 +319,7 @@ class _DonorHomePageState extends State<DonorHomePage> {
                 ),
                 const SizedBox(height: 10),
                 DashboardStatCard(
-                  label: 'Delivered',
+                        label: 'Collected',
                   value: '$completed',
                   icon: Icons.check_circle_outline,
                   wide: true,
@@ -392,7 +392,6 @@ bool _active(String? s) => const {
   'AT_HUB',
   'BATCHED',
   'PICKUP_IN_PROGRESS',
-  'COLLECTED',
 }.contains(s);
 
 class DonorMyDonationsPage extends StatefulWidget {
@@ -447,7 +446,7 @@ class _DonorMyDonationsPageState extends State<DonorMyDonationsPage> {
             status == 'BATCHED',
       'Claimed' => listing == 'CLAIMED',
       'Picked Up' => status == 'PICKUP_IN_PROGRESS' || status == 'COLLECTED',
-      'Completed' => status == 'DELIVERED',
+      'Completed' => status == 'COLLECTED',
       'Cancelled' => status == 'CANCELLED',
       _ => true,
     };
@@ -613,7 +612,10 @@ class _NgoHomePageState extends State<NgoHomePage> {
   }
 
   Future<List<Map<String, dynamic>>> _loadListings() async {
-    final rows = await _dashboardDb.rpc('discover_eligible_listings');
+    // The card RPC returns the fields rendered by ListingPreviewCard. The
+    // legacy discover_eligible_listings RPC omits titles, images and routing
+    // readiness, so using it here produced incomplete dashboard cards.
+    final rows = await _dashboardDb.rpc('discover_eligible_listing_cards');
     if (rows is! List) {
       throw const FormatException(
         'Listing discovery returned an invalid response.',
@@ -1152,10 +1154,10 @@ class _DonorImpactPageState extends State<DonorImpactPage> {
           body: const Center(child: CircularProgressIndicator()),
         );
       }
-      final delivered = snapshot.data!
-          .where((d) => d['donation_status'] == 'DELIVERED')
+      final collected = snapshot.data!
+          .where((d) => d['donation_status'] == 'COLLECTED')
           .toList();
-      final kg = delivered.fold<double>(
+      final kg = collected.fold<double>(
         0,
         (sum, d) => sum + _number(d['total_weight_kg']),
       );
@@ -1172,21 +1174,21 @@ class _DonorImpactPageState extends State<DonorImpactPage> {
           ),
           const SizedBox(height: 10),
           DashboardStatCard(
-            label: 'Delivered donations',
-            value: '${delivered.length}',
+            label: 'Collected donations',
+            value: '${collected.length}',
             icon: Icons.volunteer_activism_outlined,
             wide: true,
           ),
           const SizedBox(height: 10),
           DashboardStatCard(
-            label: 'Weight delivered',
+            label: 'Weight collected',
             value: '${kg.toStringAsFixed(1)} kg',
             icon: Icons.scale_outlined,
             wide: true,
           ),
           const SizedBox(height: 12),
           const Text(
-            'These totals reflect donation records marked DELIVERED by the backend. No environmental or beneficiary impact is inferred.',
+            'These totals reflect donation records marked COLLECTED by the backend. No environmental or beneficiary impact is inferred.',
           ),
         ],
       );
@@ -1234,6 +1236,17 @@ class RoleProfilePage extends StatelessWidget {
               ),
             ),
         ],
+        const SizedBox(height: 10),
+        OutlinedButton.icon(
+          onPressed: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => const MyReconciliationCasesPage(),
+            ),
+          ),
+          icon: const Icon(Icons.rule_folder_outlined),
+          label: const Text('Handover reconciliation'),
+        ),
         const SizedBox(height: 18),
         OutlinedButton.icon(
           onPressed: () => signOutAndReset(context),
@@ -1437,6 +1450,10 @@ class DonationSummaryCard extends StatelessWidget {
 }
 
 String _donationStatusLabel(Map<String, dynamic> d) {
+  if (d['collection_path'] == 'HUB_COLLECTION' &&
+      d['donation_status'] == 'VALIDATED') {
+    return 'Awaiting hub selection';
+  }
   if (d['donation_status'] == 'HUB_ASSIGNED' &&
       d['reservation_effective_status'] == 'EXPIRED') {
     return 'Hub reservation expired';
@@ -1452,11 +1469,8 @@ String _donationStatusLabel(Map<String, dynamic> d) {
     return 'At hub';
   }
   if (d['listing_status'] == 'CLAIMED') return 'Claimed';
-  if (d['donation_status'] == 'PICKUP_IN_PROGRESS' ||
-      d['donation_status'] == 'COLLECTED') {
-    return 'Picked up';
-  }
-  if (d['donation_status'] == 'DELIVERED') return 'Completed';
+  if (d['donation_status'] == 'PICKUP_IN_PROGRESS') return 'Pickup in progress';
+  if (d['donation_status'] == 'COLLECTED') return 'Collected';
   return (d['donation_status'] ?? 'Unknown').toString().replaceAll('_', ' ');
 }
 
@@ -1491,7 +1505,7 @@ class StatusBadge extends StatelessWidget {
 
 Color _statusColor(String value) {
   final s = value.toLowerCase();
-  if (s.contains('complete') || s.contains('delivered')) {
+  if (s.contains('complete') || s.contains('collected')) {
     return const Color(0xff16745e);
   }
   if (s.contains('cancel')) return const Color(0xffa84a4a);

@@ -2,6 +2,11 @@
 
 The supplied benchmark is experimental data, not seed data for the shared Supabase project. The app and additive migration do not import any CSV rows.
 
+The automated fixture setup for the claim-recovery runner creates independent,
+synthetic records rather than importing benchmark users or scenario rows. See
+[`stage1_dev_fixture_setup.md`](stage1_dev_fixture_setup.md) for the exact
+fixture graph and DEV-only command sequence.
+
 ## Mapping rules for an isolated test database
 
 | Benchmark source | Fixture identity | Test database representation |

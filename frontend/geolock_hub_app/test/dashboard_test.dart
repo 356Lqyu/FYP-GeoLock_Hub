@@ -77,7 +77,7 @@ void main() {
             body: DonationSummaryCard(
               donation: {
                 'title': 'Books',
-                'donation_status': 'DELIVERED',
+                'donation_status': 'COLLECTED',
                 'collection_path': 'HUB_COLLECTION',
                 'total_weight_kg': 4.5,
                 'item_count': 2,
@@ -89,7 +89,7 @@ void main() {
         ),
       );
       expect(find.text('Books'), findsOneWidget);
-      expect(find.text('Completed'), findsOneWidget);
+      expect(find.text('Collected'), findsOneWidget);
       expect(find.text('2 items · 4.5 kg'), findsOneWidget);
       expect(find.byIcon(Icons.volunteer_activism_outlined), findsOneWidget);
     },

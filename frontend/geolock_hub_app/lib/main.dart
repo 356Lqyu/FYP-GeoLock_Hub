@@ -8,11 +8,50 @@ import 'supabase_config.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  if (!SupabaseConfig.isConfigured) {
+    runApp(const _MissingDevConfigurationApp());
+    return;
+  }
   await Supabase.initialize(
     url: SupabaseConfig.projectUrl,
     publishableKey: SupabaseConfig.publishableKey,
   );
   runApp(const GeoLockApp());
+}
+
+class _MissingDevConfigurationApp extends StatelessWidget {
+  const _MissingDevConfigurationApp();
+
+  @override
+  Widget build(BuildContext context) => MaterialApp(
+    home: Scaffold(
+      body: SafeArea(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.settings_outlined, size: 44),
+                const SizedBox(height: 12),
+                Text(
+                  'Development configuration required',
+                  style: Theme.of(context).textTheme.titleLarge,
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  'Set GEOLOCK_SUPABASE_PUBLISHABLE_KEY for the DEV project. '
+                  'This build is guarded against connecting to the original shared project.',
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
 }
 
 class GeoLockApp extends StatelessWidget {

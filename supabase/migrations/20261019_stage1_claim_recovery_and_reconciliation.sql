@@ -1,0 +1,522 @@
+-- GeoLock Hub Stage 1 claim cancellation, recovery, reconciliation, and audit reads.
+-- Forward-only additive proposal for an isolated V3 development database.
+-- NOT executed. No location, road-node, eligibility, route optimization, hub
+-- reservation, or donation-creation behavior is changed here.
+--
+-- Lock order used by V3 start_pickup/complete_pickup and this migration:
+-- claim -> lease -> listing -> pickup task -> donation rows (UUID order).
+-- Route rows are deliberately not locked here. Any route-linked task is treated
+-- as uncertain and sent to reconciliation. See docs/stage1-dev-environment.md.
+
+begin;
+
+create table if not exists public.claim_cancellation_requests (
+  request_id uuid primary key,
+  claim_id uuid not null references public.donation_claims(claim_id),
+  actor_user_id uuid not null,
+  request_fingerprint text not null,
+  response jsonb,
+  created_at timestamptz not null default clock_timestamp(),
+  completed_at timestamptz,
+  constraint claim_cancellation_response_object
+    check (response is null or jsonb_typeof(response) = 'object')
+);
+alter table public.claim_cancellation_requests enable row level security;
+revoke all on public.claim_cancellation_requests from public, anon, authenticated;
+
+create table if not exists public.claim_reconciliation_cases (
+  case_id uuid primary key default gen_random_uuid(),
+  claim_id uuid not null references public.donation_claims(claim_id),
+  listing_id uuid not null references public.listings(listing_id),
+  donation_id uuid,
+  source_type text not null,
+  case_status text not null default 'OPEN'
+    check (case_status in ('OPEN','RESOLVED_COLLECTED','RESOLVED_RELEASED','MANUAL_REVIEW')),
+  opened_at timestamptz not null default clock_timestamp(),
+  resolved_at timestamptz,
+  resolution_reason text,
+  constraint claim_reconciliation_source_type_check check (source_type in ('DIRECT_DONATION','HUB_BATCH')),
+  constraint claim_reconciliation_case_claim_unique unique (claim_id)
+);
+alter table public.claim_reconciliation_cases enable row level security;
+revoke all on public.claim_reconciliation_cases from public, anon, authenticated;
+
+create table if not exists public.claim_reconciliation_evidence (
+  request_id uuid primary key,
+  case_id uuid not null references public.claim_reconciliation_cases(case_id),
+  actor_user_id uuid not null,
+  handover_confirmed boolean not null,
+  response jsonb,
+  submitted_at timestamptz not null default clock_timestamp(),
+  constraint claim_reconciliation_one_response_per_actor unique (case_id, actor_user_id),
+  constraint claim_reconciliation_response_object check (response is null or jsonb_typeof(response)='object')
+);
+alter table public.claim_reconciliation_evidence enable row level security;
+revoke all on public.claim_reconciliation_evidence from public, anon, authenticated;
+
+-- One NGO claim cancellation is idempotent by globally unique request UUID.
+-- A pre-read verifies ownership before reserving a caller supplied UUID.
+create or replace function public.cancel_claim(p_claim uuid, p_request uuid)
+returns jsonb
+language plpgsql security definer
+set search_path = pg_catalog, public, pg_temp
+as $$
+declare
+  v_actor uuid := auth.uid();
+  v_role text;
+  v_c public.donation_claims%rowtype;
+  v_l public.listings%rowtype;
+  v_le public.claim_leases%rowtype;
+  v_t public.pickup_tasks%rowtype;
+  v_req public.claim_cancellation_requests%rowtype;
+  v_fingerprint text;
+  v_result jsonb;
+  v_reason text;
+  v_safe boolean := false;
+  v_version text;
+begin
+  if v_actor is null then raise exception 'UNAUTHENTICATED'; end if;
+  if p_claim is null or p_request is null then raise exception 'CLAIM_AND_REQUEST_REQUIRED'; end if;
+  select c.* into v_c from public.donation_claims c where c.claim_id=p_claim;
+  if not found or v_c.ngo_user_id is distinct from v_actor
+     or not exists(select 1 from public.ngo_profiles n where n.user_id=v_actor and n.active_flag) then
+    raise exception 'CLAIM_NOT_FOUND_OR_FORBIDDEN';
+  end if;
+  select p.role into v_role from public.user_profiles p where p.user_id=v_actor;
+  v_fingerprint := v_actor::text || ':' || p_claim::text;
+  insert into public.claim_cancellation_requests(request_id,claim_id,actor_user_id,request_fingerprint)
+    values(p_request,p_claim,v_actor,v_fingerprint) on conflict(request_id) do nothing;
+  select r.* into v_req from public.claim_cancellation_requests r
+    where r.request_id=p_request for update;
+  if v_req.request_fingerprint is distinct from v_fingerprint then
+    insert into public.audit_events(actor_user_id,actor_role,entity_type,entity_id,event_type,
+      request_id,claim_id,correlation_id,requested_state,resulting_state,reason_code,outcome,details)
+    values(v_actor,v_role,'CLAIM',p_claim,'CANCEL_CLAIM',p_request,p_claim,p_request,
+      'RELEASED',null,'IDEMPOTENCY_KEY_REUSED_WITH_DIFFERENT_PAYLOAD','REJECTED',
+      jsonb_build_object('request_id',p_request));
+    return jsonb_build_object('outcome','REJECTED','claim_id',p_claim,
+      'reason_code','IDEMPOTENCY_KEY_REUSED_WITH_DIFFERENT_PAYLOAD');
+  end if;
+  if v_req.response is not null then return v_req.response; end if;
+
+  -- Keep the deployed pickup lock prefix exactly: claim, lease, listing, task.
+  select c.* into v_c from public.donation_claims c where c.claim_id=p_claim for update;
+  if not found then raise exception 'CLAIM_NOT_FOUND'; end if;
+  select le.* into v_le from public.claim_leases le where le.claim_id=p_claim for update;
+  if not found then raise exception 'LEASE_MISSING_REQUIRES_RECONCILIATION'; end if;
+  select l.* into v_l from public.listings l where l.listing_id=v_c.listing_id for update;
+  if not found then raise exception 'LISTING_MISSING_REQUIRES_RECONCILIATION'; end if;
+  select t.* into v_t from public.pickup_tasks t where t.claim_id=p_claim for update;
+
+  if not found then v_reason := 'PICKUP_TASK_MISSING_REQUIRES_RECONCILIATION';
+  elsif v_c.claim_status <> 'ACTIVE' then v_reason := 'CLAIM_NOT_ACTIVE';
+  elsif v_le.lease_status <> 'ACTIVE' then v_reason := 'LEASE_NOT_ACTIVE';
+  elsif v_le.expires_at <= clock_timestamp() then v_reason := 'LEASE_EXPIRED_USE_RECOVERY';
+  elsif v_l.listing_status <> 'CLAIMED' then v_reason := 'LISTING_NOT_CLAIMED';
+  elsif v_t.task_status <> 'CONFIRMED' then v_reason := 'PICKUP_ALREADY_STARTED_OR_CLOSED';
+  elsif v_l.source_type='DIRECT_DONATION' and not exists(select 1 from public.donations d
+      where d.donation_id=v_l.donation_id and d.donation_status='READY_FOR_PICKUP') then
+    v_reason := 'DONATION_STATE_REQUIRES_RECONCILIATION';
+  elsif v_l.source_type='HUB_BATCH' and (
+      not exists(select 1 from public.hub_batch_members m
+        where m.batch_id=v_l.batch_id and m.membership_status='ACTIVE')
+      or exists(select 1 from public.hub_batch_members m join public.donations d using(donation_id)
+        where m.batch_id=v_l.batch_id and m.membership_status='ACTIVE' and d.donation_status<>'BATCHED')
+      or exists(select 1 from public.hub_batch_members m
+        where m.batch_id=v_l.batch_id and m.membership_status='ACTIVE'
+          and not exists(select 1 from public.hub_inventory hi
+            where hi.donation_id=m.donation_id and hi.inventory_status='BATCHED'))) then
+    v_reason := 'BATCH_CUSTODY_STATE_REQUIRES_RECONCILIATION';
+  elsif exists(select 1 from public.active_task_route_assignments a where a.task_id=v_t.task_id)
+     or exists(select 1 from public.pickup_route_stops s
+      join public.pickup_routes r using(route_id)
+      where s.task_id=v_t.task_id and r.route_status not in ('CANCELLED','STALE')) then
+    v_reason := 'TASK_HAS_ROUTE_ACTIVITY';
+  elsif v_l.listing_expires_at is not null and v_l.listing_expires_at <= clock_timestamp() then
+    v_reason := 'LISTING_EXPIRED';
+  else
+    v_safe := true;
+  end if;
+
+  if v_safe then
+    update public.donation_claims set claim_status='RELEASED',closed_at=clock_timestamp(),
+      close_reason='NGO_CANCELLED_BEFORE_PICKUP' where claim_id=p_claim;
+    update public.claim_leases set lease_status='RELEASED',closed_at=clock_timestamp(),
+      release_reason='NGO_CANCELLED_BEFORE_PICKUP' where lease_id=v_le.lease_id;
+    update public.pickup_tasks set task_status='STALE' where task_id=v_t.task_id;
+    update public.listings set listing_status='AVAILABLE',listing_version=listing_version+1
+      where listing_id=v_l.listing_id and listing_status='CLAIMED';
+    v_reason := 'NGO_CANCELLED_BEFORE_PICKUP';
+  end if;
+  v_result := jsonb_build_object('outcome',case when v_safe then 'SUCCESS' else 'REJECTED' end,
+    'claim_id',p_claim,'listing_id',v_c.listing_id,'reason_code',v_reason,
+    'claim_status',case when v_safe then 'RELEASED' else v_c.claim_status end,
+    'resulting_listing_status',case when v_safe then 'AVAILABLE' else v_l.listing_status end);
+  update public.claim_cancellation_requests set response=v_result,completed_at=clock_timestamp()
+    where request_id=p_request;
+  select c.config_version into v_version from public.coordination_config c where c.singleton;
+  insert into public.audit_events(actor_user_id,actor_role,entity_type,entity_id,event_type,
+    request_id,claim_id,lease_id,donation_id,listing_id,correlation_id,previous_state,requested_state,resulting_state,
+    reason_code,outcome,software_version,configuration_version,details)
+  values(v_actor,v_role,'CLAIM',p_claim,'CANCEL_CLAIM',p_request,p_claim,v_le.lease_id,
+    v_l.donation_id,v_l.listing_id,p_request,
+    v_c.claim_status,'RELEASED',case when v_safe then 'RELEASED' else v_c.claim_status end,
+    v_reason,case when v_safe then 'SUCCESS' else 'REJECTED' end,
+    'geolock-stage1-2026-10-19',v_version,
+    jsonb_build_object('listing_id',v_c.listing_id,'task_id',v_t.task_id));
+  return v_result;
+end;
+$$;
+
+-- Evidence is supplied independently by the claiming NGO and the donor or
+-- owning hub admin. A mismatch stays open. A positive match closes the claim
+-- as COLLECTED. A negative match releases only if pickup never started and no
+-- non-terminal route association remains. DISPATCHED no-handover cases stay in
+-- MANUAL_REVIEW because V3 has no authorized PICKUP_IN_PROGRESS rollback.
+create or replace function public.submit_claim_reconciliation(
+  p_claim uuid, p_handover_confirmed boolean, p_request uuid
+) returns jsonb
+language plpgsql security definer
+set search_path = pg_catalog, public, pg_temp
+as $$
+declare
+  v_actor uuid := auth.uid(); v_role text; v_case public.claim_reconciliation_cases%rowtype;
+  v_c public.donation_claims%rowtype; v_l public.listings%rowtype;
+  v_le public.claim_leases%rowtype; v_t public.pickup_tasks%rowtype;
+  v_d public.donations%rowtype; v_counterpart uuid; v_allowed boolean := false;
+  v_prior public.claim_reconciliation_evidence%rowtype; v_values integer; v_true integer;
+  v_result jsonb; v_cfg text; v_did uuid;
+begin
+  if v_actor is null then raise exception 'UNAUTHENTICATED'; end if;
+  if p_claim is null or p_request is null or p_handover_confirmed is null then
+    raise exception 'CLAIM_EVIDENCE_REQUIRED'; end if;
+  -- Same lock prefix as start/complete/recovery.
+  select c.* into v_c from public.donation_claims c where c.claim_id=p_claim for update;
+  if not found then raise exception 'CLAIM_NOT_FOUND'; end if;
+  select le.* into v_le from public.claim_leases le where le.claim_id=p_claim for update;
+  if not found then raise exception 'LEASE_NOT_FOUND'; end if;
+  select l.* into v_l from public.listings l where l.listing_id=v_c.listing_id for update;
+  if not found then raise exception 'LISTING_NOT_FOUND'; end if;
+  select t.* into v_t from public.pickup_tasks t where t.claim_id=p_claim for update;
+  if not found then raise exception 'PICKUP_TASK_NOT_FOUND'; end if;
+  if v_c.claim_status<>'RECONCILIATION_REQUIRED'
+     or v_le.lease_status<>'RECONCILIATION_REQUIRED'
+     or v_l.listing_status<>'CLAIMED' then
+    raise exception 'RECONCILIATION_STATE_MISMATCH';
+  end if;
+  select p.role into v_role from public.user_profiles p where p.user_id=v_actor;
+  select * into v_case from public.claim_reconciliation_cases c
+    where c.claim_id=p_claim and c.case_status in ('OPEN','MANUAL_REVIEW') for update;
+  if not found then raise exception 'RECONCILIATION_NOT_OPEN'; end if;
+
+  if v_actor=v_c.ngo_user_id and v_role='NGO' then v_allowed:=true; end if;
+  if v_l.source_type='DIRECT_DONATION' then
+    select d.donor_user_id into v_counterpart from public.donations d where d.donation_id=v_l.donation_id;
+    if v_actor=v_counterpart and v_role='DONOR' then v_allowed:=true; end if;
+  elsif v_l.source_type='HUB_BATCH' then
+    select h.admin_user_id into v_counterpart from public.hub_batches b
+      join public.community_hubs h using(hub_id) where b.batch_id=v_l.batch_id;
+    if v_actor=v_counterpart and v_role='HUB_ADMIN' then v_allowed:=true; end if;
+  end if;
+  if not v_allowed then raise exception 'RECONCILIATION_PARTICIPANT_ONLY'; end if;
+
+  select * into v_prior from public.claim_reconciliation_evidence e where e.request_id=p_request;
+  if found then
+    if v_prior.case_id<>v_case.case_id or v_prior.actor_user_id<>v_actor
+       or v_prior.handover_confirmed<>p_handover_confirmed then
+      select c.config_version into v_cfg from public.coordination_config c where c.singleton;
+      insert into public.audit_events(actor_user_id,actor_role,entity_type,entity_id,event_type,
+        request_id,claim_id,lease_id,donation_id,listing_id,correlation_id,
+        previous_state,requested_state,resulting_state,reason_code,outcome,
+        software_version,configuration_version,details)
+      values(v_actor,v_role,'CLAIM',p_claim,'CLAIM_RECONCILIATION_EVIDENCE',p_request,p_claim,
+        v_le.lease_id,v_l.donation_id,v_l.listing_id,p_request,v_c.claim_status,
+        case when p_handover_confirmed then 'COLLECTED' else 'RELEASED' end,
+        v_c.claim_status,'IDEMPOTENCY_KEY_REUSED_WITH_DIFFERENT_PAYLOAD','REJECTED',
+        'geolock-stage1-2026-10-19',v_cfg,jsonb_build_object('case_id',v_case.case_id));
+      return jsonb_build_object('outcome','REJECTED','reason_code','IDEMPOTENCY_KEY_REUSED_WITH_DIFFERENT_PAYLOAD');
+    end if;
+    if v_prior.response is not null then return v_prior.response; end if;
+  else
+    if exists(select 1 from public.claim_reconciliation_evidence e
+        where e.case_id=v_case.case_id and e.actor_user_id=v_actor) then
+      select c.config_version into v_cfg from public.coordination_config c where c.singleton;
+      insert into public.audit_events(actor_user_id,actor_role,entity_type,entity_id,event_type,
+        request_id,claim_id,lease_id,donation_id,listing_id,correlation_id,
+        previous_state,requested_state,resulting_state,reason_code,outcome,
+        software_version,configuration_version,details)
+      values(v_actor,v_role,'CLAIM',p_claim,'CLAIM_RECONCILIATION_EVIDENCE',p_request,p_claim,
+        v_le.lease_id,v_l.donation_id,v_l.listing_id,p_request,v_c.claim_status,
+        case when p_handover_confirmed then 'COLLECTED' else 'RELEASED' end,
+        v_c.claim_status,'EVIDENCE_ALREADY_SUBMITTED','REJECTED',
+        'geolock-stage1-2026-10-19',v_cfg,jsonb_build_object('case_id',v_case.case_id));
+      return jsonb_build_object('outcome','REJECTED','reason_code','EVIDENCE_ALREADY_SUBMITTED');
+    end if;
+    insert into public.claim_reconciliation_evidence(request_id,case_id,actor_user_id,handover_confirmed)
+      values(p_request,v_case.case_id,v_actor,p_handover_confirmed);
+  end if;
+
+  select count(*),count(*) filter(where e.handover_confirmed)
+    into v_values,v_true from public.claim_reconciliation_evidence e where e.case_id=v_case.case_id;
+  if v_values<2 then
+    v_result:=jsonb_build_object('outcome','AWAITING_COUNTERPART','case_id',v_case.case_id,
+      'reason_code','SECOND_PARTY_CONFIRMATION_REQUIRED');
+  elsif v_true not in (0,2) then
+    update public.claim_reconciliation_cases set case_status='MANUAL_REVIEW',
+      resolution_reason='PARTY_EVIDENCE_CONFLICT' where case_id=v_case.case_id;
+    v_result:=jsonb_build_object('outcome','RECONCILIATION_REQUIRED','case_id',v_case.case_id,
+      'reason_code','PARTY_EVIDENCE_CONFLICT');
+  elsif v_true=2 then
+    if v_t.task_status not in ('DISPATCHED','COLLECTED') then
+      update public.claim_reconciliation_cases set case_status='MANUAL_REVIEW',
+        resolution_reason='HANDOVER_EVIDENCE_CONFLICTS_WITH_TASK_STATE' where case_id=v_case.case_id;
+      v_result:=jsonb_build_object('outcome','RECONCILIATION_REQUIRED','case_id',v_case.case_id,
+        'reason_code','HANDOVER_EVIDENCE_CONFLICTS_WITH_TASK_STATE');
+    else
+      if v_l.source_type='DIRECT_DONATION' then
+        select d.* into v_d from public.donations d where d.donation_id=v_l.donation_id for update;
+        if v_d.donation_status not in ('PICKUP_IN_PROGRESS','COLLECTED') then raise exception 'DONATION_STATE_REQUIRES_REVIEW'; end if;
+        if v_d.donation_status='PICKUP_IN_PROGRESS' then
+          update public.donations set donation_status='COLLECTED' where donation_id=v_d.donation_id;
+        end if;
+      else
+        for v_did in select m.donation_id from public.hub_batch_members m
+          where m.batch_id=v_l.batch_id and m.membership_status='ACTIVE' order by m.donation_id loop
+          select d.* into v_d from public.donations d where d.donation_id=v_did for update;
+          if v_d.donation_status not in ('PICKUP_IN_PROGRESS','COLLECTED') then raise exception 'BATCH_DONATION_STATE_REQUIRES_REVIEW'; end if;
+          if v_d.donation_status='PICKUP_IN_PROGRESS' then
+            update public.donations set donation_status='COLLECTED' where donation_id=v_did;
+          end if;
+        end loop;
+        update public.hub_inventory set inventory_status='COLLECTED'
+          where donation_id in(select m.donation_id from public.hub_batch_members m
+            where m.batch_id=v_l.batch_id and m.membership_status='ACTIVE');
+        update public.hub_batches set batch_status='COLLECTED' where batch_id=v_l.batch_id;
+      end if;
+      update public.pickup_tasks set task_status='COLLECTED' where task_id=v_t.task_id;
+      update public.listings set listing_status='CLOSED',listing_version=listing_version+1 where listing_id=v_l.listing_id;
+      update public.donation_claims set claim_status='COMPLETED',closed_at=clock_timestamp(),close_reason='RECONCILED_HANDOVER_CONFIRMED' where claim_id=p_claim;
+      update public.claim_leases set lease_status='COMPLETED',closed_at=clock_timestamp() where lease_id=v_le.lease_id;
+      update public.claim_reconciliation_cases set case_status='RESOLVED_COLLECTED',resolved_at=clock_timestamp(),
+        resolution_reason='BOTH_PARTIES_CONFIRMED_HANDOVER' where case_id=v_case.case_id;
+      v_result:=jsonb_build_object('outcome','SUCCESS','case_id',v_case.case_id,
+        'claim_status','COMPLETED','donation_status','COLLECTED','reason_code','HANDOVER_CONFIRMED');
+    end if;
+  else
+    if v_t.task_status='CONFIRMED'
+       and v_l.listing_status='CLAIMED'
+       and (v_l.listing_expires_at is null or v_l.listing_expires_at>clock_timestamp())
+       and ((v_l.source_type='DIRECT_DONATION' and exists(select 1 from public.donations d
+              where d.donation_id=v_l.donation_id and d.donation_status='READY_FOR_PICKUP'))
+         or (v_l.source_type='HUB_BATCH'
+             and exists(select 1 from public.hub_batch_members m
+               where m.batch_id=v_l.batch_id and m.membership_status='ACTIVE')
+             and not exists(select 1 from public.hub_batch_members m join public.donations d using(donation_id)
+               where m.batch_id=v_l.batch_id and m.membership_status='ACTIVE'
+                 and d.donation_status<>'BATCHED')
+              and not exists(select 1 from public.hub_batch_members m
+                where m.batch_id=v_l.batch_id and m.membership_status='ACTIVE'
+                  and not exists(select 1 from public.hub_inventory hi
+                    where hi.donation_id=m.donation_id and hi.inventory_status='BATCHED'))))
+       and not exists(select 1 from public.active_task_route_assignments a where a.task_id=v_t.task_id)
+       and not exists(
+      select 1 from public.pickup_route_stops s join public.pickup_routes r using(route_id)
+      where s.task_id=v_t.task_id and r.route_status not in ('CANCELLED','STALE')) then
+      update public.donation_claims set claim_status='RELEASED',closed_at=clock_timestamp(),close_reason='RECONCILED_NO_HANDOVER' where claim_id=p_claim;
+      update public.claim_leases set lease_status='RELEASED',closed_at=clock_timestamp(),release_reason='RECONCILED_NO_HANDOVER' where lease_id=v_le.lease_id;
+      update public.pickup_tasks set task_status='STALE' where task_id=v_t.task_id;
+      update public.listings set listing_status='AVAILABLE',listing_version=listing_version+1 where listing_id=v_l.listing_id;
+      update public.claim_reconciliation_cases set case_status='RESOLVED_RELEASED',resolved_at=clock_timestamp(),
+        resolution_reason='BOTH_PARTIES_CONFIRMED_NO_HANDOVER' where case_id=v_case.case_id;
+      v_result:=jsonb_build_object('outcome','SUCCESS','case_id',v_case.case_id,
+        'claim_status','RELEASED','reason_code','NO_HANDOVER_CONFIRMED');
+    else
+      update public.claim_reconciliation_cases set case_status='MANUAL_REVIEW',
+        resolution_reason='NO_HANDOVER_CONFIRMED_AFTER_PICKUP_STARTED' where case_id=v_case.case_id;
+      v_result:=jsonb_build_object('outcome','RECONCILIATION_REQUIRED','case_id',v_case.case_id,
+        'reason_code','NO_HANDOVER_AFTER_PICKUP_STARTED_REQUIRES_REVIEW');
+    end if;
+  end if;
+
+  update public.claim_reconciliation_evidence set response=v_result where request_id=p_request;
+  select c.config_version into v_cfg from public.coordination_config c where c.singleton;
+  insert into public.audit_events(actor_user_id,actor_role,entity_type,entity_id,event_type,
+    request_id,claim_id,lease_id,donation_id,listing_id,correlation_id,previous_state,requested_state,resulting_state,
+    reason_code,outcome,software_version,configuration_version,details)
+  values(v_actor,v_role,'CLAIM',p_claim,'CLAIM_RECONCILIATION_EVIDENCE',p_request,p_claim,
+    v_le.lease_id,v_l.donation_id,v_l.listing_id,p_request,v_c.claim_status,
+    case when p_handover_confirmed then 'COLLECTED' else 'RELEASED' end,
+    coalesce(v_result->>'claim_status',v_c.claim_status),v_result->>'reason_code',v_result->>'outcome',
+    'geolock-stage1-2026-10-19',v_cfg,jsonb_build_object('case_id',v_case.case_id,
+      'handover_confirmed',p_handover_confirmed));
+  return v_result;
+end;
+$$;
+
+-- Claim-first recovery removes the deployed lease -> claim lock inversion.
+-- Route-linked tasks are not auto-released: route dispatch/status writers are
+-- incomplete in the repository, so reconciliation is the fail-closed result.
+create or replace function public.recover_expired_claims(p_limit integer default 100)
+returns integer language plpgsql security definer
+set search_path = pg_catalog, public, extensions, pg_temp
+as $$
+declare
+  v_rec record; v_c public.donation_claims%rowtype; v_le public.claim_leases%rowtype;
+  v_l public.listings%rowtype; v_t public.pickup_tasks%rowtype;
+  v_uncertain boolean; v_count integer:=0; v_did uuid; v_cfg text;
+begin
+  if auth.role() is distinct from 'service_role' and session_user <> 'postgres' then
+    raise exception 'TRUSTED_SCHEDULER_ONLY';
+  end if;
+  for v_rec in
+    select c.claim_id,cl.lease_id,cl.expires_at from public.donation_claims c
+    join public.claim_leases cl using(claim_id)
+    where c.claim_status='ACTIVE' and cl.lease_status='ACTIVE' and cl.expires_at<=clock_timestamp()
+    order by cl.expires_at,c.claim_id
+    for update of c skip locked
+    limit greatest(1,least(coalesce(p_limit,100),1000))
+  loop
+    select c.* into v_c from public.donation_claims c where c.claim_id=v_rec.claim_id;
+    -- Current row lock was obtained on claim above; follow V3 writer order.
+    select le.* into v_le from public.claim_leases le where le.lease_id=v_rec.lease_id for update;
+    if v_c.claim_status<>'ACTIVE' or v_le.lease_status<>'ACTIVE'
+       or v_le.expires_at>clock_timestamp() then continue; end if;
+    select l.* into v_l from public.listings l where l.listing_id=v_c.listing_id for update;
+    select t.* into v_t from public.pickup_tasks t where t.claim_id=v_c.claim_id for update;
+
+    v_uncertain := v_l.listing_id is null
+      or v_t.task_id is null
+      or v_l.listing_status<>'CLAIMED'
+      or v_t.task_status<>'CONFIRMED'
+      or exists(select 1 from public.active_task_route_assignments a where a.task_id=v_t.task_id)
+      or exists(select 1 from public.pickup_route_stops s
+        where s.task_id=v_t.task_id)
+      or (v_l.source_type='DIRECT_DONATION' and exists(select 1 from public.donations d
+        where d.donation_id=v_l.donation_id and d.donation_status in ('PICKUP_IN_PROGRESS','COLLECTED','DELIVERED')))
+      or (v_l.source_type='HUB_BATCH' and exists(select 1 from public.hub_batch_members m
+        join public.donations d using(donation_id) where m.batch_id=v_l.batch_id
+        and m.membership_status='ACTIVE' and d.donation_status in ('PICKUP_IN_PROGRESS','COLLECTED','DELIVERED')));
+    if v_l.source_type='DIRECT_DONATION' then
+      v_uncertain:=v_uncertain or not exists(select 1 from public.donations d
+        where d.donation_id=v_l.donation_id and d.donation_status='READY_FOR_PICKUP');
+    elsif v_l.source_type='HUB_BATCH' then
+      v_uncertain:=v_uncertain
+        or not exists(select 1 from public.hub_batch_members m
+          where m.batch_id=v_l.batch_id and m.membership_status='ACTIVE')
+        or exists(select 1 from public.hub_batch_members m join public.donations d using(donation_id)
+          where m.batch_id=v_l.batch_id and m.membership_status='ACTIVE'
+            and d.donation_status<>'BATCHED')
+        or exists(select 1 from public.hub_batch_members m join public.hub_inventory hi using(donation_id)
+          where m.batch_id=v_l.batch_id and m.membership_status='ACTIVE'
+            and hi.inventory_status<>'BATCHED');
+    end if;
+    if v_uncertain then
+      update public.claim_leases set lease_status='RECONCILIATION_REQUIRED' where lease_id=v_le.lease_id;
+      update public.donation_claims set claim_status='RECONCILIATION_REQUIRED' where claim_id=v_c.claim_id;
+      if v_l.listing_id is not null then
+        insert into public.claim_reconciliation_cases(claim_id,listing_id,donation_id,source_type,case_status)
+          values(v_c.claim_id,v_l.listing_id,v_l.donation_id,v_l.source_type,'OPEN')
+          on conflict(claim_id) do nothing;
+      end if;
+    else
+      update public.claim_leases set lease_status='RELEASED',closed_at=clock_timestamp(),release_reason='EXPIRED_SAFE_RELEASE'
+        where lease_id=v_le.lease_id;
+      update public.donation_claims set claim_status='RELEASED',closed_at=clock_timestamp(),close_reason='EXPIRED_SAFE_RELEASE'
+        where claim_id=v_c.claim_id;
+      update public.pickup_tasks set task_status='STALE' where task_id=v_t.task_id;
+      if v_l.listing_status='CLAIMED' and (v_l.listing_expires_at is null or v_l.listing_expires_at>clock_timestamp()) then
+        update public.listings set listing_status='AVAILABLE',listing_version=listing_version+1
+          where listing_id=v_l.listing_id and listing_status='CLAIMED';
+      end if;
+    end if;
+    select c.config_version into v_cfg from public.coordination_config c where c.singleton;
+    insert into public.audit_events(actor_role,entity_type,entity_id,event_type,claim_id,lease_id,
+      donation_id,listing_id,
+      correlation_id,previous_state,requested_state,resulting_state,reason_code,outcome,
+      software_version,configuration_version,details)
+    values('SYSTEM','CLAIM',v_c.claim_id,'LEASE_RECOVERY',v_c.claim_id,v_le.lease_id,
+      v_l.donation_id,v_l.listing_id,
+      gen_random_uuid(),'ACTIVE',case when v_uncertain then 'RECONCILIATION_REQUIRED' else 'RELEASED' end,
+      case when v_uncertain then 'RECONCILIATION_REQUIRED' else 'RELEASED' end,
+      case when v_uncertain then 'HANDOVER_OR_ROUTE_ACTIVITY_UNCERTAIN' else 'EXPIRED_SAFE_RELEASE' end,
+      'SUCCESS','geolock-stage1-2026-10-19',v_cfg,
+      jsonb_build_object('listing_id',v_l.listing_id,'task_id',v_t.task_id));
+    v_count:=v_count+1;
+  end loop;
+  return v_count;
+end;
+$$;
+
+-- Role-scoped audit retrieval. The result shape intentionally matches the
+-- existing Flutter audit sheet while returning only rows related to an entity
+-- the caller can access through their own donation, claim, or hub.
+create or replace function public.get_authorized_audit_events(p_entity_type text,p_entity_id uuid)
+returns setof public.audit_events language plpgsql stable security definer
+set search_path = pg_catalog, public, pg_temp
+as $$
+declare v_user uuid:=auth.uid(); v_role text; v_allowed boolean:=false;
+begin
+  if v_user is null then raise exception 'UNAUTHENTICATED'; end if;
+  select p.role into v_role from public.user_profiles p where p.user_id=v_user;
+  if v_role='DONOR' then
+    v_allowed:=exists(select 1 from public.donations d where d.donor_user_id=v_user
+      and (d.donation_id=p_entity_id or exists(select 1 from public.listings l
+      where l.donation_id=d.donation_id and l.listing_id=p_entity_id)));
+  elsif v_role='NGO' then
+    v_allowed:=exists(select 1 from public.donation_claims c join public.listings l using(listing_id)
+      where c.ngo_user_id=v_user and (c.claim_id=p_entity_id or l.listing_id=p_entity_id or l.donation_id=p_entity_id));
+  elsif v_role='HUB_ADMIN' then
+    v_allowed:=exists(select 1 from public.community_hubs h where h.admin_user_id=v_user
+      and (h.hub_id=p_entity_id or exists(select 1 from public.hub_reservations r
+      where r.hub_id=h.hub_id and r.donation_id=p_entity_id) or exists(select 1 from public.hub_inventory i
+      where i.hub_id=h.hub_id and i.donation_id=p_entity_id)));
+  end if;
+  if not v_allowed then raise exception 'AUDIT_NOT_FOUND_OR_FORBIDDEN'; end if;
+  return query select a.* from public.audit_events a
+    where (a.entity_id=p_entity_id or a.donation_id=p_entity_id or a.listing_id=p_entity_id
+      or a.claim_id=p_entity_id)
+      and (v_role<>'NGO' or a.event_type<>'DONOR_PRIVATE_DATA')
+    order by a.occurred_at;
+end;
+$$;
+
+create or replace function public.get_my_reconciliation_cases()
+returns table(case_id uuid,claim_id uuid,listing_id uuid,donation_id uuid,
+  source_type text,case_status text,opened_at timestamptz)
+language plpgsql stable security definer
+set search_path = pg_catalog, public, pg_temp
+as $$
+declare v_user uuid:=auth.uid(); v_role text;
+begin
+  if v_user is null then raise exception 'UNAUTHENTICATED'; end if;
+  select p.role into v_role from public.user_profiles p where p.user_id=v_user;
+  if v_role not in ('DONOR','NGO','HUB_ADMIN') then raise exception 'ROLE_REQUIRED'; end if;
+  return query
+  select rc.case_id,rc.claim_id,rc.listing_id,rc.donation_id,rc.source_type,rc.case_status,rc.opened_at
+  from public.claim_reconciliation_cases rc
+  join public.donation_claims c using(claim_id)
+  join public.listings l using(listing_id)
+  where rc.case_status in ('OPEN','MANUAL_REVIEW') and (
+    (v_role='NGO' and c.ngo_user_id=v_user)
+    or (v_role='DONOR' and l.source_type='DIRECT_DONATION' and exists(
+      select 1 from public.donations d where d.donation_id=l.donation_id and d.donor_user_id=v_user))
+    or (v_role='HUB_ADMIN' and l.source_type='HUB_BATCH' and exists(
+      select 1 from public.hub_batches b join public.community_hubs h using(hub_id)
+      where b.batch_id=l.batch_id and h.admin_user_id=v_user))
+  ) order by rc.opened_at desc,rc.case_id;
+end;
+$$;
+
+revoke all on function public.cancel_claim(uuid,uuid) from public,anon;
+revoke all on function public.submit_claim_reconciliation(uuid,boolean,uuid) from public,anon;
+revoke all on function public.get_authorized_audit_events(text,uuid) from public,anon;
+revoke all on function public.get_my_reconciliation_cases() from public,anon;
+revoke all on function public.recover_expired_claims(integer) from public,anon,authenticated;
+grant execute on function public.cancel_claim(uuid,uuid) to authenticated;
+grant execute on function public.submit_claim_reconciliation(uuid,boolean,uuid) to authenticated;
+grant execute on function public.get_authorized_audit_events(text,uuid) to authenticated;
+grant execute on function public.get_my_reconciliation_cases() to authenticated;
+grant execute on function public.recover_expired_claims(integer) to service_role;
+
+notify pgrst, 'reload schema';
+commit;
