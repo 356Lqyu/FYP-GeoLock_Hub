@@ -15,6 +15,34 @@ create table if not exists public.donation_images (
   is_primary boolean not null default false,
   created_at timestamptz not null default clock_timestamp()
 );
+-- Install ordering/capacity safeguards in this first migration too. The later
+-- transition migration repeats these checks idempotently for earlier drafts.
+alter table public.donation_images add column if not exists display_order smallint;
+do $$
+begin
+  if exists(select 1 from public.donation_images group by donation_id having count(*)>3) then
+    raise exception 'A donation already has more than three image rows; reconcile before applying';
+  end if;
+end $$;
+with ranked as (
+  select image_id,row_number() over(partition by donation_id order by is_primary desc,created_at,image_id) as n
+  from public.donation_images
+)
+update public.donation_images i set display_order=r.n::smallint
+from ranked r where r.image_id=i.image_id and i.display_order is null;
+update public.donation_images set is_primary=(display_order=1)
+where is_primary is distinct from (display_order=1);
+alter table public.donation_images alter column display_order set not null;
+do $$
+begin
+  if not exists(select 1 from pg_constraint where conrelid='public.donation_images'::regclass and conname='donation_images_order_range') then
+    alter table public.donation_images add constraint donation_images_order_range
+      check(display_order between 1 and 3 and is_primary=(display_order=1)) not valid;
+  end if;
+end $$;
+alter table public.donation_images validate constraint donation_images_order_range;
+create unique index if not exists ux_donation_images_display_order
+  on public.donation_images(donation_id,display_order);
 create index if not exists idx_donation_images_owner_donation
   on public.donation_images(owner_user_id, donation_id, created_at);
 create unique index if not exists ux_donation_images_primary
@@ -44,6 +72,15 @@ create table if not exists public.hub_batch_images (
   is_primary boolean not null default false,
   created_at timestamptz not null default clock_timestamp()
 );
+do $$
+begin
+  if exists(select 1 from public.hub_batch_images group by batch_id having count(*)>1) then
+    raise exception 'A batch already has multiple image rows; reconcile before applying';
+  end if;
+end $$;
+update public.hub_batch_images set is_primary=true where not is_primary;
+create unique index if not exists ux_hub_batch_single_photo
+  on public.hub_batch_images(batch_id);
 create unique index if not exists ux_hub_batch_images_primary
   on public.hub_batch_images(batch_id) where is_primary;
 alter table public.hub_batch_images enable row level security;
@@ -143,6 +180,7 @@ for delete to authenticated
 using (
   bucket_id='geolock-donation-images'
   and (storage.foldername(name))[1]=auth.uid()::text
+  and not exists(select 1 from public.donation_images i where i.storage_path=name)
   and exists (
     select 1 from public.donations d
     where d.donation_id::text=(storage.foldername(name))[2]
@@ -157,6 +195,7 @@ using (
   bucket_id='geolock-donation-images'
   and (storage.foldername(name))[1]=auth.uid()::text
   and (storage.foldername(name))[2]='batches'
+  and not exists(select 1 from public.hub_batch_images i where i.storage_path=name)
   and exists (
     select 1 from public.hub_batches b
     join public.community_hubs h using(hub_id)
@@ -173,11 +212,18 @@ set search_path=pg_catalog, public, pg_temp
 as $$
 declare
   v_actor uuid := auth.uid();
+  v_donation public.donations%rowtype;
   v_image uuid;
-  v_primary boolean;
+  v_order smallint;
   v_role text;
+  v_actual_size bigint;
+  v_actual_type text;
+  v_ext text;
 begin
   if v_actor is null then raise exception 'UNAUTHENTICATED'; end if;
+  select * into v_donation from public.donations
+    where donation_id=p_donation and donor_user_id=v_actor for update;
+  if not found then raise exception 'DONATION_NOT_FOUND_OR_FORBIDDEN'; end if;
   if p_size_bytes is null or p_size_bytes not between 1 and 5242880
      or p_content_type is null
      or p_content_type not in ('image/jpeg','image/png','image/webp') then
@@ -188,19 +234,27 @@ begin
   ) then
     raise exception 'INVALID_IMAGE_PATH';
   end if;
-  if not exists (
-    select 1 from public.donations d
-    where d.donation_id=p_donation and d.donor_user_id=v_actor
-  ) then raise exception 'DONATION_NOT_FOUND_OR_FORBIDDEN'; end if;
-
-  v_primary := not exists (
-    select 1 from public.donation_images i
-    where i.donation_id=p_donation and i.is_primary
-  );
+  v_ext:=lower(split_part(p_storage_path,'.',array_length(string_to_array(p_storage_path,'.'),1)));
+  if (v_ext in ('jpg','jpeg') and p_content_type<>'image/jpeg')
+     or (v_ext='png' and p_content_type<>'image/png')
+     or (v_ext='webp' and p_content_type<>'image/webp') then
+    raise exception 'IMAGE_EXTENSION_MIME_MISMATCH';
+  end if;
+  select nullif(o.metadata->>'size','')::bigint,o.metadata->>'mimetype'
+    into v_actual_size,v_actual_type from storage.objects o
+    where o.bucket_id='geolock-donation-images' and o.name=p_storage_path;
+  if not found or v_actual_size is distinct from p_size_bytes::bigint
+     or v_actual_type is distinct from p_content_type then
+    raise exception 'STORED_IMAGE_MISSING_OR_MISMATCHED';
+  end if;
+  select count(*)::smallint into v_order from public.donation_images
+    where donation_id=p_donation;
+  if v_order>=3 then raise exception 'MAXIMUM_THREE_DONATION_PHOTOS'; end if;
+  v_order:=v_order+1;
   insert into public.donation_images(
-    donation_id, owner_user_id, storage_path, content_type, size_bytes, is_primary
+    donation_id, owner_user_id, storage_path, content_type, size_bytes, is_primary, display_order
   ) values (
-    p_donation, v_actor, p_storage_path, p_content_type, p_size_bytes, v_primary
+    p_donation, v_actor, p_storage_path, p_content_type, p_size_bytes, v_order=1, v_order
   ) returning image_id into v_image;
 
   select p.role into v_role from public.user_profiles p where p.user_id=v_actor;
@@ -228,6 +282,9 @@ declare
   v_image uuid;
   v_primary boolean;
   v_role text;
+  v_actual_size bigint;
+  v_actual_type text;
+  v_ext text;
 begin
   if v_actor is null then raise exception 'UNAUTHENTICATED'; end if;
   if p_size_bytes is null or p_size_bytes not between 1 and 5242880
@@ -237,6 +294,19 @@ begin
   if p_storage_path is null or p_storage_path !~ (
     '^'||v_actor::text||'/batches/'||p_batch::text||'/[0-9a-fA-F-]{36}[.](jpg|jpeg|png|webp)$'
   ) then raise exception 'INVALID_IMAGE_PATH'; end if;
+  v_ext:=lower(split_part(p_storage_path,'.',array_length(string_to_array(p_storage_path,'.'),1)));
+  if (v_ext in ('jpg','jpeg') and p_content_type<>'image/jpeg')
+     or (v_ext='png' and p_content_type<>'image/png')
+     or (v_ext='webp' and p_content_type<>'image/webp') then
+    raise exception 'IMAGE_EXTENSION_MIME_MISMATCH';
+  end if;
+  select nullif(o.metadata->>'size','')::bigint,o.metadata->>'mimetype'
+    into v_actual_size,v_actual_type from storage.objects o
+    where o.bucket_id='geolock-donation-images' and o.name=p_storage_path;
+  if not found or v_actual_size is distinct from p_size_bytes::bigint
+     or v_actual_type is distinct from p_content_type then
+    raise exception 'STORED_IMAGE_MISSING_OR_MISMATCHED';
+  end if;
   if not exists (
     select 1 from public.hub_batches b
     join public.community_hubs h using(hub_id)

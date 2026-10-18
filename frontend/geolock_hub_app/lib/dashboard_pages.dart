@@ -211,7 +211,7 @@ class _DonorHomePageState extends State<DonorHomePage> {
   late Future<Map<String, dynamic>?> _profile = _loadProfile();
 
   Future<List<Map<String, dynamic>>> _loadDonations() async {
-    final response = await _dashboardDb.rpc('get_my_donation_dashboard');
+    final response = await _dashboardDb.rpc('get_my_donation_dashboard_v2');
     if (response is! List) {
       throw const FormatException(
         'Donation dashboard RPC returned an invalid response.',
@@ -286,7 +286,11 @@ class _DonorHomePageState extends State<DonorHomePage> {
                 .where((d) => _active(d['donation_status']?.toString()))
                 .length;
             final awaiting = rows
-                .where((d) => d['donation_status'] == 'HUB_ASSIGNED')
+                .where(
+                  (d) =>
+                      d['donation_status'] == 'HUB_ASSIGNED' &&
+                      d['reservation_effective_status'] == 'ACTIVE',
+                )
                 .length;
             final completed = rows
                 .where((d) => d['donation_status'] == 'DELIVERED')
@@ -412,7 +416,7 @@ class _DonorMyDonationsPageState extends State<DonorMyDonationsPage> {
   ];
 
   Future<List<Map<String, dynamic>>> _load() async {
-    final response = await _dashboardDb.rpc('get_my_donation_dashboard');
+    final response = await _dashboardDb.rpc('get_my_donation_dashboard_v2');
     if (response is! List) {
       throw const FormatException(
         'Donation dashboard RPC returned an invalid response.',
@@ -1117,7 +1121,7 @@ class DonorImpactPage extends StatefulWidget {
 class _DonorImpactPageState extends State<DonorImpactPage> {
   late Future<List<Map<String, dynamic>>> _data = _load();
   Future<List<Map<String, dynamic>>> _load() async {
-    final rows = await _dashboardDb.rpc('get_my_donation_dashboard');
+    final rows = await _dashboardDb.rpc('get_my_donation_dashboard_v2');
     if (rows is! List) {
       throw const FormatException(
         'Donor dashboard RPC returned an invalid response.',
@@ -1433,7 +1437,17 @@ class DonationSummaryCard extends StatelessWidget {
 }
 
 String _donationStatusLabel(Map<String, dynamic> d) {
-  if (d['donation_status'] == 'HUB_ASSIGNED') return 'Awaiting drop-off';
+  if (d['donation_status'] == 'HUB_ASSIGNED' &&
+      d['reservation_effective_status'] == 'EXPIRED') {
+    return 'Hub reservation expired';
+  }
+  if (d['donation_status'] == 'HUB_ASSIGNED' &&
+      d['reservation_effective_status'] == 'ACTIVE') {
+    return 'Awaiting drop-off';
+  }
+  if (d['donation_status'] == 'HUB_ASSIGNED') {
+    return 'Hub assignment needs review';
+  }
   if (d['inventory_status'] == 'STORED' || d['donation_status'] == 'AT_HUB') {
     return 'At hub';
   }
@@ -1535,21 +1549,27 @@ class ListingPreviewCard extends StatelessWidget {
       padding: const EdgeInsets.all(12),
       child: Row(
         children: [
-          const DonationImage(path: null, size: 58),
+          DonationImage(path: row['primary_image_path']?.toString(), size: 58),
           const SizedBox(width: 10),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '${row['source_type'] == 'HUB_BATCH' ? 'Community hub batch' : 'Direct donation'} · ${row['listing_weight_kg']} kg',
+                  '${row['title'] ?? (row['source_type'] == 'HUB_BATCH' ? 'Community hub batch' : 'Donation')} · ${row['listing_weight_kg']} kg',
                   style: const TextStyle(fontWeight: FontWeight.w700),
                 ),
-                const Text(
-                  'Listing information is limited by the deployed discovery RPC. No title, image, or distance is inferred.',
-                ),
                 Text(
-                  'Listing ${row['listing_id']}',
+                  row['collection_path'] == 'HUB_COLLECTION'
+                      ? 'Community Hub Collection'
+                      : 'Direct Pickup',
+                ),
+                if (row['distance_m'] != null)
+                  Text(
+                    '${(_number(row['distance_m']) / 1000).toStringAsFixed(1)} km away',
+                  ),
+                Text(
+                  'Routing: ${row['routing_status'] ?? 'UNVERIFIED'}',
                   style: Theme.of(context).textTheme.labelSmall,
                 ),
               ],

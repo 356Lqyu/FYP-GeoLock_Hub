@@ -99,12 +99,15 @@ The screens render explicit loading, retry and backend-unavailable states until
 those reads are installed. The migration uses V3 status, receipt, reservation,
 inventory and batch records and does not insert dashboard sample data.
 
-Donors can optionally upload a private JPG, PNG or WebP photo (up to 5 MB) when
-creating a donation. Authorized hub administrators can attach a photo to their
-own batches. The proposed migration stores private object paths and ownership
-metadata; the app creates short-lived signed URLs for the owner. NGO photo access
-is intentionally blocked until a trusted road graph and server-side image read
-path can prove that a listing is eligible. Flutter does not infer claimability.
+Donors select 1–3 private JPG, PNG or WebP photos (up to 5 MB each) when creating
+a donation. The first photo is the cover; users can remove/replace photos and
+promote another photo to cover. Authorized hub administrators can attach one
+optional photo of their own physical batch. Constituent donation photos remain
+separate; a first-constituent cover is only a visual fallback and does not prove
+the batch was assembled. Private object paths and ordered metadata are stored
+separately from donation rows. The app displays short-lived signed URLs and
+uses secure read RPCs for donor, geographically eligible NGO, claimant, and
+responsible hub-admin access. Flutter does not infer claimability.
 
 Before using dashboard data, review and manually deploy the registration
 compatibility and donation-state migrations required by the current auth and
@@ -113,3 +116,53 @@ unresolved Stage 1 migration as part of this dashboard setup. Use
 `../../supabase/tests/role_dashboards_and_images_readiness.sql` for read-only
 schema and permission checks; deployment and live integration testing remain
 manual.
+
+## Donation availability and photo rollout
+
+The donor form no longer asks for availability start/end. It keeps a required
+title (80 characters maximum), an optional description (1,000 maximum), and
+structured item records as the authoritative source for category, quantity, and
+weight. No donor availability date is sent to the creation RPC.
+
+New photo uploads use a request-scoped private staging path. The
+`create_donation_with_images` RPC validates staged objects, invokes the existing
+V3 donation creation RPC with NULL legacy date parameters, and inserts ordered
+image metadata in the same database transaction. The request ID makes uncertain
+responses safe to retry. If a transaction fails, uploaded files remain
+unattached staging objects; cleanup must use the Supabase Storage API, not direct
+deletion from `storage.objects`.
+
+Review the migration
+`../../supabase/migrations/20261018_donation_photo_and_availability_transition.sql`
+after the dashboard/image migration. It preserves existing RPC signatures and
+historical date columns, removes donor-date filtering from the installed
+discovery/claim function bodies while preserving their other logic, and stops
+copying a donor end date into new direct-listing expiry. Existing
+`listing_expires_at` values are preserved so an expired historical listing is
+not accidentally revived. It does not change the 360-minute lease, claim
+idempotency, hub capacity, or routing safeguards.
+
+Until a trusted operational road graph and node validation are configured, NGO
+listing image paths are withheld from unclaimed discovery results. Claim-holder
+image access remains subject to the server lease/custody checks. This keeps
+unverified routes from being presented as fully eligible; NGO discovery cards
+may show the neutral image placeholder in this state.
+
+Required-photo enforcement is staged to avoid interrupting old clients:
+
+1. Review and manually apply the dashboard/image migration, then the
+   availability/photo transition migration in a development Supabase project.
+2. Update and distribute the Flutter client using `create_donation_with_images`.
+3. After verifying the new client and legacy image compatibility, apply
+   `../../supabase/migrations/20261018_enforce_required_donation_photos.sql`.
+   This deferred database trigger requires at least one photo for each newly
+   inserted donation; existing donations are not changed. Legacy creation RPC
+   signatures remain, but a zero-photo insert fails after this enforcement step,
+   so do not apply step 3 while old clients remain active.
+
+Availability columns are not dropped in these migrations. The proposed
+donation-state and unresolved Stage 1 migrations still contain legacy reads, so
+column removal needs a later dependency scan and coordinated cleanup. Use
+`../../supabase/tests/donation_photo_availability_readiness.sql` for read-only
+schema, function, permission, RLS, private-bucket, ordering, and trigger checks.
+No migrations or live database changes have been executed by this work.

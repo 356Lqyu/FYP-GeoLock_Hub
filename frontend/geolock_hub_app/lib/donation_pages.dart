@@ -8,6 +8,8 @@ import 'package:image_picker/image_picker.dart';
 
 import 'location/location_picker_page.dart';
 import 'location/location_result.dart';
+import 'donation_photo_rules.dart';
+import 'donation_photo_errors.dart';
 
 final _db = Supabase.instance.client;
 
@@ -31,7 +33,7 @@ class _EligibleListingsPageState extends State<EligibleListingsPage> {
   }
 
   Future<List<Map<String, dynamic>>> _load() async {
-    final response = await _db.rpc('discover_eligible_listings');
+    final response = await _db.rpc('discover_eligible_listing_cards');
     if (response is! List) {
       throw const FormatException('Invalid listing response.');
     }
@@ -126,13 +128,22 @@ class _EligibleListingsPageState extends State<EligibleListingsPage> {
                   return Card(
                     margin: const EdgeInsets.all(10),
                     child: ListTile(
+                      leading: _StoredImageThumbnail(
+                        path: listing['primary_image_path']?.toString(),
+                      ),
                       title: Text(
-                        '${listing['source_type']} · ${listing['listing_weight_kg']} kg',
+                        '${listing['title'] ?? listing['source_type']} · ${listing['listing_weight_kg']} kg',
                       ),
                       subtitle: Text(
-                        canClaim
-                            ? 'Available since ${listing['listing_created_at']}'
-                            : 'Not claimable: trusted road-node readiness is not confirmed by the server.',
+                        '${listing['collection_path'] ?? listing['source_type']} · ${listing['routing_status'] ?? 'UNVERIFIED'}\n${canClaim ? 'Available since ${listing['listing_created_at']}' : 'Not claimable: trusted road-node readiness is not confirmed by the server.'}',
+                      ),
+                      isThreeLine: true,
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) =>
+                              NgoListingDetailsPage(listing: listing),
+                        ),
                       ),
                       trailing: FilledButton(
                         onPressed: canClaim ? () => _claim(id) : null,
@@ -305,17 +316,34 @@ class _HubOperationsPageState extends State<HubOperationsPage> {
         'get_my_hub_batches_dashboard',
         params: {'p_hub': widget.hub['hub_id']},
       ),
+      _db.rpc(
+        'get_hub_donation_covers',
+        params: {'p_hub': widget.hub['hub_id']},
+      ),
     ]);
     if (responses.any((value) => value is! List)) {
       throw const FormatException('Hub operation RPC returned invalid data.');
     }
+    final covers = <String, String>{};
+    for (final row in (responses[3] as List)) {
+      final cover = Map<String, dynamic>.from(row as Map);
+      if (cover['primary_image_path'] != null) {
+        covers[cover['donation_id'].toString()] = cover['primary_image_path']
+            .toString();
+      }
+    }
+    final reservations = (responses[0] as List)
+        .map((r) => Map<String, dynamic>.from(r as Map))
+        .toList();
+    final inventory = (responses[1] as List)
+        .map((r) => Map<String, dynamic>.from(r as Map))
+        .toList();
+    for (final row in [...reservations, ...inventory]) {
+      row['primary_image_path'] = covers[row['donation_id'].toString()];
+    }
     return {
-      'reservations': (responses[0] as List)
-          .map((r) => Map<String, dynamic>.from(r as Map))
-          .toList(),
-      'inventory': (responses[1] as List)
-          .map((r) => Map<String, dynamic>.from(r as Map))
-          .toList(),
+      'reservations': reservations,
+      'inventory': inventory,
       'batches': (responses[2] as List)
           .map((r) => Map<String, dynamic>.from(r as Map))
           .toList(),
@@ -586,7 +614,7 @@ class _HubOperationsPageState extends State<HubOperationsPage> {
     } catch (error) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Batch photo was not attached: $error')),
+          SnackBar(content: Text(donationPhotoFailureMessage(error))),
         );
       }
     }
@@ -641,21 +669,33 @@ class _HubOperationsPageState extends State<HubOperationsPage> {
                   ),
                 ...reservations.map(
                   (row) => Card(
-                    child: ListTile(
-                      title: Text(
-                        '${row['title']} · ${row['reserved_weight_kg']} kg',
-                      ),
-                      subtitle: Text(
-                        '${row['status']} · expires ${row['expires_at']}',
-                      ),
-                      trailing: row['status'] == 'ACTIVE'
-                          ? FilledButton(
-                              onPressed: _busy
-                                  ? null
-                                  : () => _confirmReceipt(row),
-                              child: const Text('Receive'),
-                            )
-                          : null,
+                    child: Row(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(10),
+                          child: _StoredImageThumbnail(
+                            path: row['primary_image_path']?.toString(),
+                          ),
+                        ),
+                        Expanded(
+                          child: ListTile(
+                            title: Text(
+                              '${row['title']} · ${row['reserved_weight_kg']} kg',
+                            ),
+                            subtitle: Text(
+                              '${row['status']} · expires ${row['expires_at']}',
+                            ),
+                            trailing: row['status'] == 'ACTIVE'
+                                ? FilledButton(
+                                    onPressed: _busy
+                                        ? null
+                                        : () => _confirmReceipt(row),
+                                    child: const Text('Receive'),
+                                  )
+                                : null,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -681,12 +721,27 @@ class _HubOperationsPageState extends State<HubOperationsPage> {
                 if (inventory.isEmpty)
                   const ListTile(title: Text('No stored donations.')),
                 ...inventory.map(
-                  (row) => ListTile(
-                    title: Text(
-                      '${row['title']} · ${row['received_weight_kg']} kg',
-                    ),
-                    subtitle: Text(
-                      '${row['inventory_status']} · ${row['category_name'] ?? '—'}',
+                  (row) => Card(
+                    child: ListTile(
+                      leading: _StoredImageThumbnail(
+                        path: row['primary_image_path']?.toString(),
+                      ),
+                      title: Text(
+                        '${row['title']} · ${row['received_weight_kg']} kg',
+                      ),
+                      subtitle: Text(
+                        '${row['inventory_status']} · ${row['category_name'] ?? '—'}',
+                      ),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => DonationPhotosPage(
+                            donationId: row['donation_id'].toString(),
+                            title: row['title'].toString(),
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -710,10 +765,25 @@ class _HubOperationsPageState extends State<HubOperationsPage> {
                       subtitle: Text(
                         '${row['batch_status']} · ${row['batch_donation_count']} donations · ${row['batch_weight_kg']} kg',
                       ),
-                      trailing: IconButton(
-                        tooltip: 'Add batch photo',
-                        onPressed: _busy ? null : () => _addBatchImage(row),
-                        icon: const Icon(Icons.add_photo_alternate_outlined),
+                      trailing: row['primary_image_path'] == null
+                          ? IconButton(
+                              tooltip: 'Add batch photo',
+                              onPressed: _busy
+                                  ? null
+                                  : () => _addBatchImage(row),
+                              icon: const Icon(
+                                Icons.add_photo_alternate_outlined,
+                              ),
+                            )
+                          : const Icon(Icons.photo_outlined),
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => HubBatchDetailsPage(
+                            batchId: row['batch_id'].toString(),
+                            hubId: widget.hub['hub_id'].toString(),
+                          ),
+                        ),
                       ),
                     ),
                   ),
@@ -732,7 +802,7 @@ class _MyClaimsPageState extends State<MyClaimsPage> {
   bool _busy = false;
 
   Future<List<Map<String, dynamic>>> _load() async {
-    final response = await _db.rpc('get_my_claims');
+    final response = await _db.rpc('get_my_claim_cards');
     if (response is! List) {
       throw const FormatException('Invalid claim history response.');
     }
@@ -873,10 +943,34 @@ class _MyClaimsPageState extends State<MyClaimsPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        '${row['source_type']} · ${row['listing_weight_kg']} kg',
-                        style: Theme.of(context).textTheme.titleMedium,
+                      Row(
+                        children: [
+                          _StoredImageThumbnail(
+                            path: row['primary_image_path']?.toString(),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  row['title']?.toString() ??
+                                      row['source_type'].toString(),
+                                  style: Theme.of(
+                                    context,
+                                  ).textTheme.titleMedium,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                Text(
+                                  '${row['source_type']} · ${row['listing_weight_kg']} kg',
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
+                      const SizedBox(height: 8),
                       Text('Claim $status · lease ${row['lease_status']}'),
                       Text(
                         'Lease expiry (database): ${row['lease_expires_at'] ?? '—'}',
@@ -945,6 +1039,119 @@ class _MyClaimsPageState extends State<MyClaimsPage> {
   );
 }
 
+class NgoListingDetailsPage extends StatefulWidget {
+  final Map<String, dynamic> listing;
+  const NgoListingDetailsPage({super.key, required this.listing});
+
+  @override
+  State<NgoListingDetailsPage> createState() => _NgoListingDetailsPageState();
+}
+
+class _NgoListingDetailsPageState extends State<NgoListingDetailsPage> {
+  late final Future<Map<String, dynamic>> _details = _load();
+
+  Future<Map<String, dynamic>> _load() async {
+    final row = widget.listing;
+    final isBatch = row['source_type'] == 'HUB_BATCH';
+    final rawImages = await _db.rpc(
+      isBatch ? 'get_batch_images' : 'get_donation_images',
+      params: isBatch
+          ? {'p_batch': row['batch_id']}
+          : {'p_donation': row['donation_id']},
+    );
+    final images = rawImages is List
+        ? rawImages
+              .map((image) => Map<String, dynamic>.from(image as Map))
+              .toList()
+        : <Map<String, dynamic>>[];
+    List<Map<String, dynamic>> constituents = [];
+    if (isBatch) {
+      final rawMembers = await _db.rpc(
+        'get_eligible_listing_constituents',
+        params: {'p_listing': row['listing_id']},
+      );
+      if (rawMembers is List) {
+        constituents = rawMembers
+            .map((item) => Map<String, dynamic>.from(item as Map))
+            .toList();
+      }
+    }
+    return {'images': images, 'constituents': constituents};
+  }
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    appBar: AppBar(title: const Text('Donation Listing')),
+    body: FutureBuilder<Map<String, dynamic>>(
+      future: _details,
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Center(
+            child: Text('Listing details unavailable: ${snapshot.error}'),
+          );
+        }
+        if (!snapshot.hasData) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        final data = snapshot.data!;
+        final images = (data['images'] as List).cast<Map<String, dynamic>>();
+        final constituents = (data['constituents'] as List)
+            .cast<Map<String, dynamic>>();
+        final cover = widget.listing['primary_image_path']?.toString();
+        final imagePaths = images
+            .map((image) => image['storage_path']?.toString() ?? '')
+            .where((path) => path.isNotEmpty)
+            .toList();
+        if (imagePaths.isEmpty && cover != null) imagePaths.add(cover);
+        return ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            Text(
+              widget.listing['title']?.toString() ?? 'Community Hub Batch',
+              style: Theme.of(context).textTheme.headlineSmall,
+            ),
+            Text(
+              '${widget.listing['listing_weight_kg']} kg · ${widget.listing['collection_path'] ?? widget.listing['source_type']}',
+            ),
+            const SizedBox(height: 12),
+            DonationPhotoCarousel(paths: imagePaths),
+            const SizedBox(height: 12),
+            Text(
+              'Routing: ${widget.listing['routing_status'] ?? 'UNVERIFIED'}',
+            ),
+            const Text(
+              'A listing appears only after backend eligibility checks. Claiming is enabled only when trusted road-node resolution is confirmed.',
+            ),
+            if (constituents.isNotEmpty) ...[
+              const Divider(),
+              const Text('Whole donations in this batch'),
+              for (final donation in constituents)
+                ListTile(
+                  leading: _StoredImageThumbnail(
+                    path: donation['primary_image_path']?.toString(),
+                  ),
+                  title: Text(donation['title'].toString()),
+                  subtitle: Text(
+                    '${donation['total_weight_kg']} kg · ${donation['donation_status']}',
+                  ),
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => DonationPhotosPage(
+                        donationId: donation['donation_id'].toString(),
+                        title: donation['title'].toString(),
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ],
+        );
+      },
+    ),
+  );
+}
+
 class ClaimPickupDetailPage extends StatelessWidget {
   final String claimId;
   const ClaimPickupDetailPage({super.key, required this.claimId});
@@ -957,7 +1164,33 @@ class ClaimPickupDetailPage extends StatelessWidget {
     if (response is! Map) {
       throw const FormatException('Invalid claim detail response.');
     }
-    return Map<String, dynamic>.from(response);
+    final result = Map<String, dynamic>.from(response);
+    final constituents = await _db.rpc(
+      'get_claimed_listing_constituents',
+      params: {'p_claim': claimId},
+    );
+    result['constituents'] = constituents is List
+        ? constituents
+              .map((row) => Map<String, dynamic>.from(row as Map))
+              .toList()
+        : <Map<String, dynamic>>[];
+    if (result['source_type'] == 'DIRECT_DONATION' &&
+        result['donation_id'] == null &&
+        (result['constituents'] as List).isNotEmpty) {
+      result['donation_id'] =
+          (result['constituents'] as List).first['donation_id'];
+    }
+    if (result['source_type'] == 'DIRECT_DONATION' &&
+        result['donation_id'] != null) {
+      final photos = await _db.rpc(
+        'get_donation_images',
+        params: {'p_donation': result['donation_id']},
+      );
+      result['donation_images'] = photos is List
+          ? photos.map((row) => Map<String, dynamic>.from(row as Map)).toList()
+          : <Map<String, dynamic>>[];
+    }
+    return result;
   }
 
   @override
@@ -975,6 +1208,8 @@ class ClaimPickupDetailPage extends StatelessWidget {
           return const Center(child: CircularProgressIndicator());
         }
         final data = snapshot.data!;
+        final constituents = (data['constituents'] as List? ?? const [])
+            .cast<Map<String, dynamic>>();
         return ListView(
           padding: const EdgeInsets.all(16),
           children: [
@@ -996,6 +1231,52 @@ class ClaimPickupDetailPage extends StatelessWidget {
               '${data['latitude']}, ${data['longitude']}',
             ),
             _claimDetailRow('Weight', '${data['listing_weight_kg']} kg'),
+            if (data['source_type'] == 'HUB_BATCH') ...[
+              const Divider(),
+              const Text('Whole donations in this batch'),
+              DonationPhotoCarousel(
+                paths:
+                    constituents.isEmpty ||
+                        constituents.first['batch_cover_path'] == null
+                    ? (constituents.isEmpty ||
+                              constituents.first['primary_image_path'] == null
+                          ? const []
+                          : [
+                              constituents.first['primary_image_path']
+                                  .toString(),
+                            ])
+                    : [constituents.first['batch_cover_path'].toString()],
+              ),
+              ...constituents.map(
+                (donation) => ListTile(
+                  leading: _StoredImageThumbnail(
+                    path: donation['primary_image_path']?.toString(),
+                  ),
+                  title: Text(donation['title'].toString()),
+                  subtitle: Text(
+                    '${donation['weight_kg']} kg · ${donation['donation_status']}',
+                  ),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => DonationPhotosPage(
+                        donationId: donation['donation_id'].toString(),
+                        title: donation['title'].toString(),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ] else if (constituents.isNotEmpty)
+              DonationPhotoCarousel(
+                paths: [
+                  for (final image
+                      in (data['donation_images'] as List? ?? const []))
+                    if ((image as Map)['storage_path'] != null)
+                      image['storage_path'].toString(),
+                ],
+              ),
             const Text(
               'Exact pickup details are shown only after this NGO has a claim for the listing.',
             ),
@@ -1039,6 +1320,12 @@ class DonationCategory {
   const DonationCategory(this.id, this.name);
 }
 
+class DonationPhotoSelection {
+  final String id;
+  final XFile file;
+  const DonationPhotoSelection({required this.id, required this.file});
+}
+
 class CreateDonationPage extends StatefulWidget {
   const CreateDonationPage({super.key});
   @override
@@ -1052,28 +1339,36 @@ class _CreateDonationPageState extends State<CreateDonationPage> {
   LocationResult? pickupLocation;
   final items = <DonationItemInput>[DonationItemInput()];
   late Future<List<DonationCategory>> categories = _loadCategories();
-  DateTime start = DateTime.now().add(const Duration(hours: 1));
-  DateTime end = DateTime.now().add(const Duration(days: 7));
-  bool useAvailabilityWindow = true;
   bool busy = false;
-  XFile? donationImage;
+  String progressMessage = '';
+  String createRequestId = const Uuid().v4();
+  final photos = <DonationPhotoSelection>[];
 
-  Future<void> _pickDonationImage() async {
+  Future<void> _pickDonationImages() async {
     try {
-      final picked = await ImagePicker().pickImage(
-        source: ImageSource.gallery,
+      final remaining = 3 - photos.length;
+      if (remaining <= 0) return;
+      final picked = await ImagePicker().pickMultiImage(
         imageQuality: 82,
-        maxWidth: 1800,
+        maxWidth: 1600,
+        limit: remaining,
       );
-      if (picked == null || !mounted) return;
-      final extension = picked.path.split('.').last.toLowerCase();
-      if (!const {'jpg', 'jpeg', 'png', 'webp'}.contains(extension)) {
-        throw StateError('Choose a JPG, PNG or WebP image.');
+      if (!mounted || picked.isEmpty) return;
+      final accepted = <DonationPhotoSelection>[];
+      for (final file in picked.take(remaining)) {
+        final extension = file.path.split('.').last.toLowerCase();
+        if (!const {'jpg', 'jpeg', 'png', 'webp'}.contains(extension)) {
+          throw StateError('Choose JPG, PNG or WebP photos.');
+        }
+        if (await file.length() > 5 * 1024 * 1024) {
+          throw StateError('Each resized photo must be 5 MB or smaller.');
+        }
+        accepted.add(DonationPhotoSelection(id: const Uuid().v4(), file: file));
       }
-      if (await picked.length() > 5 * 1024 * 1024) {
-        throw StateError('Image must be 5 MB or smaller.');
-      }
-      setState(() => donationImage = picked);
+      setState(() {
+        photos.addAll(accepted);
+        _resetCreateRequest();
+      });
     } catch (error) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -1083,40 +1378,86 @@ class _CreateDonationPageState extends State<CreateDonationPage> {
     }
   }
 
-  Future<void> _uploadDonationImage(String donationId) async {
-    final image = donationImage;
-    final userId = _db.auth.currentUser?.id;
-    if (image == null || userId == null) return;
-    final ext = image.path.split('.').last.toLowerCase();
-    final mime = ext == 'png'
-        ? 'image/png'
-        : (ext == 'webp' ? 'image/webp' : 'image/jpeg');
-    final path = '$userId/$donationId/${const Uuid().v4()}.$ext';
-    final storage = _db.storage.from('geolock-donation-images');
-    await storage.upload(
-      path,
-      File(image.path),
-      fileOptions: FileOptions(contentType: mime, upsert: false),
-    );
+  Future<void> _replaceDonationImage(int index) async {
     try {
-      await _db.rpc(
-        'add_donation_image',
-        params: {
-          'p_donation': donationId,
-          'p_storage_path': path,
-          'p_content_type': mime,
-          'p_size_bytes': await image.length(),
-        },
+      final picked = await ImagePicker().pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 82,
+        maxWidth: 1600,
       );
-    } catch (_) {
-      try {
-        await storage.remove([path]);
-      } catch (_) {
-        // The metadata RPC remains authoritative. The deployment migration
-        // also includes an orphan-cleanup query for rare failed removals.
+      if (picked == null || !mounted) return;
+      final extension = picked.path.split('.').last.toLowerCase();
+      if (!const {'jpg', 'jpeg', 'png', 'webp'}.contains(extension) ||
+          await picked.length() > 5 * 1024 * 1024) {
+        throw StateError('Choose a JPG, PNG or WebP photo up to 5 MB.');
       }
-      rethrow;
+      setState(() {
+        photos[index] = DonationPhotoSelection(
+          id: const Uuid().v4(),
+          file: picked,
+        );
+        _resetCreateRequest();
+      });
+    } catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Photo could not be replaced: $error')),
+        );
+      }
     }
+  }
+
+  void _resetCreateRequest() => createRequestId = const Uuid().v4();
+
+  void _makeCover(int index) {
+    if (index == 0) return;
+    final ordered = DonationPhotoRules.withCoverFirst(photos, index);
+    setState(() {
+      photos
+        ..clear()
+        ..addAll(ordered);
+      _resetCreateRequest();
+    });
+  }
+
+  Future<List<Map<String, dynamic>>> _uploadDonationImages() async {
+    final userId = _db.auth.currentUser?.id;
+    if (userId == null) {
+      throw StateError('Your session has expired. Sign in again.');
+    }
+    final storage = _db.storage.from('geolock-donation-images');
+    final folder = '$userId/pending/$createRequestId';
+    final existing = await storage.list(path: folder);
+    final existingNames = existing.map((object) => object.name).toSet();
+    final imagePayload = <Map<String, dynamic>>[];
+    for (var index = 0; index < photos.length; index++) {
+      final selection = photos[index];
+      final file = selection.file;
+      final ext = file.path.split('.').last.toLowerCase();
+      final mime = ext == 'png'
+          ? 'image/png'
+          : (ext == 'webp' ? 'image/webp' : 'image/jpeg');
+      final path = '$folder/${selection.id}.$ext';
+      if (mounted) {
+        setState(
+          () => progressMessage =
+              'Uploading photo ${index + 1} of ${photos.length}…',
+        );
+      }
+      if (!existingNames.contains('${selection.id}.$ext')) {
+        await storage.upload(
+          path,
+          File(file.path),
+          fileOptions: FileOptions(contentType: mime, upsert: false),
+        );
+      }
+      imagePayload.add({
+        'storage_path': path,
+        'content_type': mime,
+        'size_bytes': await file.length(),
+      });
+    }
+    return imagePayload;
   }
 
   void retryCategories() => setState(() => categories = _loadCategories());
@@ -1147,37 +1488,12 @@ class _CreateDonationPageState extends State<CreateDonationPage> {
         ),
       ),
     );
-    if (selected != null && mounted) setState(() => pickupLocation = selected);
-  }
-
-  Future<void> pickDate(bool isStart) async {
-    final old = isStart ? start : end;
-    final date = await showDatePicker(
-      context: context,
-      initialDate: old,
-      firstDate: DateTime.now().subtract(const Duration(days: 1)),
-      lastDate: DateTime.now().add(const Duration(days: 365)),
-    );
-    if (date == null || !mounted) return;
-    final time = await showTimePicker(
-      context: context,
-      initialTime: TimeOfDay.fromDateTime(old),
-    );
-    if (time == null || !mounted) return;
-    setState(() {
-      final value = DateTime(
-        date.year,
-        date.month,
-        date.day,
-        time.hour,
-        time.minute,
-      );
-      if (isStart) {
-        start = value;
-      } else {
-        end = value;
-      }
-    });
+    if (selected != null && mounted) {
+      setState(() {
+        pickupLocation = selected;
+        _resetCreateRequest();
+      });
+    }
   }
 
   Future<void> submit() async {
@@ -1190,10 +1506,11 @@ class _CreateDonationPageState extends State<CreateDonationPage> {
       );
       return;
     }
-    if (useAvailabilityWindow &&
-        (!end.isAfter(start) || !end.isAfter(DateTime.now()))) {
+    if (!DonationPhotoRules.validPhotoCount(photos.length)) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Choose a valid availability period.')),
+        const SnackBar(
+          content: Text('Choose between 1 and 3 donation photos.'),
+        ),
       );
       return;
     }
@@ -1223,45 +1540,39 @@ class _CreateDonationPageState extends State<CreateDonationPage> {
         'item_condition': item.condition,
       });
     }
-    setState(() => busy = true);
+    setState(() {
+      busy = true;
+      progressMessage = 'Preparing photo uploads…';
+    });
     try {
       // No trusted road-node resolver is confirmed in the installed V3 RPCs.
       // Null is safe: claim_listing rejects listings without a valid node.
       const String? resolvedNode = null;
+      final imagePayload = await _uploadDonationImages();
+      if (mounted) {
+        setState(() => progressMessage = 'Saving donation securely…');
+      }
       final id = await _db.rpc(
-        'create_and_validate_donation',
-        params: {
-          'p_title': title.text.trim(),
-          'p_description': description.text.trim(),
-          'p_pickup_address': pickupLocation!.address,
-          'p_latitude': pickupLocation!.latitude,
-          'p_longitude': pickupLocation!.longitude,
+        'create_donation_with_images',
+        params: DonationPhotoRules.createRpcPayload(
+          requestId: createRequestId,
+          title: title.text,
+          description: description.text,
+          pickupAddress: pickupLocation!.address,
+          latitude: pickupLocation!.latitude,
+          longitude: pickupLocation!.longitude,
           // Never send an unverified client node. The installed V3 claim RPC
           // rejects this listing until trusted road-node support is deployed.
-          'p_pickup_road_node_id': resolvedNode,
-          'p_availability_start': useAvailabilityWindow
-              ? start.toUtc().toIso8601String()
-              : null,
-          'p_availability_end': useAvailabilityWindow
-              ? end.toUtc().toIso8601String()
-              : null,
-          'p_items': payload,
-        },
+          pickupRoadNodeId: resolvedNode,
+          items: payload,
+          images: imagePayload,
+        ),
       );
-      String? imageWarning;
-      if (donationImage != null) {
-        try {
-          await _uploadDonationImage(id.toString());
-        } catch (error) {
-          imageWarning =
-              ' Donation saved, but its image was not attached: $error';
-        }
-      }
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            '${resolvedNode == null ? 'Donation created: $id. Trusted road-node resolution is not configured, so this listing cannot be claimed yet.' : 'Donation created and validated: $id.'}${imageWarning ?? ''}',
+            'Donation created with ${photos.length} photos: $id. Trusted road-node resolution is not configured, so this listing cannot be claimed yet.',
           ),
           duration: const Duration(seconds: 7),
         ),
@@ -1269,9 +1580,12 @@ class _CreateDonationPageState extends State<CreateDonationPage> {
       Navigator.pop(context);
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Creation failed: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(donationPhotoFailureMessage(e)),
+            duration: const Duration(seconds: 8),
+          ),
+        );
       }
     } finally {
       if (mounted) setState(() => busy = false);
@@ -1326,45 +1640,88 @@ class _CreateDonationPageState extends State<CreateDonationPage> {
             children: [
               TextFormField(
                 controller: title,
+                readOnly: busy,
+                maxLength: 80,
                 decoration: const InputDecoration(labelText: 'Donation title'),
-                validator: (v) =>
-                    (v?.trim().length ?? 0) < 2 ? 'Enter a title' : null,
+                validator: (v) => DonationPhotoRules.titleError(v ?? ''),
+                onChanged: (_) => _resetCreateRequest(),
               ),
               TextFormField(
                 controller: description,
+                readOnly: busy,
+                maxLength: 1000,
+                maxLines: 3,
                 decoration: const InputDecoration(labelText: 'Description'),
+                validator: (v) => DonationPhotoRules.descriptionError(v ?? ''),
+                onChanged: (_) => _resetCreateRequest(),
               ),
               const SizedBox(height: 10),
-              Card(
-                child: ListTile(
-                  leading: donationImage == null
-                      ? const Icon(Icons.add_photo_alternate_outlined)
-                      : ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: Image.file(
-                            File(donationImage!.path),
-                            width: 52,
-                            height: 52,
-                            fit: BoxFit.cover,
+              Row(
+                children: [
+                  Expanded(child: Text('Donation photos (${photos.length}/3)')),
+                  TextButton.icon(
+                    onPressed: busy || photos.length >= 3
+                        ? null
+                        : _pickDonationImages,
+                    icon: const Icon(Icons.add_photo_alternate_outlined),
+                    label: const Text('Add photos'),
+                  ),
+                ],
+              ),
+              Text(
+                'Select 1–3 photos. The first is the cover; choose another photo as cover to move it first. Photos are resized before upload.',
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+              if (photos.isEmpty)
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 12),
+                  child: Text('At least one photo is required.'),
+                ),
+              for (var i = 0; i < photos.length; i++)
+                Card(
+                  key: ValueKey(photos[i].id),
+                  child: ListTile(
+                    leading: ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: Image.file(
+                        File(photos[i].file.path),
+                        width: 56,
+                        height: 56,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    title: Text(i == 0 ? 'Cover photo' : 'Photo ${i + 1}'),
+                    subtitle: Text(photos[i].file.name),
+                    trailing: Wrap(
+                      spacing: 0,
+                      children: [
+                        if (i > 0)
+                          IconButton(
+                            tooltip: 'Set as cover',
+                            onPressed: busy ? null : () => _makeCover(i),
+                            icon: const Icon(Icons.star_outline),
                           ),
+                        IconButton(
+                          tooltip: 'Replace photo',
+                          onPressed: busy
+                              ? null
+                              : () => _replaceDonationImage(i),
+                          icon: const Icon(Icons.refresh),
                         ),
-                  title: Text(
-                    donationImage == null
-                        ? 'Add a donation photo'
-                        : 'Photo selected',
-                  ),
-                  subtitle: const Text(
-                    'Optional · JPG, PNG or WebP · up to 5 MB',
-                  ),
-                  trailing: IconButton(
-                    tooltip: donationImage == null
-                        ? 'Choose image'
-                        : 'Change image',
-                    onPressed: busy ? null : _pickDonationImage,
-                    icon: const Icon(Icons.photo_library_outlined),
+                        IconButton(
+                          tooltip: 'Remove photo',
+                          onPressed: busy
+                              ? null
+                              : () => setState(() {
+                                  photos.removeAt(i);
+                                  _resetCreateRequest();
+                                }),
+                          icon: const Icon(Icons.delete_outline),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
               const SizedBox(height: 10),
               const Text('Pickup location'),
               OutlinedButton.icon(
@@ -1384,28 +1741,6 @@ class _CreateDonationPageState extends State<CreateDonationPage> {
                 ),
               ],
               const SizedBox(height: 12),
-              SwitchListTile(
-                contentPadding: EdgeInsets.zero,
-                title: const Text('Set an availability window'),
-                value: useAvailabilityWindow,
-                onChanged: busy
-                    ? null
-                    : (value) => setState(() => useAvailabilityWindow = value),
-              ),
-              if (useAvailabilityWindow) ...[
-                ListTile(
-                  title: const Text('Availability start'),
-                  subtitle: Text(start.toLocal().toString()),
-                  trailing: const Icon(Icons.edit_calendar),
-                  onTap: busy ? null : () => pickDate(true),
-                ),
-                ListTile(
-                  title: const Text('Availability end'),
-                  subtitle: Text(end.toLocal().toString()),
-                  trailing: const Icon(Icons.edit_calendar),
-                  onTap: busy ? null : () => pickDate(false),
-                ),
-              ],
               const Divider(),
               ...items.asMap().entries.map((entry) {
                 final i = entry.key;
@@ -1422,10 +1757,13 @@ class _CreateDonationPageState extends State<CreateDonationPage> {
                             if (items.length > 1)
                               IconButton(
                                 icon: const Icon(Icons.delete_outline),
-                                onPressed: () => setState(() {
-                                  items.removeAt(i);
-                                  item.dispose();
-                                }),
+                                onPressed: busy
+                                    ? null
+                                    : () => setState(() {
+                                        items.removeAt(i);
+                                        item.dispose();
+                                        _resetCreateRequest();
+                                      }),
                               ),
                           ],
                         ),
@@ -1442,33 +1780,46 @@ class _CreateDonationPageState extends State<CreateDonationPage> {
                                 ),
                               )
                               .toList(),
-                          onChanged: (v) => setState(() => item.category = v),
+                          onChanged: busy
+                              ? null
+                              : (v) => setState(() {
+                                  item.category = v;
+                                  _resetCreateRequest();
+                                }),
                           validator: (v) =>
                               v == null ? 'Select category' : null,
                         ),
                         TextFormField(
                           controller: item.name,
+                          readOnly: busy,
                           decoration: const InputDecoration(
                             labelText: 'Item name',
                           ),
+                          onChanged: (_) => _resetCreateRequest(),
                           validator: (v) => (v?.trim().isEmpty ?? true)
                               ? 'Enter item name'
                               : null,
                         ),
                         TextFormField(
                           controller: item.quantity,
+                          readOnly: busy,
                           keyboardType: TextInputType.number,
-                          onChanged: (_) => setState(() {}),
+                          onChanged: (_) => setState(() {
+                            _resetCreateRequest();
+                          }),
                           decoration: const InputDecoration(
                             labelText: 'Quantity',
                           ),
                         ),
                         TextFormField(
                           controller: item.weight,
+                          readOnly: busy,
                           keyboardType: const TextInputType.numberWithOptions(
                             decimal: true,
                           ),
-                          onChanged: (_) => setState(() {}),
+                          onChanged: (_) => setState(() {
+                            _resetCreateRequest();
+                          }),
                           decoration: const InputDecoration(
                             labelText: 'Unit weight (kg)',
                           ),
@@ -1489,8 +1840,12 @@ class _CreateDonationPageState extends State<CreateDonationPage> {
                               child: Text('Fair'),
                             ),
                           ],
-                          onChanged: (value) =>
-                              setState(() => item.condition = value ?? 'GOOD'),
+                          onChanged: busy
+                              ? null
+                              : (value) => setState(() {
+                                  item.condition = value ?? 'GOOD';
+                                  _resetCreateRequest();
+                                }),
                         ),
                       ],
                     ),
@@ -1500,9 +1855,12 @@ class _CreateDonationPageState extends State<CreateDonationPage> {
               TextButton.icon(
                 icon: const Icon(Icons.add),
                 label: const Text('Add another item'),
-                onPressed: items.length >= 30
+                onPressed: busy || items.length >= 30
                     ? null
-                    : () => setState(() => items.add(DonationItemInput())),
+                    : () => setState(() {
+                        items.add(DonationItemInput());
+                        _resetCreateRequest();
+                      }),
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8),
@@ -1516,6 +1874,11 @@ class _CreateDonationPageState extends State<CreateDonationPage> {
                 ),
               ),
               const SizedBox(height: 16),
+              if (busy) ...[
+                const LinearProgressIndicator(),
+                const SizedBox(height: 8),
+                Text(progressMessage, textAlign: TextAlign.center),
+              ],
               FilledButton(
                 onPressed: busy ? null : submit,
                 child: Text(busy ? 'Saving...' : 'Submit Donation'),
@@ -1543,7 +1906,7 @@ class _MyDonationsPageState extends State<MyDonationsPage> {
   late Future<List<Map<String, dynamic>>> _donations = _load();
 
   Future<List<Map<String, dynamic>>> _load() async {
-    final response = await _db.rpc('get_my_donations');
+    final response = await _db.rpc('get_my_donation_dashboard_v2');
     if (response is! List) {
       throw const FormatException('Invalid donation history response.');
     }
@@ -1581,17 +1944,23 @@ class _MyDonationsPageState extends State<MyDonationsPage> {
           itemCount: rows.length,
           itemBuilder: (context, i) {
             final d = rows[i];
-            return ListTile(
-              title: Text('${d['title']}'),
-              subtitle: Text(
-                '${d['collection_path']} • ${d['donation_status']} • ${d['total_weight_kg'] ?? '—'} kg${d['listing_routing_status'] == null ? '' : ' • route node ${d['listing_routing_status']}'}',
-              ),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => DonationDetailPage(
-                    donationId: d['donation_id'].toString(),
+            return Card(
+              margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+              child: ListTile(
+                leading: _StoredImageThumbnail(
+                  path: d['primary_image_path']?.toString(),
+                ),
+                title: Text('${d['title']}'),
+                subtitle: Text(
+                  '${d['collection_path']} • ${d['donation_status']} • ${d['total_weight_kg'] ?? '—'} kg${d['listing_routing_status'] == null ? '' : ' • route node ${d['listing_routing_status']}'}',
+                ),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => DonationDetailPage(
+                      donationId: d['donation_id'].toString(),
+                    ),
                   ),
                 ),
               ),
@@ -1624,16 +1993,40 @@ class _DonationDetailPageState extends State<DonationDetailPage> {
       throw StateError('Donation not found or you do not have access to it.');
     }
     final detail = Map<String, dynamic>.from(response);
-    final dashboardRows = await _db.rpc('get_my_donation_dashboard');
+    List<Map<String, dynamic>> imageRows = [];
+    try {
+      final rows = await _db.rpc(
+        'get_donation_images',
+        params: {'p_donation': widget.donationId},
+      );
+      if (rows is List) {
+        imageRows = rows
+            .map((row) => Map<String, dynamic>.from(row as Map))
+            .toList();
+      }
+    } catch (_) {
+      // Older deployments may have only the first-photo dashboard field.
+    }
+    final dashboardRows = await _db.rpc('get_my_donation_dashboard_v2');
     if (dashboardRows is List) {
       for (final row in dashboardRows) {
         final donation = Map<String, dynamic>.from(row as Map);
         if (donation['donation_id'].toString() == widget.donationId) {
           detail['primary_image_path'] = donation['primary_image_path'];
+          detail['inventory_status'] = donation['inventory_status'];
+          if (imageRows.isEmpty && donation['primary_image_path'] != null) {
+            imageRows = [
+              {
+                'storage_path': donation['primary_image_path'],
+                'display_order': 1,
+              },
+            ];
+          }
           break;
         }
       }
     }
+    detail['images'] = imageRows;
     return detail;
   }
 
@@ -1776,20 +2169,38 @@ class _DonationDetailPageState extends State<DonationDetailPage> {
         final reservations = (d['hub_reservations'] as List? ?? const [])
             .cast<Map>();
         final items = (d['items'] as List? ?? const []).cast<Map>();
-        final hasActiveReservation = reservations.any(
-          (r) => r['status'] == 'ACTIVE',
+        final latestReservation = reservations.isEmpty
+            ? null
+            : reservations.first;
+        final latestReservationStatus =
+            latestReservation?['effective_status'] ??
+            latestReservation?['status'];
+        final hasReceipt = reservations.any(
+          (reservation) => reservation['receipt_status'] != null,
+        );
+        final hasInventory = d['inventory_status'] != null;
+        final hubHistoryIsClear = reservations.every(
+          (reservation) => reservation['receipt_status'] == null,
         );
         final cancellable =
-            [
-              'SUBMITTED',
-              'VALIDATED',
-              'READY_FOR_PICKUP',
-            ].contains(d['status']) &&
-            d['listing_status'] != 'CLAIMED' &&
-            !hasActiveReservation;
+            !hasReceipt &&
+            !hasInventory &&
+            ((d['status'] == 'SUBMITTED' && reservations.isEmpty) ||
+                (d['status'] == 'VALIDATED' && reservations.isEmpty) ||
+                (d['status'] == 'READY_FOR_PICKUP' &&
+                    d['collection_path'] == 'DIRECT_PICKUP' &&
+                    d['listing_status'] == 'AVAILABLE' &&
+                    reservations.isEmpty) ||
+                (d['status'] == 'HUB_ASSIGNED' &&
+                    d['collection_path'] == 'HUB_COLLECTION' &&
+                    hubHistoryIsClear &&
+                    (latestReservationStatus == 'ACTIVE' ||
+                        latestReservationStatus == 'EXPIRED')));
         final needsHub =
-            d['status'] == 'VALIDATED' &&
-            d['collection_path'] == 'HUB_COLLECTION';
+            d['collection_path'] == 'HUB_COLLECTION' &&
+            (d['status'] == 'VALIDATED' ||
+                (d['status'] == 'HUB_ASSIGNED' &&
+                    latestReservationStatus == 'EXPIRED'));
         return ListView(
           padding: const EdgeInsets.all(16),
           children: [
@@ -1797,15 +2208,31 @@ class _DonationDetailPageState extends State<DonationDetailPage> {
               d['title'].toString(),
               style: Theme.of(context).textTheme.headlineSmall,
             ),
-            const SizedBox(height: 8),
-            Align(
-              alignment: Alignment.centerLeft,
-              child: _StoredImageThumbnail(
-                path: d['primary_image_path']?.toString(),
+            if ((d['description']?.toString().trim().isNotEmpty ?? false))
+              Padding(
+                padding: const EdgeInsets.only(top: 6, bottom: 10),
+                child: Text(d['description'].toString()),
               ),
+            DonationPhotoCarousel(
+              paths: ((d['images'] as List?) ?? const [])
+                  .map((image) => Map<String, dynamic>.from(image as Map))
+                  .map((image) => image['storage_path']?.toString() ?? '')
+                  .where((path) => path.isNotEmpty)
+                  .toList(),
             ),
             const SizedBox(height: 12),
-            _detailRow('Current state', d['status']),
+            _detailRow(
+              'Current state',
+              d['status'] == 'HUB_ASSIGNED' &&
+                      latestReservationStatus == 'EXPIRED'
+                  ? 'Hub reservation expired — choose another hub'
+                  : d['status'] == 'HUB_ASSIGNED' &&
+                        latestReservationStatus == 'ACTIVE'
+                  ? 'Hub assigned — awaiting drop-off'
+                  : d['status'] == 'HUB_ASSIGNED'
+                  ? 'Hub assignment needs review'
+                  : d['status'],
+            ),
             _detailRow('Collection path', d['collection_path']),
             _detailRow('Total weight', '${d['total_weight_kg']} kg'),
             if (d['collection_path'] == 'DIRECT_PICKUP')
@@ -1814,10 +2241,6 @@ class _DonationDetailPageState extends State<DonationDetailPage> {
                 d['road_node_status'] ?? 'PENDING_NODE',
               ),
             _detailRow('Pickup address', d['pickup_address']),
-            _detailRow(
-              'Availability',
-              '${d['availability_start'] ?? '—'} → ${d['availability_end'] ?? '—'}',
-            ),
             const Divider(),
             Text('Items', style: Theme.of(context).textTheme.titleMedium),
             ...items.map(
@@ -1840,14 +2263,20 @@ class _DonationDetailPageState extends State<DonationDetailPage> {
               (r) => ListTile(
                 contentPadding: EdgeInsets.zero,
                 title: Text(r['hub_name'].toString()),
-                subtitle: Text('${r['status']} · expires ${r['expires_at']}'),
+                subtitle: Text(
+                  '${r['effective_status'] ?? r['status']} · expires ${r['expires_at']}',
+                ),
               ),
             ),
             if (needsHub)
               FilledButton.icon(
                 onPressed: _busy ? null : _reserveHub,
                 icon: const Icon(Icons.storefront_outlined),
-                label: const Text('Reserve a Community Hub'),
+                label: Text(
+                  d['status'] == 'HUB_ASSIGNED'
+                      ? 'Choose another Community Hub'
+                      : 'Reserve a Community Hub',
+                ),
               ),
             if (d['collection_path'] == 'DIRECT_PICKUP' &&
                 d['road_node_status'] != 'READY')
@@ -1920,4 +2349,289 @@ class _StoredImageThumbnail extends StatelessWidget {
       },
     );
   }
+}
+
+class DonationPhotoCarousel extends StatefulWidget {
+  final List<String> paths;
+  final Future<String> Function(String path)? urlResolver;
+  const DonationPhotoCarousel({
+    super.key,
+    required this.paths,
+    this.urlResolver,
+  });
+
+  @override
+  State<DonationPhotoCarousel> createState() => _DonationPhotoCarouselState();
+}
+
+class DonationPhotosPage extends StatefulWidget {
+  final String donationId;
+  final String title;
+  const DonationPhotosPage({
+    super.key,
+    required this.donationId,
+    required this.title,
+  });
+
+  @override
+  State<DonationPhotosPage> createState() => _DonationPhotosPageState();
+}
+
+class _DonationPhotosPageState extends State<DonationPhotosPage> {
+  late final Future<List<String>> _photos = _load();
+
+  Future<List<String>> _load() async {
+    final result = await _db.rpc(
+      'get_donation_images',
+      params: {'p_donation': widget.donationId},
+    );
+    if (result is! List) throw const FormatException('Invalid photo response.');
+    return result
+        .map(
+          (row) =>
+              Map<String, dynamic>.from(
+                row as Map,
+              )['storage_path']?.toString() ??
+              '',
+        )
+        .where((path) => path.isNotEmpty)
+        .toList();
+  }
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    appBar: AppBar(title: Text(widget.title)),
+    body: FutureBuilder<List<String>>(
+      future: _photos,
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Center(child: Text('Photos unavailable: ${snapshot.error}'));
+        }
+        if (!snapshot.hasData) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        return Padding(
+          padding: const EdgeInsets.all(16),
+          child: DonationPhotoCarousel(paths: snapshot.data!),
+        );
+      },
+    ),
+  );
+}
+
+class HubBatchDetailsPage extends StatefulWidget {
+  final String batchId;
+  final String hubId;
+  const HubBatchDetailsPage({
+    super.key,
+    required this.batchId,
+    required this.hubId,
+  });
+
+  @override
+  State<HubBatchDetailsPage> createState() => _HubBatchDetailsPageState();
+}
+
+class _HubBatchDetailsPageState extends State<HubBatchDetailsPage> {
+  late final Future<Map<String, dynamic>> _details = _load();
+
+  Future<Map<String, dynamic>> _load() async {
+    final result = await _db.rpc(
+      'get_hub_batch_details',
+      params: {'p_hub': widget.hubId, 'p_batch': widget.batchId},
+    );
+    if (result is! Map) {
+      throw const FormatException('Invalid batch detail response.');
+    }
+    return Map<String, dynamic>.from(result);
+  }
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    appBar: AppBar(title: const Text('Batch Details')),
+    body: FutureBuilder<Map<String, dynamic>>(
+      future: _details,
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Center(
+            child: Text('Batch details unavailable: ${snapshot.error}'),
+          );
+        }
+        if (!snapshot.hasData) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        final data = snapshot.data!;
+        final donations = (data['donations'] as List? ?? const []).map(
+          (row) => Map<String, dynamic>.from(row as Map),
+        );
+        final cover = data['batch_cover_path']?.toString();
+        return ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            Text(
+              'Batch ${data['batch_id']}',
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            Text(
+              '${data['batch_status']} · ${data['batch_weight_kg'] ?? ''} kg',
+            ),
+            const SizedBox(height: 12),
+            DonationPhotoCarousel(paths: cover == null ? const [] : [cover]),
+            const SizedBox(height: 16),
+            Text(
+              'Constituent donations',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            for (final donation in donations)
+              Card(
+                child: ListTile(
+                  leading: _StoredImageThumbnail(
+                    path: donation['primary_image_path']?.toString(),
+                  ),
+                  title: Text(donation['title'].toString()),
+                  subtitle: Text(
+                    '${donation['weight_kg']} kg · ${donation['donation_status']}',
+                  ),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => DonationPhotosPage(
+                        donationId: donation['donation_id'].toString(),
+                        title: donation['title'].toString(),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            const Padding(
+              padding: EdgeInsets.only(top: 8),
+              child: Text(
+                'A constituent donation image is a visual fallback only; it does not prove that the batch is physically assembled.',
+              ),
+            ),
+          ],
+        );
+      },
+    ),
+  );
+}
+
+class _DonationPhotoCarouselState extends State<DonationPhotoCarousel> {
+  late final PageController _controller = PageController();
+  final _signedUrls = <String, Future<String>>{};
+  int _index = 0;
+
+  @override
+  void didUpdateWidget(covariant DonationPhotoCarousel oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.paths != widget.paths) _index = 0;
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final count = widget.paths.length;
+    if (count == 0) {
+      return Container(
+        height: 220,
+        decoration: BoxDecoration(
+          color: const Color(0xffe4f2ed),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: const Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.volunteer_activism_outlined, size: 42),
+              SizedBox(height: 8),
+              Text('No donation photos'),
+            ],
+          ),
+        ),
+      );
+    }
+    return Column(
+      children: [
+        SizedBox(
+          height: 240,
+          child: Stack(
+            children: [
+              PageView.builder(
+                controller: _controller,
+                itemCount: count,
+                onPageChanged: (value) => setState(() => _index = value),
+                itemBuilder: (context, index) => FutureBuilder<String>(
+                  future: _signedUrls.putIfAbsent(
+                    widget.paths[index],
+                    () =>
+                        widget.urlResolver?.call(widget.paths[index]) ??
+                        _db.storage
+                            .from('geolock-donation-images')
+                            .createSignedUrl(widget.paths[index], 900),
+                  ),
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData || snapshot.hasError) {
+                      return _photoPlaceholder();
+                    }
+                    return ClipRRect(
+                      borderRadius: BorderRadius.circular(16),
+                      child: Image.network(
+                        snapshot.data!,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, _, _) => _photoPlaceholder(),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              if (count > 1 && _index > 0)
+                Positioned(
+                  left: 8,
+                  top: 96,
+                  child: IconButton.filledTonal(
+                    tooltip: 'Previous photo',
+                    onPressed: () => _controller.previousPage(
+                      duration: const Duration(milliseconds: 180),
+                      curve: Curves.easeOut,
+                    ),
+                    icon: const Icon(Icons.chevron_left),
+                  ),
+                ),
+              if (count > 1 && _index < count - 1)
+                Positioned(
+                  right: 8,
+                  top: 96,
+                  child: IconButton.filledTonal(
+                    tooltip: 'Next photo',
+                    onPressed: () => _controller.nextPage(
+                      duration: const Duration(milliseconds: 180),
+                      curve: Curves.easeOut,
+                    ),
+                    icon: const Icon(Icons.chevron_right),
+                  ),
+                ),
+            ],
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(top: 6),
+          child: Text('${_index + 1} / $count'),
+        ),
+      ],
+    );
+  }
+
+  Widget _photoPlaceholder() => Container(
+    color: const Color(0xffe4f2ed),
+    child: const Center(
+      child: Icon(Icons.image_not_supported_outlined, size: 42),
+    ),
+  );
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:geolock_hub_app/dashboard_pages.dart';
+import 'package:geolock_hub_app/donation_pages.dart';
 
 void main() {
   testWidgets('donor navigation has five donor-only destinations and selects', (
@@ -93,4 +94,38 @@ void main() {
       expect(find.byIcon(Icons.volunteer_activism_outlined), findsOneWidget);
     },
   );
+
+  testWidgets('donation photo carousel has a graceful no-photo state', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: Scaffold(body: DonationPhotoCarousel(paths: [])),
+      ),
+    );
+    expect(find.text('No donation photos'), findsOneWidget);
+  });
+
+  testWidgets('donation photo carousel changes photo and counter', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: DonationPhotoCarousel(
+            paths: const ['first', 'second'],
+            urlResolver: (path) async => 'https://example.invalid/$path',
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+    expect(find.text('1 / 2'), findsOneWidget);
+    await tester.tap(find.byTooltip('Next photo'));
+    await tester.pumpAndSettle();
+    expect(find.text('2 / 2'), findsOneWidget);
+    await tester.tap(find.byTooltip('Previous photo'));
+    await tester.pumpAndSettle();
+    expect(find.text('1 / 2'), findsOneWidget);
+  });
 }
