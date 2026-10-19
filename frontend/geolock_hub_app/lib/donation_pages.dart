@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart' show debugPrint, kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uuid/uuid.dart';
@@ -11,8 +12,64 @@ import 'location/location_result.dart';
 import 'donation_photo_rules.dart';
 import 'donation_photo_errors.dart';
 import 'donation_status.dart';
+import 'status_timeline.dart';
 
 final _db = Supabase.instance.client;
+
+String _safePhotoDiagnostic(Object error) => error
+    .toString()
+    .replaceAll(RegExp(r'https?://[^\s)\]}>]+'), '[URL redacted]')
+    .replaceAll(
+      RegExp(r'Bearer\s+\S+', caseSensitive: false),
+      'Bearer [redacted]',
+    )
+    .replaceAll(
+      RegExp(
+        r'\beyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\b',
+      ),
+      '[JWT redacted]',
+    )
+    .replaceAll(
+      RegExp(r'\bsb_(?:publishable|secret)_[A-Za-z0-9_-]+\b'),
+      '[Supabase key redacted]',
+    )
+    .replaceAll(
+      RegExp(
+        r'\b[0-9a-fA-F-]{36}/(?:pending/)?[0-9a-fA-F-]{36}/[0-9a-fA-F-]{36}\.(?:jpg|jpeg|png|webp)\b',
+      ),
+      '[Storage path redacted]',
+    );
+
+void _photoDebug(String message) {
+  if (kDebugMode) debugPrint('[GeoLock photo] $message');
+}
+
+Future<String> createDonationPhotoSignedUrl(
+  SupabaseClient client,
+  String path, {
+  required String surface,
+}) async {
+  try {
+    final url = await client.storage
+        .from('geolock-donation-images')
+        .createSignedUrl(path, 900);
+    _photoDebug('$surface signed URL created (URL omitted)');
+    return url;
+  } catch (error, stackTrace) {
+    _photoDebug('$surface signed URL failed: ${_safePhotoDiagnostic(error)}');
+    if (kDebugMode) debugPrint('$stackTrace');
+    rethrow;
+  }
+}
+
+void logDonationPhotoNetworkFailure({
+  required String surface,
+  required Object error,
+  StackTrace? stackTrace,
+}) {
+  _photoDebug('$surface image request failed: ${_safePhotoDiagnostic(error)}');
+  if (kDebugMode && stackTrace != null) debugPrint('$stackTrace');
+}
 
 class EligibleListingsPage extends StatefulWidget {
   const EligibleListingsPage({super.key});
@@ -136,7 +193,7 @@ class _EligibleListingsPageState extends State<EligibleListingsPage> {
                         '${listing['title'] ?? listing['source_type']} · ${listing['listing_weight_kg']} kg',
                       ),
                       subtitle: Text(
-                        '${listing['collection_path'] ?? listing['source_type']} · ${listing['routing_status'] ?? 'UNVERIFIED'}\n${canClaim ? 'Available since ${listing['listing_created_at']}' : 'Not claimable: trusted road-node readiness is not confirmed by the server.'}',
+                        '${friendlyWorkflowStatus(listing['collection_path'] ?? listing['source_type'])} · ${friendlyWorkflowStatus(listing['routing_status'] ?? 'UNVERIFIED')}\n${canClaim ? 'Eligible in discovery; the database rechecks when claimed.' : 'Claim unavailable: trusted road-node readiness is not confirmed by the server.'}',
                       ),
                       isThreeLine: true,
                       onTap: () => Navigator.push(
@@ -392,7 +449,9 @@ class _HubOperationsPageState extends State<HubOperationsPage> {
         },
       );
       if (receipt == null || receipt.toString().trim().isEmpty) {
-        throw const FormatException('The database did not confirm hub receipt.');
+        throw const FormatException(
+          'The database did not confirm hub receipt.',
+        );
       }
       if (mounted) {
         setState(() => _data = _load());
@@ -686,7 +745,16 @@ class _HubOperationsPageState extends State<HubOperationsPage> {
                               '${row['title']} · ${row['reserved_weight_kg']} kg',
                             ),
                             subtitle: Text(
-                              '${row['status']} · expires ${row['expires_at']}',
+                              '${row['status'] == 'ACTIVE' ? 'Recorded as Active · validity depends on database expiry' : friendlyWorkflowStatus(row['status'])} · deadline ${statusTimestampText(context, row['expires_at']) ?? '—'}',
+                            ),
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => HubDonationDetailsPage(
+                                  hub: widget.hub,
+                                  donationId: row['donation_id'].toString(),
+                                ),
+                              ),
                             ),
                             trailing: row['status'] == 'ACTIVE'
                                 ? FilledButton(
@@ -733,15 +801,15 @@ class _HubOperationsPageState extends State<HubOperationsPage> {
                         '${row['title']} · ${row['received_weight_kg']} kg',
                       ),
                       subtitle: Text(
-                        '${row['inventory_status']} · ${row['category_name'] ?? '—'}',
+                        '${friendlyWorkflowStatus(row['inventory_status'])} · ${row['category_name'] ?? '—'}',
                       ),
                       trailing: const Icon(Icons.chevron_right),
                       onTap: () => Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => DonationPhotosPage(
+                          builder: (_) => HubDonationDetailsPage(
+                            hub: widget.hub,
                             donationId: row['donation_id'].toString(),
-                            title: row['title'].toString(),
                           ),
                         ),
                       ),
@@ -766,7 +834,7 @@ class _HubOperationsPageState extends State<HubOperationsPage> {
                       ),
                       title: Text('Batch ${row['batch_id']}'),
                       subtitle: Text(
-                        '${row['batch_status']} · ${row['batch_donation_count']} donations · ${row['batch_weight_kg']} kg',
+                        '${friendlyWorkflowStatus(row['batch_status'])} · ${row['batch_donation_count']} donations · ${row['batch_weight_kg']} kg',
                       ),
                       trailing: row['primary_image_path'] == null
                           ? IconButton(
@@ -825,7 +893,8 @@ class _MyReconciliationCasesPageState extends State<MyReconciliationCasesPage> {
     final caseId = row['case_id'].toString();
     final choice = handoverConfirmed ? 'yes' : 'no';
     final prefs = await SharedPreferences.getInstance();
-    final key = 'geolock_reconcile_${_db.auth.currentUser?.id}_${caseId}_$choice';
+    final key =
+        'geolock_reconcile_${_db.auth.currentUser?.id}_${caseId}_$choice';
     final requestId = prefs.getString(key) ?? const Uuid().v4();
     await prefs.setString(key, requestId);
     setState(() => _busy = true);
@@ -907,7 +976,9 @@ class _MyReconciliationCasesPageState extends State<MyReconciliationCasesPage> {
         }
         final rows = snapshot.data!;
         if (rows.isEmpty) {
-          return const Center(child: Text('No handover cases require your response.'));
+          return const Center(
+            child: Text('No handover cases require your response.'),
+          );
         }
         return ListView.builder(
           padding: const EdgeInsets.all(12),
@@ -921,13 +992,20 @@ class _MyReconciliationCasesPageState extends State<MyReconciliationCasesPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Case ${row['case_id']}', style: Theme.of(context).textTheme.titleMedium),
+                    Text(
+                      'Case ${row['case_id']}',
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
                     Text('${row['source_type']} · ${row['case_status']}'),
-                    Text('Claim ${row['claim_id']} · opened ${row['opened_at']}'),
+                    Text(
+                      'Claim ${row['claim_id']} · opened ${row['opened_at']}',
+                    ),
                     const SizedBox(height: 8),
-                    Text(open
-                        ? 'Confirm whether the physical handover occurred. The NGO and donor or hub administrator must submit matching answers.'
-                        : 'This case needs trusted manual review. Your response will not change the pickup or listing state.'),
+                    Text(
+                      open
+                          ? 'Confirm whether the physical handover occurred. The NGO and donor or hub administrator must submit matching answers.'
+                          : 'This case needs trusted manual review. Your response will not change the pickup or listing state.',
+                    ),
                     if (open)
                       Wrap(
                         spacing: 8,
@@ -1062,7 +1140,11 @@ class _MyClaimsPageState extends State<MyClaimsPage> {
     } catch (error) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Claim cancellation was not confirmed. Retry will reuse request $requestId. $error')),
+          SnackBar(
+            content: Text(
+              'Claim cancellation was not confirmed. Retry will reuse request $requestId. $error',
+            ),
+          ),
         );
       }
     } finally {
@@ -1070,10 +1152,14 @@ class _MyClaimsPageState extends State<MyClaimsPage> {
     }
   }
 
-  Future<void> _submitReconciliation(String claimId, bool handoverConfirmed) async {
+  Future<void> _submitReconciliation(
+    String claimId,
+    bool handoverConfirmed,
+  ) async {
     final choice = handoverConfirmed ? 'yes' : 'no';
     final prefs = await SharedPreferences.getInstance();
-    final key = 'geolock_reconcile_${_db.auth.currentUser?.id}_${claimId}_$choice';
+    final key =
+        'geolock_reconcile_${_db.auth.currentUser?.id}_${claimId}_$choice';
     final requestId = prefs.getString(key) ?? const Uuid().v4();
     await prefs.setString(key, requestId);
     setState(() => _busy = true);
@@ -1118,7 +1204,11 @@ class _MyClaimsPageState extends State<MyClaimsPage> {
     } catch (error) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Reconciliation was not confirmed; retry will reuse request $requestId. $error')),
+          SnackBar(
+            content: Text(
+              'Reconciliation was not confirmed; retry will reuse request $requestId. $error',
+            ),
+          ),
         );
       }
     } finally {
@@ -1134,19 +1224,35 @@ class _MyClaimsPageState extends State<MyClaimsPage> {
       );
       if (!mounted) return;
       if (rows is! List) throw const FormatException('Invalid audit response.');
+      final events = recordedAuditEvents(
+        rows.map((row) => Map<String, dynamic>.from(row as Map)),
+        allowedEventTypes: const {
+          'CANCEL_CLAIM',
+          'START_PICKUP',
+          'COMPLETE_PICKUP',
+          'LEASE_RECOVERY',
+          'CLAIM_RECONCILIATION_EVIDENCE',
+        },
+      );
       await showModalBottomSheet<void>(
         context: context,
         builder: (context) => SafeArea(
           child: ListView(
             children: [
               const ListTile(title: Text('Claim and pickup audit history')),
-              ...rows.map((row) {
-                final event = Map<String, dynamic>.from(row as Map);
+              if (events.isEmpty)
+                const ListTile(
+                  title: Text('No supported claim events are recorded.'),
+                ),
+              ...events.map((event) {
                 return ListTile(
-                  title: Text(event['event_type'].toString()),
-                  subtitle: Text(
-                    '${event['previous_state'] ?? '—'} → ${event['resulting_state'] ?? '—'} · ${event['reason_code'] ?? event['outcome']}',
-                  ),
+                  title: Text(event.title),
+                  subtitle: event.occurredAt == null
+                      ? (event.detail == null ? null : Text(event.detail!))
+                      : Text(
+                          '${statusTimestampText(context, event.occurredAt)}'
+                          '${event.detail == null ? '' : ' · ${event.detail}'}',
+                        ),
                 );
               }),
             ],
@@ -1223,15 +1329,25 @@ class _MyClaimsPageState extends State<MyClaimsPage> {
                         ],
                       ),
                       const SizedBox(height: 8),
-                      Text('Claim $status · lease ${row['lease_status']}'),
+                      Text('Claim · ${friendlyWorkflowStatus(status)}'),
                       Text(
-                        'Lease expiry (database): ${row['lease_expires_at'] ?? '—'}',
+                        'Lease · ${friendlyWorkflowStatus(row['lease_status'])}',
                       ),
-                      Text('Pickup task: ${task ?? '—'}'),
+                      Text(
+                        'Lease expiry (database): ${statusTimestampText(context, row['lease_expires_at']) ?? '—'}',
+                      ),
+                      Text('Pickup task · ${friendlyWorkflowStatus(task)}'),
+                      if (status == 'RECONCILIATION_REQUIRED' ||
+                          row['lease_status'] == 'RECONCILIATION_REQUIRED')
+                        const Text(
+                          'Needs reconciliation · the listing is not available while handover remains unresolved.',
+                          style: TextStyle(color: Colors.deepOrange),
+                        ),
                       Wrap(
                         spacing: 8,
                         children: [
-                          if (active && (task == 'CONFIRMED' || task == 'PLANNED'))
+                          if (active &&
+                              (task == 'CONFIRMED' || task == 'PLANNED'))
                             OutlinedButton(
                               onPressed: _busy
                                   ? null
@@ -1258,19 +1374,27 @@ class _MyClaimsPageState extends State<MyClaimsPage> {
                             ),
                           if (active && task == 'CONFIRMED')
                             TextButton(
-                              onPressed: _busy ? null : () => _cancelClaim(claimId),
+                              onPressed: _busy
+                                  ? null
+                                  : () => _cancelClaim(claimId),
                               child: const Text('Cancel Claim'),
                             ),
                           if (status == 'RECONCILIATION_REQUIRED') ...[
                             FilledButton.tonal(
-                              onPressed: _busy ? null : () => _submitReconciliation(claimId, true),
+                              onPressed: _busy
+                                  ? null
+                                  : () => _submitReconciliation(claimId, true),
                               child: const Text('Confirm handover'),
                             ),
                             OutlinedButton(
-                              onPressed: _busy ? null : () => _submitReconciliation(claimId, false),
+                              onPressed: _busy
+                                  ? null
+                                  : () => _submitReconciliation(claimId, false),
                               child: const Text('Confirm no handover'),
                             ),
-                            const Text('Both the NGO and donor or hub administrator must submit matching evidence. Some pickup-started cases remain under trusted review.'),
+                            const Text(
+                              'Both the NGO and donor or hub administrator must submit matching evidence. Some pickup-started cases remain under trusted review.',
+                            ),
                           ],
                           TextButton.icon(
                             onPressed: () => _audit(claimId),
@@ -1332,7 +1456,14 @@ class _NgoListingDetailsPageState extends State<NgoListingDetailsPage> {
             .toList();
       }
     }
-    return {'images': images, 'constituents': constituents};
+    return {
+      'images': images,
+      'constituents': constituents,
+      // discover_eligible_listings() returned this row only while it was
+      // available and eligible. The claim RPC rechecks that state atomically.
+      'listing_discovered_available': true,
+      'progress_status': isBatch ? 'PUBLISHED' : 'READY_FOR_PICKUP',
+    };
   }
 
   @override
@@ -1369,6 +1500,30 @@ class _NgoListingDetailsPageState extends State<NgoListingDetailsPage> {
             Text(
               '${widget.listing['listing_weight_kg']} kg · ${widget.listing['collection_path'] ?? widget.listing['source_type']}',
             ),
+            const SizedBox(height: 8),
+            Card(
+              child: ListTile(
+                leading: const Icon(Icons.check_circle_outline),
+                title: const Text('Listing availability'),
+                subtitle: const Text(
+                  'Eligible in the latest discovery response. Availability and claim eligibility are rechecked by the database when you claim.',
+                ),
+              ),
+            ),
+            GeoStatusTimeline(
+              title: widget.listing['source_type'] == 'HUB_BATCH'
+                  ? 'Batch Progress'
+                  : 'Donation Progress',
+              currentStatus: friendlyWorkflowStatus(data['progress_status']),
+              pendingMilestones: data['progress_status'] == 'READY_FOR_PICKUP'
+                  ? pendingDonationMilestones(
+                      collectionPath: 'DIRECT_PICKUP',
+                      currentStatus: 'READY_FOR_PICKUP',
+                    )
+                  : const [],
+              emptyMessage:
+                  'This state is present in the eligible discovery response. Historical status timestamps are not provided on this screen.',
+            ),
             const SizedBox(height: 12),
             DonationPhotoCarousel(paths: imagePaths),
             const SizedBox(height: 12),
@@ -1388,7 +1543,7 @@ class _NgoListingDetailsPageState extends State<NgoListingDetailsPage> {
                   ),
                   title: Text(donation['title'].toString()),
                   subtitle: Text(
-                    '${donation['total_weight_kg']} kg · ${donation['donation_status']}',
+                    '${donation['total_weight_kg']} kg · ${friendlyWorkflowStatus(donation['donation_status'])}',
                   ),
                   onTap: () => Navigator.push(
                     context,
@@ -1446,6 +1601,35 @@ class ClaimPickupDetailPage extends StatelessWidget {
           ? photos.map((row) => Map<String, dynamic>.from(row as Map)).toList()
           : <Map<String, dynamic>>[];
     }
+    final cards = await _db.rpc('get_my_claim_cards');
+    if (cards is List) {
+      for (final row in cards) {
+        final card = Map<String, dynamic>.from(row as Map);
+        if (card['claim_id']?.toString() == claimId) {
+          result['claim_card'] = card;
+          break;
+        }
+      }
+    }
+    var auditRows = <Map<String, dynamic>>[];
+    String? auditError;
+    try {
+      final audit = await _db.rpc(
+        'get_authorized_audit_events',
+        params: {'p_entity_type': 'CLAIM', 'p_entity_id': claimId},
+      );
+      if (audit is List) {
+        auditRows = audit
+            .map((row) => Map<String, dynamic>.from(row as Map))
+            .toList();
+      } else {
+        auditError = 'Claim event history is unavailable.';
+      }
+    } catch (_) {
+      auditError = 'Claim event history could not be loaded.';
+    }
+    result['audit_events'] = auditRows;
+    result['audit_error'] = auditError;
     return result;
   }
 
@@ -1466,6 +1650,35 @@ class ClaimPickupDetailPage extends StatelessWidget {
         final data = snapshot.data!;
         final constituents = (data['constituents'] as List? ?? const [])
             .cast<Map<String, dynamic>>();
+        final card = data['claim_card'] as Map<String, dynamic>?;
+        final auditRows = (data['audit_events'] as List? ?? const [])
+            .cast<Map<String, dynamic>>();
+        final claimEvents = recordedAuditEvents(
+          auditRows,
+          allowedEventTypes: const {
+            'CANCEL_CLAIM',
+            'START_PICKUP',
+            'COMPLETE_PICKUP',
+            'LEASE_RECOVERY',
+            'CLAIM_RECONCILIATION_EVIDENCE',
+          },
+        );
+        final claimedAt = card?['claimed_at']?.toString();
+        if (claimedAt != null && DateTime.tryParse(claimedAt) != null) {
+          claimEvents.insert(
+            0,
+            StatusTimelineEvent(
+              title: 'Claim created',
+              occurredAt: DateTime.parse(claimedAt),
+            ),
+          );
+        }
+        final claimStatus = data['claim_status']?.toString();
+        final leaseStatus = data['lease_status']?.toString();
+        final taskStatus = card?['task_status']?.toString();
+        final isReconciliationRequired =
+            claimStatus == 'RECONCILIATION_REQUIRED' ||
+            leaseStatus == 'RECONCILIATION_REQUIRED';
         return ListView(
           padding: const EdgeInsets.all(16),
           children: [
@@ -1474,12 +1687,53 @@ class ClaimPickupDetailPage extends StatelessWidget {
               style: Theme.of(context).textTheme.titleLarge,
             ),
             const SizedBox(height: 12),
-            _claimDetailRow('Claim state', data['claim_status']),
-            _claimDetailRow('Listing state', data['listing_status']),
-            _claimDetailRow('Lease state', data['lease_status']),
+            Text(
+              'My Claim Status',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            _claimDetailRow('Claim', friendlyWorkflowStatus(claimStatus)),
             _claimDetailRow(
-              'Lease expires (database)',
-              data['lease_expires_at'],
+              'Listing availability',
+              friendlyWorkflowStatus(data['listing_status']),
+            ),
+            _claimDetailRow(
+              'Claim created',
+              statusTimestampText(context, card?['claimed_at']) ?? '—',
+            ),
+            Text(
+              'Claim Lease Status',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            _claimDetailRow('Lease', friendlyWorkflowStatus(leaseStatus)),
+            _claimDetailRow(
+              'Lease expiration (database)',
+              statusTimestampText(context, data['lease_expires_at']) ?? '—',
+            ),
+            const Text(
+              'The database decides whether a lease is active. Elapsed time alone does not reopen a listing.',
+            ),
+            Text(
+              'Pickup Task Status',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            _claimDetailRow('Pickup task', friendlyWorkflowStatus(taskStatus)),
+            if (isReconciliationRequired)
+              const Card(
+                color: Color(0xfffff0e8),
+                child: ListTile(
+                  leading: Icon(Icons.warning_amber_rounded),
+                  title: Text('Handover requires reconciliation'),
+                  subtitle: Text(
+                    'This claim is unresolved. Do not treat the listing as available.',
+                  ),
+                ),
+              ),
+            GeoStatusTimeline(
+              title: 'Claim and Pickup History',
+              currentStatus: friendlyWorkflowStatus(claimStatus),
+              events: claimEvents,
+              errorMessage: data['audit_error']?.toString(),
+              emptyMessage: 'No recorded claim or pickup events are available.',
             ),
             _claimDetailRow('Pickup address', data['pickup_address']),
             _claimDetailRow(
@@ -1510,7 +1764,7 @@ class ClaimPickupDetailPage extends StatelessWidget {
                   ),
                   title: Text(donation['title'].toString()),
                   subtitle: Text(
-                    '${donation['weight_kg']} kg · ${donation['donation_status']}',
+                    '${donation['weight_kg']} kg · ${friendlyWorkflowStatus(donation['donation_status'])}',
                   ),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () => Navigator.push(
@@ -1532,6 +1786,21 @@ class ClaimPickupDetailPage extends StatelessWidget {
                     if ((image as Map)['storage_path'] != null)
                       image['storage_path'].toString(),
                 ],
+              ),
+            for (final donation in constituents)
+              GeoStatusTimeline(
+                title: 'Donation Progress · ${donation['title'] ?? 'Donation'}',
+                currentStatus: friendlyWorkflowStatus(
+                  donation['donation_status'],
+                ),
+                pendingMilestones: pendingDonationMilestones(
+                  collectionPath: data['source_type'] == 'HUB_BATCH'
+                      ? 'HUB_COLLECTION'
+                      : 'DIRECT_PICKUP',
+                  currentStatus: donation['donation_status']?.toString(),
+                ),
+                emptyMessage:
+                    'No earlier donation events are available in this claim read.',
               ),
             const Text(
               'Exact pickup details are shown only after this NGO has a claim for the listing.',
@@ -2249,6 +2518,25 @@ class _DonationDetailPageState extends State<DonationDetailPage> {
       throw StateError('Donation not found or you do not have access to it.');
     }
     final detail = Map<String, dynamic>.from(response);
+    var auditEvents = <Map<String, dynamic>>[];
+    String? auditError;
+    try {
+      final audit = await _db.rpc(
+        'get_authorized_audit_events',
+        params: {'p_entity_type': 'DONATION', 'p_entity_id': widget.donationId},
+      );
+      if (audit is List) {
+        auditEvents = audit
+            .map((row) => Map<String, dynamic>.from(row as Map))
+            .toList();
+      } else {
+        auditError = 'Recorded progress history is unavailable.';
+      }
+    } catch (_) {
+      // The current donation state remains usable if a legacy deployment lacks
+      // the role-scoped audit read or an older row has incomplete history.
+      auditError = 'Recorded progress history could not be loaded.';
+    }
     List<Map<String, dynamic>> imageRows = [];
     try {
       final rows = await _db.rpc(
@@ -2259,9 +2547,29 @@ class _DonationDetailPageState extends State<DonationDetailPage> {
         imageRows = rows
             .map((row) => Map<String, dynamic>.from(row as Map))
             .toList();
+        _photoDebug(
+          'DonationDetailPage get_donation_images succeeded: '
+          '${imageRows.length} row(s)',
+        );
+        for (var index = 0; index < imageRows.length; index++) {
+          final path = imageRows[index]['storage_path']?.toString();
+          _photoDebug(
+            'DonationDetailPage image row #${index + 1}: '
+            'storage_path_present=${path?.isNotEmpty == true}',
+          );
+        }
+      } else {
+        _photoDebug(
+          'DonationDetailPage get_donation_images returned a non-list response',
+        );
       }
-    } catch (_) {
+    } catch (error, stackTrace) {
       // Older deployments may have only the first-photo dashboard field.
+      _photoDebug(
+        'DonationDetailPage get_donation_images failed: '
+        '${_safePhotoDiagnostic(error)}',
+      );
+      if (kDebugMode) debugPrint('$stackTrace');
     }
     final dashboardRows = await _db.rpc('get_my_donation_dashboard_v2');
     if (dashboardRows is List) {
@@ -2288,6 +2596,8 @@ class _DonationDetailPageState extends State<DonationDetailPage> {
       }
     }
     detail['images'] = imageRows;
+    detail['audit_events'] = auditEvents;
+    detail['audit_error'] = auditError;
     return detail;
   }
 
@@ -2349,7 +2659,9 @@ class _DonationDetailPageState extends State<DonationDetailPage> {
       setState(() => _detail = _load());
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Hub reservation committed. You may deliver to this hub.'),
+          content: Text(
+            'Hub reservation committed. You may deliver to this hub.',
+          ),
         ),
       );
     } catch (error) {
@@ -2444,7 +2756,8 @@ class _DonationDetailPageState extends State<DonationDetailPage> {
         final latestReservation = reservations.isEmpty
             ? null
             : reservations.first;
-        final latestReservationStatus = d['reservation_effective_status'] ??
+        final latestReservationStatus =
+            d['reservation_effective_status'] ??
             latestReservation?['effective_status'] ??
             (latestReservation?['status'] == 'ACTIVE'
                 ? 'STATUS_UNVERIFIED'
@@ -2453,6 +2766,23 @@ class _DonationDetailPageState extends State<DonationDetailPage> {
           (reservation) => reservation['receipt_status'] != null,
         );
         final hasInventory = d['inventory_status'] != null;
+        final isHubCollection = shouldShowHubReservationSection(
+          d['collection_path']?.toString(),
+        );
+        final auditEvents = (d['audit_events'] as List? ?? const [])
+            .cast<Map<String, dynamic>>();
+        final donationEvents = recordedAuditEvents(
+          auditEvents,
+          allowedEventTypes: const {
+            'CREATE_VALIDATE',
+            'CONFIRM_HUB_RECEIPT',
+            'CANCEL_DONATION',
+          },
+        );
+        final reservationEvents = recordedAuditEvents(
+          auditEvents,
+          allowedEventTypes: const {'RESERVE_HUB', 'EXPIRE_HUB_RESERVATION'},
+        );
         final hubHistoryIsClear = reservations.every(
           (reservation) => reservation['receipt_status'] == null,
         );
@@ -2469,7 +2799,8 @@ class _DonationDetailPageState extends State<DonationDetailPage> {
                     hubHistoryIsClear &&
                     (latestReservationStatus == 'ACTIVE' ||
                         latestReservationStatus == 'EXPIRED')));
-        final needsHub = d['collection_path'] == 'HUB_COLLECTION' &&
+        final needsHub =
+            d['collection_path'] == 'HUB_COLLECTION' &&
             (d['status'] == 'SUBMITTED' ||
                 (d['status'] == 'HUB_ASSIGNED' &&
                     latestReservationStatus == 'EXPIRED'));
@@ -2514,6 +2845,19 @@ class _DonationDetailPageState extends State<DonationDetailPage> {
                 d['road_node_status'] ?? 'PENDING_NODE',
               ),
             _detailRow('Pickup address', d['pickup_address']),
+            const SizedBox(height: 8),
+            GeoStatusTimeline(
+              title: 'Donation Progress',
+              currentStatus: friendlyWorkflowStatus(d['status']),
+              events: donationEvents,
+              pendingMilestones: pendingDonationMilestones(
+                collectionPath: d['collection_path']?.toString(),
+                currentStatus: d['status']?.toString(),
+              ),
+              errorMessage: d['audit_error']?.toString(),
+              emptyMessage:
+                  'No earlier progress events are available from the current backend reads.',
+            ),
             const Divider(),
             Text('Items', style: Theme.of(context).textTheme.titleMedium),
             ...items.map(
@@ -2526,21 +2870,66 @@ class _DonationDetailPageState extends State<DonationDetailPage> {
               ),
             ),
             const Divider(),
-            Text(
-              'Hub reservations',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            if (reservations.isEmpty)
-              const Text('No hub reservation recorded.'),
-            ...reservations.map(
-              (r) => ListTile(
-                contentPadding: EdgeInsets.zero,
-                title: Text(r['hub_name'].toString()),
-                subtitle: Text(
-                  '${r['effective_status'] ?? r['status']} · expires ${r['expires_at']}',
-                ),
+            if (isHubCollection) ...[
+              Text(
+                'Hub Reservation',
+                style: Theme.of(context).textTheme.titleMedium,
               ),
-            ),
+              if (reservations.isEmpty)
+                const Text('No hub reservation has been recorded.'),
+              for (
+                var reservationIndex = 0;
+                reservationIndex < reservations.length;
+                reservationIndex++
+              )
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: Text(
+                    reservations[reservationIndex]['hub_name']?.toString() ??
+                        'Community Hub',
+                  ),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Reservation · ${reservationStatusLabel(recordedStatus: reservations[reservationIndex]['status'], effectiveStatus: latestReservationStatus, isLatest: reservationIndex == 0)}',
+                      ),
+                      if (statusTimestampText(
+                            context,
+                            reservations[reservationIndex]['reserved_at'],
+                          )
+                          case final reservedAt?)
+                        Text('Reserved · $reservedAt'),
+                      if (statusTimestampText(
+                            context,
+                            reservations[reservationIndex]['expires_at'],
+                          )
+                          case final expiresAt?)
+                        Text('Reservation deadline · $expiresAt'),
+                      if (reservations[reservationIndex]['receipt_status'] !=
+                          null)
+                        Text(
+                          'Physical receipt · ${friendlyWorkflowStatus(reservations[reservationIndex]['receipt_status'])}',
+                        ),
+                      if (statusTimestampText(
+                            context,
+                            reservations[reservationIndex]['received_at'],
+                          )
+                          case final receivedAt?)
+                        Text('Received · $receivedAt'),
+                    ],
+                  ),
+                ),
+              const Text(
+                'A reservation holds hub capacity; it does not confirm physical receipt.',
+              ),
+              GeoStatusTimeline(
+                title: 'Reservation History',
+                events: reservationEvents,
+                emptyMessage:
+                    'Reservation timestamps are shown on each reservation when the backend provides them. No separate reservation change events are available.',
+              ),
+            ],
             if (needsHub)
               FilledButton.icon(
                 onPressed: _busy ? null : _reserveHub,
@@ -2705,18 +3094,214 @@ class HubBatchDetailsPage extends StatefulWidget {
   State<HubBatchDetailsPage> createState() => _HubBatchDetailsPageState();
 }
 
+class HubDonationDetailsPage extends StatefulWidget {
+  final Map<String, dynamic> hub;
+  final String donationId;
+
+  const HubDonationDetailsPage({
+    super.key,
+    required this.hub,
+    required this.donationId,
+  });
+
+  @override
+  State<HubDonationDetailsPage> createState() => _HubDonationDetailsPageState();
+}
+
+class _HubDonationDetailsPageState extends State<HubDonationDetailsPage> {
+  late final Future<Map<String, dynamic>> _details = _load();
+
+  Future<Map<String, dynamic>> _load() async {
+    final responses = await Future.wait([
+      _db.rpc('get_my_hub_inventory', params: {'p_hub': widget.hub['hub_id']}),
+      _db.rpc(
+        'get_my_hub_reservations',
+        params: {'p_hub': widget.hub['hub_id']},
+      ),
+    ]);
+    if (responses.any((response) => response is! List)) {
+      throw const FormatException('Hub donation details are unavailable.');
+    }
+    final inventory = (responses[0] as List)
+        .map((row) => Map<String, dynamic>.from(row as Map))
+        .where((row) => row['donation_id']?.toString() == widget.donationId)
+        .toList();
+    final reservations = (responses[1] as List)
+        .map((row) => Map<String, dynamic>.from(row as Map))
+        .where((row) => row['donation_id']?.toString() == widget.donationId)
+        .toList();
+    if (inventory.isEmpty && reservations.isEmpty) {
+      throw const FormatException('Donation not found for this hub.');
+    }
+    var audit = <Map<String, dynamic>>[];
+    String? auditError;
+    try {
+      final result = await _db.rpc(
+        'get_authorized_audit_events',
+        params: {'p_entity_type': 'DONATION', 'p_entity_id': widget.donationId},
+      );
+      if (result is List) {
+        audit = result
+            .map((row) => Map<String, dynamic>.from(row as Map))
+            .toList();
+      }
+    } catch (_) {
+      auditError = 'Recorded event history is not available for this donation.';
+    }
+    return {
+      'inventory': inventory.isEmpty ? null : inventory.first,
+      'reservations': reservations,
+      'audit': audit,
+      'audit_error': auditError,
+    };
+  }
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    appBar: AppBar(title: const Text('Hub Donation Details')),
+    body: FutureBuilder<Map<String, dynamic>>(
+      future: _details,
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Center(
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Text('Donation details unavailable: ${snapshot.error}'),
+            ),
+          );
+        }
+        if (!snapshot.hasData) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        final data = snapshot.data!;
+        final inventory = data['inventory'] as Map<String, dynamic>?;
+        final reservations = (data['reservations'] as List)
+            .cast<Map<String, dynamic>>();
+        final donationStatus = inventory?['donation_status']?.toString();
+        final path =
+            inventory?['collection_path']?.toString() ?? 'HUB_COLLECTION';
+        final auditRows = (data['audit'] as List).cast<Map<String, dynamic>>();
+        final donationEvents = recordedAuditEvents(
+          auditRows,
+          allowedEventTypes: const {'CONFIRM_HUB_RECEIPT', 'CANCEL_DONATION'},
+        );
+        final reservationEvents = recordedAuditEvents(
+          auditRows,
+          allowedEventTypes: const {'RESERVE_HUB', 'EXPIRE_HUB_RESERVATION'},
+        );
+        return ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            Text(
+              inventory?['title']?.toString() ?? 'Reserved donation',
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            if (donationStatus != null)
+              Text('Donation · ${friendlyWorkflowStatus(donationStatus)}'),
+            if (inventory?['received_weight_kg'] != null)
+              Text('Received weight · ${inventory!['received_weight_kg']} kg'),
+            GeoStatusTimeline(
+              title: 'Donation Progress',
+              currentStatus: donationStatus == null
+                  ? null
+                  : friendlyWorkflowStatus(donationStatus),
+              events: donationEvents,
+              pendingMilestones: pendingDonationMilestones(
+                collectionPath: path,
+                currentStatus: donationStatus,
+              ),
+              errorMessage: data['audit_error']?.toString(),
+              emptyMessage:
+                  'No recorded donation progress events are available.',
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'Hub Reservation',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            if (reservations.isEmpty)
+              const Text('No reservation history is available.'),
+            if (inventory == null)
+              const Text(
+                'The hub reservation read does not include pre-receipt donation progress.',
+              ),
+            for (final reservation in reservations)
+              Card(
+                child: ListTile(
+                  title: Text(
+                    widget.hub['hub_name']?.toString() ?? 'Community Hub',
+                  ),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Reservation · ${reservationStatusLabel(recordedStatus: reservation['status'], effectiveStatus: null, isLatest: false)}',
+                      ),
+                      Text(
+                        'Expiry · ${statusTimestampText(context, reservation['expires_at']) ?? '—'}',
+                      ),
+                      Text(
+                        'Reserved weight · ${reservation['reserved_weight_kg']} kg',
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            const Text(
+              'The hub reservation list omits reservation creation and receipt timestamps. Audit timestamps are shown when available. Reservation expiry is a deadline, not proof of receipt.',
+            ),
+            GeoStatusTimeline(
+              title: 'Reservation History',
+              events: reservationEvents,
+              errorMessage: data['audit_error']?.toString(),
+              emptyMessage:
+                  'No separate reservation change events are available from the current read.',
+            ),
+            const SizedBox(height: 12),
+            Text('Inventory', style: Theme.of(context).textTheme.titleMedium),
+            Text(
+              inventory == null
+                  ? 'No received inventory record is available.'
+                  : friendlyWorkflowStatus(inventory['inventory_status']),
+            ),
+            if (inventory?['inventory_status'] == 'BATCHED')
+              const Text(
+                'This donation is recorded as part of a batch. The current inventory read does not return its batch ID.',
+              ),
+          ],
+        );
+      },
+    ),
+  );
+}
+
 class _HubBatchDetailsPageState extends State<HubBatchDetailsPage> {
   late final Future<Map<String, dynamic>> _details = _load();
 
   Future<Map<String, dynamic>> _load() async {
-    final result = await _db.rpc(
-      'get_hub_batch_details',
-      params: {'p_hub': widget.hubId, 'p_batch': widget.batchId},
-    );
-    if (result is! Map) {
+    final responses = await Future.wait([
+      _db.rpc(
+        'get_hub_batch_details',
+        params: {'p_hub': widget.hubId, 'p_batch': widget.batchId},
+      ),
+      _db.rpc('get_my_hub_batches_dashboard', params: {'p_hub': widget.hubId}),
+    ]);
+    if (responses[0] is! Map) {
       throw const FormatException('Invalid batch detail response.');
     }
-    return Map<String, dynamic>.from(result);
+    final result = Map<String, dynamic>.from(responses[0] as Map);
+    final dashboardRows = responses[1] is List
+        ? (responses[1] as List).map(
+            (row) => Map<String, dynamic>.from(row as Map),
+          )
+        : const <Map<String, dynamic>>[];
+    for (final row in dashboardRows) {
+      if (row['batch_id']?.toString() == widget.batchId) {
+        result['published_at'] = row['published_at'];
+        break;
+      }
+    }
+    return result;
   }
 
   @override
@@ -2734,10 +3319,12 @@ class _HubBatchDetailsPageState extends State<HubBatchDetailsPage> {
           return const Center(child: CircularProgressIndicator());
         }
         final data = snapshot.data!;
-        final donations = (data['donations'] as List? ?? const []).map(
-          (row) => Map<String, dynamic>.from(row as Map),
-        );
+        final donations = (data['donations'] as List? ?? const [])
+            .map((row) => Map<String, dynamic>.from(row as Map))
+            .toList();
         final cover = data['batch_cover_path']?.toString();
+        final batchStatus = data['batch_status']?.toString();
+        final publishedAt = data['published_at'];
         return ListView(
           padding: const EdgeInsets.all(16),
           children: [
@@ -2746,8 +3333,37 @@ class _HubBatchDetailsPageState extends State<HubBatchDetailsPage> {
               style: Theme.of(context).textTheme.titleLarge,
             ),
             Text(
-              '${data['batch_status']} · ${data['batch_weight_kg'] ?? ''} kg',
+              '${friendlyWorkflowStatus(batchStatus)} · ${data['batch_weight_kg'] ?? ''} kg',
             ),
+            if (statusTimestampText(context, publishedAt) != null)
+              Text(
+                'Batch published · ${statusTimestampText(context, publishedAt)}',
+              ),
+            const Text(
+              'This page shows batch status. The current hub batch reads do not expose separate listing availability, NGO claim, lease, or pickup task history.',
+            ),
+            GeoStatusTimeline(
+              title: 'Batch Progress',
+              currentStatus: friendlyWorkflowStatus(batchStatus),
+              events: statusTimestampText(context, publishedAt) == null
+                  ? const []
+                  : [
+                      StatusTimelineEvent(
+                        title: 'Batch published',
+                        occurredAt: DateTime.tryParse(publishedAt.toString()),
+                      ),
+                    ],
+              emptyMessage:
+                  'No historical batch events are available from the current hub reads.',
+            ),
+            if (batchStatus == 'PUBLISHED')
+              const ListTile(
+                leading: Icon(Icons.check_circle_outline),
+                title: Text('Batch listing availability'),
+                subtitle: Text(
+                  'This batch was published. Current listing availability is not included in the hub detail read.',
+                ),
+              ),
             const SizedBox(height: 12),
             DonationPhotoCarousel(paths: cover == null ? const [] : [cover]),
             const SizedBox(height: 16),
@@ -2763,7 +3379,7 @@ class _HubBatchDetailsPageState extends State<HubBatchDetailsPage> {
                   ),
                   title: Text(donation['title'].toString()),
                   subtitle: Text(
-                    '${donation['weight_kg']} kg · ${donation['donation_status']}',
+                    '${donation['weight_kg']} kg · ${friendlyWorkflowStatus(donation['donation_status'])}',
                   ),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () => Navigator.push(
@@ -2776,6 +3392,19 @@ class _HubBatchDetailsPageState extends State<HubBatchDetailsPage> {
                     ),
                   ),
                 ),
+              ),
+            for (final donation in donations)
+              GeoStatusTimeline(
+                title: 'Donation · ${donation['title'] ?? 'Constituent'}',
+                currentStatus: friendlyWorkflowStatus(
+                  donation['donation_status'],
+                ),
+                pendingMilestones: pendingDonationMilestones(
+                  collectionPath: 'HUB_COLLECTION',
+                  currentStatus: donation['donation_status']?.toString(),
+                ),
+                emptyMessage:
+                    'The hub batch detail read provides current donation state, but no earlier donation timestamps.',
               ),
             const Padding(
               padding: EdgeInsets.only(top: 8),
@@ -2844,9 +3473,11 @@ class _DonationPhotoCarouselState extends State<DonationPhotoCarousel> {
                     widget.paths[index],
                     () =>
                         widget.urlResolver?.call(widget.paths[index]) ??
-                        _db.storage
-                            .from('geolock-donation-images')
-                            .createSignedUrl(widget.paths[index], 900),
+                        createDonationPhotoSignedUrl(
+                          _db,
+                          widget.paths[index],
+                          surface: 'DonationPhotoCarousel image #${index + 1}',
+                        ),
                   ),
                   builder: (context, snapshot) {
                     if (!snapshot.hasData || snapshot.hasError) {
@@ -2858,7 +3489,15 @@ class _DonationPhotoCarouselState extends State<DonationPhotoCarousel> {
                         snapshot.data!,
                         width: double.infinity,
                         fit: BoxFit.cover,
-                        errorBuilder: (_, _, _) => _photoPlaceholder(),
+                        errorBuilder: (_, error, stackTrace) {
+                          logDonationPhotoNetworkFailure(
+                            surface:
+                                'DonationPhotoCarousel image #${index + 1}',
+                            error: error,
+                            stackTrace: stackTrace,
+                          );
+                          return _photoPlaceholder();
+                        },
                       ),
                     );
                   },

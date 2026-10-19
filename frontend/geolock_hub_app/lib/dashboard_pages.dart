@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show debugPrint, kDebugMode;
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'auth/auth_navigation.dart';
@@ -218,9 +219,22 @@ class _DonorHomePageState extends State<DonorHomePage> {
         'Donation dashboard RPC returned an invalid response.',
       );
     }
-    return response
+    final donations = response
         .map((row) => Map<String, dynamic>.from(row as Map))
         .toList();
+    if (kDebugMode) {
+      debugPrint(
+        '[GeoLock photo] donor dashboard returned ${donations.length} donation(s)',
+      );
+      for (var index = 0; index < donations.length; index++) {
+        final path = donations[index]['primary_image_path']?.toString();
+        debugPrint(
+          '[GeoLock photo] donor dashboard donation #${index + 1}: '
+          'primary_image_path_present=${path?.isNotEmpty == true}',
+        );
+      }
+    }
+    return donations;
   }
 
   Future<Map<String, dynamic>?> _loadProfile() async {
@@ -320,7 +334,7 @@ class _DonorHomePageState extends State<DonorHomePage> {
                 ),
                 const SizedBox(height: 10),
                 DashboardStatCard(
-                        label: 'Collected',
+                  label: 'Collected',
                   value: '$completed',
                   icon: Icons.check_circle_outline,
                   wide: true,
@@ -1418,9 +1432,13 @@ class DonationSummaryCard extends StatelessWidget {
                       StatusBadge(
                         status: donationStatusLabel(
                           status: donation['donation_status']?.toString(),
-                          collectionPath: donation['collection_path']?.toString(),
-                          reservationStatus: donation['reservation_effective_status']?.toString(),
-                          inventoryStatus: donation['inventory_status']?.toString(),
+                          collectionPath: donation['collection_path']
+                              ?.toString(),
+                          reservationStatus:
+                              donation['reservation_effective_status']
+                                  ?.toString(),
+                          inventoryStatus: donation['inventory_status']
+                              ?.toString(),
                           listingStatus: donation['listing_status']?.toString(),
                         ),
                       ),
@@ -1508,9 +1526,11 @@ class DonationImage extends StatelessWidget {
   Widget build(BuildContext context) {
     if (path == null || path!.isEmpty) return _placeholder();
     return FutureBuilder<String>(
-      future: _dashboardDb.storage
-          .from('geolock-donation-images')
-          .createSignedUrl(path!, 900),
+      future: createDonationPhotoSignedUrl(
+        _dashboardDb,
+        path!,
+        surface: 'DonationImage thumbnail',
+      ),
       builder: (context, snapshot) {
         if (!snapshot.hasData || snapshot.hasError) return _placeholder();
         return ClipRRect(
@@ -1520,7 +1540,14 @@ class DonationImage extends StatelessWidget {
             width: size,
             height: size,
             fit: BoxFit.cover,
-            errorBuilder: (_, _, _) => _placeholder(),
+            errorBuilder: (_, error, stackTrace) {
+              logDonationPhotoNetworkFailure(
+                surface: 'DonationImage thumbnail',
+                error: error,
+                stackTrace: stackTrace,
+              );
+              return _placeholder();
+            },
           ),
         );
       },
