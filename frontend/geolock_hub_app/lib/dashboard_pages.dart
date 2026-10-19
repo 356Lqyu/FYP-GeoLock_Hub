@@ -3,6 +3,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'auth/auth_navigation.dart';
 import 'donation_pages.dart';
+import 'donation_status.dart';
 
 const _mint = Color(0xffedfbf7);
 const _green = Color(0xff2f806c);
@@ -386,6 +387,7 @@ String _greeting() {
 
 bool _active(String? s) => const {
   'SUBMITTED',
+  // Keep legacy rows visible until the forward migration converts them.
   'VALIDATED',
   'READY_FOR_PICKUP',
   'HUB_ASSIGNED',
@@ -1413,7 +1415,15 @@ class DonationSummaryCard extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      StatusBadge(status: _donationStatusLabel(donation)),
+                      StatusBadge(
+                        status: donationStatusLabel(
+                          status: donation['donation_status']?.toString(),
+                          collectionPath: donation['collection_path']?.toString(),
+                          reservationStatus: donation['reservation_effective_status']?.toString(),
+                          inventoryStatus: donation['inventory_status']?.toString(),
+                          listingStatus: donation['listing_status']?.toString(),
+                        ),
+                      ),
                     ],
                   ),
                   const SizedBox(height: 4),
@@ -1447,31 +1457,6 @@ class DonationSummaryCard extends StatelessWidget {
       ),
     ),
   );
-}
-
-String _donationStatusLabel(Map<String, dynamic> d) {
-  if (d['collection_path'] == 'HUB_COLLECTION' &&
-      d['donation_status'] == 'VALIDATED') {
-    return 'Awaiting hub selection';
-  }
-  if (d['donation_status'] == 'HUB_ASSIGNED' &&
-      d['reservation_effective_status'] == 'EXPIRED') {
-    return 'Hub reservation expired';
-  }
-  if (d['donation_status'] == 'HUB_ASSIGNED' &&
-      d['reservation_effective_status'] == 'ACTIVE') {
-    return 'Awaiting drop-off';
-  }
-  if (d['donation_status'] == 'HUB_ASSIGNED') {
-    return 'Hub assignment needs review';
-  }
-  if (d['inventory_status'] == 'STORED' || d['donation_status'] == 'AT_HUB') {
-    return 'At hub';
-  }
-  if (d['listing_status'] == 'CLAIMED') return 'Claimed';
-  if (d['donation_status'] == 'PICKUP_IN_PROGRESS') return 'Pickup in progress';
-  if (d['donation_status'] == 'COLLECTED') return 'Collected';
-  return (d['donation_status'] ?? 'Unknown').toString().replaceAll('_', ' ');
 }
 
 String _date(Object? date) {

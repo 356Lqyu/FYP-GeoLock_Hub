@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:geolock_hub_app/dashboard_pages.dart';
 import 'package:geolock_hub_app/donation_pages.dart';
+import 'package:geolock_hub_app/donation_status.dart';
 
 void main() {
   testWidgets('donor navigation has five donor-only destinations and selects', (
@@ -48,6 +49,36 @@ void main() {
       'Collections',
       'Profile',
     ]);
+  });
+
+  test('donation state labels reflect the simplified lifecycle', () {
+    expect(
+      donationStatusLabel(
+        status: 'SUBMITTED',
+        collectionPath: 'HUB_COLLECTION',
+      ),
+      'Awaiting Hub Selection',
+    );
+    expect(
+      donationStatusLabel(
+        status: 'READY_FOR_PICKUP',
+        collectionPath: 'DIRECT_PICKUP',
+      ),
+      'Ready for Pickup',
+    );
+    expect(
+      donationStatusLabel(status: 'HUB_ASSIGNED', reservationStatus: 'EXPIRED'),
+      'Hub Reservation Expired',
+    );
+    // Legacy rows can be displayed safely during migration rollout, but the
+    // application no longer treats VALIDATED as an operational state.
+    expect(
+      donationStatusLabel(
+        status: 'VALIDATED',
+        collectionPath: 'HUB_COLLECTION',
+      ),
+      'Awaiting Hub Selection',
+    );
   });
 
   testWidgets('dashboard statistics render live values and labels', (

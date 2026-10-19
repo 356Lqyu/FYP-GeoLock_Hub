@@ -11,8 +11,11 @@ class DonationPhotoRules {
     return null;
   }
 
-  static String? descriptionError(String value) =>
-      value.length > maxDescriptionLength ? 'Maximum 1000 characters' : null;
+  static String? descriptionError(String value) {
+    if (value.trim().isEmpty) return 'Donation description is required';
+    if (value.length > maxDescriptionLength) return 'Maximum 1000 characters';
+    return null;
+  }
 
   static List<T> withCoverFirst<T>(List<T> photos, int coverIndex) {
     if (coverIndex < 0 || coverIndex >= photos.length) return List.of(photos);

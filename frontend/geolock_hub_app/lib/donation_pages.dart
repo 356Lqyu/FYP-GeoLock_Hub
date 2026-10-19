@@ -10,6 +10,7 @@ import 'location/location_picker_page.dart';
 import 'location/location_result.dart';
 import 'donation_photo_rules.dart';
 import 'donation_photo_errors.dart';
+import 'donation_status.dart';
 
 final _db = Supabase.instance.client;
 
@@ -2207,7 +2208,7 @@ class _MyDonationsPageState extends State<MyDonationsPage> {
                 ),
                 title: Text('${d['title']}'),
                 subtitle: Text(
-                  '${d['collection_path']} • ${d['donation_status']} • ${d['total_weight_kg'] ?? '—'} kg${d['listing_routing_status'] == null ? '' : ' • route node ${d['listing_routing_status']}'}',
+                  '${d['collection_path']} • ${donationStatusLabel(status: d['donation_status']?.toString(), collectionPath: d['collection_path']?.toString())} • ${d['total_weight_kg'] ?? '—'} kg${d['listing_routing_status'] == null ? '' : ' • route node ${d['listing_routing_status']}'}',
                 ),
                 trailing: const Icon(Icons.chevron_right),
                 onTap: () => Navigator.push(
@@ -2459,7 +2460,6 @@ class _DonationDetailPageState extends State<DonationDetailPage> {
             !hasReceipt &&
             !hasInventory &&
             ((d['status'] == 'SUBMITTED' && reservations.isEmpty) ||
-                (d['status'] == 'VALIDATED' && reservations.isEmpty) ||
                 (d['status'] == 'READY_FOR_PICKUP' &&
                     d['collection_path'] == 'DIRECT_PICKUP' &&
                     d['listing_status'] == 'AVAILABLE' &&
@@ -2470,7 +2470,7 @@ class _DonationDetailPageState extends State<DonationDetailPage> {
                     (latestReservationStatus == 'ACTIVE' ||
                         latestReservationStatus == 'EXPIRED')));
         final needsHub = d['collection_path'] == 'HUB_COLLECTION' &&
-            (d['status'] == 'VALIDATED' ||
+            (d['status'] == 'SUBMITTED' ||
                 (d['status'] == 'HUB_ASSIGNED' &&
                     latestReservationStatus == 'EXPIRED'));
         return ListView(
@@ -2495,18 +2495,16 @@ class _DonationDetailPageState extends State<DonationDetailPage> {
             const SizedBox(height: 12),
             _detailRow(
               'Current state',
-              d['status'] == 'VALIDATED' &&
-                      d['collection_path'] == 'HUB_COLLECTION'
-                  ? 'Awaiting Hub Selection'
-                  : d['status'] == 'HUB_ASSIGNED' &&
+              d['status'] == 'HUB_ASSIGNED' &&
                       latestReservationStatus == 'EXPIRED'
-                  ? 'Hub reservation expired — choose another hub'
-                  : d['status'] == 'HUB_ASSIGNED' &&
-                        latestReservationStatus == 'ACTIVE'
-                  ? 'Hub assigned — awaiting drop-off'
-                  : d['status'] == 'HUB_ASSIGNED'
-                  ? 'Hub assignment needs review'
-                  : d['status'],
+                  ? 'Hub Reservation Expired — Choose Another Hub'
+                  : donationStatusLabel(
+                      status: d['status']?.toString(),
+                      collectionPath: d['collection_path']?.toString(),
+                      reservationStatus: latestReservationStatus?.toString(),
+                      inventoryStatus: d['inventory_status']?.toString(),
+                      listingStatus: d['listing_status']?.toString(),
+                    ),
             ),
             _detailRow('Collection path', d['collection_path']),
             _detailRow('Total weight', '${d['total_weight_kg']} kg'),
