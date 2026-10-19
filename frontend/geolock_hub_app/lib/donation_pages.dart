@@ -820,6 +820,19 @@ class _HubOperationsPageState extends State<HubOperationsPage> {
               if (widget.section == 'All' ||
                   widget.section == 'Collections') ...[
                 const SizedBox(height: 16),
+                if (widget.section == 'Collections')
+                  OutlinedButton.icon(
+                    onPressed: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) =>
+                            const MyReconciliationCasesPage(role: 'HUB_ADMIN'),
+                      ),
+                    ),
+                    icon: const Icon(Icons.rule_folder_outlined),
+                    label: const Text('Handover cases'),
+                  ),
+                if (widget.section == 'Collections') const SizedBox(height: 8),
                 Text(
                   'Published batches',
                   style: Theme.of(context).textTheme.titleLarge,
@@ -869,7 +882,8 @@ class _HubOperationsPageState extends State<HubOperationsPage> {
 }
 
 class MyReconciliationCasesPage extends StatefulWidget {
-  const MyReconciliationCasesPage({super.key});
+  final String role;
+  const MyReconciliationCasesPage({super.key, required this.role});
   @override
   State<MyReconciliationCasesPage> createState() =>
       _MyReconciliationCasesPageState();
@@ -1006,7 +1020,9 @@ class _MyReconciliationCasesPageState extends State<MyReconciliationCasesPage> {
                           ? 'Confirm whether the physical handover occurred. The NGO and donor or hub administrator must submit matching answers.'
                           : 'This case needs trusted manual review. Your response will not change the pickup or listing state.',
                     ),
-                    if (open)
+                    if (open &&
+                        widget.role == 'HUB_ADMIN' &&
+                        row['source_type'] == 'HUB_BATCH')
                       Wrap(
                         spacing: 8,
                         children: [
@@ -1143,70 +1159,6 @@ class _MyClaimsPageState extends State<MyClaimsPage> {
           SnackBar(
             content: Text(
               'Claim cancellation was not confirmed. Retry will reuse request $requestId. $error',
-            ),
-          ),
-        );
-      }
-    } finally {
-      if (mounted) setState(() => _busy = false);
-    }
-  }
-
-  Future<void> _submitReconciliation(
-    String claimId,
-    bool handoverConfirmed,
-  ) async {
-    final choice = handoverConfirmed ? 'yes' : 'no';
-    final prefs = await SharedPreferences.getInstance();
-    final key =
-        'geolock_reconcile_${_db.auth.currentUser?.id}_${claimId}_$choice';
-    final requestId = prefs.getString(key) ?? const Uuid().v4();
-    await prefs.setString(key, requestId);
-    setState(() => _busy = true);
-    try {
-      final response = await _db.rpc(
-        'submit_claim_reconciliation',
-        params: {
-          'p_claim': claimId,
-          'p_handover_confirmed': handoverConfirmed,
-          'p_request': requestId,
-        },
-      );
-      if (response is! Map) {
-        throw const FormatException('Reconciliation outcome missing.');
-      }
-      final result = Map<String, dynamic>.from(response);
-      if (result['outcome'] == null) {
-        throw const FormatException('Reconciliation outcome is missing.');
-      }
-      await prefs.remove(key);
-      List<Map<String, dynamic>>? refreshed;
-      Object? refreshError;
-      try {
-        refreshed = await _load();
-      } catch (error) {
-        refreshError = error;
-      }
-      if (!mounted) return;
-      if (refreshed != null) {
-        setState(() => _claims = Future.value(refreshed));
-      } else {
-        setState(() => _claims = _load());
-      }
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            '${result['outcome']}: ${result['reason_code'] ?? ''}'
-            '${refreshError == null ? '' : ' (status refresh failed; pull to refresh)'}',
-          ),
-        ),
-      );
-    } catch (error) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Reconciliation was not confirmed; retry will reuse request $requestId. $error',
             ),
           ),
         );
@@ -1363,7 +1315,7 @@ class _MyClaimsPageState extends State<MyClaimsPage> {
                               ),
                             ),
                             icon: const Icon(Icons.location_on_outlined),
-                            label: const Text('Pickup details'),
+                            label: const Text('Claim details'),
                           ),
                           if (active && task == 'DISPATCHED')
                             FilledButton(
@@ -1379,23 +1331,6 @@ class _MyClaimsPageState extends State<MyClaimsPage> {
                                   : () => _cancelClaim(claimId),
                               child: const Text('Cancel Claim'),
                             ),
-                          if (status == 'RECONCILIATION_REQUIRED') ...[
-                            FilledButton.tonal(
-                              onPressed: _busy
-                                  ? null
-                                  : () => _submitReconciliation(claimId, true),
-                              child: const Text('Confirm handover'),
-                            ),
-                            OutlinedButton(
-                              onPressed: _busy
-                                  ? null
-                                  : () => _submitReconciliation(claimId, false),
-                              child: const Text('Confirm no handover'),
-                            ),
-                            const Text(
-                              'Both the NGO and donor or hub administrator must submit matching evidence. Some pickup-started cases remain under trusted review.',
-                            ),
-                          ],
                           TextButton.icon(
                             onPressed: () => _audit(claimId),
                             icon: const Icon(Icons.history),
@@ -1563,14 +1498,22 @@ class _NgoListingDetailsPageState extends State<NgoListingDetailsPage> {
   );
 }
 
-class ClaimPickupDetailPage extends StatelessWidget {
+class ClaimPickupDetailPage extends StatefulWidget {
   final String claimId;
   const ClaimPickupDetailPage({super.key, required this.claimId});
+
+  @override
+  State<ClaimPickupDetailPage> createState() => _ClaimPickupDetailPageState();
+}
+
+class _ClaimPickupDetailPageState extends State<ClaimPickupDetailPage> {
+  late Future<Map<String, dynamic>> _detail = _load();
+  bool _reconciliationBusy = false;
 
   Future<Map<String, dynamic>> _load() async {
     final response = await _db.rpc(
       'get_claimed_listing_detail',
-      params: {'p_claim': claimId},
+      params: {'p_claim': widget.claimId},
     );
     if (response is! Map) {
       throw const FormatException('Invalid claim detail response.');
@@ -1578,7 +1521,7 @@ class ClaimPickupDetailPage extends StatelessWidget {
     final result = Map<String, dynamic>.from(response);
     final constituents = await _db.rpc(
       'get_claimed_listing_constituents',
-      params: {'p_claim': claimId},
+      params: {'p_claim': widget.claimId},
     );
     result['constituents'] = constituents is List
         ? constituents
@@ -1605,7 +1548,7 @@ class ClaimPickupDetailPage extends StatelessWidget {
     if (cards is List) {
       for (final row in cards) {
         final card = Map<String, dynamic>.from(row as Map);
-        if (card['claim_id']?.toString() == claimId) {
+        if (card['claim_id']?.toString() == widget.claimId) {
           result['claim_card'] = card;
           break;
         }
@@ -1616,7 +1559,7 @@ class ClaimPickupDetailPage extends StatelessWidget {
     try {
       final audit = await _db.rpc(
         'get_authorized_audit_events',
-        params: {'p_entity_type': 'CLAIM', 'p_entity_id': claimId},
+        params: {'p_entity_type': 'CLAIM', 'p_entity_id': widget.claimId},
       );
       if (audit is List) {
         auditRows = audit
@@ -1633,11 +1576,60 @@ class ClaimPickupDetailPage extends StatelessWidget {
     return result;
   }
 
+  Future<void> _submitReconciliation(bool handoverConfirmed) async {
+    final choice = handoverConfirmed ? 'yes' : 'no';
+    final prefs = await SharedPreferences.getInstance();
+    final key =
+        'geolock_reconcile_${_db.auth.currentUser?.id}_${widget.claimId}_$choice';
+    final requestId = prefs.getString(key) ?? const Uuid().v4();
+    await prefs.setString(key, requestId);
+    setState(() => _reconciliationBusy = true);
+    try {
+      final response = await _db.rpc(
+        'submit_claim_reconciliation',
+        params: {
+          'p_claim': widget.claimId,
+          'p_handover_confirmed': handoverConfirmed,
+          'p_request': requestId,
+        },
+      );
+      if (response is! Map) {
+        throw const FormatException('Reconciliation outcome missing.');
+      }
+      final result = Map<String, dynamic>.from(response);
+      if (result['outcome'] == null) {
+        throw const FormatException('Reconciliation outcome is missing.');
+      }
+      await prefs.remove(key);
+      if (!mounted) return;
+      setState(() => _detail = _load());
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            '${result['outcome']}: ${result['reason_code'] ?? 'Evidence recorded'}',
+          ),
+        ),
+      );
+    } catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Reconciliation was not confirmed; retry will reuse request $requestId. $error',
+            ),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _reconciliationBusy = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(title: const Text('Claimed Pickup Details')),
     body: FutureBuilder<Map<String, dynamic>>(
-      future: _load(),
+      future: _detail,
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return Center(
@@ -1718,13 +1710,45 @@ class ClaimPickupDetailPage extends StatelessWidget {
             ),
             _claimDetailRow('Pickup task', friendlyWorkflowStatus(taskStatus)),
             if (isReconciliationRequired)
-              const Card(
-                color: Color(0xfffff0e8),
-                child: ListTile(
-                  leading: Icon(Icons.warning_amber_rounded),
-                  title: Text('Handover requires reconciliation'),
-                  subtitle: Text(
-                    'This claim is unresolved. Do not treat the listing as available.',
+              Card(
+                color: const Color(0xfffff0e8),
+                child: Padding(
+                  padding: const EdgeInsets.all(14),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const ListTile(
+                        contentPadding: EdgeInsets.zero,
+                        leading: Icon(Icons.warning_amber_rounded),
+                        title: Text('Handover requires reconciliation'),
+                        subtitle: Text(
+                          'This claim is unresolved. Do not treat the listing as available.',
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 6,
+                        children: [
+                          FilledButton.tonal(
+                            onPressed: _reconciliationBusy
+                                ? null
+                                : () => _submitReconciliation(true),
+                            child: const Text('Confirm handover'),
+                          ),
+                          OutlinedButton(
+                            onPressed: _reconciliationBusy
+                                ? null
+                                : () => _submitReconciliation(false),
+                            child: const Text('Confirm no handover'),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 6),
+                      const Text(
+                        'The donor or hub administrator must also submit matching evidence. Some cases remain under trusted review.',
+                      ),
+                    ],
                   ),
                 ),
               ),

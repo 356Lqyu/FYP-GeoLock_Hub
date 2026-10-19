@@ -1212,65 +1212,536 @@ class _DonorImpactPageState extends State<DonorImpactPage> {
   );
 }
 
-class RoleProfilePage extends StatelessWidget {
+class RoleProfilePage extends StatefulWidget {
   final String role;
   const RoleProfilePage({super.key, required this.role});
+
   @override
-  Widget build(BuildContext context) => FutureBuilder<dynamic>(
-    future: _dashboardDb.rpc('get_my_profile'),
-    builder: (context, snapshot) => ListView(
-      padding: const EdgeInsets.all(16),
-      children: [
-        const GeoLockHeader(compact: true),
-        const SizedBox(height: 24),
-        Text(
-          'Profile',
-          style: Theme.of(
-            context,
-          ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800),
-        ),
-        const SizedBox(height: 12),
-        if (snapshot.hasError)
-          DashboardErrorCard(
-            message:
-                'Profile read is unavailable. The current-profile RPC may not be deployed.\n${snapshot.error}',
-            onRetry: () {},
+  State<RoleProfilePage> createState() => _RoleProfilePageState();
+}
+
+class _RoleProfilePageState extends State<RoleProfilePage> {
+  late Future<Map<String, dynamic>> _profile = _loadProfile();
+
+  Future<Map<String, dynamic>> _loadProfile() async {
+    final userId = _dashboardDb.auth.currentUser?.id;
+    if (userId == null) throw StateError('Your session has ended.');
+    final response = await _dashboardDb.rpc('get_my_profile');
+    if (_dashboardDb.auth.currentUser?.id != userId) {
+      throw StateError('Account changed while the profile was loading.');
+    }
+    if (response is! Map) {
+      throw const FormatException('Profile information is unavailable.');
+    }
+    final profile = Map<String, dynamic>.from(response);
+    final result = <String, dynamic>{'profile': profile};
+    if (widget.role == 'HUB_ADMIN') {
+      try {
+        final hubResponse = await _dashboardDb.rpc('get_my_hubs');
+        if (hubResponse is! List) {
+          throw const FormatException('Hub list response was invalid.');
+        }
+        final hubs = hubResponse
+            .map((row) => Map<String, dynamic>.from(row as Map))
+            .toList();
+        result['hubs'] = hubs;
+        final summaries = <String, Map<String, dynamic>>{};
+        for (final hub in hubs) {
+          final hubId = hub['hub_id']?.toString();
+          if (hubId == null) continue;
+          try {
+            final summary = await _dashboardDb.rpc(
+              'get_hub_dashboard',
+              params: {'p_hub': hubId},
+            );
+            if (summary is Map) {
+              summaries[hubId] = Map<String, dynamic>.from(summary);
+            }
+          } catch (_) {
+            // Hub identity and registered capacity remain useful even when
+            // the separate authorized availability summary is unavailable.
+          }
+        }
+        result['hub_summaries'] = summaries;
+      } catch (error) {
+        result['hub_error'] = error;
+      }
+    }
+    if (_dashboardDb.auth.currentUser?.id != userId) {
+      throw StateError('Account changed while the profile was loading.');
+    }
+    return result;
+  }
+
+  void _refresh() => setState(() => _profile = _loadProfile());
+
+  @override
+  Widget build(BuildContext context) => FutureBuilder<Map<String, dynamic>>(
+    future: _profile,
+    builder: (context, snapshot) {
+      final theme = Theme.of(context);
+      if (snapshot.hasError) {
+        return ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            const GeoLockHeader(compact: true),
+            const SizedBox(height: 20),
+            Text('Your profile', style: theme.textTheme.headlineSmall),
+            const SizedBox(height: 12),
+            DashboardErrorCard(
+              message: 'Profile information could not be loaded.',
+              onRetry: _refresh,
+            ),
+          ],
+        );
+      }
+      if (!snapshot.hasData) {
+        return ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            const GeoLockHeader(compact: true),
+            const SizedBox(height: 20),
+            Text('Your profile', style: theme.textTheme.headlineSmall),
+            const SizedBox(height: 12),
+            const DashboardLoadingCard(height: 148),
+          ],
+        );
+      }
+      final data = snapshot.data!;
+      final profile = data['profile'] as Map<String, dynamic>;
+      final user = _dashboardDb.auth.currentUser;
+      final rawName = profile['full_name']?.toString().trim() ?? '';
+      final name = _profileValue(rawName, empty: 'Name unavailable');
+      final roleLabel = _profileRoleLabel(
+        profile['role']?.toString() ?? widget.role,
+      );
+      final hubs = (data['hubs'] as List? ?? const [])
+          .cast<Map<String, dynamic>>();
+      final summaries =
+          (data['hub_summaries'] as Map<String, dynamic>? ?? const {});
+
+      return ListView(
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 28),
+        children: [
+          const GeoLockHeader(compact: true),
+          const SizedBox(height: 18),
+          Text(
+            'Your profile',
+            style: theme.textTheme.headlineSmall?.copyWith(
+              color: _ink,
+              fontWeight: FontWeight.w800,
+            ),
           ),
-        if (!snapshot.hasError && !snapshot.hasData)
-          const DashboardLoadingCard(height: 80),
-        if (snapshot.data is Map) ...[
-          ListTile(
-            title: const Text('Name'),
-            subtitle: Text('${snapshot.data['full_name'] ?? '—'}'),
+          const SizedBox(height: 14),
+          _ProfileSection(
+            child: Row(
+              children: [
+                CircleAvatar(
+                  radius: 31,
+                  backgroundColor: const Color(0xffd9efe8),
+                  foregroundColor: _green,
+                  child: Text(
+                    _profileInitials(rawName),
+                    style: theme.textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 15),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        name,
+                        style: theme.textTheme.titleLarge?.copyWith(
+                          color: _ink,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      _ProfileRoleBadge(label: roleLabel),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
-          ListTile(title: const Text('Role'), subtitle: Text(role)),
-          if (role == 'NGO')
-            ListTile(
-              title: const Text('Location verification'),
-              subtitle: Text(
-                '${snapshot.data['location_status'] ?? 'UNKNOWN'}',
+          const SizedBox(height: 16),
+          _ProfileSection(
+            title: 'Account information',
+            icon: Icons.person_outline,
+            children: [
+              _ProfileField(
+                icon: Icons.badge_outlined,
+                label: 'Full name',
+                value: _profileValue(profile['full_name']),
+              ),
+              _ProfileField(
+                icon: Icons.email_outlined,
+                label: 'Email address',
+                value: _profileValue(user?.email, empty: 'Not available'),
+              ),
+              _ProfileField(
+                icon: Icons.phone_outlined,
+                label: 'Phone number',
+                value: _profileValue(
+                  profile['phone_number'],
+                  empty: 'Not added',
+                ),
+              ),
+              _ProfileField(
+                icon: Icons.verified_user_outlined,
+                label: 'Account role',
+                value: roleLabel,
+              ),
+              _ProfileField(
+                icon: Icons.calendar_today_outlined,
+                label: 'Account created',
+                value: _profileDate(user?.createdAt),
+                isLast: true,
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          if (widget.role == 'NGO')
+            _ProfileSection(
+              title: 'NGO information',
+              icon: Icons.volunteer_activism_outlined,
+              children: [
+                _ProfileField(
+                  icon: Icons.business_outlined,
+                  label: 'Organization',
+                  value: _profileValue(profile['ngo_name']),
+                ),
+                const _ProfileField(
+                  icon: Icons.confirmation_number_outlined,
+                  label: 'Registration number',
+                  value: 'Not available from the current profile read',
+                ),
+                _ProfileField(
+                  icon: Icons.location_on_outlined,
+                  label: 'Operating address',
+                  value: _profileValue(profile['operating_address']),
+                ),
+                _ProfileLocationStatus(
+                  status: profile['location_status']?.toString(),
+                  verifiedAt: profile['location_verified_at'],
+                ),
+              ],
+            ),
+          if (widget.role == 'HUB_ADMIN') ...[
+            _ProfileSection(
+              title: 'Assigned hubs',
+              icon: Icons.home_work_outlined,
+              children: [
+                if (data['hub_error'] != null)
+                  const Padding(
+                    padding: EdgeInsets.only(top: 12),
+                    child: Text('Assigned hub information is unavailable.'),
+                  )
+                else if (hubs.isEmpty)
+                  const Padding(
+                    padding: EdgeInsets.only(top: 12),
+                    child: Text('No hub is currently linked to this account.'),
+                  )
+                else
+                  for (var index = 0; index < hubs.length; index++) ...[
+                    if (index > 0)
+                      const Divider(height: 24, color: Color(0xffe5eee9)),
+                    _ProfileHubFields(
+                      hub: hubs[index],
+                      summary:
+                          summaries[hubs[index]['hub_id']?.toString()]
+                              as Map<String, dynamic>?,
+                    ),
+                  ],
+              ],
+            ),
+            const SizedBox(height: 16),
+          ],
+          if (widget.role == 'DONOR')
+            _ProfileSection(
+              title: 'Donor account',
+              icon: Icons.volunteer_activism_outlined,
+              children: const [
+                Padding(
+                  padding: EdgeInsets.only(top: 10),
+                  child: Text(
+                    'Pickup details are provided with each donation. Your account does not store a permanent pickup address.',
+                  ),
+                ),
+              ],
+            ),
+          if (widget.role == 'DONOR') const SizedBox(height: 16),
+          _ProfileSection(
+            title: 'Settings',
+            icon: Icons.settings_outlined,
+            children: const [
+              Padding(
+                padding: EdgeInsets.only(top: 10),
+                child: Text(
+                  'Profile details are read-only here. Secure profile editing is not available in the current backend.',
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          OutlinedButton.icon(
+            onPressed: () => signOutAndReset(context),
+            icon: const Icon(Icons.logout),
+            label: const Text('Sign out'),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: Theme.of(context).colorScheme.error,
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              side: BorderSide(
+                color: Theme.of(
+                  context,
+                ).colorScheme.error.withValues(alpha: .5),
               ),
             ),
-        ],
-        const SizedBox(height: 10),
-        OutlinedButton.icon(
-          onPressed: () => Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => const MyReconciliationCasesPage(),
-            ),
           ),
-          icon: const Icon(Icons.rule_folder_outlined),
-          label: const Text('Handover reconciliation'),
-        ),
-        const SizedBox(height: 18),
-        OutlinedButton.icon(
-          onPressed: () => signOutAndReset(context),
-          icon: const Icon(Icons.logout),
-          label: const Text('Sign out'),
+        ],
+      );
+    },
+  );
+}
+
+String _profileRoleLabel(String role) => switch (role) {
+  'DONOR' => 'Donor',
+  'NGO' => 'NGO Personnel',
+  'HUB_ADMIN' => 'Community Hub Admin',
+  _ => 'Account',
+};
+
+String _profileValue(Object? value, {String empty = 'Not provided'}) {
+  final text = value?.toString().trim();
+  return text == null || text.isEmpty ? empty : text;
+}
+
+String _profileInitials(String name) {
+  final parts = name
+      .trim()
+      .split(RegExp(r'\s+'))
+      .where((part) => part.isNotEmpty);
+  final initials = parts.take(2).map((part) => part[0].toUpperCase()).join();
+  return initials.isEmpty ? '?' : initials;
+}
+
+String _profileDate(Object? value) {
+  final parsed = value == null ? null : DateTime.tryParse(value.toString());
+  if (parsed == null) return 'Not available';
+  final local = parsed.toLocal();
+  return '${local.day.toString().padLeft(2, '0')}/'
+      '${local.month.toString().padLeft(2, '0')}/${local.year}';
+}
+
+class _ProfileSection extends StatelessWidget {
+  final String? title;
+  final IconData? icon;
+  final Widget? child;
+  final List<Widget> children;
+
+  const _ProfileSection({
+    this.title,
+    this.icon,
+    this.child,
+    this.children = const [],
+  });
+
+  @override
+  Widget build(BuildContext context) => Card(
+    color: Colors.white,
+    elevation: 0,
+    margin: EdgeInsets.zero,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(20),
+      side: const BorderSide(color: Color(0xffdfeae4)),
+    ),
+    child: Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (title != null) ...[
+            Row(
+              children: [
+                Icon(icon, color: _green, size: 20),
+                const SizedBox(width: 9),
+                Text(
+                  title!,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: _ink,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
+            ),
+            if (child != null || children.isNotEmpty)
+              const SizedBox(height: 10),
+          ],
+          ?child,
+          ...children,
+        ],
+      ),
+    ),
+  );
+}
+
+class _ProfileField extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final String value;
+  final bool isLast;
+
+  const _ProfileField({
+    required this.icon,
+    required this.label,
+    required this.value,
+    this.isLast = false,
+  });
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: EdgeInsets.only(top: 10, bottom: isLast ? 0 : 10),
+    child: Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(icon, size: 19, color: const Color(0xff668078)),
+        const SizedBox(width: 11),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                  color: const Color(0xff6b7b75),
+                ),
+              ),
+              const SizedBox(height: 2),
+              SelectableText(
+                value,
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  color: _ink,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
         ),
       ],
     ),
+  );
+}
+
+class _ProfileRoleBadge extends StatelessWidget {
+  final String label;
+  const _ProfileRoleBadge({required this.label});
+
+  @override
+  Widget build(BuildContext context) => Container(
+    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+    decoration: BoxDecoration(
+      color: const Color(0xffe4f3ed),
+      borderRadius: BorderRadius.circular(99),
+    ),
+    child: Text(
+      label,
+      style: const TextStyle(
+        color: Color(0xff216d5a),
+        fontWeight: FontWeight.w700,
+        fontSize: 12,
+      ),
+    ),
+  );
+}
+
+class _ProfileLocationStatus extends StatelessWidget {
+  final String? status;
+  final Object? verifiedAt;
+  const _ProfileLocationStatus({this.status, this.verifiedAt});
+
+  @override
+  Widget build(BuildContext context) {
+    final verified = status == 'VERIFIED' || verifiedAt != null;
+    final label = verified ? 'Verified location' : 'Pending verification';
+    final color = verified ? _green : const Color(0xff98681b);
+    return Padding(
+      padding: const EdgeInsets.only(top: 10),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(
+            verified ? Icons.verified_outlined : Icons.pending_outlined,
+            size: 19,
+            color: color,
+          ),
+          const SizedBox(width: 11),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Location verification',
+                  style: Theme.of(context).textTheme.labelMedium,
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  label,
+                  style: TextStyle(color: color, fontWeight: FontWeight.w700),
+                ),
+                if (verified && verifiedAt != null)
+                  Text(
+                    'Verified ${_profileDate(verifiedAt)}',
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ProfileHubFields extends StatelessWidget {
+  final Map<String, dynamic> hub;
+  final Map<String, dynamic>? summary;
+  const _ProfileHubFields({required this.hub, this.summary});
+
+  @override
+  Widget build(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(
+        _profileValue(hub['hub_name'], empty: 'Community hub'),
+        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+          fontWeight: FontWeight.w700,
+          color: _ink,
+        ),
+      ),
+      _ProfileField(
+        icon: Icons.location_on_outlined,
+        label: 'Hub address',
+        value: _profileValue(hub['address_text']),
+      ),
+      _ProfileField(
+        icon: Icons.storage_outlined,
+        label: 'Registered total capacity',
+        value: hub['capacity_kg'] == null
+            ? 'Not available'
+            : '${hub['capacity_kg']} kg',
+      ),
+      _ProfileField(
+        icon: Icons.inventory_2_outlined,
+        label: 'Available capacity',
+        value: summary?['available_capacity_kg'] == null
+            ? 'Not available from the current hub read'
+            : '${summary!['available_capacity_kg']} kg',
+        isLast: true,
+      ),
+    ],
   );
 }
 
