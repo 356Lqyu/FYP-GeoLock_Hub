@@ -2737,18 +2737,40 @@ class _DonationDetailPageState extends State<DonationDetailPage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const Text('Donation Details')),
+    backgroundColor: const Color(0xfff5f8f6),
+    appBar: AppBar(
+      title: const Text('Donation details'),
+      backgroundColor: const Color(0xfff5f8f6),
+      surfaceTintColor: Colors.transparent,
+    ),
     body: FutureBuilder<Map<String, dynamic>>(
       future: _detail,
       builder: (context, snapshot) {
         if (snapshot.hasError) {
-          return Center(
-            child: Text('Unable to load donation: ${snapshot.error}'),
+          return _DonorDetailMessage(
+            icon: Icons.cloud_off_outlined,
+            title: 'Could not load this donation',
+            message: 'Check your connection and try again.',
+            actionLabel: 'Try again',
+            onPressed: () => setState(() => _detail = _load()),
           );
         }
         if (!snapshot.hasData) {
-          return const Center(child: CircularProgressIndicator());
+          return const Center(
+            child: SizedBox(
+              width: 220,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CircularProgressIndicator(),
+                  SizedBox(height: 16),
+                  Text('Loading donation details…'),
+                ],
+              ),
+            ),
+          );
         }
+
         final d = snapshot.data!;
         final reservations = (d['hub_reservations'] as List? ?? const [])
             .cast<Map>();
@@ -2804,173 +2826,737 @@ class _DonationDetailPageState extends State<DonationDetailPage> {
             (d['status'] == 'SUBMITTED' ||
                 (d['status'] == 'HUB_ASSIGNED' &&
                     latestReservationStatus == 'EXPIRED'));
-        return ListView(
-          padding: const EdgeInsets.all(16),
-          children: [
-            Text(
-              d['title'].toString(),
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
-            if ((d['description']?.toString().trim().isNotEmpty ?? false))
-              Padding(
-                padding: const EdgeInsets.only(top: 6, bottom: 10),
-                child: Text(d['description'].toString()),
-              ),
-            DonationPhotoCarousel(
-              paths: ((d['images'] as List?) ?? const [])
-                  .map((image) => Map<String, dynamic>.from(image as Map))
-                  .map((image) => image['storage_path']?.toString() ?? '')
-                  .where((path) => path.isNotEmpty)
-                  .toList(),
-            ),
-            const SizedBox(height: 12),
-            _detailRow(
-              'Current state',
-              d['status'] == 'HUB_ASSIGNED' &&
-                      latestReservationStatus == 'EXPIRED'
-                  ? 'Hub Reservation Expired — Choose Another Hub'
-                  : donationStatusLabel(
-                      status: d['status']?.toString(),
-                      collectionPath: d['collection_path']?.toString(),
-                      reservationStatus: latestReservationStatus?.toString(),
-                      inventoryStatus: d['inventory_status']?.toString(),
-                      listingStatus: d['listing_status']?.toString(),
-                    ),
-            ),
-            _detailRow('Collection path', d['collection_path']),
-            _detailRow('Total weight', '${d['total_weight_kg']} kg'),
-            if (d['collection_path'] == 'DIRECT_PICKUP')
-              _detailRow(
-                'Road-node availability',
-                d['road_node_status'] ?? 'PENDING_NODE',
-              ),
-            _detailRow('Pickup address', d['pickup_address']),
-            const SizedBox(height: 8),
-            GeoStatusTimeline(
-              title: 'Donation Progress',
-              currentStatus: friendlyWorkflowStatus(d['status']),
-              events: donationEvents,
-              pendingMilestones: pendingDonationMilestones(
+        final statusLabel =
+            d['status'] == 'HUB_ASSIGNED' &&
+                latestReservationStatus == 'EXPIRED'
+            ? 'Hub reservation expired'
+            : donationStatusLabel(
+                status: d['status']?.toString(),
                 collectionPath: d['collection_path']?.toString(),
-                currentStatus: d['status']?.toString(),
-              ),
-              errorMessage: d['audit_error']?.toString(),
-              emptyMessage:
-                  'No earlier progress events are available from the current backend reads.',
-            ),
-            const Divider(),
-            Text('Items', style: Theme.of(context).textTheme.titleMedium),
-            ...items.map(
-              (item) => ListTile(
-                contentPadding: EdgeInsets.zero,
-                title: Text(item['item_name'].toString()),
-                subtitle: Text(
-                  '${item['category']} · ${item['quantity']} × ${item['unit_weight_kg']} kg · ${item['item_condition']}',
-                ),
-              ),
-            ),
-            const Divider(),
-            if (isHubCollection) ...[
-              Text(
-                'Hub Reservation',
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-              if (reservations.isEmpty)
-                const Text('No hub reservation has been recorded.'),
-              for (
-                var reservationIndex = 0;
-                reservationIndex < reservations.length;
-                reservationIndex++
-              )
-                ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  title: Text(
-                    reservations[reservationIndex]['hub_name']?.toString() ??
-                        'Community Hub',
-                  ),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                reservationStatus: latestReservationStatus?.toString(),
+                inventoryStatus: d['inventory_status']?.toString(),
+                listingStatus: d['listing_status']?.toString(),
+              );
+        final statusColor = _donorStatusColor(d['status']?.toString());
+        final photos = ((d['images'] as List?) ?? const [])
+            .map((image) => Map<String, dynamic>.from(image as Map))
+            .map((image) => image['storage_path']?.toString() ?? '')
+            .where((path) => path.isNotEmpty)
+            .toList();
+
+        return Column(
+          children: [
+            Expanded(
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 680),
+                  child: ListView(
+                    padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
                     children: [
+                      DonationPhotoCarousel(paths: photos),
+                      const SizedBox(height: 20),
                       Text(
-                        'Reservation · ${reservationStatusLabel(recordedStatus: reservations[reservationIndex]['status'], effectiveStatus: latestReservationStatus, isLatest: reservationIndex == 0)}',
+                        d['title']?.toString() ?? 'Donation',
+                        style: Theme.of(context).textTheme.headlineSmall
+                            ?.copyWith(fontWeight: FontWeight.w700),
                       ),
-                      if (statusTimestampText(
-                            context,
-                            reservations[reservationIndex]['reserved_at'],
-                          )
-                          case final reservedAt?)
-                        Text('Reserved · $reservedAt'),
-                      if (statusTimestampText(
-                            context,
-                            reservations[reservationIndex]['expires_at'],
-                          )
-                          case final expiresAt?)
-                        Text('Reservation deadline · $expiresAt'),
-                      if (reservations[reservationIndex]['receipt_status'] !=
-                          null)
+                      if ((d['description']?.toString().trim().isNotEmpty ??
+                          false)) ...[
+                        const SizedBox(height: 6),
                         Text(
-                          'Physical receipt · ${friendlyWorkflowStatus(reservations[reservationIndex]['receipt_status'])}',
+                          d['description'].toString(),
+                          style: Theme.of(context).textTheme.bodyLarge
+                              ?.copyWith(
+                                color: const Color(0xff52645d),
+                                height: 1.4,
+                              ),
                         ),
-                      if (statusTimestampText(
-                            context,
-                            reservations[reservationIndex]['received_at'],
-                          )
-                          case final receivedAt?)
-                        Text('Received · $receivedAt'),
+                      ],
+                      const SizedBox(height: 14),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        children: [
+                          _DonorStatusBadge(
+                            label: statusLabel,
+                            color: statusColor,
+                          ),
+                          _DonorInfoChip(
+                            icon: Icons.scale_outlined,
+                            label: '${d['total_weight_kg'] ?? '—'} kg',
+                          ),
+                          _DonorInfoChip(
+                            icon: isHubCollection
+                                ? Icons.storefront_outlined
+                                : Icons.local_shipping_outlined,
+                            label: isHubCollection
+                                ? 'Community Hub collection'
+                                : 'Direct pickup',
+                          ),
+                        ],
+                      ),
+                      if (d['pickup_address']?.toString().isNotEmpty == true)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 14),
+                          child: _DonorSectionCard(
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Icon(
+                                  Icons.location_on_outlined,
+                                  color: Color(0xff287764),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        isHubCollection
+                                            ? 'Pickup location'
+                                            : 'Collection location',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .labelLarge
+                                            ?.copyWith(
+                                              color: const Color(0xff52645d),
+                                            ),
+                                      ),
+                                      const SizedBox(height: 3),
+                                      Text(d['pickup_address'].toString()),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      const SizedBox(height: 22),
+                      _DonorProgressTimeline(
+                        currentStatus: d['status']?.toString(),
+                        collectionPath: d['collection_path']?.toString(),
+                        events: donationEvents,
+                        auditError: d['audit_error']?.toString(),
+                      ),
+                      if (isHubCollection) ...[
+                        const SizedBox(height: 18),
+                        _DonorHubReservationSection(
+                          reservations: reservations,
+                          effectiveStatus: latestReservationStatus,
+                          events: reservationEvents,
+                        ),
+                      ],
+                      const SizedBox(height: 18),
+                      _DonorSectionCard(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    'Donation items',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleMedium
+                                        ?.copyWith(fontWeight: FontWeight.w700),
+                                  ),
+                                ),
+                                Text(
+                                  '${items.length}',
+                                  style: Theme.of(context).textTheme.labelLarge
+                                      ?.copyWith(
+                                        color: const Color(0xff687a73),
+                                      ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            if (items.isEmpty)
+                              const Text('No item details are available.'),
+                            for (var index = 0; index < items.length; index++)
+                              _DonorItemRow(
+                                item: items[index],
+                                isLast: index == items.length - 1,
+                              ),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                 ),
-              const Text(
-                'A reservation holds hub capacity; it does not confirm physical receipt.',
               ),
-              GeoStatusTimeline(
-                title: 'Reservation History',
-                events: reservationEvents,
-                emptyMessage:
-                    'Reservation timestamps are shown on each reservation when the backend provides them. No separate reservation change events are available.',
-              ),
-            ],
-            if (needsHub)
-              FilledButton.icon(
-                onPressed: _busy ? null : _reserveHub,
-                icon: const Icon(Icons.storefront_outlined),
-                label: Text(
-                  d['status'] == 'HUB_ASSIGNED'
-                      ? 'Choose another Community Hub'
-                      : 'Reserve a Community Hub',
-                ),
-              ),
-            if (d['collection_path'] == 'DIRECT_PICKUP' &&
-                d['road_node_status'] != 'READY')
-              const Text(
-                'No trusted road-node resolver is configured for this V3 deployment. This direct listing remains unavailable to claims until a validated node is assigned.',
-              ),
-            if (cancellable)
-              TextButton.icon(
-                onPressed: _busy ? null : _cancel,
-                icon: const Icon(Icons.cancel_outlined),
-                label: const Text('Cancel donation'),
+            ),
+            if (needsHub || cancellable)
+              _DonorDetailActions(
+                isBusy: _busy,
+                needsHub: needsHub,
+                canCancel: cancellable,
+                onChooseHub: _reserveHub,
+                onCancel: _cancel,
               ),
           ],
         );
       },
     ),
   );
+}
 
-  Widget _detailRow(String label, Object? value) => Padding(
-    padding: const EdgeInsets.symmetric(vertical: 4),
+Color _donorStatusColor(String? status) => switch (status) {
+  'CANCELLED' => const Color(0xffad3f42),
+  'COLLECTED' => const Color(0xff277764),
+  'PICKUP_IN_PROGRESS' => const Color(0xff28659a),
+  'HUB_ASSIGNED' || 'AT_HUB' || 'BATCHED' => const Color(0xff89651b),
+  _ => const Color(0xff287764),
+};
+
+class _DonorDetailMessage extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String message;
+  final String? actionLabel;
+  final VoidCallback? onPressed;
+
+  const _DonorDetailMessage({
+    required this.icon,
+    required this.title,
+    required this.message,
+    this.actionLabel,
+    this.onPressed,
+  });
+
+  @override
+  Widget build(BuildContext context) => Center(
+    child: Padding(
+      padding: const EdgeInsets.all(28),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 42, color: const Color(0xff287764)),
+          const SizedBox(height: 14),
+          Text(title, style: Theme.of(context).textTheme.titleLarge),
+          const SizedBox(height: 6),
+          Text(message, textAlign: TextAlign.center),
+          if (actionLabel != null && onPressed != null) ...[
+            const SizedBox(height: 18),
+            FilledButton(onPressed: onPressed, child: Text(actionLabel!)),
+          ],
+        ],
+      ),
+    ),
+  );
+}
+
+class _DonorStatusBadge extends StatelessWidget {
+  final String label;
+  final Color color;
+
+  const _DonorStatusBadge({required this.label, required this.color});
+
+  @override
+  Widget build(BuildContext context) => Container(
+    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+    decoration: BoxDecoration(
+      color: color.withValues(alpha: .1),
+      borderRadius: BorderRadius.circular(999),
+      border: Border.all(color: color.withValues(alpha: .25)),
+    ),
     child: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(Icons.circle, size: 9, color: color),
+        const SizedBox(width: 7),
+        Text(
+          label,
+          style: TextStyle(color: color, fontWeight: FontWeight.w700),
+        ),
+      ],
+    ),
+  );
+}
+
+class _DonorInfoChip extends StatelessWidget {
+  final IconData icon;
+  final String label;
+
+  const _DonorInfoChip({required this.icon, required this.label});
+
+  @override
+  Widget build(BuildContext context) => Container(
+    padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 8),
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(999),
+      border: Border.all(color: const Color(0xffdce8e2)),
+    ),
+    child: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, size: 16, color: const Color(0xff287764)),
+        const SizedBox(width: 6),
+        Text(label, style: Theme.of(context).textTheme.labelLarge),
+      ],
+    ),
+  );
+}
+
+class _DonorSectionCard extends StatelessWidget {
+  final Widget child;
+
+  const _DonorSectionCard({required this.child});
+
+  @override
+  Widget build(BuildContext context) => Card(
+    margin: EdgeInsets.zero,
+    color: Colors.white,
+    elevation: 0,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(18),
+      side: const BorderSide(color: Color(0xffe2ebe6)),
+    ),
+    child: Padding(padding: const EdgeInsets.all(16), child: child),
+  );
+}
+
+class _DonorProgressTimeline extends StatelessWidget {
+  final String? currentStatus;
+  final String? collectionPath;
+  final List<StatusTimelineEvent> events;
+  final String? auditError;
+
+  const _DonorProgressTimeline({
+    required this.currentStatus,
+    required this.collectionPath,
+    required this.events,
+    this.auditError,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final currentLabel = donationStatusLabel(
+      status: currentStatus,
+      collectionPath: collectionPath,
+    );
+    final pending = pendingDonationMilestones(
+      collectionPath: collectionPath,
+      currentStatus: currentStatus,
+    );
+    final cancellationIsRecorded =
+        currentStatus == 'CANCELLED' &&
+        events.any((event) => event.title == 'Donation cancelled');
+    return _DonorSectionCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Donation progress',
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+          ),
+          const SizedBox(height: 16),
+          for (final event in events)
+            _DonorTimelineRow(
+              title: event.title,
+              detail: event.detail,
+              timestamp: event.occurredAt,
+              state: event.title == 'Donation cancelled'
+                  ? _DonorTimelineState.terminal
+                  : _DonorTimelineState.complete,
+              isLast:
+                  cancellationIsRecorded &&
+                  identical(event, events.last) &&
+                  pending.isEmpty,
+            ),
+          if (!cancellationIsRecorded)
+            _DonorTimelineRow(
+              title: currentLabel,
+              detail: currentStatus == 'CANCELLED'
+                  ? 'This donation is closed.'
+                  : 'Current status',
+              state: currentStatus == 'CANCELLED'
+                  ? _DonorTimelineState.terminal
+                  : _DonorTimelineState.current,
+              isLast: pending.isEmpty,
+            ),
+          for (var index = 0; index < pending.length; index++)
+            _DonorTimelineRow(
+              title: pending[index],
+              detail: 'Pending',
+              state: _DonorTimelineState.pending,
+              isLast: index == pending.length - 1,
+            ),
+          if (events.isEmpty && currentStatus == null)
+            const Text('No donation history is available yet.'),
+        ],
+      ),
+    );
+  }
+}
+
+enum _DonorTimelineState { complete, current, pending, terminal }
+
+class _DonorTimelineRow extends StatelessWidget {
+  final String title;
+  final String? detail;
+  final DateTime? timestamp;
+  final _DonorTimelineState state;
+  final bool isLast;
+
+  const _DonorTimelineRow({
+    required this.title,
+    required this.state,
+    required this.isLast,
+    this.detail,
+    this.timestamp,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final color = switch (state) {
+      _DonorTimelineState.complete => const Color(0xff287764),
+      _DonorTimelineState.current => const Color(0xff176957),
+      _DonorTimelineState.pending => const Color(0xffa8b6af),
+      _DonorTimelineState.terminal => const Color(0xffad3f42),
+    };
+    final icon = switch (state) {
+      _DonorTimelineState.complete => Icons.check_circle,
+      _DonorTimelineState.current => Icons.radio_button_checked,
+      _DonorTimelineState.pending => Icons.radio_button_unchecked,
+      _DonorTimelineState.terminal => Icons.cancel,
+    };
+    return IntrinsicHeight(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          SizedBox(
+            width: 28,
+            child: Column(
+              children: [
+                Icon(icon, color: color, size: 18),
+                if (!isLast)
+                  Expanded(
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(vertical: 2),
+                      width: 2,
+                      color: color.withValues(alpha: .24),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.only(left: 8, bottom: 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                      fontWeight: state == _DonorTimelineState.current
+                          ? FontWeight.w700
+                          : FontWeight.w600,
+                      color: state == _DonorTimelineState.pending
+                          ? const Color(0xff75857d)
+                          : null,
+                    ),
+                  ),
+                  if (detail != null && state != _DonorTimelineState.pending)
+                    Text(
+                      detail!,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: const Color(0xff697a72),
+                      ),
+                    ),
+                  if (timestamp != null)
+                    Text(
+                      statusTimestampText(context, timestamp) ?? '',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: const Color(0xff697a72),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _DonorHubReservationSection extends StatelessWidget {
+  final List<Map> reservations;
+  final Object? effectiveStatus;
+  final List<StatusTimelineEvent> events;
+
+  const _DonorHubReservationSection({
+    required this.reservations,
+    required this.effectiveStatus,
+    required this.events,
+  });
+
+  Widget _reservationTile(
+    BuildContext context,
+    Map reservation, {
+    required bool latest,
+  }) {
+    final status = reservationStatusLabel(
+      recordedStatus: reservation['status'],
+      effectiveStatus: effectiveStatus,
+      isLatest: latest,
+    );
+    final receivedAt = statusTimestampText(context, reservation['received_at']);
+    final reservedAt = statusTimestampText(context, reservation['reserved_at']);
+    final expiresAt = statusTimestampText(context, reservation['expires_at']);
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 7),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Icon(Icons.storefront_outlined, color: Color(0xff287764)),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  reservation['hub_name']?.toString() ?? 'Community Hub',
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+                ),
+                const SizedBox(height: 3),
+                Text(status),
+                if (reservedAt != null) Text('Reserved · $reservedAt'),
+                if (expiresAt != null) Text('Reservation expires · $expiresAt'),
+                if (reservation['receipt_status'] != null) ...[
+                  const SizedBox(height: 5),
+                  Text(
+                    'Physical receipt · ${friendlyWorkflowStatus(reservation['receipt_status'])}',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  if (receivedAt != null) Text('Received · $receivedAt'),
+                ],
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) => _DonorSectionCard(
+    child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(
-          width: 130,
-          child: Text(
-            label,
-            style: const TextStyle(fontWeight: FontWeight.w600),
+        Text(
+          'Community hub',
+          style: Theme.of(
+            context,
+          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          'A reservation holds capacity. It is not confirmation that the hub has received your donation.',
+          style: Theme.of(
+            context,
+          ).textTheme.bodySmall?.copyWith(color: const Color(0xff687a73)),
+        ),
+        const SizedBox(height: 8),
+        if (reservations.isEmpty)
+          const ListTile(
+            contentPadding: EdgeInsets.zero,
+            leading: Icon(Icons.store_mall_directory_outlined),
+            title: Text('No hub selected yet'),
+            subtitle: Text('Choose a community hub when you are ready.'),
+          )
+        else ...[
+          _reservationTile(context, reservations.first, latest: true),
+          if (reservations.length > 1)
+            ExpansionTile(
+              tilePadding: EdgeInsets.zero,
+              childrenPadding: EdgeInsets.zero,
+              title: Text('Previous reservations (${reservations.length - 1})'),
+              children: [
+                for (final reservation in reservations.skip(1))
+                  _reservationTile(context, reservation, latest: false),
+              ],
+            ),
+        ],
+        if (events.isNotEmpty) ...[
+          const SizedBox(height: 4),
+          for (final event in events)
+            Padding(
+              padding: const EdgeInsets.only(top: 4),
+              child: Row(
+                children: [
+                  const Icon(Icons.history, size: 16, color: Color(0xff687a73)),
+                  const SizedBox(width: 8),
+                  Expanded(child: Text(event.title)),
+                  if (event.occurredAt != null)
+                    Text(
+                      statusTimestampText(context, event.occurredAt) ?? '',
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                ],
+              ),
+            ),
+        ],
+      ],
+    ),
+  );
+}
+
+class _DonorItemRow extends StatelessWidget {
+  final Map item;
+  final bool isLast;
+
+  const _DonorItemRow({required this.item, required this.isLast});
+
+  @override
+  Widget build(BuildContext context) {
+    final condition = switch (item['item_condition']?.toString()) {
+      'NEW' => 'New',
+      'GOOD' => 'Good condition',
+      'FAIR' => 'Fair condition',
+      'POOR' => 'Needs repair',
+      final value? => value.replaceAll('_', ' ').toLowerCase(),
+      _ => null,
+    };
+    return Column(
+      children: [
+        if (!isLast) const Divider(height: 1, color: Color(0xffedf1ee)),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 38,
+                height: 38,
+                decoration: BoxDecoration(
+                  color: const Color(0xffe9f4ef),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(
+                  Icons.volunteer_activism_outlined,
+                  size: 20,
+                  color: Color(0xff287764),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      item['item_name']?.toString() ?? 'Donation item',
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      '${item['category'] ?? 'Item'} · ${item['quantity'] ?? '—'} × ${item['unit_weight_kg'] ?? '—'} kg',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: const Color(0xff687a73),
+                      ),
+                    ),
+                    if (condition != null)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 5),
+                        child: Text(
+                          condition,
+                          style: Theme.of(context).textTheme.labelSmall
+                              ?.copyWith(color: const Color(0xff287764)),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
-        Expanded(child: Text(value?.toString() ?? '—')),
       ],
+    );
+  }
+}
+
+class _DonorDetailActions extends StatelessWidget {
+  final bool isBusy;
+  final bool needsHub;
+  final bool canCancel;
+  final VoidCallback onChooseHub;
+  final VoidCallback onCancel;
+
+  const _DonorDetailActions({
+    required this.isBusy,
+    required this.needsHub,
+    required this.canCancel,
+    required this.onChooseHub,
+    required this.onCancel,
+  });
+
+  @override
+  Widget build(BuildContext context) => SafeArea(
+    top: false,
+    child: Container(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 10),
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        border: Border(top: BorderSide(color: Color(0xffe2ebe6))),
+      ),
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 680),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (needsHub)
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton.icon(
+                    onPressed: isBusy ? null : onChooseHub,
+                    icon: const Icon(Icons.storefront_outlined),
+                    label: Text(
+                      isBusy ? 'Please wait…' : 'Choose a community hub',
+                    ),
+                  ),
+                ),
+              if (canCancel)
+                SizedBox(
+                  width: double.infinity,
+                  child: needsHub
+                      ? TextButton.icon(
+                          onPressed: isBusy ? null : onCancel,
+                          icon: const Icon(Icons.close),
+                          label: const Text('Cancel donation'),
+                          style: TextButton.styleFrom(
+                            foregroundColor: Theme.of(
+                              context,
+                            ).colorScheme.error,
+                          ),
+                        )
+                      : OutlinedButton.icon(
+                          onPressed: isBusy ? null : onCancel,
+                          icon: const Icon(Icons.close),
+                          label: const Text('Cancel donation'),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: Theme.of(
+                              context,
+                            ).colorScheme.error,
+                          ),
+                        ),
+                ),
+            ],
+          ),
+        ),
+      ),
     ),
   );
 }
