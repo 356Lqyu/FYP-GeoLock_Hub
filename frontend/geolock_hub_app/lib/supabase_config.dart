@@ -15,7 +15,7 @@ abstract final class SupabaseConfig {
   );
   static const publishableKey = String.fromEnvironment(
     'GEOLOCK_SUPABASE_PUBLISHABLE_KEY',
-    defaultValue: '',
+    defaultValue: 'sb_publishable_6nGhMdwaC79KbE-JiX4yPA_f3jFNbvd',
   );
 
   static bool get isConfigured =>
