@@ -16,8 +16,9 @@ void main() {
       expect(DonationPhotoRules.titleError('x' * 81), isNotNull);
     });
 
-    test('description is optional and limited to 1000 characters', () {
-      expect(DonationPhotoRules.descriptionError(''), isNull);
+    test('description is required and limited to 1000 characters', () {
+      expect(DonationPhotoRules.descriptionError(''), isNotNull);
+      expect(DonationPhotoRules.descriptionError('   '), isNotNull);
       expect(DonationPhotoRules.descriptionError('Condition details'), isNull);
       expect(DonationPhotoRules.descriptionError('x' * 1001), isNotNull);
     });

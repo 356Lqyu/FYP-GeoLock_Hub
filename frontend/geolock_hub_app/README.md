@@ -4,28 +4,41 @@ GeoLock Hub is a Flutter client for the V3 Supabase coordination backend. Postgr
 
 ## Run the app
 
-The client is pinned to the DEV project URL. It deliberately refuses to start
-against any other URL, including the original shared project. Obtain the DEV
-project's publishable key from its Dashboard and create an ignored local file
-named `.env.development.json` in this directory:
-
-```json
-{
-  "GEOLOCK_SUPABASE_PUBLISHABLE_KEY": "sb_publishable_your_dev_key"
-}
-```
-
-Run:
+Normal Flutter launches use the isolated DEV project. The URL and public
+publishable client key are included in `lib/supabase_config.dart`, so both
+`flutter run` and Android Studio's Run button work without Dart defines or a
+local config file:
 
 ```powershell
 flutter pub get
-flutter run --dart-define-from-file=.env.development.json
+flutter run
 ```
 
-Only a DEV `sb_publishable_` key is accepted. Never put a service-role key, secret
-key, or database password in Flutter source, assets, or the local app config.
-Configure the redirect URL in DEV Supabase Authentication's allowed redirect
-URLs.
+The checked-in key is a Supabase `sb_publishable_` public client key for the
+isolated DEV URL. Publishable keys are expected to be present in client apps;
+they do not grant database authority by themselves. PostgreSQL RLS and RPC
+authorization must protect data. Never put a service-role key, secret key, or
+database password in Flutter source, assets, or build defines. Configure the
+redirect URL in DEV Supabase Authentication's allowed redirect URLs.
+
+### Explicitly selecting the teammate-shared project
+
+The app never falls back to the teammate-shared project. A developer must
+explicitly select it and supply its own publishable key for that run. The URL is
+validated against project `mffccmlimmbrgasgfnnq`:
+
+```powershell
+flutter run `
+  --dart-define=GEOLOCK_SUPABASE_ENV=shared `
+  --dart-define=GEOLOCK_SUPABASE_URL=https://mffccmlimmbrgasgfnnq.supabase.co `
+  --dart-define=GEOLOCK_SUPABASE_PUBLISHABLE_KEY=YOUR_SHARED_PUBLISHABLE_KEY
+```
+
+For Android Studio, add those same three defines to a separate, intentionally
+selected Run configuration only when shared-project access is needed. Leave
+the normal Run configuration unchanged to use DEV. The shared key is not
+checked into the repository. An unknown environment, missing key, or mismatched
+URL is rejected before Supabase initialization.
 
 Android and iOS register the `io.supabase.geolockhub://login-callback` app link. Email confirmation and recovery links return to the app; Supabase Auth establishes the session before profile registration or password update proceeds.
 

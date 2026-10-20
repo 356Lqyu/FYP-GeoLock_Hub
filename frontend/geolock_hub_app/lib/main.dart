@@ -41,8 +41,10 @@ class _MissingDevConfigurationApp extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 const Text(
-                  'Set GEOLOCK_SUPABASE_PUBLISHABLE_KEY for the DEV project. '
-                  'This build is guarded against connecting to the original shared project.',
+                  'This build has no valid Supabase environment configuration. '
+                  'Normal launches use the isolated DEV project. The original '
+                  'shared project requires an explicit environment selection '
+                  'and its own publishable key.',
                   textAlign: TextAlign.center,
                 ),
               ],
