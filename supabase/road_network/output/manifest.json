@@ -1,0 +1,123 @@
+{
+  "network_snapshot_id": "OSM-OPS-20261018",
+  "dataset_kind": "OPERATIONAL",
+  "generated_at": "2026-10-20T08:34:49+00:00",
+  "source": {
+    "provider": "Geofabrik",
+    "file": "malaysia-singapore-brunei-261018.osm.pbf",
+    "md5": "962e5488d557f21ed6f8cfba88eec0ad",
+    "sha256": "bc65fdec223498d6a7d8d81d56a6b5128f0c6a7010cc2473fdf6729e2eba21e7",
+    "osm_replication_timestamp": "2026-10-18T20:25:06Z",
+    "licence": "ODbL 1.0, (c) OpenStreetMap contributors"
+  },
+  "study_area": {
+    "iso3166": {
+      "MY-04": 2939673,
+      "MY-09": 4444918,
+      "MY-05": 2939674,
+      "MY-16": 4443881,
+      "MY-02": 4444908,
+      "MY-01": 2939653,
+      "SG": 536780,
+      "MY-14": 2939672,
+      "MY-07": 4445131,
+      "MY-10": 2932285,
+      "MY-06": 4444595,
+      "MY-08": 4445076,
+      "MY-03": 4443571,
+      "MY-11": 4444411
+    },
+    "names": {
+      "MY-01": "Johor",
+      "MY-02": "Kedah",
+      "MY-03": "Kelantan",
+      "MY-04": "Melaka",
+      "MY-05": "Negeri Sembilan",
+      "MY-06": "Pahang",
+      "MY-07": "Pulau Pinang",
+      "MY-08": "Perak",
+      "MY-09": "Perlis",
+      "MY-10": "Selangor",
+      "MY-11": "Terengganu",
+      "MY-14": "Kuala Lumpur",
+      "MY-16": "Putrajaya"
+    },
+    "roads_clipped_to": "states + 0.05 deg coastal band, minus SG and lat > 5.6",
+    "simplify_deg": 0.0005,
+    "vertices": 6361
+  },
+  "graph_filter": {
+    "highway_speed_kmh": {
+      "motorway": 90,
+      "motorway_link": 60,
+      "trunk": 70,
+      "trunk_link": 50,
+      "primary": 60,
+      "primary_link": 45,
+      "secondary": 50,
+      "secondary_link": 40,
+      "tertiary": 40,
+      "tertiary_link": 35,
+      "unclassified": 30,
+      "residential": 25,
+      "living_street": 10
+    },
+    "excluded_highway": [
+      "service"
+    ],
+    "excluded_service": [
+      "drive-through",
+      "emergency_access",
+      "parking_aisle"
+    ],
+    "excluded_access": [
+      "no",
+      "private"
+    ],
+    "oneway": "yes/1/true forward, -1 reverse, reversible excluded, motorway and roundabout implied one-way",
+    "maxspeed": "numeric km/h or mph within 5-130 km/h, else class default"
+  },
+  "contraction": {
+    "osm_nodes": 4863935,
+    "kept_before_connectivity": 938498,
+    "max_spacing_m": 350.0,
+    "kept": "junctions, dead ends, one-way changes, study-area exits and a node at least every max_spacing_m along a chain"
+  },
+  "snap_rule": {
+    "max_snap_distance_m": 500,
+    "report_section": "3.3.5.1"
+  },
+  "connectivity": {
+    "nodes_before": 938492,
+    "strong_components_before": 3937,
+    "weak_components_before": 817,
+    "largest_component_nodes": 926414,
+    "nodes_dropped_not_connected": 12078,
+    "second_largest_component_nodes": 4791,
+    "kept_graph_strong_components": 1,
+    "shortest_path_check": {
+      "sources": 25,
+      "pairs_compared": 573046,
+      "limit_km": 25.0,
+      "reachability_mismatches": 0,
+      "max_distance_difference_m": 0.0
+    }
+  },
+  "counts": {
+    "ways": 755273,
+    "nodes": 926414,
+    "edges": 2145828
+  },
+  "files": {
+    "road_network_nodes.csv": "a8cd24823990b7e8b354ed85fc4207043b45cb1dd92b6780d32ad0f8fabacdf7",
+    "road_network_edges.csv": "dbfb052c9cf19d583690765d60613e3c8ff1b062c5070c214a5dfde971d541fd",
+    "operational_road_coverage.sql": "06b78e5f8502fa8aa02b0599003e99fcdc20d008b2ec76fc17fd501df9ad162f"
+  },
+  "builder": {
+    "sha256": "188bde7568b4d9eb910ddc8876f9626275669b86a4f51ed8f7afdf08371ebf23",
+    "python": "3.12.10",
+    "numpy": "2.5.2",
+    "shapely": "2.2.0"
+  },
+  "elapsed_s": 169.5
+}
