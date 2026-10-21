@@ -9,6 +9,8 @@ import 'package:image_picker/image_picker.dart';
 
 import 'location/location_picker_page.dart';
 import 'location/location_result.dart';
+import 'location/road_routing.dart';
+import 'donation_collection_path.dart';
 import 'donation_photo_rules.dart';
 import 'donation_photo_errors.dart';
 import 'donation_status.dart';
@@ -128,7 +130,7 @@ class _EligibleListingsPageState extends State<EligibleListingsPage> {
           content: Text(
             success
                 ? 'Claim committed. Claim ID: ${result['claim_id']}'
-                : 'Claim $outcome${reason == null ? '' : ': $reason'}',
+                : 'Claim not accepted: ${roadOutcomeMessage(reason)}',
           ),
         ),
       );
@@ -172,7 +174,10 @@ class _EligibleListingsPageState extends State<EligibleListingsPage> {
         return FutureBuilder<bool>(
           future: _trustedRouting,
           builder: (context, routeSnapshot) {
-            final capabilityReady = routeSnapshot.data == true;
+            final bool? capabilityReady =
+                routeSnapshot.connectionState == ConnectionState.done
+                ? routeSnapshot.data == true
+                : null;
             return RefreshIndicator(
               onRefresh: () async => setState(() => _listings = _load()),
               child: ListView.builder(
@@ -180,32 +185,14 @@ class _EligibleListingsPageState extends State<EligibleListingsPage> {
                 itemCount: rows.length,
                 itemBuilder: (context, index) {
                   final listing = rows[index];
-                  final id = listing['listing_id'].toString();
-                  final trustedNode = listing['routing_status'] == 'READY';
-                  final canClaim = capabilityReady && trustedNode;
-                  return Card(
-                    margin: const EdgeInsets.all(10),
-                    child: ListTile(
-                      leading: _StoredImageThumbnail(
-                        path: listing['primary_image_path']?.toString(),
-                      ),
-                      title: Text(
-                        '${listing['title'] ?? listing['source_type']} · ${listing['listing_weight_kg']} kg',
-                      ),
-                      subtitle: Text(
-                        '${friendlyWorkflowStatus(listing['collection_path'] ?? listing['source_type'])} · ${friendlyWorkflowStatus(listing['routing_status'] ?? 'UNVERIFIED')}\n${canClaim ? 'Eligible in discovery; the database rechecks when claimed.' : 'Claim unavailable: trusted road-node readiness is not confirmed by the server.'}',
-                      ),
-                      isThreeLine: true,
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) =>
-                              NgoListingDetailsPage(listing: listing),
-                        ),
-                      ),
-                      trailing: FilledButton(
-                        onPressed: canClaim ? () => _claim(id) : null,
-                        child: Text(canClaim ? 'Claim' : 'Unavailable'),
+                  return EligibleListingCard(
+                    listing: listing,
+                    capabilityReady: capabilityReady,
+                    onClaim: () => _claim(listing['listing_id'].toString()),
+                    onOpen: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => NgoListingDetailsPage(listing: listing),
                       ),
                     ),
                   );
@@ -219,11 +206,81 @@ class _EligibleListingsPageState extends State<EligibleListingsPage> {
   );
 }
 
+/// Why a discovered listing cannot be claimed, or null when it can.
+/// [capabilityReady] is null while the capability check is still loading.
+String? listingClaimBlockReason({
+  required bool? capabilityReady,
+  required Object? routingStatus,
+}) {
+  if (capabilityReady == null) return 'Checking the road network…';
+  if (!capabilityReady) return 'Road network is not active on the server';
+  if (routingStatus != 'READY') return roadStatusLine(routingStatus);
+  return null;
+}
+
+class EligibleListingCard extends StatelessWidget {
+  final Map<String, dynamic> listing;
+  final bool? capabilityReady;
+  final VoidCallback onClaim;
+  final VoidCallback onOpen;
+  const EligibleListingCard({
+    super.key,
+    required this.listing,
+    required this.capabilityReady,
+    required this.onClaim,
+    required this.onOpen,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final blockReason = listingClaimBlockReason(
+      capabilityReady: capabilityReady,
+      routingStatus: listing['routing_status'],
+    );
+    final canClaim = blockReason == null;
+    return Card(
+      margin: const EdgeInsets.all(10),
+      child: ListTile(
+        leading: _StoredImageThumbnail(
+          path: listing['primary_image_path']?.toString(),
+        ),
+        title: Text(
+          '${listing['title'] ?? listing['source_type']} · ${listing['listing_weight_kg']} kg',
+        ),
+        subtitle: Text(
+          '${friendlyWorkflowStatus(listing['collection_path'] ?? listing['source_type'])}\n${canClaim ? 'Eligible in discovery; the database rechecks when claimed.' : 'Claim unavailable: $blockReason'}',
+        ),
+        isThreeLine: true,
+        onTap: onOpen,
+        trailing: FilledButton(
+          onPressed: canClaim ? onClaim : null,
+          child: Text(canClaim ? 'Claim' : 'Unavailable'),
+        ),
+      ),
+    );
+  }
+}
+
 class MyClaimsPage extends StatefulWidget {
   const MyClaimsPage({super.key});
   @override
   State<MyClaimsPage> createState() => _MyClaimsPageState();
 }
+
+const hubLocationHint =
+    'Choose the hub entrance on or next to a road where vehicles can stop';
+
+/// Hub location picker: the entrance must be within reach of a drivable road.
+LocationPickerPage buildHubLocationPicker({
+  LocationResult? initialLocation,
+  RoadAccessCheck? roadAccessCheck,
+}) => LocationPickerPage(
+  title: 'Hub Address and Location',
+  initialLocation: initialLocation,
+  roadAccess: RoadAccessRequirement.required,
+  roadAccessCheck: roadAccessCheck,
+  hint: hubLocationHint,
+);
 
 class RegisterHubPage extends StatefulWidget {
   const RegisterHubPage({super.key});
@@ -247,10 +304,7 @@ class _RegisterHubPageState extends State<RegisterHubPage> {
     final result = await Navigator.push<LocationResult>(
       context,
       MaterialPageRoute(
-        builder: (_) => LocationPickerPage(
-          title: 'Hub Address and Location',
-          initialLocation: _location,
-        ),
+        builder: (_) => buildHubLocationPicker(initialLocation: _location),
       ),
     );
     if (result != null && mounted) setState(() => _location = result);
@@ -275,9 +329,6 @@ class _RegisterHubPageState extends State<RegisterHubPage> {
     }
     setState(() => _busy = true);
     try {
-      // V3's resolver is not confirmed deployed. Never send a client-guessed
-      // node; the protected V3 registration RPC accepts null for this field.
-      const String? roadNode = null;
       final hubId = await _db.rpc(
         'register_community_hub',
         params: {
@@ -286,16 +337,15 @@ class _RegisterHubPageState extends State<RegisterHubPage> {
           'p_lat': _location!.latitude,
           'p_lon': _location!.longitude,
           'p_capacity_kg': capacity,
-          'p_road_node': roadNode,
+          // Never send a client node: trg_hub_road_node assigns it on save.
+          'p_road_node': null,
         },
       );
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            roadNode == null
-                ? 'Hub registered ($hubId); route-node coverage is unavailable.'
-                : 'Hub registration committed ($hubId).',
+            'Hub registered. The database assigned its road node. ($hubId)',
           ),
         ),
       );
@@ -1463,10 +1513,10 @@ class _NgoListingDetailsPageState extends State<NgoListingDetailsPage> {
             DonationPhotoCarousel(paths: imagePaths),
             const SizedBox(height: 12),
             Text(
-              'Routing: ${widget.listing['routing_status'] ?? 'UNVERIFIED'}',
+              'Routing: ${roadStatusLine(widget.listing['routing_status'])}',
             ),
             const Text(
-              'A listing appears only after backend eligibility checks. Claiming is enabled only when trusted road-node resolution is confirmed.',
+              'A listing appears only after backend eligibility checks. The database rechecks the road distance (20 km or less) when you claim.',
             ),
             if (constituents.isNotEmpty) ...[
               const Divider(),
@@ -2027,13 +2077,30 @@ class _CreateDonationPageState extends State<CreateDonationPage> {
     }).toList();
   }
 
+  static const _directPickupHint =
+      'Choose a spot where a vehicle can stop (roadside, gate or lobby)';
+
+  double get _previewTotalKg => donationTotalWeightKg(
+    items.map(
+      (item) => (
+        quantity: int.tryParse(item.quantity.text.trim()),
+        unitWeightKg: double.tryParse(item.weight.text.trim()),
+      ),
+    ),
+  );
+
+  bool get _directPickupPreview =>
+      previewCollectionPath(_previewTotalKg) == 'DIRECT_PICKUP';
+
   Future<void> selectPickupLocation() async {
     final selected = await Navigator.push<LocationResult>(
       context,
       MaterialPageRoute(
         builder: (_) => LocationPickerPage(
-          title: 'Donation Pickup Location',
+          title: 'Pickup location',
           initialLocation: pickupLocation,
+          roadAccess: RoadAccessRequirement.required,
+          hint: _directPickupPreview ? _directPickupHint : null,
         ),
       ),
     );
@@ -2094,9 +2161,6 @@ class _CreateDonationPageState extends State<CreateDonationPage> {
       progressMessage = 'Preparing photo uploads…';
     });
     try {
-      // No trusted road-node resolver is confirmed in the installed V3 RPCs.
-      // Null is safe: claim_listing rejects listings without a valid node.
-      const String? resolvedNode = null;
       final imagePayload = await _uploadDonationImages();
       if (mounted) {
         setState(() => progressMessage = 'Saving donation securely…');
@@ -2110,24 +2174,70 @@ class _CreateDonationPageState extends State<CreateDonationPage> {
           pickupAddress: pickupLocation!.address,
           latitude: pickupLocation!.latitude,
           longitude: pickupLocation!.longitude,
-          // Never send an unverified client node. The installed V3 claim RPC
-          // rejects this listing until trusted road-node support is deployed.
-          pickupRoadNodeId: resolvedNode,
+          // Never send a client node: trg_donation_road_node snaps the stored
+          // pickup point to the nearest drivable road node in the database.
+          pickupRoadNodeId: null,
           items: payload,
           images: imagePayload,
         ),
       );
+      final donationId = id?.toString().trim() ?? '';
+      if (donationId.isEmpty) {
+        throw const FormatException('The database did not return a donation.');
+      }
+      if (mounted) {
+        setState(() => progressMessage = 'Reading the saved donation…');
+      }
+      // Show only committed state: re-read the donation the RPC just created.
+      Map<String, dynamic>? detail;
+      try {
+        final response = await _db.rpc(
+          'get_my_donation_detail',
+          params: {'p_donation': donationId},
+        );
+        if (response is Map) detail = Map<String, dynamic>.from(response);
+      } catch (_) {
+        detail = null;
+      }
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Donation created with ${photos.length} photos: $id. Trusted road-node resolution is not configured, so this listing cannot be claimed yet.',
+      final navigator = Navigator.of(context);
+      if (detail == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Donation saved (id $donationId). Open My Donations to see its status.',
+            ),
+            duration: const Duration(seconds: 8),
           ),
-          duration: const Duration(seconds: 7),
-        ),
+        );
+        navigator.pop();
+        return;
+      }
+      final committed = detail;
+      final chooseHub = await showDialog<bool>(
+        context: context,
+        barrierDismissible: false,
+        builder: (_) => DonationResultDialog(detail: committed),
       );
-      Navigator.pop(context);
+      if (!mounted) return;
+      if (chooseHub == true) {
+        navigator.pushReplacement(
+          MaterialPageRoute(
+            builder: (_) => DonationDetailPage(
+              donationId: donationId,
+              openHubSelection: true,
+            ),
+          ),
+        );
+      } else {
+        navigator.pop();
+      }
     } catch (e) {
+      if (e is PostgrestException &&
+          donationServerErrorCode(e) ==
+              'IDEMPOTENCY_KEY_REUSED_WITH_DIFFERENT_PAYLOAD') {
+        _resetCreateRequest();
+      }
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -2272,7 +2382,15 @@ class _CreateDonationPageState extends State<CreateDonationPage> {
                   ),
                 ),
               const SizedBox(height: 10),
-              const Text('Pickup location'),
+              Text(
+                'Pickup location',
+                style: Theme.of(context).textTheme.titleSmall,
+              ),
+              if (_directPickupPreview)
+                Text(
+                  _directPickupHint,
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
               OutlinedButton.icon(
                 onPressed: busy ? null : selectPickupLocation,
                 icon: const Icon(Icons.location_on_outlined),
@@ -2288,6 +2406,11 @@ class _CreateDonationPageState extends State<CreateDonationPage> {
                   '${pickupLocation!.latitude.toStringAsFixed(6)}, ${pickupLocation!.longitude.toStringAsFixed(6)}',
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
+                if (pickupLocation!.roadAccess != null)
+                  Text(
+                    'Road access: ${pickupLocation!.roadAccess!.summary}',
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
               ],
               const SizedBox(height: 12),
               const Divider(),
@@ -2411,17 +2534,7 @@ class _CreateDonationPageState extends State<CreateDonationPage> {
                         _resetCreateRequest();
                       }),
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                child: Text(
-                  'Estimated total weight: ${items.fold<double>(0, (total, item) {
-                    final quantity = int.tryParse(item.quantity.text) ?? 0;
-                    final unitWeight = double.tryParse(item.weight.text) ?? 0;
-                    return total + quantity * unitWeight;
-                  }).toStringAsFixed(3)} kg',
-                  style: Theme.of(context).textTheme.titleSmall,
-                ),
-              ),
+              CollectionPathPreviewCard(totalKg: _previewTotalKg),
               const SizedBox(height: 16),
               if (busy) ...[
                 const LinearProgressIndicator(),
@@ -2431,10 +2544,6 @@ class _CreateDonationPageState extends State<CreateDonationPage> {
               FilledButton(
                 onPressed: busy ? null : submit,
                 child: Text(busy ? 'Saving...' : 'Submit Donation'),
-              ),
-              const SizedBox(height: 16),
-              const Text(
-                'Classification: below 10 kg = hub collection; 10 kg or more = direct pickup.',
               ),
             ],
           ),
@@ -2521,9 +2630,101 @@ class _MyDonationsPageState extends State<MyDonationsPage> {
   );
 }
 
+class CollectionPathPreviewCard extends StatelessWidget {
+  final double totalKg;
+  const CollectionPathPreviewCard({super.key, required this.totalKg});
+
+  @override
+  Widget build(BuildContext context) {
+    final direct = previewCollectionPath(totalKg) == 'DIRECT_PICKUP';
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      child: ListTile(
+        leading: Icon(
+          direct ? Icons.local_shipping_outlined : Icons.store_outlined,
+        ),
+        title: Text(
+          totalKg <= 0
+              ? 'Enter quantities and unit weights to preview the collection path'
+              : collectionPathPreviewText(totalKg),
+        ),
+        subtitle: Text(
+          'Preview: ${donationDirectMinKgPreview.toStringAsFixed(0)} kg or more '
+          'is collected directly. The server confirms the path when you submit.',
+        ),
+      ),
+    );
+  }
+}
+
+/// Result of a committed donation, built only from get_my_donation_detail.
+/// Pops `true` when the donor chooses to reserve a community hub.
+class DonationResultDialog extends StatelessWidget {
+  final Map<String, dynamic> detail;
+  const DonationResultDialog({super.key, required this.detail});
+
+  @override
+  Widget build(BuildContext context) {
+    final status = detail['donation_status']?.toString();
+    final path = detail['collection_path']?.toString();
+    final road = detail['road_node_status']?.toString();
+    final hub = path == 'HUB_COLLECTION';
+    return AlertDialog(
+      title: const Text('Donation submitted'),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _detailLine(
+            'Status',
+            donationStatusLabel(status: status, collectionPath: path),
+          ),
+          _detailLine('Collection path', collectionPathLabel(path)),
+          if (detail['total_weight_kg'] != null)
+            _detailLine('Total weight', '${detail['total_weight_kg']} kg'),
+          _detailLine('Road status', routingStatusExplanation(road)),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context, false),
+          child: Text(hub ? 'Later' : 'Done'),
+        ),
+        if (hub)
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Choose a community hub'),
+          ),
+      ],
+    );
+  }
+
+  Widget _detailLine(String label, String value) => Padding(
+    padding: const EdgeInsets.only(bottom: 8),
+    child: Text.rich(
+      TextSpan(
+        children: [
+          TextSpan(
+            text: '$label: ',
+            style: const TextStyle(fontWeight: FontWeight.w600),
+          ),
+          TextSpan(text: value),
+        ],
+      ),
+    ),
+  );
+}
+
 class DonationDetailPage extends StatefulWidget {
   final String donationId;
-  const DonationDetailPage({super.key, required this.donationId});
+
+  /// Opens the hub chooser once the page appears (after a new hub donation).
+  final bool openHubSelection;
+  const DonationDetailPage({
+    super.key,
+    required this.donationId,
+    this.openHubSelection = false,
+  });
   @override
   State<DonationDetailPage> createState() => _DonationDetailPageState();
 }
@@ -2532,6 +2733,16 @@ class _DonationDetailPageState extends State<DonationDetailPage> {
   late Future<Map<String, dynamic>> _detail = _load();
   bool _busy = false;
   String _cancelRequestId = const Uuid().v4();
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.openHubSelection) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _reserveHub();
+      });
+    }
+  }
 
   Future<Map<String, dynamic>> _load() async {
     final response = await _db.rpc(
@@ -2694,7 +2905,12 @@ class _DonationDetailPageState extends State<DonationDetailPage> {
         // Refresh authoritative state before inviting the donor to retry.
         setState(() => _detail = _load());
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Hub reservation failed: $error')),
+          SnackBar(
+            content: Text(
+              'Hub reservation failed: '
+              '${'$error'.contains('ROUTE_UNAVAILABLE') ? roadOutcomeMessage('ROUTE_UNAVAILABLE') : error}',
+            ),
+          ),
         );
       }
     } finally {
