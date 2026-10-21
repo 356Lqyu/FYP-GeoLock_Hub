@@ -14,10 +14,7 @@ class AuthController {
         return 'This account already has a registered role. Sign in again to continue.';
       }
       if (m.contains('ROLE_NOT_SELF_SERVICE')) {
-        return 'Community Hub Admin accounts are provisioned by the GeoLock Hub administrator.';
-      }
-      if (m.contains('NGO_LOCATION_REQUIRED')) {
-        return 'Enter an NGO name and confirm its operating location on the map.';
+        return 'Choose a supported account role.';
       }
       return m;
     }
@@ -73,16 +70,6 @@ class AuthController {
       _requireCurrentUser(userId);
       return role;
     }
-    if (role == 'NGO') {
-      final capabilities = await client.rpc('geolock_app_capabilities');
-      _requireCurrentUser(userId);
-      if (capabilities is! Map ||
-          capabilities['ngo_location_registration'] != 'UNVERIFIED') {
-        throw StateError(
-          'NGO registration is waiting for the reviewed backend migration that keeps self-selected locations unverified. Your account and pending registration are saved; retry after the migration is installed.',
-        );
-      }
-    }
     await client.rpc(
       'register_role_profile',
       params: {
@@ -93,15 +80,10 @@ class AuthController {
         'p_registration_number': role == 'NGO'
             ? pending['registration_number']
             : null,
-        'p_operating_address': role == 'NGO'
-            ? pending['operating_address']
-            : null,
-        'p_latitude': role == 'NGO'
-            ? double.tryParse('${pending['latitude']}')
-            : null,
-        'p_longitude': role == 'NGO'
-            ? double.tryParse('${pending['longitude']}')
-            : null,
+        // Location is configured after login through a protected RPC.
+        'p_operating_address': null,
+        'p_latitude': null,
+        'p_longitude': null,
         'p_road_node_id': null,
       },
     );
@@ -119,22 +101,10 @@ class AuthController {
         pending['full_name'] is String &&
         (pending['full_name'] as String).trim().isNotEmpty;
     if (!hasName) return false;
-    if (role == 'DONOR') return true;
+    if (role == 'DONOR' || role == 'HUB_ADMIN') return true;
     if (role != 'NGO') return false;
     final ngoName = pending['ngo_name'];
-    final address = pending['operating_address'];
-    final latitude = double.tryParse('${pending['latitude']}');
-    final longitude = double.tryParse('${pending['longitude']}');
-    return ngoName is String &&
-        ngoName.trim().isNotEmpty &&
-        address is String &&
-        address.trim().isNotEmpty &&
-        latitude != null &&
-        latitude >= -90 &&
-        latitude <= 90 &&
-        longitude != null &&
-        longitude >= -180 &&
-        longitude <= 180;
+    return ngoName is String && ngoName.trim().isNotEmpty;
   }
 
   void _requireCurrentUser(String? expectedUserId) {

@@ -1,10 +1,71 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:geolock_hub_app/auth/auth_pages.dart';
 import 'package:geolock_hub_app/donation_pages.dart';
 import 'package:geolock_hub_app/location/location_result.dart';
 import 'package:geolock_hub_app/location/road_routing.dart';
 
 void main() {
+  testWidgets(
+    'NGO signup collects organization details without a location picker',
+    (tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(home: RegistrationPage(role: AccountRole.ngo)),
+      );
+      expect(find.text('NGO Organisation Name'), findsOneWidget);
+      expect(
+        find.text('Registration / Reference Number (optional)'),
+        findsOneWidget,
+      );
+      expect(find.text('Operating Address and Map Pin'), findsNothing);
+      expect(find.text('Select location'), findsNothing);
+      expect(
+        find.textContaining('after email verification and login'),
+        findsOneWidget,
+      );
+    },
+  );
+
+  testWidgets('authenticated NGO location setup requires server road preview', (
+    tester,
+  ) async {
+    var previewCalls = 0;
+    await tester.pumpWidget(
+      MaterialApp(
+        home: buildNgoLocationPicker(
+          initialLocation: const LocationResult(
+            address: 'Test operating address',
+            latitude: 3.1390,
+            longitude: 101.6869,
+            method: LocationSelectionMethod.mapPin,
+          ),
+          roadAccessCheck: (_, _) async {
+            previewCalls++;
+            return const RoadAccessResult(routable: true, snapDistanceM: 42);
+          },
+          requireRoadPreview: true,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(previewCalls, 1);
+    expect(find.textContaining('42 m from a drivable road'), findsOneWidget);
+    final confirm = tester.widget<FilledButton>(
+      find.widgetWithText(FilledButton, 'Confirm Location'),
+    );
+    expect(confirm.onPressed, isNotNull);
+  });
+
+  testWidgets('Hub Admin signup offers self-registration without hub details', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      const MaterialApp(home: RegistrationPage(role: AccountRole.hubAdmin)),
+    );
+    expect(find.textContaining('Community Hub Admin'), findsOneWidget);
+    expect(find.text('Hub name'), findsNothing);
+    expect(find.text('Operating Address and Map Pin'), findsNothing);
+  });
   group('roadOutcomeMessage', () {
     const expected = {
       'OUTSIDE_GEOFENCE': 'More than 20 km from your NGO by road',
@@ -82,15 +143,11 @@ void main() {
               'routing_status': routingStatus,
             },
             capabilityReady: capabilityReady,
-            onClaim: () {},
             onOpen: () {},
           ),
         ),
       ),
     );
-
-    FilledButton claimButton(WidgetTester tester) =>
-        tester.widget<FilledButton>(find.byType(FilledButton));
 
     testWidgets('shows the routing reason when status is not READY', (
       tester,
@@ -102,12 +159,13 @@ void main() {
       );
       expect(
         find.textContaining(
-          'Claim unavailable: ${routingStatusExplanation('NOT_ROUTABLE')}',
+          'claiming unavailable: ${routingStatusExplanation('NOT_ROUTABLE')}',
         ),
         findsOneWidget,
       );
       expect(find.textContaining('trusted road-node'), findsNothing);
-      expect(claimButton(tester).onPressed, isNull);
+      expect(find.text('Claim'), findsNothing);
+      expect(find.byIcon(Icons.chevron_right), findsOneWidget);
     });
 
     testWidgets('shows inactive road network when capability is false', (
@@ -118,7 +176,7 @@ void main() {
         find.textContaining('Road network is not active on the server'),
         findsOneWidget,
       );
-      expect(claimButton(tester).onPressed, isNull);
+      expect(find.text('Claim'), findsNothing);
     });
 
     testWidgets('missing status reads as unknown', (tester) async {
@@ -126,10 +184,29 @@ void main() {
       expect(find.textContaining('Road status unknown'), findsOneWidget);
     });
 
-    testWidgets('READY with active network can be claimed', (tester) async {
-      await pumpCard(tester, capabilityReady: true, routingStatus: 'READY');
-      expect(find.text('Claim'), findsOneWidget);
-      expect(claimButton(tester).onPressed, isNotNull);
+    testWidgets('tapping a listing invokes its detail navigation callback', (
+      tester,
+    ) async {
+      var opened = false;
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: EligibleListingCard(
+              listing: const {
+                'listing_id': 'l-1',
+                'title': 'Rice bags',
+                'listing_weight_kg': 12,
+                'collection_path': 'DIRECT_PICKUP',
+                'routing_status': 'READY',
+              },
+              capabilityReady: true,
+              onOpen: () => opened = true,
+            ),
+          ),
+        ),
+      );
+      await tester.tap(find.textContaining('Rice bags'));
+      expect(opened, isTrue);
     });
   });
 }

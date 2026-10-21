@@ -436,7 +436,7 @@ def main() -> int:
         leases = rows(url,service,
             f"claim_leases?select=claim_id,lease_status,expires_at&claim_id=eq.{active_claim['claim_id']}",
             "direct race claim lease")
-        if committed_listing["listing_status"] != "CLAIMED" or committed_donation["donation_status"] != "READY_FOR_PICKUP" \
+        if committed_listing["listing_status"] != "CLAIMED" or committed_donation["donation_status"] != "CLAIMED" \
                 or len(leases) != 1 or leases[0]["lease_status"] != "ACTIVE":
             raise RuntimeError("Successful claim response is not reflected in committed listing/donation/claim state.")
         if leases[0]["claim_id"] != active_claim["claim_id"]:
