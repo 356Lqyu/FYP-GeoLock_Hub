@@ -5,6 +5,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'auth/auth_navigation.dart';
 import 'donation_pages.dart';
 import 'donation_status.dart';
+import 'location/road_routing.dart';
 
 const _mint = Color(0xffedfbf7);
 const _green = Color(0xff2f806c);
@@ -2063,10 +2064,10 @@ class ListingPreviewCard extends StatelessWidget {
                 ),
                 if (row['distance_m'] != null)
                   Text(
-                    '${(_number(row['distance_m']) / 1000).toStringAsFixed(1)} km away',
+                    '${(_number(row['distance_m']) / 1000).toStringAsFixed(1)} km by road',
                   ),
                 Text(
-                  'Routing: ${row['routing_status'] ?? 'UNVERIFIED'}',
+                  'Routing: ${roadStatusLine(row['routing_status'])}',
                   style: Theme.of(context).textTheme.labelSmall,
                 ),
               ],

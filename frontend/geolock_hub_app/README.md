@@ -50,7 +50,6 @@ Android and iOS register the `io.supabase.geolockhub://login-callback` app link.
 - Current-profile routing, donor donation creation/history/detail/cancellation, hub reservation, NGO discovery/claim/pickup/claim cancellation/reconciliation, and authorized hub reservation/receipt/batch screens use protected RPCs. Actual Supabase end-to-end behavior has not been verified from this workspace.
 - Reusable one-time foreground location selection for NGO, donor and authorized hub forms. It supports current GPS, address geocoding, map tap/marker drag and explicit location confirmation. GPS permission is requested only when the user chooses the current-location button; no background permission or continuous tracking is requested.
 - NGO self-selected coordinates stay blocked from eligibility until trusted verification. A protected role-profile registration waits for the migration capability before calling the existing `register_role_profile` signature.
-- A trusted road-node resolver is not confirmed in the deployed V3 capabilities. Direct listings without a validated node cannot be claimed. Do not use synthetic benchmark nodes for live eligibility.
 
 ## Google Maps setup
 
@@ -69,17 +68,32 @@ address lookup and reverse lookup, but does not provide address autocomplete;
 the picker therefore uses an explicit Search action. A map key is required for
 Google map tiles. Do not enable background location or add a tracking stream.
 
+## Road nodes
+
+- The Google Map picker (pin, GPS or address search) only produces latitude and
+  longitude. Flutter always sends the road node as `null`.
+- `preview_location_routing(p_latitude, p_longitude)` previews whether the point
+  is within 500 m of a drivable road. Donor pickups and hub registration require
+  a routable point before Confirm is enabled.
+- On save, database triggers (`trg_donation_road_node`, `trg_listing_road_node`,
+  `trg_hub_road_node`) snap the point to the nearest drivable OSM node.
+- An NGO's road node is set only when an operator verifies its location with
+  `verify_ngo_location`; the app never sets it.
+- Discovery and claims use road distance: a listing is eligible when it is at
+  most 20 km from the NGO by road. Do not use synthetic benchmark nodes for live
+  eligibility.
+
 ## DEV backend status and service limits
 
 - `register_role_profile` accepts DONOR and NGO only. HUB_ADMIN must be provisioned by a trusted backend; the public role picker explains this restriction.
 - NGO registration collects a confirmed address and coordinates using the picker. The reviewed migration changes the existing `register_role_profile` implementation to leave the location unverified. A trusted verifier must explicitly approve it before listings become discoverable.
 - The SQL has `register_community_hub` for an already provisioned hub administrator, but this registration screen does not create hubs yet.
 - Per the latest project status supplied by the developer, V3, October 18 hub reservation changes, and October 19 claim recovery/reconciliation changes are installed in DEV. This has not been independently checked against a live project in this work.
-- `create_donation_with_images` calls the existing V3 creation/validation transaction with 1–3 staged images. The Flutter client does not invent a road node; direct claims remain blocked until trusted routing is configured.
+- `create_donation_with_images` calls the existing V3 creation/validation transaction with 1–3 staged images. The Flutter client does not send a road node; the database assigns it on save.
 - Existing `claim_listing(p_listing, p_request)` is the server authority for claim outcomes and the 360-minute database-clock lease. The app persists a request UUID per listing across restarts when the response is uncertain. It does not renew leases.
 - Existing `start_pickup(p_claim)` and `complete_pickup(p_claim, p_handover_confirmed)` are used for pickup. The migration adds delivery confirmation, cancellation, safe pre-dispatch release, and trusted reconciliation. Uncertain handover does not automatically reopen a listing.
 - Google geocoding returns the device provider's results. No independent NGO verification or road coverage is inferred from that response.
-- The project rules use a 360-minute NGO claim lease, 120-minute hub reservation, 20 km straight-line eligibility radius, and 10 kg classification boundary. The frontend does not decide those outcomes.
+- The project rules use a 360-minute NGO claim lease, 120-minute hub reservation, 20 km road-distance eligibility radius, and 10 kg classification boundary. The frontend does not decide those outcomes.
 
 ## Remaining DEV setup
 
@@ -87,7 +101,6 @@ Google map tiles. Do not enable background location or add a tracking stream.
 2. Confirm the DEV Auth redirect URL `io.supabase.geolockhub://login-callback` is allowed.
 3. Provision HUB_ADMIN users through trusted backend/service-role operations only.
 4. Confirm whether automatic scheduling of `recover_expired_claims(p_limit)` has been configured in DEV. An installed recovery RPC alone does not run automatically.
-5. Do not enable NGO claim actions for `PENDING_NODE` or `UNVERIFIED` listings. A trusted, approved road graph and NGO verification flow remain prerequisites for claim eligibility.
 
 ## Stage 1 checklist
 
@@ -100,7 +113,6 @@ Google map tiles. Do not enable background location or add a tracking stream.
 - [ ] Confirm automatic lease recovery scheduling in DEV.
 - [ ] Apply the separate `20261019_retire_delivered_state.sql` manually only after a DEV read-only check confirms no `DELIVERED` donation rows and the migration is reviewed.
 - [ ] Set restricted Google Maps keys for Android and iOS.
-- [ ] Provision and approve operational road-network coverage and trusted NGO location verification.
 
 The `service_role` key is server-only. Do not add it to Flutter assets, source, build arguments, or distributed configuration.
 
@@ -158,12 +170,6 @@ copying a donor end date into new direct-listing expiry. Existing
 `listing_expires_at` values are preserved so an expired historical listing is
 not accidentally revived. It does not change the 360-minute lease, claim
 idempotency, hub capacity, or routing safeguards.
-
-Until a trusted operational road graph and node validation are configured, NGO
-listing image paths are withheld from unclaimed discovery results. Claim-holder
-image access remains subject to the server lease/custody checks. This keeps
-unverified routes from being presented as fully eligible; NGO discovery cards
-may show the neutral image placeholder in this state.
 
 Required-photo enforcement is staged to avoid interrupting old clients:
 
