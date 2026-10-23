@@ -1,13 +1,33 @@
-"""Standalone direct household pickup baseline using the frozen CSV benchmark."""
+"""Direct Household Pickup baseline (comparison method).
+
+For every HUB_AGGREGATION scenario the original small donations stay separate
+household pickups: the NGO claims each one and collects them with the
+Nearest-Next routing rule. No community hub is used.
+
+A baseline is a comparison METHOD, not an experiment: this script produces only
+the direct-household condition. The community-hub condition is the proposed
+system (protected reservation, receipt, batch and publication) and is run later
+by the E3 experiment on the same scenarios, NGO, fleet and routing rule.
+"""
+FOLDER = '5_direct_household_pickup'
+TITLE = 'Direct Household Pickup (baseline 5)'
+WHAT = ("No community hub. The NGO claims every original small donation of the aggregation scenario and collects each one from the donor's home, using the Nearest-Next routing rule and the same NGO fleet that the hub condition will use in E3.")
+# Benchmark cost index (cost units, not money), used in the direct-pickup summary only.
+COST_PER_KM = 1.00
+COST_PER_TRIP = 5.00
+SAVE_SNAPSHOTS = False
+
 import argparse
-from collections import defaultdict
+from collections import Counter, defaultdict
 import csv
 from datetime import datetime, timedelta
 import hashlib
 import json
 import math
 from pathlib import Path
+import statistics
 import sys
+import time
 
 
 def read_table(directory, name):
@@ -57,7 +77,7 @@ def base_parser(description):
     parser.add_argument('--dataset-dir', type=Path,
                         default=Path(__file__).resolve().parents[2] / 'benchmark dataset' / 'dataset')
     parser.add_argument('--output-dir', type=Path,
-                        default=Path(__file__).resolve().parents[1] / 'result')
+                        default=Path(__file__).resolve().parents[1] / 'result' / FOLDER)
     parser.add_argument('--scenario-ids', type=Path, help='CSV scenario_id column or one ID per line')
     parser.add_argument('--geofence-km', type=float, default=20)
     parser.add_argument('--lease-minutes', type=float, default=360)
@@ -92,17 +112,13 @@ class Benchmark:
                        for name in names}
         self.hashes['generation_manifest.json'] = hashlib.sha256((directory / 'generation_manifest.json').read_bytes()).hexdigest()
         for name in names:
-            expected = self.manifest.get('generated_csv_sha256', {}).get(name)
-            if expected and expected != self.hashes[name + '.csv']:
+            if self.manifest['generated_csv_sha256'][name] != self.hashes[name + '.csv']:
                 raise ValueError(f'Input hash differs from generation manifest: {name}')
         self.members = defaultdict(list)
         for row in self.tables['scenario_members']:
             self.members[row['scenario_id']].append(row)
-        self.agents = index_rows(self.tables['ngo_agents'], ('ngo_agent_id',))
+        self.ngos = index_rows(self.tables['ngos'], ('ngo_id',))
         self.matrix = index_rows(self.tables['road_distance_matrix'], ('from_node_id', 'to_node_id'))
-        for row in self.tables['scenarios']:
-            if row['matrix_id'] != self.manifest['matrix_id']:
-                raise ValueError('Scenario matrix ID mismatch')
 
     def ids(self, sid, kind, role):
         values = [r['entity_id'] for r in self.members[sid] if r['entity_type'] == kind and r['scenario_role'] == role]
@@ -120,18 +136,14 @@ class Benchmark:
         row = self.matrix.get((str(origin), str(destination)))
         if row is None or row['route_available_flag'] == '0':
             return None
-        if row['route_available_flag'] != '1' or row['matrix_id'] != self.manifest['matrix_id']:
+        if row['route_available_flag'] != '1':
             raise ValueError('Invalid road matrix record')
         return (positive(row['road_distance_km'], 'road distance', True),
                 positive(row['travel_time_min'], 'travel time', True))
 
-    def eligibility(self, agent_id, node, radius):
-        agent = self.agents[(agent_id,)]
-        if agent['active_flag'] != '1' or agent['benchmark_location_valid_flag'] != '1':
-            return 'NOT_ELIGIBLE', None
-        if agent['capability_profile'] != 'GENERAL_NONHAZARDOUS_SYNTHETIC':
-            return 'CAPABILITY_UNSUPPORTED', None
-        arc = self.arc(agent['road_node_id'], node)
+    def eligibility(self, ngo_id, node, radius):
+        """Backend rule: directed NGO-to-pickup road distance <= geofence radius."""
+        arc = self.arc(self.ngos[(ngo_id,)]['road_node_id'], node)
         if arc is None:
             return 'ROUTE_UNAVAILABLE', None
         if arc[0] > radius:
@@ -140,148 +152,80 @@ class Benchmark:
 
     def metadata(self, method, configuration):
         return dict(method=method, benchmark_version=self.manifest['benchmark_version'],
-                    matrix_id=self.manifest['matrix_id'], dataset_dir=str(self.directory.resolve()),
+                    matrix_id=self.manifest['matrix_id'],
                     input_sha256=self.hashes, runner_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
-                    python_version=sys.version, configuration=configuration, configuration_id=digest(configuration),
-                    fixture_timezone=self.manifest.get('fixture_timezone', 'Asia/Kuala_Lumpur'),
-                    evaluation_status='EXPLORATORY_CONTROLLED_SIMULATION',
+                    python_version=sys.version.split()[0], configuration=configuration, configuration_id=digest(configuration),
+                    fixture_timezone=self.manifest['fixture_timezone'],
+                    run_type='BASELINE_METHOD_OUTPUT_NOT_EXPERIMENT_RESULT',
                     backend='IN_MEMORY_SIMULATION_NOT_POSTGRESQL', dispatch_authority_issued=False)
 
-ROUTE_TABLES = ['scenarios', 'scenario_members', 'ngo_agents', 'vehicles', 'listings',
-                'road_distance_matrix', 'donations', 'donors', 'locations', 'hub_batches',
-                'hub_batch_members', 'hubs', 'donation_hub_candidates']
+METHOD = 'direct_household_pickup'
+CONDITION = 'direct'
+ROUTE_TABLES = ['scenarios', 'scenario_members', 'ngos', 'vehicles', 'donations', 'donors',
+                'road_distance_matrix']
 
 
 def setup_route_data(directory):
     data = Benchmark(directory, ROUTE_TABLES)
-    for name, key in [('vehicles', 'vehicle_id'), ('listings', 'listing_id'),
-                      ('donations', 'donation_id'), ('donors', 'donor_id'),
-                      ('locations', 'location_id'), ('hub_batches', 'batch_id'), ('hubs', 'hub_id')]:
+    for name, key in [('vehicles', 'vehicle_id'), ('donations', 'donation_id'), ('donors', 'donor_id')]:
         setattr(data, name, index_rows(data.tables[name], (key,)))
-    data.candidates = index_rows(data.tables['donation_hub_candidates'], ('donation_id', 'hub_id'))
     return data
 
 
 def make_task(task_id, source_id, node, weight, created, owner, lease_minutes,
-              service_minutes, listing_expires, initial_state='AVAILABLE'):
+              service_minutes, listing_expires):
     """Create a confirmed task only after simulated protected claim admission."""
-    if initial_state != 'AVAILABLE' or timestamp(created) >= timestamp(listing_expires):
-        return None, 'LISTING_NOT_AVAILABLE'
+    if timestamp(created) >= timestamp(listing_expires):
+        return None, 'LISTING_EXPIRED'
     positive(weight, 'task weight')
     positive(service_minutes, 'service time', True)
     return dict(task_id=task_id, source_id=source_id, road_node_id=node,
                 weight_kg=float(weight), created_at=created, service_minutes=service_minutes,
-                ngo_agent_id=owner, claim_id='CLM-'+task_id, claim_status='ACTIVE',
+                ngo_id=owner, claim_id='CLM-'+task_id, claim_status='ACTIVE',
                 claim_expires_at=(timestamp(created)+timedelta(minutes=lease_minutes)).isoformat(),
-                task_status='CONFIRMED', task_version=1, listing_version=1), ''
+                task_status='CONFIRMED', task_version=1), ''
 
 
-def build_snapshot(data, scenario, args, condition='route'):
+def build_snapshot(data, scenario, args, condition='direct'):
+    """Seal the direct-household planning snapshot of one aggregation scenario."""
     sid = scenario['scenario_id']
-    aggregation = scenario['scenario_type'] == 'HUB_AGGREGATION'
-    owner = data.one(sid, 'NGO_AGENT', 'SAME_COMPARISON_NGO' if aggregation else 'INTENDED_CLAIMANT')
-    fleet_ids = data.ids(sid, 'VEHICLE', 'SAME_COMPARISON_FLEET' if aggregation else 'AVAILABLE_FLEET')
+    owner = data.one(sid, 'NGO', 'SAME_COMPARISON_NGO')
     fleet = []
-    for vid in fleet_ids:
+    for vid in data.ids(sid, 'VEHICLE', 'SAME_COMPARISON_FLEET'):
         v = data.vehicles[(vid,)]
-        if v['ngo_agent_id'] != owner:
+        if v['ngo_id'] != owner:
             raise ValueError(f'Foreign vehicle: {sid}/{vid}')
-        if v['active_flag'] != '1':
-            continue
-        fleet.append(dict(vehicle_id=vid, ngo_agent_id=owner, depot_road_node_id=v['depot_road_node_id'],
+        fleet.append(dict(vehicle_id=vid, ngo_id=owner, depot_road_node_id=v['depot_road_node_id'],
                           capacity_kg=positive(v['vehicle_capacity_kg'], 'vehicle capacity')))
     fleet.sort(key=lambda v: v['vehicle_id'])
-    tasks, excluded, custody = [], [], []
-    originals = []
-    donor_burden = 0.0
-    if not aggregation:
-        listing_ids = data.ids(sid, 'LISTING', 'INITIAL_AVAILABLE_LISTING')
-        listing_rows = [data.listings[(lid,)] for lid in listing_ids]
-        if not listing_rows:
-            raise ValueError(f'Empty route input: {sid}')
-        listing_rows.sort(key=lambda row: (row['created_at'], row['listing_id']))
-        schedule_start = timestamp(max(r['created_at'] for r in listing_rows))
-        claim_times = {row['listing_id']: (schedule_start + timedelta(seconds=i)).isoformat()
-                       for i, row in enumerate(listing_rows)}
-        cutoff = (schedule_start + timedelta(seconds=len(listing_rows))).isoformat()
-        opportunities = [(r['listing_id'], r['source_id'], r['pickup_road_node_id'],
-                          r['listing_weight_kg'], r['listing_expires_at'], r['initial_state']) for r in listing_rows]
-        originals = [r['source_id'] for r in listing_rows]
-    else:
-        bid = data.one(sid, 'HUB_BATCH', 'UNCOMMITTED_GROUP_TEMPLATE')
-        batch = data.hub_batches[(bid,)]
-        hid = data.one(sid, 'HUB', 'CANDIDATE_AGGREGATION_SITE')
-        originals = data.ids(sid, 'DONATION', 'ORIGINAL_DONATION')
-        members = [r['donation_id'] for r in data.tables['hub_batch_members'] if r['batch_id'] == bid]
-        if len(members) != len(set(members)) or set(members) != set(originals):
-            raise ValueError(f'Batch/scenario membership mismatch: {sid}')
-        donated = [data.donations[(did,)] for did in originals]
-        if batch['hub_id'] != hid or not donated:
-            raise ValueError(f'Invalid aggregation group: {sid}')
-        cutoff = max(d['availability_start'] for d in donated)
-        expiry = min(d['availability_end'] for d in donated)
-        if cutoff >= expiry:
-            raise ValueError(f'No common donation availability: {sid}')
-        mass = sum(positive(d['weight_kg'], 'donation weight') for d in donated)
-        if not math.isclose(mass, float(batch['batch_weight_kg']), abs_tol=1e-6) or len(donated) != int(batch['batch_item_count']):
-            raise ValueError(f'Batch aggregate mismatch: {sid}')
-        if condition == 'hub':
-            hub = data.hubs[(hid,)]
-            if not 3 <= len(donated) <= 5 or mass > 30 or len({d['category'] for d in donated}) != 1:
-                raise ValueError(f'Batch publication rule violation: {sid}')
-            load = positive(hub['hub_load_kg'], 'hub load', True)
-            reserved = positive(hub['hub_reserved_kg'], 'reserved load', True)
-            capacity = positive(hub['hub_capacity_kg'], 'hub capacity')
-            if load + reserved + mass > capacity + 1e-6:
-                raise ValueError(f'Insufficient protected hub capacity: {sid}')
-            for donation in sorted(donated, key=lambda d: (d['received_at'], d['donation_id'])):
-                did = donation['donation_id']
-                candidate = data.candidates[(did, hid)]
-                if candidate['feasible_flag'] != '1' or hub['hub_active_flag'] != '1':
-                    raise ValueError(f'Infeasible hub receipt: {sid}/{did}')
-                if donation['category'] not in hub['accepted_categories'].split('|'):
-                    raise ValueError('Category incompatible with hub')
-                # Capacity reservation, verified receipt, and unique batching
-                # are simulated transitions. No real physical receipt is claimed.
-                donor = data.donors[(donation['donor_id'],)]
-                loc = data.locations[(donor['location_id'],)]
-                arc = data.arc(loc['road_node_id'], batch['pickup_road_node_id'])
-                if arc is None:
-                    raise ValueError('Unavailable donor-to-hub route')
-                donor_burden += arc[0]
-                custody.append(dict(donation_id=did, hub_id=hid, batch_id=bid,
-                                    transitions=['ACTIVE_RESERVATION', 'VERIFIED_RECEIPT_SIMULATED', 'STORED', 'BATCHED'],
-                                    weight_kg=float(donation['weight_kg']), donor_one_way_road_km=arc[0]))
-            opportunities = [(bid, bid, batch['pickup_road_node_id'], mass, expiry, 'AVAILABLE')]
-        else:
-            opportunities = []
-            for d in donated:
-                donor = data.donors[(d['donor_id'],)]
-                loc = data.locations[(donor['location_id'],)]
-                opportunities.append((d['donation_id'], d['donation_id'], loc['road_node_id'],
-                                      d['weight_kg'], expiry, 'AVAILABLE'))
-    for identity, source_id, node, weight, expiry, state in opportunities:
-        status, distance = data.eligibility(owner, node, args.geofence_km)
-        task_id = 'TASK-'+identity
+    originals = data.ids(sid, 'DONATION', 'ORIGINAL_DONATION')
+    donated = [data.donations[(did,)] for did in originals]
+    if not donated or any(d['collection_path'] != 'COMMUNITY_HUB' for d in donated):
+        raise ValueError(f'Aggregation scenario must hold small community-hub donations: {sid}')
+    # Same common cutoff the hub condition uses: the last donation becomes available.
+    cutoff = max(d['availability_start'] for d in donated)
+    tasks, excluded = [], []
+    for donation in sorted(donated, key=lambda d: d['donation_id']):
+        did = donation['donation_id']
+        node = data.donors[(donation['donor_id'],)]['road_node_id']
+        task_id = 'TASK-' + did
+        status, _ = data.eligibility(owner, node, args.geofence_km)
         if status != 'ELIGIBLE':
-            excluded.append(dict(task_id=task_id, source_id=source_id, reason=status))
+            excluded.append(dict(task_id=task_id, source_id=did, reason=status))
             continue
-        claim_time = claim_times[identity] if not aggregation else cutoff
-        task, reason = make_task(task_id, source_id, node, weight, claim_time, owner,
-                                 args.lease_minutes, args.service_minutes, expiry, state)
+        task, reason = make_task(task_id, did, node, donation['weight_kg'], cutoff, owner,
+                                 args.lease_minutes, args.service_minutes, donation['availability_end'])
         if task is None:
-            excluded.append(dict(task_id=task_id, source_id=source_id, reason=reason))
+            excluded.append(dict(task_id=task_id, source_id=did, reason=reason))
         else:
             tasks.append(task)
     snapshot = dict(scenario_id=sid, scenario_type=scenario['scenario_type'],
-                    scenario_profile=scenario.get('scenario_profile', ''), condition=condition,
-                    ngo_agent_id=owner, cutoff=cutoff, matrix_id=data.manifest['matrix_id'],
+                    scenario_profile=scenario['scenario_profile'], condition=condition,
+                    ngo_id=owner, cutoff=cutoff, matrix_id=data.manifest['matrix_id'],
                     matrix_sha256=data.hashes['road_distance_matrix.csv'],
-                    tasks=sorted(tasks, key=lambda t: t['task_id']), excluded_tasks=excluded,
-                    fleet=fleet, original_donation_ids=originals, original_weight_kg=sum(t['weight_kg'] for t in tasks),
-                    donor_one_way_road_km=donor_burden, custody_transitions=custody,
-                    claim_model='SERIAL_PROTECTED_IN_MEMORY_ADMISSION', dispatch_authority_issued=False,
-                    claim_schedule='SOURCE_CREATED_AT_THEN_LISTING_ID_ONE_SECOND_SPACING' if not aggregation else 'MATCHED_COMMON_CUTOFF')
+                    tasks=sorted(tasks, key=lambda t: t['task_id']), excluded_tasks=excluded, fleet=fleet,
+                    original_donation_ids=originals,
+                    claim_model='SERIAL_PROTECTED_IN_MEMORY_ADMISSION', dispatch_authority_issued=False)
     snapshot['planning_contract'] = route_configuration(args)
     snapshot['snapshot_id'] = digest(snapshot)
     return snapshot
@@ -298,7 +242,7 @@ def extension(data, snapshot, vehicle, current, load, elapsed, task, args):
     if completion + home[1] > args.route_minutes + 1e-8:
         return None, 'ROUTE_DURATION_EXCEEDED'
     remaining_lease = (timestamp(task['claim_expires_at']) - timestamp(snapshot['cutoff'])).total_seconds()/60
-    if task['claim_status'] != 'ACTIVE' or task['ngo_agent_id'] != snapshot['ngo_agent_id']:
+    if task['claim_status'] != 'ACTIVE' or task['ngo_id'] != snapshot['ngo_id']:
         return None, 'INVALID_AUTHORITY'
     if remaining_lease + 1e-8 < completion + args.safety_margin_minutes:
         return None, 'LEASE_INSUFFICIENT'
@@ -386,7 +330,7 @@ def validate_plan(data, snapshot, routes, unserved, args):
             arrival = elapsed + arc[1]
             elapsed = arrival + task['service_minutes']
             lease = (timestamp(task['claim_expires_at'])-timestamp(snapshot['cutoff'])).total_seconds()/60
-            if task['claim_status'] != 'ACTIVE' or task['ngo_agent_id'] != snapshot['ngo_agent_id']:
+            if task['claim_status'] != 'ACTIVE' or task['ngo_id'] != snapshot['ngo_id']:
                 raise ValueError('Invalid task authority')
             if lease + 1e-8 < elapsed + args.safety_margin_minutes:
                 raise ValueError('Lease insufficient at service completion')
@@ -440,20 +384,19 @@ def route_configuration(args):
                 safety_margin_minutes=positive(args.safety_margin_minutes, 'safety margin', True),
                 vehicle_order='ASCENDING_VEHICLE_ID', trips_per_vehicle=1,
                 fcfs_infeasible_policy='SKIP_INFEASIBLE_AND_TRY_NEXT_TASK',
-                cutoff='AFTER_FINAL_SCHEDULED_CLAIM',
-                claim_schedule='SOURCE_CREATED_AT_THEN_LISTING_ID_ONE_SECOND_SPACING',
-                donor_burden_definition='ONE_WAY_DONOR_TO_HUB_KM_NO_RETURN_ASSUMED')
+                cutoff='LATEST_DONATION_AVAILABILITY_START',
+                claim_schedule='ALL_ORIGINALS_CLAIMED_AT_CUTOFF',
+                downstream_routing='NEAREST_NEXT')
 
 
 def append_evidence(snapshot, routes, unserved, metrics, results, route_rows, task_rows):
     sid = snapshot['scenario_id']
     condition = snapshot['condition']
     results.append(dict(scenario_id=sid, condition=condition, snapshot_id=snapshot['snapshot_id'],
-                        ngo_agent_id=snapshot['ngo_agent_id'], scenario_profile=snapshot['scenario_profile'], **metrics))
+                        ngo_id=snapshot['ngo_id'], scenario_profile=snapshot['scenario_profile'], **metrics))
     assignments = {}
     for route in routes:
-        route_rows.append(dict(scenario_id=sid, condition=condition, snapshot_id=snapshot['snapshot_id'],
-                               vehicle_id=route['vehicle_id'], depot_road_node_id=route['depot_road_node_id'],
+        route_rows.append(dict(scenario_id=sid, vehicle_id=route['vehicle_id'], depot_road_node_id=route['depot_road_node_id'],
                                stop_task_ids='|'.join(s['task_id'] for s in route['stops']),
                                load_kg=route['load_kg'], road_distance_km=route['road_distance_km'],
                                travel_time_min=route['travel_time_min'], duration_min=route['duration_min']))
@@ -461,62 +404,282 @@ def append_evidence(snapshot, routes, unserved, metrics, results, route_rows, ta
             assignments[stop['task_id']] = (route['vehicle_id'], i, stop)
     for task in snapshot['tasks']:
         assigned = assignments.get(task['task_id'])
-        task_rows.append(dict(scenario_id=sid, condition=condition, task_id=task['task_id'], source_id=task['source_id'],
+        task_rows.append(dict(scenario_id=sid, task_id=task['task_id'], source_id=task['source_id'],
                               status='SERVED' if assigned else 'UNSERVED', reason='' if assigned else unserved[task['task_id']],
                               vehicle_id=assigned[0] if assigned else '', stop_order=assigned[1] if assigned else '',
                               arrival_elapsed_min=assigned[2]['arrival_elapsed_min'] if assigned else '',
                               completion_elapsed_min=assigned[2]['completion_elapsed_min'] if assigned else ''))
     for task in snapshot['excluded_tasks']:
-        task_rows.append(dict(scenario_id=sid, condition=condition, task_id=task['task_id'], source_id=task['source_id'],
+        task_rows.append(dict(scenario_id=sid, task_id=task['task_id'], source_id=task['source_id'],
                               status='EXCLUDED', reason=task['reason'], vehicle_id='', stop_order='',
                               arrival_elapsed_min='', completion_elapsed_min=''))
 
 
+RESULT_COLUMNS = [('scenario_id', 'Benchmark aggregation scenario (3-5 small donations from nearby households)'), ('ngo_id', 'The NGO that collects them'), ('vehicles_available', 'Vehicles of that NGO'), ('donations', 'Small donations to collect'), ('donations_collected', 'Donations placed on a valid route'), ('coverage_percent', 'donations_collected / donations x 100'), ('total_ngo_distance_km', "Road distance driven by the NGO's vehicles (depot - homes - depot)"), ('total_driving_time_min', 'Driving time only (service time not included)'), ('vehicle_trips', 'Vehicles used (each makes at most one trip)'), ('donor_travel_km', 'Distance donors travel; always 0 here because the NGO comes to their home'), ('benchmark_cost', '1.00 x NGO km + 5.00 x trips (benchmark cost index, not real money)'), ('cost_per_donation', 'benchmark_cost / donations'), ('longest_route_min', 'Longest vehicle route, including 10 min per stop; must be <= 240'), ('all_rules_passed', 'YES if every route passed the independent check (capacity, 240 min, lease, road route)'), ('planning_time_ms', 'Computer time to plan the routes (varies between computers)')]
+RESULT_FIELDS = ['scenario_id', 'scenario_profile', 'ngo_id', 'valid_task_count', 'served_tasks', 'unserved_tasks',
+                 'excluded_task_count', 'valid_task_coverage', 'ngo_road_distance_km', 'pickup_trips',
+                 'travel_time_min', 'route_duration_min', 'collected_weight_kg', 'constraint_valid', 'plan_status',
+                 'planning_runtime_ms', 'snapshot_id']
+REASONS = {
+    'FLEET_CAPACITY_OR_ROUTE_BUDGET_EXHAUSTED': 'The task could be collected by an empty vehicle on its own, but every '
+        'vehicle was already full or out of its 240-minute route time (each vehicle makes one trip).',
+    'ROUTE_UNAVAILABLE': 'No directed road route between the pickup point and a depot in the road matrix (the point is '
+        'on a one-way road section), so no vehicle can collect it.',
+    'CAPACITY_EXCEEDED': 'The task is heavier than any vehicle.',
+    'ROUTE_DURATION_EXCEEDED': 'Even alone, the task cannot be collected and returned to the depot within 240 minutes.',
+    'LEASE_INSUFFICIENT': 'The claim lease would expire before the pickup.',
+    'OUTSIDE_GEOFENCE': 'Excluded before planning: pickup is more than 20 km by road from the NGO.',
+    'LISTING_EXPIRED': 'Excluded before planning: the listing expired before it could be claimed.',
+}
+
+
+def spread(values, unit, digits=1):
+    values = sorted(values)
+    if not values:
+        return 'n/a'
+    q = statistics.quantiles(values, n=10) if len(values) >= 10 else [values[0]] * 9
+    return (f'median {statistics.median(values):,.{digits}f} {unit} '
+            f'(10th-90th percentile {q[0]:,.{digits}f}-{q[-1]:,.{digits}f}; max {values[-1]:,.{digits}f})')
+
+
+ROUTE_READ = [
+    "**Valid-task coverage** is the main metric: the share of the NGO's valid confirmed tasks that got "
+    "onto a valid route. Tasks no vehicle can take are counted as **Unserved tasks**, each with a reason code "
+    "(explained under Reason codes).",
+    "**Total route distance** and **Total travel time** are what the NGO's vehicles drive. Lower is better, "
+    "but distances are only comparable between methods with the same coverage, and only after the "
+    "hard-constraint check passes.",
+    "**Pickup trips** is how many vehicles were used; each vehicle drives at most one trip.",
+    "**Route duration** includes driving, 10 minutes per stop and the drive back; every route must stay within "
+    "240 minutes.",
+    "**Hard-constraint violations** must be 0. A separate check recomputes every route from the road matrix "
+    "and stops the run if any rule is broken, so 0 means the plans are valid, not just plausible.",
+    "In `details/routes.csv`, `stops_in_order` lists the stops in driving order. In `details/tasks.csv`, each task is SERVED "
+    "(with vehicle and stop number), UNSERVED or EXCLUDED with its reason.",
+]
+SPREAD_NOTE = ("A spread such as \"median 77.8 min (10th-90th percentile 29.2-117.7; max 144.1)\" means: half of "
+               "the routes are at or below the median; 8 in 10 lie between the two percentiles; max is the "
+               "longest one.")
+GUIDE = dict(
+ how=["Each HUB_AGGREGATION scenario holds 3-5 small donations (< 10 kg) from nearby households that the "
+      "proposed system would bring together at a community hub.",
+      "Here there is no hub: the NGO claims every donation itself, and each one becomes a pickup at the "
+      "donor's home.",
+      "The NGO's vehicles collect them with the Nearest-Next rule (nearest legal pickup next, one trip per "
+      "vehicle, 240 minutes, capacity, lease), using the same NGO and fleet as the hub condition in E3."],
+ expect=["Collecting at every household means one stop per donation, so the NGO's driving grows with the "
+         "number of donations. Pickup-point and alternative-delivery-location studies show that consolidating "
+         "items at a shared point can cut travel for one party, but the benefit depends on participation, "
+         "capacity and routing, and part of the travel moves to the people who bring items to the point "
+         "[1, 2, 3].",
+         "Example from a UK case study: collection points reduced total vehicle travel from 1,846 km to "
+         "940-1,246 km when 30% of first home deliveries failed, but with few failures overall travel could "
+         "even rise (by 10.9% in one case) [4].",
+         "So this baseline gives the NGO side of the no-hub option, with zero donor travel. E3 then checks "
+         "whether the hub condition lowers NGO distance and how much donor travel it adds."],
+ read=["**Total NGO road distance** is the main metric. E3 compares it with the hub condition on the "
+       "same scenarios, NGO, fleet and routing rule.",
+       "**Donor travel burden** is 0 here. In the hub condition donors take their items to the hub, so E3 "
+       "reports that distance next to the NGO distance (burden transfer).",
+       "**Pickup trips** counts NGO dispatches; each vehicle makes at most one trip.",
+       "**Calculated benchmark cost** = 1.00 x NGO km + 5.00 x trips. It is supporting "
+       "evidence only, not real money; the hub condition also adds 0.50 per donation handled at a hub.",
+       "**Hard-constraint violations** must be 0: every route was re-checked independently.",
+       "In `details/routes.csv`, `stops_in_order` lists the households in driving order; `details/tasks.csv` shows the vehicle "
+       "and stop number of each donation."],
+ refs=['[1] Galiullina, A., Mutlu, N. R., Kinable, J., & van Woensel, T. (2024). Demand steering in a last-mile delivery problem with home and pickup point delivery options. *Transportation Science*, 58(2), 454-473. https://doi.org/10.1287/trsc.2023.0287 *(in the report reference list)*',
+       '[2] Mo, Y., Yang, K., Han, S., & Gupta, S. (2024). Multi-period heterogeneous fleet vehicle routing problem with self-pickup point selection: A last-mile delivery scenario in urban and rural areas. *Annals of Operations Research*. https://doi.org/10.1007/s10479-024-06011-7 *(in the report reference list)*',
+       '[3] Pourmohammadreza, N., Akbari Jokar, M. R., & Van Woensel, T. (2025). Last-mile logistics with alternative delivery locations: A systematic literature review. *Results in Engineering*, 25, 104085. https://doi.org/10.1016/j.rineng.2025.104085 *(in the report reference list)*',
+       '[4] Song, L., Cherrett, T., McLeod, F., & Guan, W. (2009). Addressing the last mile problem: Transport impacts of collection and delivery points. *Transportation Research Record*, 2097. https://doi.org/10.3141/2097-02 *(not yet in the report: add it if you cite it)*'])
+
+
+def guide_lines():
+    g = GUIDE
+    lines = ['', '## How the method works', ''] + [f'{i}. {t}' for i, t in enumerate(g['how'], 1)]
+    lines += ['', '## What to expect', ''] + [f'- {t}' for t in g['expect']]
+    lines += ['', '## How to read the results', ''] + [f'- {t}' for t in g.get('read', ROUTE_READ)] + ['', SPREAD_NOTE]
+    lines += ['', '## References', ''] + [f'- {t}' for t in g['refs']]
+    return lines
+
+
+def write_summary(path, data, results, task_rows, snapshots):
+    tasks = sum(r['valid_task_count'] for r in results)
+    served = sum(r['served_tasks'] for r in results)
+    unserved = Counter(r['reason'] for r in task_rows if r['status'] == 'UNSERVED')
+    excluded = Counter(r['reason'] for r in task_rows if r['status'] == 'EXCLUDED')
+    km = sum(r['ngo_road_distance_km'] for r in results)
+    trips = sum(r['pickup_trips'] for r in results)
+    fleet = sum(len(s['fleet']) for s in snapshots)
+    durations = [float(r['duration_min']) for r in ROUTE_ROWS]
+    direct = CONDITION == 'direct'
+    travel = sum(r['travel_time_min'] for r in results)
+    violations = len(results) - sum(r['constraint_valid'] for r in results)
+    rows = [('Scenarios', f'{len(results):,}', 'One NGO with its own vehicles and a set of pickups')]
+    if direct:
+        cost = COST_PER_KM * km + COST_PER_TRIP * trips  # no hub, so there is no hub-handling cost
+        rows += [('Original donations', f'{tasks:,}', 'Every small donation (< 10 kg) of the aggregation '
+                  'scenario, each picked up at the donor\'s home'),
+                 ('Collected', f'{served:,} of {tasks:,} ({served / tasks:.1%})', 'Assigned to a valid route'),
+                 ('**Total NGO road distance** (main metric)', f'{km:,.1f} km',
+                  'Depot to every household and back, all routes'),
+                 ('Pickup trips (NGO dispatches)', f'{trips:,} of {fleet:,} vehicles available',
+                  'Each vehicle makes at most one trip'),
+                 ('Donor travel burden', '0 km', 'Donors stay at home in this condition'),
+                 ('Calculated benchmark cost', f'{cost:,.1f} units',
+                  f'{COST_PER_KM:.2f} x NGO km + {COST_PER_TRIP:.2f} x trips; a benchmark '
+                  'index, not real money'),
+                 ('Calculated cost per original donation', f'{cost / tasks:.2f} units', 'Cost / donations'),
+                 ('NGO road distance per donation', f'{km / tasks:.2f} km', 'Total distance / donations')]
+    else:
+        rows += [('Confirmed pickup tasks', f'{tasks:,}',
+                  'Pickups the NGO legally holds (protected claim, inside its 20 km road geofence)'),
+                 ('**Valid-task coverage** (main metric)', f'{served:,} of {tasks:,} ({served / tasks:.1%})',
+                  'Share of valid confirmed tasks placed on a valid route'),
+                 ('Unserved tasks', f'{tasks - served:,}',
+                  '; '.join(f'{n} {k}' for k, n in unserved.most_common()) or 'none'),
+                 ('Excluded before planning', f'{sum(excluded.values()):,}',
+                  '; '.join(f'{n} {k}' for k, n in excluded.most_common()) or 'none'),
+                 ('Total route distance', f'{km:,.1f} km', 'Depot to pickups and back to the depot, all routes'),
+                 ('Total travel time', f'{travel:,.0f} min', 'Driving only; service time (10 min per stop) is '
+                  'counted in route duration'),
+                 ('Road distance per collected task', f'{km / served:.2f} km' if served else 'n/a',
+                  'Total distance / collected tasks'),
+                 ('Pickup trips (vehicles used)', f'{trips:,} of {fleet:,} available',
+                  'Each vehicle makes at most one trip')]
+    rows += [('Route duration', spread(durations, 'min'), 'Driving + 10 min service per stop + return; limit 240 min'),
+             ('**Hard-constraint violations**', f'{violations} (routes of all {len(results)} scenarios pass)'
+              if not violations else f'{violations} scenarios fail',
+              'Independent check: capacity, 240-min duration, lease, NGO ownership, road route, each task once')]
+    lines = [f'# {TITLE}', '', f"Benchmark {data.manifest['benchmark_version']}. This describes this method on its own; "
+             f"comparing methods is done in experiment {'E3' if CONDITION == 'direct' else 'E4'}.", '',
+             f'**Method.** {WHAT}', '',
+             '| Result | Value | Meaning |', '| --- | --- | --- |']
+    lines += [f'| {a} | {b} | {c} |' for a, b, c in rows]
+    profiles = sorted({r['scenario_profile'] for r in results})
+    if len(profiles) > 1:
+        lines += ['', '## By scenario profile', '',
+                  '| Profile | Scenarios | Tasks | Collected | Not collected | Road distance (km) | Trips |',
+                  '| --- | --- | --- | --- | --- | --- | --- |']
+        for p in profiles:
+            sub = [r for r in results if r['scenario_profile'] == p]
+            lines.append(f"| {p} | {len(sub)} | {sum(r['valid_task_count'] for r in sub)} | "
+                         f"{sum(r['served_tasks'] for r in sub)} | {sum(r['unserved_tasks'] for r in sub)} | "
+                         f"{sum(r['ngo_road_distance_km'] for r in sub):,.1f} | {sum(r['pickup_trips'] for r in sub)} |")
+    used = set(unserved) | set(excluded)
+    if used:
+        lines += ['', '## Reason codes', '', '| Code | Meaning |', '| --- | --- |']
+        lines += [f'| {k} | {REASONS.get(k, k)} |' for k in sorted(used)]
+    lines += guide_lines()
+    files = [('results_per_scenario.csv', '**The main result.** One row per scenario.'),
+             ('details/routes.csv', 'One row per vehicle trip: stops in driving order, load, distance, time.'),
+             ('details/tasks.csv', 'One row per pickup: SERVED (vehicle, stop number), UNSERVED or EXCLUDED with its reason.')]
+    if SAVE_SNAPSHOTS:
+        files.append(('details/planning_snapshots.json', 'The exact planning input of every scenario (pickups, vehicles, cutoff time). A route optimiser can plan on this same file with --snapshot-file.'))
+    files.append(('run_info.md', 'What produced this run (date, benchmark, script fingerprint, command).'))
+    lines += ['', '## Files', '', '| File | Content |', '| --- | --- |'] + [f'| `{a}` | {b} |' for a, b in files]
+    lines += ['', '### Columns of results_per_scenario.csv', '', '| Column | Meaning |', '| --- | --- |']
+    lines += [f'| `{a}` | {b} |' for a, b in RESULT_COLUMNS] + ['']
+    path.write_text('\n'.join(lines), encoding='utf-8')
+
+
+ROUTE_ROWS = []
+
+
+def write_run_info(path, title, rows):
+    '''Plain record of what produced the results (only needed to repeat or audit the run).'''
+    lines = [f'# Run information: {title}', '',
+             'This file only records what produced the results in this folder, so the run can be repeated '
+             'and checked. You do not need it to read the results.', '',
+             '| Item | Value |', '| --- | --- |'] + [f'| {a} | {b} |' for a, b in rows] + ['']
+    path.write_text('\n'.join(lines), encoding='utf-8')
+
+
+def common_run_rows(manifest_path, script, command):
+    manifest = Path(manifest_path)
+    version = json.loads(manifest.read_text(encoding='utf-8'))['benchmark_version']
+    manifest_hash = hashlib.sha256(manifest.read_bytes()).hexdigest()[:16]
+    script_hash = hashlib.sha256(Path(script).read_bytes()).hexdigest()[:16]
+    return [('Run at', datetime.now().astimezone().strftime('%Y-%m-%d %H:%M %Z')),
+            ('Benchmark', f'{version} (generation_manifest.json SHA-256 {manifest_hash}...; '
+                          'every input CSV was checked against this manifest)'),
+            ('Script', f'`{Path(script).name}` (SHA-256 {script_hash}...)'),
+            ('Python', sys.version.split()[0]),
+            ('Command to repeat', f'`{command}`')]
+
+
 def save_route_outputs(args, data, configuration, results, route_rows, task_rows, snapshots):
-    config_id=digest(configuration)
-    for rows in (results,route_rows,task_rows):
-        for row in rows: row['configuration_id']=config_id
-    args.output_dir.mkdir(parents=True, exist_ok=True)
-    prefix = args.output_dir / 'direct_household_pickup'
-    write_csv(prefix.with_name(prefix.name+'_results.csv'), results, list(results[0]))
-    route_fields = ['scenario_id', 'condition', 'snapshot_id', 'vehicle_id', 'depot_road_node_id',
-                    'stop_task_ids', 'load_kg', 'road_distance_km', 'travel_time_min', 'duration_min']
-    task_fields = ['scenario_id', 'condition', 'task_id', 'source_id', 'status', 'reason', 'vehicle_id',
-                   'stop_order', 'arrival_elapsed_min', 'completion_elapsed_min']
-    route_fields.append('configuration_id')
-    task_fields.append('configuration_id')
-    write_csv(prefix.with_name(prefix.name+'_routes.csv'), route_rows, route_fields)
-    write_csv(prefix.with_name(prefix.name+'_tasks.csv'), task_rows, task_fields)
-    write_json(prefix.with_name(prefix.name+'_snapshots.json'), snapshots)
-    summary = data.metadata('direct_household_pickup', configuration)
-    summary.update(scenarios=len({r['scenario_id'] for r in results}), condition_runs=len(results),
-                   valid_tasks=sum(r['valid_task_count'] for r in results),
-                   served_tasks=sum(r['served_tasks'] for r in results),
-                   unserved_tasks=sum(r['unserved_tasks'] for r in results),
-                   excluded_tasks=sum(r['excluded_task_count'] for r in results),
-                   ngo_road_distance_km=sum(r['ngo_road_distance_km'] for r in results),
-                   pickup_trips=sum(r['pickup_trips'] for r in results),
-                   all_constraint_checks_passed=all(r['constraint_valid'] for r in results),
-                   snapshot_set_sha256=digest(snapshots),
-                   limitation='Simulated protected claims and receipts; current live authority and dispatch authorisation are not implemented')
-    summary['conditions'] = {}
-    for condition in ('direct', 'hub'):
-        rows = [r for r in results if r['condition'] == condition]
-        summary['conditions'][condition] = dict(original_donations=sum(r['original_donations'] for r in rows),
-            collected_original_donations=sum(r['collected_original_donations'] for r in rows),
-            ngo_road_distance_km=sum(r['ngo_road_distance_km'] for r in rows),
-            donor_one_way_road_km=sum(r['donor_one_way_road_km'] for r in rows),
-            pickup_trips=sum(r['pickup_trips'] for r in rows),
-            benchmark_cost_index=sum(r['benchmark_cost_index'] for r in rows))
-    write_json(prefix.with_name(prefix.name+'_summary.json'), summary)
-    print(json.dumps({k: summary[k] for k in ('method', 'scenarios', 'condition_runs', 'valid_tasks',
-                                             'served_tasks', 'unserved_tasks', 'all_constraint_checks_passed')}, indent=2))
+    out = args.output_dir
+    (out / 'details').mkdir(parents=True, exist_ok=True)
+    fleet = {s['scenario_id']: len(s['fleet']) for s in snapshots}
+    longest = defaultdict(float)
+    for r in route_rows:
+        longest[r['scenario_id']] = max(longest[r['scenario_id']], r['duration_min'])
+    yes = lambda v: 'YES' if v else 'NO'
+    rows = []
+    for r in results:
+        sid = r['scenario_id']
+        coverage = round(100 * r['served_tasks'] / r['valid_task_count'], 1) if r['valid_task_count'] else ''
+        if CONDITION == 'direct':
+            cost = COST_PER_KM * r['ngo_road_distance_km'] + COST_PER_TRIP * r['pickup_trips']
+            rows.append(dict(scenario_id=sid, ngo_id=r['ngo_id'], vehicles_available=fleet[sid],
+                             donations=r['valid_task_count'], donations_collected=r['served_tasks'],
+                             coverage_percent=coverage, total_ngo_distance_km=round(r['ngo_road_distance_km'], 3),
+                             total_driving_time_min=round(r['travel_time_min'], 1), vehicle_trips=r['pickup_trips'],
+                             donor_travel_km=0, benchmark_cost=round(cost, 2),
+                             cost_per_donation=round(cost / r['valid_task_count'], 2) if r['valid_task_count'] else '',
+                             longest_route_min=round(longest[sid], 1), all_rules_passed=yes(r['constraint_valid']),
+                             planning_time_ms=r['planning_runtime_ms']))
+        else:
+            rows.append(dict(scenario_id=sid, scenario_profile=r['scenario_profile'], ngo_id=r['ngo_id'],
+                             vehicles_available=fleet[sid], tasks_valid=r['valid_task_count'],
+                             tasks_collected=r['served_tasks'], tasks_not_collected=r['unserved_tasks'],
+                             tasks_excluded=r['excluded_task_count'], coverage_percent=coverage,
+                             total_distance_km=round(r['ngo_road_distance_km'], 3),
+                             total_driving_time_min=round(r['travel_time_min'], 1), vehicle_trips=r['pickup_trips'],
+                             longest_route_min=round(longest[sid], 1), all_rules_passed=yes(r['constraint_valid']),
+                             planning_time_ms=r['planning_runtime_ms']))
+    write_csv(out / 'results_per_scenario.csv', rows, list(rows[0]))
+    write_csv(out / 'details' / 'routes.csv',
+              [dict(scenario_id=r['scenario_id'], vehicle_id=r['vehicle_id'],
+                    stops_in_order=' > '.join(r['stop_task_ids'].split('|')), stops=len(r['stop_task_ids'].split('|')),
+                    load_kg=round(r['load_kg'], 2), distance_km=round(r['road_distance_km'], 3),
+                    driving_time_min=round(r['travel_time_min'], 1), route_time_min=round(r['duration_min'], 1))
+               for r in route_rows],
+              ['scenario_id', 'vehicle_id', 'stops_in_order', 'stops', 'load_kg', 'distance_km', 'driving_time_min',
+               'route_time_min'])
+    write_csv(out / 'details' / 'tasks.csv',
+              [dict(scenario_id=r['scenario_id'], task_id=r['task_id'], donation_id=r['source_id'], status=r['status'],
+                    reason=r['reason'], vehicle_id=r['vehicle_id'], stop_number=r['stop_order'],
+                    arrives_min_after_start=round(r['arrival_elapsed_min'], 1) if r['arrival_elapsed_min'] != '' else '',
+                    finished_min_after_start=round(r['completion_elapsed_min'], 1) if r['completion_elapsed_min'] != '' else '')
+               for r in sorted(task_rows, key=lambda r: (r['scenario_id'], {'SERVED': 0, 'UNSERVED': 1}.get(r['status'], 2),
+                                                         r['vehicle_id'], r['stop_order'] or 0, r['task_id']))],
+              ['scenario_id', 'task_id', 'donation_id', 'status', 'reason', 'vehicle_id', 'stop_number',
+               'arrives_min_after_start', 'finished_min_after_start'])
+    if SAVE_SNAPSHOTS:
+        write_json(out / 'details' / 'planning_snapshots.json', snapshots)
+    served = sum(r['served_tasks'] for r in results)
+    valid = sum(r['valid_task_count'] for r in results)
+    km = sum(r['ngo_road_distance_km'] for r in results)
+    trips = sum(r['pickup_trips'] for r in results)
+    run_rows = common_run_rows(args.dataset_dir / 'generation_manifest.json', __file__,
+                               f'python {Path(__file__).name}' + (' --snapshot-file ...' if args.snapshot_file else ''))
+    run_rows += [('Scenarios run', f"{len(results):,}" + (' (selected with --scenario-ids)' if args.scenario_ids else ' (all)')),
+                 ('Planning input', 'shared snapshot file ' + args.snapshot_file.name if args.snapshot_file
+                  else 'built from the benchmark (same snapshots as the other route baselines)'),
+                 ('Settings', f"20 km geofence; 360 min lease; 240 min per route; 10 min per stop; "
+                              f"safety margin {configuration['safety_margin_minutes']:g} min; one trip per vehicle"),
+                 ('Note', 'Claims are taken as already protected; live dispatch authorisation is not part of this baseline')]
+    write_run_info(out / 'run_info.md', TITLE, run_rows)
+    ROUTE_ROWS[:] = route_rows
+    write_summary(out / 'summary.md', data, results, task_rows, snapshots)
+    print(f"{TITLE}: {served}/{valid} collected, {km:,.1f} km, {trips} trips -> {out / 'summary.md'}")
 
 
 def load_shared_snapshots(path, data, scenarios, args):
     snapshots = json.loads(path.read_text(encoding='utf-8'))
     selected = {s['scenario_id'] for s in scenarios}
-    expected_condition = {'direct', 'hub'} if scenarios[0]['scenario_type']=='HUB_AGGREGATION' else {'route'}
+    expected_condition = {CONDITION}
     chosen = [s for s in snapshots if s['scenario_id'] in selected]
     pairs = [(s['scenario_id'],s['condition']) for s in chosen]
     if len(pairs)!=len(set(pairs)) or set(pairs)!={(sid,c) for sid in selected for c in expected_condition}:
@@ -538,13 +701,13 @@ def load_shared_snapshots(path, data, scenarios, args):
             positive(task['weight_kg'], 'shared task weight')
             if task['service_minutes']!=args.service_minutes or task['task_status']!='CONFIRMED' or task['claim_status']!='ACTIVE':
                 raise ValueError('Invalid shared task state/service time')
-            if task['ngo_agent_id']!=snapshot['ngo_agent_id'] or timestamp(task['claim_expires_at'])<=timestamp(snapshot['cutoff']):
+            if task['ngo_id']!=snapshot['ngo_id'] or timestamp(task['claim_expires_at'])<=timestamp(snapshot['cutoff']):
                 raise ValueError('Invalid shared task authority')
-            if task['task_version']<1 or task['listing_version']<1 or timestamp(task['created_at'])>timestamp(snapshot['cutoff']):
+            if task['task_version']<1 or timestamp(task['created_at'])>timestamp(snapshot['cutoff']):
                 raise ValueError('Invalid shared task version/time')
         for vehicle in snapshot['fleet']:
             benchmark_vehicle=data.vehicles[(vehicle['vehicle_id'],)]
-            if vehicle['ngo_agent_id']!=snapshot['ngo_agent_id'] or vehicle['depot_road_node_id']!=benchmark_vehicle['depot_road_node_id']:
+            if vehicle['ngo_id']!=snapshot['ngo_id'] or vehicle['depot_road_node_id']!=benchmark_vehicle['depot_road_node_id']:
                 raise ValueError('Shared vehicle owner/depot differs')
             if vehicle['capacity_kg']!=float(benchmark_vehicle['vehicle_capacity_kg']):
                 raise ValueError('Shared vehicle capacity differs')
@@ -555,54 +718,24 @@ def main():
     parser = route_parser()
     args = parser.parse_args()
     configuration = route_configuration(args)
-    configuration.update(downstream_method='NEAREST_NEXT_FOR_BOTH_CONDITIONS',
-                         cost_per_ngo_km=1.0, cost_per_trip=5.0, cost_per_hub_donation=0.5,
-                         hub_receipts='SIMULATED_VERIFIED_RECEIPTS', batch_limits=[3, 5, 30])
     data = setup_route_data(args.dataset_dir)
     scenarios = select_scenarios(data, ('HUB_AGGREGATION',), args.scenario_ids)
     configuration['selected_scenarios'] = [r['scenario_id'] for r in scenarios]
     shared = load_shared_snapshots(args.snapshot_file, data, scenarios, args) if args.snapshot_file else None
     configuration['snapshot_input_sha256'] = hashlib.sha256(args.snapshot_file.read_bytes()).hexdigest() if args.snapshot_file else None
-    results, routes_output, tasks_output, snapshots, pairs, sensitivity = [], [], [], [], [], []
+    results, routes_output, tasks_output, snapshots = [], [], [], []
     for scenario in scenarios:
-        outcomes = {}
-        for condition in ('direct', 'hub'):
-            snapshot = shared[(scenario['scenario_id'],condition)] if shared else build_snapshot(data, scenario, args, condition)
-            routes, unserved = plan_routes(data, snapshot, args)
-            metrics = validate_plan(data, snapshot, routes, unserved, args)
-            original_count = len(snapshot['original_donation_ids'])
-            collected = original_count if condition == 'hub' and metrics['served_tasks'] else metrics['served_tasks']
-            metrics.update(original_donations=original_count, collected_original_donations=collected,
-                           original_donation_coverage=collected/original_count,
-                           donor_one_way_road_km=snapshot['donor_one_way_road_km'],
-                           hub_handled_donations=original_count if condition == 'hub' else 0)
-            metrics['benchmark_cost_index'] = (metrics['ngo_road_distance_km'] + 5*metrics['pickup_trips']
-                                                + 0.5*metrics['hub_handled_donations'])
-            append_evidence(snapshot, routes, unserved, metrics, results, routes_output, tasks_output)
-            snapshots.append(snapshot)
-            outcomes[condition] = metrics
-        direct, hub = outcomes['direct'], outcomes['hub']
-        pairs.append(dict(scenario_id=scenario['scenario_id'],
-                          matched_originals=direct['original_donations'],
-                          both_complete=int(direct['original_donation_coverage'] == 1 and hub['original_donation_coverage'] == 1),
-                          direct_collected=direct['collected_original_donations'], hub_collected=hub['collected_original_donations'],
-                          direct_ngo_road_km=direct['ngo_road_distance_km'], hub_ngo_road_km=hub['ngo_road_distance_km'],
-                          hub_minus_direct_ngo_road_km=hub['ngo_road_distance_km']-direct['ngo_road_distance_km'],
-                          direct_pickup_trips=direct['pickup_trips'], hub_pickup_trips=hub['pickup_trips'],
-                          hub_donor_one_way_road_km=hub['donor_one_way_road_km'],
-                          direct_cost_index=direct['benchmark_cost_index'], hub_cost_index=hub['benchmark_cost_index']))
-        settings = [('base', 1, 1, 1)]
-        for factor in (0.5, 2.0):
-            settings += [('km', factor, 1, 1), ('trip', 1, factor, 1), ('hub', 1, 1, factor), ('all', factor, factor, factor)]
-        for name, km, trip, handling in settings:
-            cost = lambda m: km*m['ngo_road_distance_km']+5*trip*m['pickup_trips']+0.5*handling*m['hub_handled_donations']
-            sensitivity.append(dict(scenario_id=scenario['scenario_id'], setting=name, km_multiplier=km,
-                                    trip_multiplier=trip, hub_multiplier=handling,
-                                    direct_cost_index=cost(direct), hub_cost_index=cost(hub),
-                                    hub_minus_direct_cost=cost(hub)-cost(direct)))
+        snapshot = shared[(scenario['scenario_id'],CONDITION)] if shared else build_snapshot(data, scenario, args, CONDITION)
+        started = time.perf_counter()
+        routes, unserved = plan_routes(data, snapshot, args)
+        runtime_ms = (time.perf_counter() - started) * 1000
+        metrics = validate_plan(data, snapshot, routes, unserved, args)
+        metrics['planning_runtime_ms'] = round(runtime_ms, 3)
+        metrics['original_donations'] = len(snapshot['original_donation_ids'])
+        metrics['collected_original_donations'] = metrics['served_tasks']
+        append_evidence(snapshot, routes, unserved, metrics, results, routes_output, tasks_output)
+        snapshots.append(snapshot)
     save_route_outputs(args, data, configuration, results, routes_output, tasks_output, snapshots)
-    write_csv(args.output_dir / 'direct_household_pickup_pairs.csv', pairs, list(pairs[0]))
-    write_csv(args.output_dir / 'direct_household_pickup_cost_sensitivity.csv', sensitivity, list(sensitivity[0]))
 
 
 

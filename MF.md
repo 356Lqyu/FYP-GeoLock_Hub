@@ -131,12 +131,13 @@ The benchmark supports:
 The project’s review notes explicitly recommend using the benchmark to show that the system can perform well under fixed conditions rather than only in a demo environment.
 
 ## 9. Implementation status in this repository
-This repository currently contains the benchmark and evaluation baselines rather than a full production application front end. It is therefore best understood as the experimental and reproducible support layer for the GeoLock Hub study.
+This repository contains the GeoLock Hub system (Flutter app in `frontend/`, Supabase schema, migrations and backend tests in `supabase/`) together with the reproducible benchmark and the baseline methods used to evaluate it.
 
 The relevant folders are:
 - `benchmark dataset/` for generated data and benchmark inputs
-- `baseline implementation/` for standalone comparison scripts and result outputs
-- `pubic dataset/` for public geographic input data
+- `baseline implementation/` for the baseline methods: `source code/`, `postgresql/` (claim-baseline test database), `result/` (per-baseline outputs and summaries)
+- `public dataset/` for public geographic input data
+- `experiments/` for experiment set-up and runners
 
 ## 10. Outcome expectation
 A strong GeoLock Hub implementation should demonstrate that deterministic coordination logic ensures correctness and that AI or optimisation modules add value only after feasibility and safety checks are already satisfied. In other words, the system should be auditable, conflict-free, benchmarkable, and explainable.

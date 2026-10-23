@@ -1,0 +1,12 @@
+ngo_id,ngo_name,state,category,status,latitude,longitude,road_node_id,node_snap_distance_m
+NGO001,Pertubuhan Permata Kasih Aisyah,Kuala Lumpur,charity organization and social welfare,AKTIF,3.113531,101.755752,775883393,45.4
+NGO002,Yayasan Taiwan Buddhist Tzu-Chi Malaysia,Kuala Lumpur,"humanitarian, welfare, and charitable services",AKTIF,3.20945,101.64949,8838501187,64.4
+NGO003,Pertubuhan Kebajikan dan Penjagaan Kanak-Kanak Kurang Upaya Negeri Johor,Johor,Children Charitable and Cares Organisation,AKTIF,1.534652,103.807443,2760201978,5.6
+NGO004,Teach For Malaysia,Selangor,Education and Youth Development,AKTIF,3.132585,101.683551,4621579341,30.2
+NGO005,St. Nicholas’ Home Penang,Penang,Special Needs Care and Welfare,AKTIF,5.431284,100.302302,7847167733,2.1
+NGO006,Persatuan DAYBREAK,Perak,Disability Vocational Training and Support,AKTIF,4.542289,101.077209,3207349194,6.5
+NGO007,Turtle Conservation Society of Malaysia (TCS),Terengganu,Environmental Conservation and Wildlife Protection,AKTIF,4.249444,103.411667,7622334490,35.4
+NGO008,MERCY Malaysia,Kuala Lumpur,Humanitarian Relief and Disaster Medical Aid,AKTIF,3.12933,101.69176,7048717349,6.5
+NGO009,Persatuan Kebajikan Kanak-Kanak Istimewa Seremban,Negeri Sembilan,Special Needs and Learning Disabilities Welfare,AKTIF,2.721404,101.936082,4883808713,1.9
+NGO010,Pertubuhan Kebajikan Anak Yatim Pahang (PEKAYA),Pahang,Orphanage and Child Welfare,AKTIF,3.812543,103.32551,3883275870,10.9
+NGO011,Badan Usaha Didikan Anak Yatim Negeri Kedah (BUDI),Kedah,Orphanage and Child Welfare,AKTIF,5.802319,100.374184,7652710478,26.1

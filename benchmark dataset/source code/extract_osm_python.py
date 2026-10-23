@@ -6,6 +6,7 @@ Requires Python 3.10+ and the original Malaysia/Singapore/Brunei .osm.pbf snapsh
 The regional extraction windows follow EVERY NGO in the supplied CSV.
 An edge row is: origin_osm_id,destination_osm_id,road_km,travel_minutes.
 A node row is: osm_id,latitude,longitude. Neither has a header (compatible with generator).
+household_nodes.csv lists, one per line, the nodes on residential-type streets (donor homes).
 """
 import argparse
 import hashlib
@@ -39,6 +40,9 @@ SPEEDS = {'motorway':100,'motorway_link':55,'trunk':90,'trunk_link':50,
           'tertiary':50,'tertiary_link':35,'residential':35,'unclassified':40,
           'service':20,'living_street':15}
 MAXSPEED_RE = re.compile(r'[0-9]{2,3}')
+# Streets where a household front door can plausibly be: donor homes are sampled
+# only from nodes on these ways (main roads and highways are excluded).
+HOUSEHOLD_STREETS = {'residential','living_street','service','unclassified'}
 
 
 def unsigned(buf, pos):
@@ -224,7 +228,7 @@ def read_nodes(block, coords, hub_candidates):
                             hub_candidates[('node',nid)]=('node',nid,amenity,tags.get(b'name',b'').decode('utf8','replace'),y,x)
 
 
-def read_way(record, strings, coords, outfile):
+def read_way(record, strings, coords, outfile, household_nodes):
     keys = vals = refs = None
     for tag,value in fields(record):
         if tag == 2:
@@ -256,7 +260,10 @@ def read_way(record, strings, coords, outfile):
                      tags.get(b'junction') == b'roundabout' or highway in ('motorway','motorway_link'))
     count = 0
     last = None
+    household = highway in HOUSEHOLD_STREETS
     for node in delta_values(refs):
+        if household and node in coords:
+            household_nodes.add(node)
         if last is not None:
             p,q = coords.get(last),coords.get(node)
             if p is not None and q is not None:
@@ -276,14 +283,14 @@ def read_way(record, strings, coords, outfile):
     return count
 
 
-def read_ways(block, coords, output, hub_candidates):
+def read_ways(block, coords, output, hub_candidates, household_nodes):
     groups, table, *_ = primitive_group_info(block)
     strings = [item for tag,item in fields(table) if tag == 1]
     count = 0
     for g in groups:
         for tag, record in fields(g):
             if tag == 3:
-                count += read_way(record, strings, coords, output)
+                count += read_way(record, strings, coords, output, household_nodes)
                 tags={}; way_id=None; refs=None;keys=[];vals=[]
                 for t,v in fields(record):
                     if t==1: way_id=v
@@ -303,7 +310,7 @@ def read_ways(block, coords, output, hub_candidates):
     return count
 
 
-def extract(pbf, nodes, edges, hubs, ngos, radius_km):
+def extract(pbf, nodes, edges, hubs, ngos, radius_km, household):
     ngo_rows = set_boxes(ngos, radius_km)
     print(f"OSM regions: {len(ngo_rows)} NGO references, {len(BOXES)} extraction windows, {radius_km}km + 3km buffer", flush=True)
     started = time.monotonic()
@@ -324,13 +331,18 @@ def extract(pbf, nodes, edges, hubs, ngos, radius_km):
     print(f'Python OSM pass 2/2: extracting edges from {len(coords):,} coordinates',flush=True)
     count = 0
     edge_count = 0
+    household_nodes = set()
     with open(edges,'w',encoding='utf8') as output:
         for count,blob in enumerate(parse_blob_stream(pbf),1):
-            edge_count += read_ways(blob,coords,output,hub_candidates)
+            edge_count += read_ways(blob,coords,output,hub_candidates,household_nodes)
             if count % 500 == 0:
                 print(f'  scanned {count} blocks, {edge_count:,} directed edges',flush=True)
     if not edge_count:
         raise RuntimeError('No drivable road edges found in selected geographic boxes')
+    with open(household,'w',encoding='utf8') as out:
+        for nid in sorted(household_nodes):
+            out.write(f'{nid}\n')
+    print(f'Household-street nodes: {len(household_nodes):,}',flush=True)
     hubs.parent.mkdir(parents=True, exist_ok=True)
     with hubs.open('w',newline='',encoding='utf8') as f:
         w=csv.writer(f);w.writerow(['osm_type','osm_id','amenity','name','latitude','longitude'])
@@ -347,5 +359,9 @@ if __name__ == '__main__':
     parser.add_argument('hubs_csv',type=Path)
     parser.add_argument('--ngos',type=Path,required=True,help='Updated NGO_references.csv')
     parser.add_argument('--radius-km',type=float,default=17.0)
+    parser.add_argument('--household-nodes',type=Path,default=None,
+                        help='Output list of nodes on residential/living_street/service/unclassified ways '
+                             '(default: household_nodes.csv next to nodes_csv)')
     args = parser.parse_args()
-    extract(args.pbf,args.nodes_csv,args.edges_csv,args.hubs_csv,args.ngos,args.radius_km)
+    household = args.household_nodes or args.nodes_csv.with_name('household_nodes.csv')
+    extract(args.pbf,args.nodes_csv,args.edges_csv,args.hubs_csv,args.ngos,args.radius_km,household)
