@@ -1,5 +1,11 @@
 # Methodology and Feature Summary
 
+Current acceptance evidence: [Stage 3J review and requirements matrix](supabase/tests/review-only/stage3j/README.md)
+reconciles historical 2/10/50-client experiments with the current deployed RPCs.
+Supervised direct recovery remains PASS; current multi-NGO acceptance has focused
+fixture/harness gaps. Permanent unattended recovery is not approved; job 3 remains
+inactive. Historical examples below are retained with the lifecycle addendum.
+
 This document summarises the GeoLock Hub project as described in the project report and supervision review notes.
 
 ## 1. Project objective
@@ -39,6 +45,15 @@ AI may be used to rank valid options that already satisfy deterministic rules:
 AI must not bypass geofence restrictions, override claim protection, create invalid donations, or assign a donation to a second NGO while it is already claimed.
 
 ## 4. Donation lifecycle and authority contract
+Implementation update (23 October 2026): the list below records original report
+examples, not the deployed donation enum. The approved persisted lifecycle uses
+`AVAILABLE` and `CLAIMED` for direct donations, preserves `SUBMITTED` for hub
+selection and `BATCHED` for published hub stock, and treats `COLLECTED` as terminal.
+`VALIDATED`, `DELIVERED` and `LEASE_EXPIRED` are not current donation states.
+Expiry is derived from database time and claim/lease evidence until protected
+recovery performs safe release or reconciliation. See the current
+[closure and authority review](docs/audits/2026-10-23-stage3i-closure-and-next-stage-plan.md).
+
 The project recommends a clear coordination authority contract before advanced features are built. This includes a formal state machine such as:
 - AVAILABLE
 - CLAIMED

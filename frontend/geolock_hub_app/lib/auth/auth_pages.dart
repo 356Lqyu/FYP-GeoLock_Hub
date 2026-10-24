@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import '../location/location_picker_page.dart';
 import '../location/location_result.dart';
+import '../location/road_routing.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'auth_controller.dart';
 import 'auth_navigation.dart';
@@ -13,6 +14,24 @@ const _pale = Color(0xffedfbf7);
 const _redirect = String.fromEnvironment(
   'AUTH_REDIRECT_URL',
   defaultValue: 'io.supabase.geolockhub://login-callback',
+);
+
+const ngoLocationHint =
+    'Road access is checked against the approved road network. The database '
+    'validates the location again before saving it.';
+
+LocationPickerPage buildNgoLocationPicker({
+  LocationResult? initialLocation,
+  RoadAccessCheck? roadAccessCheck,
+  bool requireRoadPreview = true,
+}) => LocationPickerPage(
+  title: 'NGO Operating Location',
+  initialLocation: initialLocation,
+  roadAccess: requireRoadPreview
+      ? RoadAccessRequirement.required
+      : RoadAccessRequirement.none,
+  roadAccessCheck: roadAccessCheck,
+  hint: ngoLocationHint,
 );
 
 class AuthFrame extends StatelessWidget {
@@ -348,7 +367,8 @@ class _SelectRolePageState extends State<SelectRolePage> {
           selected: selected == AccountRole.ngo,
           icon: Icons.apartment_outlined,
           title: 'NGO Personnel',
-          description: 'Discover, claim and coordinate available donations.',
+          description:
+              'Set up your operating location after login, then coordinate donations.',
           onTap: () => setState(() => selected = AccountRole.ngo),
         ),
         _RoleCard(
@@ -356,7 +376,7 @@ class _SelectRolePageState extends State<SelectRolePage> {
           icon: Icons.home_work_outlined,
           title: 'Community Hub Administrator',
           description:
-              'Manage hub inventory and coordinate NGO collections. Authorized accounts only.',
+              'Register a community hub after login and coordinate collections.',
           onTap: () => setState(() => selected = AccountRole.hubAdmin),
         ),
         const SizedBox(height: 20),
@@ -365,13 +385,6 @@ class _SelectRolePageState extends State<SelectRolePage> {
           onPressed: selected == null
               ? null
               : () {
-                  if (selected == AccountRole.hubAdmin) {
-                    showMessage(
-                      context,
-                      'Hub Admin accounts must be provisioned by a trusted administrator.',
-                    );
-                    return;
-                  }
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -464,7 +477,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
       password = TextEditingController(),
       confirm = TextEditingController();
   final ngoName = TextEditingController(), regNo = TextEditingController();
-  LocationResult? ngoLocation;
   bool busy = false, showPass = false, showConfirm = false;
   @override
   void dispose() {
@@ -476,27 +488,14 @@ class _RegistrationPageState extends State<RegistrationPage> {
 
   String? requiredValue(String? v) =>
       v == null || v.trim().isEmpty ? 'This field is required.' : null;
-  Future<void> selectNgoLocation() async {
-    final selected = await Navigator.push<LocationResult>(
-      context,
-      MaterialPageRoute(
-        builder: (_) => LocationPickerPage(
-          title: 'NGO Operating Location',
-          initialLocation: ngoLocation,
-        ),
-      ),
-    );
-    if (selected != null && mounted) setState(() => ngoLocation = selected);
-  }
-
   Future<void> submit() async {
     if (!(form.currentState?.validate() ?? false)) return;
-    if (widget.role == AccountRole.ngo && ngoLocation == null) {
-      showMessage(context, 'Select and confirm the NGO operating location.');
-      return;
-    }
     setState(() => busy = true);
-    final role = widget.role == AccountRole.donor ? 'DONOR' : 'NGO';
+    final role = switch (widget.role) {
+      AccountRole.donor => 'DONOR',
+      AccountRole.ngo => 'NGO',
+      AccountRole.hubAdmin => 'HUB_ADMIN',
+    };
     final pending = <String, dynamic>{
       'role': role,
       'full_name': name.text.trim(),
@@ -508,9 +507,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
         'registration_number': regNo.text.trim().isEmpty
             ? null
             : regNo.text.trim(),
-        'operating_address': ngoLocation!.address,
-        'latitude': ngoLocation!.latitude,
-        'longitude': ngoLocation!.longitude,
       });
     }
     try {
@@ -563,7 +559,11 @@ class _RegistrationPageState extends State<RegistrationPage> {
                     style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
                   ),
                   Text(
-                    'Role selected: ${widget.role == AccountRole.donor ? 'Donor' : 'NGO Personnel'}',
+                    'Role selected: ${switch (widget.role) {
+                      AccountRole.donor => 'Donor',
+                      AccountRole.ngo => 'NGO Personnel',
+                      AccountRole.hubAdmin => 'Community Hub Admin',
+                    }}',
                     style: const TextStyle(color: _green, fontSize: 12),
                   ),
                 ],
@@ -612,23 +612,11 @@ class _RegistrationPageState extends State<RegistrationPage> {
                   hintText: 'Registration number',
                 ),
               ),
-              const SizedBox(height: 10),
-              const _FieldLabel('Operating Address and Map Pin'),
-              OutlinedButton.icon(
-                onPressed: busy ? null : selectNgoLocation,
-                icon: const Icon(Icons.location_on_outlined),
-                label: Text(
-                  ngoLocation == null ? 'Select location' : 'Change location',
-                ),
+              const SizedBox(height: 8),
+              const Text(
+                'Set and validate your operating location after email verification and login.',
+                style: TextStyle(fontSize: 12, color: Colors.blueGrey),
               ),
-              if (ngoLocation != null) ...[
-                const SizedBox(height: 6),
-                Text(ngoLocation!.address),
-                Text(
-                  '${ngoLocation!.latitude.toStringAsFixed(6)}, ${ngoLocation!.longitude.toStringAsFixed(6)} · awaiting trusted location verification',
-                  style: const TextStyle(fontSize: 12, color: Colors.blueGrey),
-                ),
-              ],
             ],
             const SizedBox(height: 16),
             const _SectionTitle('Security'),

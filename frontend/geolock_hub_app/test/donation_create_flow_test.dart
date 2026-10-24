@@ -152,15 +152,15 @@ void main() {
       await tester.pumpAndSettle();
     }
 
-    testWidgets('READY_FOR_PICKUP / DIRECT_PICKUP / READY', (tester) async {
+    testWidgets('AVAILABLE / DIRECT_PICKUP / READY', (tester) async {
       bool? result;
       await pumpDialog(tester, {
-        'donation_status': 'READY_FOR_PICKUP',
+        'donation_status': 'AVAILABLE',
         'collection_path': 'DIRECT_PICKUP',
         'road_node_status': 'READY',
         'total_weight_kg': 12,
       }, (value) => result = value);
-      expect(find.textContaining('Ready for Pickup'), findsOneWidget);
+      expect(find.textContaining('Available'), findsOneWidget);
       expect(find.textContaining('Direct pickup'), findsOneWidget);
       expect(
         find.textContaining(

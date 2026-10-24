@@ -12,9 +12,9 @@ void main() {
   test('pending donation milestones do not invent completed timestamps', () {
     final pending = pendingDonationMilestones(
       collectionPath: 'DIRECT_PICKUP',
-      currentStatus: 'READY_FOR_PICKUP',
+      currentStatus: 'AVAILABLE',
     );
-    expect(pending, ['Pickup in Progress', 'Collected']);
+    expect(pending, ['Claimed', 'Pickup in Progress', 'Collected']);
   });
 
   test('terminal statuses have no future milestones', () {

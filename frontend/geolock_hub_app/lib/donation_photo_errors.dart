@@ -9,6 +9,11 @@ String donationPhotoFailureMessage(Object error) {
     );
   }
   if (error is PostgrestException) {
+    if (error.code == '57014') {
+      return 'Saving the donation timed out. Your donation was not confirmed. '
+          'Retry using the same form; your photos and request are preserved. '
+          '(code: 57014)';
+    }
     final code = donationServerErrorCode(error);
     final known = code == null ? null : _donationServerErrors[_baseCode(code)];
     if (known != null) return '$known (code: $code)';
@@ -58,17 +63,20 @@ const _donationServerErrors = <String, String>{
   'DONOR_ONLY': 'Only a registered donor account can create donations.',
 };
 
-String donationPhotoFailureForStatusCode(int? statusCode) => switch (
-  statusCode
-) {
-  403 => 'Supabase denied the photo upload. The GeoLock Storage permission '
-      'migration may be missing or the signed-in account may not have a '
-      'Donor profile. Your donation was not submitted; tap Retry after '
-      'the issue is corrected.',
-  404 => 'Donation photo storage is not configured in Supabase. Contact '
-      'the project administrator. Your donation was not submitted.',
-  413 => 'A photo exceeds the 5 MB upload limit. Choose smaller photos '
-      'and try again.',
-  _ => 'A photo could not be uploaded. Check your connection and try '
-      'again. Your donation was not submitted.',
-};
+String donationPhotoFailureForStatusCode(int? statusCode) =>
+    switch (statusCode) {
+      403 =>
+        'Supabase denied the photo upload. The GeoLock Storage permission '
+            'migration may be missing or the signed-in account may not have a '
+            'Donor profile. Your donation was not submitted; tap Retry after '
+            'the issue is corrected.',
+      404 =>
+        'Donation photo storage is not configured in Supabase. Contact '
+            'the project administrator. Your donation was not submitted.',
+      413 =>
+        'A photo exceeds the 5 MB upload limit. Choose smaller photos '
+            'and try again.',
+      _ =>
+        'A photo could not be uploaded. Check your connection and try '
+            'again. Your donation was not submitted.',
+    };

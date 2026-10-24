@@ -259,6 +259,10 @@ List<StatusTimelineEvent> recordedAuditEvents(
 }) {
   const eventLabels = {
     'CREATE_VALIDATE': 'Donation submitted',
+    'CREATE_DONATION': 'Donation created',
+    'DONATION_STATUS_CHANGED': 'Donation status updated',
+    'DONATION_STATUS_BACKFILL': 'Donation status migrated',
+    'CLAIM_ATTEMPT': 'Claim processed',
     'RESERVE_HUB': 'Hub reservation updated',
     'EXPIRE_HUB_RESERVATION': 'Hub reservation expired',
     'CONFIRM_HUB_RECEIPT': 'Donation received at hub',
@@ -314,11 +318,16 @@ List<String> pendingDonationMilestones({
           'HUB_ASSIGNED',
           'AT_HUB',
           'BATCHED',
+          'CLAIMED',
           'PICKUP_IN_PROGRESS',
           'COLLECTED',
         ]
-      : const ['READY_FOR_PICKUP', 'PICKUP_IN_PROGRESS', 'COLLECTED'];
-  final index = path.indexOf(currentStatus ?? '');
+      : const ['AVAILABLE', 'CLAIMED', 'PICKUP_IN_PROGRESS', 'COLLECTED'];
+  // Historical values are read-only compatibility, not persisted writes.
+  final normalized = currentStatus == 'READY_FOR_PICKUP'
+      ? 'AVAILABLE'
+      : currentStatus;
+  final index = path.indexOf(normalized ?? '');
   final start = index >= 0 ? index + 1 : 0;
   return path.skip(start).map(friendlyWorkflowStatus).toList();
 }

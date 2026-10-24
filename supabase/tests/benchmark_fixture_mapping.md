@@ -1,5 +1,11 @@
 # Stage 1 benchmark fixture mapping
 
+Current interpretation (23 October 2026): see the
+[Stage 3J matrix](review-only/stage3j/EVIDENCE_MATRIX.md). The original benchmark
+and historical outputs are preserved. Existing baselines are simulations, not
+native PostgreSQL acceptance results. Stage 3I direct supervised recovery PASS
+does not authorize reusing its retained fixture or activating job 3.
+
 The supplied benchmark is experimental data, not seed data for the shared Supabase project. The app and additive migration do not import any CSV rows.
 
 The automated fixture setup for the claim-recovery runner creates independent,
@@ -34,6 +40,6 @@ Additional deterministic cases to run against an isolated database:
 - State guards: invalid skips, `COLLECTED -> AVAILABLE`, and stale holder operations fail without state change.
 - Hub rules: 50–250 kg capacity, reservation contention, 3–5 whole donations, one category, no more than 30 kg, and no duplicate active membership.
 - Road coverage: an approved operational coverage point resolves only within its configured snap distance; outside-coverage and benchmark-only points return no node and cannot be discovered/claimed.
-- Audit: claim rejections are durable in `claim_requests`/`audit_events`; errors that roll back are sent after rollback to the trusted failure logger and verified in `operation_failure_events`.
+- Audit: ordinary returned claim rejections commit in `claim_requests`/`audit_events`. Thrown errors roll back those writes. A trusted post-rollback failure record is a remaining requirement; DEV has no public `operation_failure_events` table. Do not claim a failure logger is installed or that transactional audits survive rollback.
 
 The two E2 claim baselines (`baseline implementation/source code`) already apply this mapping to an isolated PostgreSQL test database: see `baseline implementation/postgresql/README.md` for the setup. Flutter unit tests do not establish PostgreSQL concurrency safety.

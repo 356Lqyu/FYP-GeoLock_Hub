@@ -1,5 +1,34 @@
 # Stage 2 atomic claim tests (isolated DEV only)
 
+## Current-version review — 23 October 2026
+
+**Minimum acceptance preparation follow-up:** the confirmed delayed-race defect
+is now corrected and validated by 25 offline regressions and four isolated
+PostgreSQL tests. Use the [two-actor package](review-only/stage3j/two_actor/README.md)
+and its new entry point, which requires exactly two sessions/two fresh fixtures.
+The original ten-actor suite below is retained; do not run it for this step.
+The original findings below describe the pre-fix review. No live tests ran and
+the saved DEV account/cron snapshot has not been refreshed in this preparation.
+
+The [Stage 3J evidence matrix](review-only/stage3j/EVIDENCE_MATRIX.md) and
+[acceptance plan](review-only/stage3j/ACCEPTANCE_PLAN.md) qualify the historical
+preparation notes below. Current road eligibility, asynchronous workers and
+Flutter workflows are implemented; they are not pending algorithm development.
+Fresh SELECT-only DEV inspection found two active NGO profiles, only one with
+verified road-node evidence. Ten eligible authenticated sessions and dedicated
+fresh fixtures are therefore still unproven prerequisites for this runner.
+
+Original defect, now fixed: executor shutdown previously waited
+for blocked requests before the outer finally releases their listing lock.
+The fix and isolated validation are recorded in the two-actor package; current
+live execution still needs preflight and separate approval. No production SQL
+change is indicated. The original runner
+also has no 50-client cohort or full deployed-source/build result manifest.
+Historical 2/10/50 G16 results are retained, but use an older RPC/fixture contract
+and do not establish current-version acceptance. Stage 3I supervised direct
+recovery remains PASS; job 3 stays inactive; unattended recovery is not approved.
+No stateful execution is authorized by this documentation update.
+
 `claim_concurrency_test.py` and `claim_fault_injection_dev_test.py` are
 state-changing integration tests. They have been prepared but **not run**.
 Never use the original shared project (`mffccmlimmbrgasgfnnq`). The runners
@@ -24,9 +53,10 @@ invent coordinates, insert road nodes, or bypass discovery/claim checks.
 - These claims commit and are not cleaned up by the runner. Use a fresh set of
   disposable listings for every normal-suite run; preserve audit history.
 
-The repository fixture setup currently creates only two NGO accounts and does
+Historical setup note (superseded for current implementation status by Stage 3J):
+the repository fixture setup creates only two NGO accounts and does
 not produce trusted operational verification or road-node assignments. Since
-those teammate-owned dependencies remain pending, the two-way and ten-way
+those trusted-fixture prerequisites were not established by that setup, the two-way and ten-way
 success/conflict races, delayed race, and discarded-response retry case are
 **BLOCKED** until ten legitimate eligible accounts and valid operational
 listings are provisioned through the approved trusted workflow. The test does
