@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show debugPrint, kDebugMode;
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'async_request_gate.dart';
+import 'claim_cards_controller.dart';
 import 'auth/auth_navigation.dart';
 import 'auth/auth_controller.dart';
 import 'donation_pages.dart';
@@ -648,19 +651,34 @@ class NgoHomePage extends StatefulWidget {
   State<NgoHomePage> createState() => _NgoHomePageState();
 }
 
-class _NgoHomePageState extends State<NgoHomePage> {
+class _NgoHomePageState extends State<NgoHomePage> with WidgetsBindingObserver {
   final _listingsGate = AsyncRequestGate();
-  final _claimsGate = AsyncRequestGate();
+  late final ClaimCardsController _claimReader;
+  late Future<void> _claimsRefresh;
+  StreamSubscription<AuthState>? _authSubscription;
   final _routingGate = AsyncRequestGate();
   final _nameGate = AsyncRequestGate();
   late Future<List<Map<String, dynamic>>> _listings;
-  late Future<List<Map<String, dynamic>>> _claims;
   late Future<bool> _trustedRouting;
   late Future<String?> _ngoName;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _claimReader = ClaimCardsController(
+      load: () =>
+          widget.claimsLoader?.call() ??
+          _dashboardDb.rpc('get_my_claim_cards_v2'),
+      identity: () => widget.claimsLoader != null
+          ? 'injected'
+          : _dashboardDb.auth.currentUser?.id,
+    );
+    if (widget.claimsLoader == null) {
+      _authSubscription = _dashboardDb.auth.onAuthStateChange.listen(
+        (_) => _refresh(),
+      );
+    }
     _assignRefreshFutures();
   }
 
@@ -670,9 +688,26 @@ class _NgoHomePageState extends State<NgoHomePage> {
     if (oldWidget.refreshSignal != widget.refreshSignal) _refresh();
   }
 
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _refresh();
+    } else {
+      _claimReader.invalidate();
+    }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _authSubscription?.cancel();
+    _claimReader.dispose();
+    super.dispose();
+  }
+
   void _assignRefreshFutures() {
     _listings = _listingsGate.run(_loadListings);
-    _claims = _claimsGate.run(_loadClaims);
+    _claimsRefresh = _claimReader.refresh();
     _trustedRouting = _routingGate.run(_loadTrustedRouting);
     _ngoName = _nameGate.run(_loadNgoName);
   }
@@ -684,7 +719,7 @@ class _NgoHomePageState extends State<NgoHomePage> {
 
   Future<void> _refreshAndWait() async {
     _refresh();
-    await Future.wait([_listings, _claims, _trustedRouting, _ngoName]);
+    await Future.wait([_listings, _claimsRefresh, _trustedRouting, _ngoName]);
   }
 
   Future<String?> _loadNgoName() async {
@@ -704,18 +739,6 @@ class _NgoHomePageState extends State<NgoHomePage> {
     if (rows is! List) {
       throw const FormatException(
         'Listing discovery returned an invalid response.',
-      );
-    }
-    return rows.map((r) => Map<String, dynamic>.from(r as Map)).toList();
-  }
-
-  Future<List<Map<String, dynamic>>> _loadClaims() async {
-    final rows = widget.claimsLoader == null
-        ? await _dashboardDb.rpc('get_my_claims')
-        : await widget.claimsLoader!();
-    if (rows is! List) {
-      throw const FormatException(
-        'Claim history returned an invalid response.',
       );
     }
     return rows.map((r) => Map<String, dynamic>.from(r as Map)).toList();
@@ -758,35 +781,27 @@ class _NgoHomePageState extends State<NgoHomePage> {
           ),
         ),
         const SizedBox(height: 12),
-        FutureBuilder<List<Map<String, dynamic>>>(
-          future: _claims,
-          builder: (context, c) => FutureBuilder<List<Map<String, dynamic>>>(
+        ListenableBuilder(
+          listenable: _claimReader,
+          builder: (context, _) => FutureBuilder<List<Map<String, dynamic>>>(
             future: _listings,
             builder: (context, l) {
-              if (c.hasError || l.hasError) {
+              if (_claimReader.error != null || l.hasError) {
                 return DashboardErrorCard(
                   message:
-                      'NGO counts require the secure claim-history read RPC and eligible-listing discovery.\n${c.error ?? l.error}',
+                      'NGO counts require the secure claim-history read RPC and eligible-listing discovery.\n${_claimReader.error ?? l.error}',
                   onRetry: _refresh,
                 );
               }
-              if (c.connectionState != ConnectionState.done ||
+              if (_claimReader.loading ||
                   l.connectionState != ConnectionState.done ||
-                  !c.hasData ||
                   !l.hasData) {
                 return const DashboardLoadingCard(height: 116);
               }
-              final active = c.data!
-                  .where((r) => r['claim_status'] == 'ACTIVE')
-                  .length;
-              final pickups = c.data!
-                  .where(
-                    (r) =>
-                        r['task_status'] == 'CONFIRMED' ||
-                        r['task_status'] == 'PLANNED' ||
-                        r['task_status'] == 'DISPATCHED',
-                  )
-                  .length;
+              final active = _claimReader.fresh
+                  ? _claimReader.cards.where((c) => c.isValidActive).length
+                  : 0;
+              final pickups = active;
               return Row(
                 children: [
                   Expanded(

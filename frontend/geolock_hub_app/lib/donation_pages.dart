@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart' show debugPrint, kDebugMode;
@@ -8,6 +9,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:image_picker/image_picker.dart';
 
 import 'async_request_gate.dart';
+import 'claim_card.dart';
+import 'claim_cards_controller.dart';
 import 'location/location_picker_page.dart';
 import 'location/location_result.dart';
 import 'location/road_routing.dart';
@@ -258,7 +261,20 @@ class EligibleListingCard extends StatelessWidget {
 class MyClaimsPage extends StatefulWidget {
   final int refreshSignal;
   final Future<Object?> Function()? claimsLoader;
-  const MyClaimsPage({super.key, this.refreshSignal = 0, this.claimsLoader});
+  final Future<Object?> Function(
+    String operation,
+    String claimId,
+    String? requestId,
+  )?
+  actionRunner;
+  final Widget Function(String claimId)? detailBuilder;
+  const MyClaimsPage({
+    super.key,
+    this.refreshSignal = 0,
+    this.claimsLoader,
+    this.actionRunner,
+    this.detailBuilder,
+  });
   @override
   State<MyClaimsPage> createState() => _MyClaimsPageState();
 }
@@ -1149,61 +1165,104 @@ class _MyReconciliationCasesPageState extends State<MyReconciliationCasesPage> {
   );
 }
 
-class _MyClaimsPageState extends State<MyClaimsPage> {
-  final _claimsGate = AsyncRequestGate();
-  late Future<List<Map<String, dynamic>>> _claims = _claimsGate.run(
-    _loadRequest,
-  );
+class _MyClaimsPageState extends State<MyClaimsPage>
+    with WidgetsBindingObserver {
+  late final ClaimCardsController _reader;
+  StreamSubscription<AuthState>? _authSubscription;
+  ClaimTab _selectedTab = ClaimTab.active;
   bool _busy = false;
 
-  Future<List<Map<String, dynamic>>> _load() => _claimsGate.run(_loadRequest);
-
-  Future<List<Map<String, dynamic>>> _loadRequest() async {
-    final response = widget.claimsLoader == null
-        ? await _db.rpc('get_my_claim_cards')
-        : await widget.claimsLoader!();
-    if (response is! List) {
-      throw const FormatException('Invalid claim history response.');
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _reader = ClaimCardsController(
+      load: () =>
+          widget.claimsLoader?.call() ?? _db.rpc('get_my_claim_cards_v2'),
+      identity: () =>
+          widget.claimsLoader != null ? 'injected' : _db.auth.currentUser?.id,
+    )..addListener(_changed);
+    if (widget.claimsLoader == null) {
+      _authSubscription = _db.auth.onAuthStateChange.listen((_) {
+        _reader.invalidate();
+        unawaited(_reader.refresh());
+      });
     }
-    return response
-        .map((row) => Map<String, dynamic>.from(row as Map))
-        .toList();
+    unawaited(_reader.refresh());
+  }
+
+  void _changed() {
+    if (mounted) setState(() {});
   }
 
   @override
   void didUpdateWidget(covariant MyClaimsPage oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.refreshSignal != widget.refreshSignal) {
-      // Begin the backend read before setState; setState only swaps the Future.
-      final refreshedClaims = _load();
-      setState(() {
-        _claims = refreshedClaims;
-      });
+      unawaited(_reader.refresh());
     }
   }
 
-  Future<void> _run(String claimId, String operation) async {
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      unawaited(_reader.refresh());
+    } else {
+      _reader.invalidate();
+    }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _authSubscription?.cancel();
+    _reader.dispose();
+    super.dispose();
+  }
+
+  bool _allowed(ClaimCard card, String operation) =>
+      _reader.fresh &&
+      _reader.cards.contains(card) &&
+      !_busy &&
+      switch (operation) {
+        'START_PICKUP' => card.canStart,
+        'COMPLETE_PICKUP' => card.canComplete,
+        'CANCEL_CLAIM' => card.canCancel,
+        _ => false,
+      };
+
+  Future<Object?> _callAction(
+    String operation,
+    String claimId, [
+    String? requestId,
+  ]) {
+    if (widget.actionRunner != null) {
+      return widget.actionRunner!(operation, claimId, requestId);
+    }
+    return switch (operation) {
+      'START_PICKUP' => _db.rpc('start_pickup', params: {'p_claim': claimId}),
+      'COMPLETE_PICKUP' => _db.rpc(
+        'complete_pickup',
+        params: {'p_claim': claimId, 'p_handover_confirmed': true},
+      ),
+      'CANCEL_CLAIM' => _db.rpc(
+        'cancel_claim',
+        params: {'p_claim': claimId, 'p_request': requestId},
+      ),
+      _ => throw ArgumentError.value(operation),
+    };
+  }
+
+  Future<void> _run(ClaimCard card, String operation) async {
+    if (!_allowed(card, operation)) return;
     setState(() => _busy = true);
     try {
-      if (operation == 'START_PICKUP') {
-        await _db.rpc('start_pickup', params: {'p_claim': claimId});
-      } else if (operation == 'COMPLETE_PICKUP') {
-        await _db.rpc(
-          'complete_pickup',
-          params: {'p_claim': claimId, 'p_handover_confirmed': true},
+      await _callAction(operation, card.claimId);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('$operation committed by the database.')),
         );
-      } else {
-        throw ArgumentError.value(operation, 'operation', 'Unsupported action');
       }
-      final refreshed = await _load();
-      if (!mounted) return;
-      final refreshedClaims = Future.value(refreshed);
-      setState(() {
-        _claims = refreshedClaims;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('$operation committed by the database.')),
-      );
     } catch (error) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -1211,11 +1270,15 @@ class _MyClaimsPageState extends State<MyClaimsPage> {
         );
       }
     } finally {
-      if (mounted) setState(() => _busy = false);
+      if (mounted) {
+        await _reader.refresh();
+        if (mounted) setState(() => _busy = false);
+      }
     }
   }
 
-  Future<void> _cancelClaim(String claimId) async {
+  Future<void> _cancelClaim(ClaimCard card) async {
+    if (!_allowed(card, 'CANCEL_CLAIM')) return;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -1235,54 +1298,43 @@ class _MyClaimsPageState extends State<MyClaimsPage> {
         ],
       ),
     );
-    if (confirmed != true || !mounted) return;
-    final prefs = await SharedPreferences.getInstance();
-    final key = 'geolock_cancel_claim_${_db.auth.currentUser?.id}_$claimId';
-    final requestId = prefs.getString(key) ?? const Uuid().v4();
-    await prefs.setString(key, requestId);
+    if (confirmed != true || !mounted || !_allowed(card, 'CANCEL_CLAIM')) {
+      return;
+    }
+    // Preserve the persisted request key for safe retries after uncertain outcomes.
     setState(() => _busy = true);
+    String? requestId;
     try {
-      final response = await _db.rpc(
-        'cancel_claim',
-        params: {'p_claim': claimId, 'p_request': requestId},
+      final prefs = await SharedPreferences.getInstance();
+      final userId = widget.claimsLoader != null
+          ? 'injected'
+          : _db.auth.currentUser?.id;
+      final key = 'geolock_cancel_claim_${userId}_${card.claimId}';
+      requestId = prefs.getString(key) ?? const Uuid().v4();
+      await prefs.setString(key, requestId);
+      // A refresh, deadline or account change while preferences loaded invalidates this card.
+      if (!mounted || !_reader.fresh || !_reader.cards.contains(card)) return;
+      final response = await _callAction(
+        'CANCEL_CLAIM',
+        card.claimId,
+        requestId,
       );
-      if (response is! Map) {
+      if (response is! Map || response['outcome'] == null) {
         throw const FormatException('Cancellation outcome missing.');
       }
-      final result = Map<String, dynamic>.from(response);
-      if (result['outcome'] == null) {
-        throw const FormatException('Claim cancellation outcome is missing.');
-      }
-      if (result['outcome'] == 'SUCCESS' || result['outcome'] == 'REJECTED') {
+      if (response['outcome'] == 'SUCCESS' ||
+          response['outcome'] == 'REJECTED') {
         await prefs.remove(key);
       }
-      List<Map<String, dynamic>>? refreshed;
-      Object? refreshError;
-      try {
-        refreshed = await _load();
-      } catch (error) {
-        refreshError = error;
-      }
-      if (!mounted) return;
-      if (refreshed != null) {
-        final refreshedClaims = Future.value(refreshed);
-        setState(() {
-          _claims = refreshedClaims;
-        });
-      } else {
-        final refreshedClaims = _load();
-        setState(() {
-          _claims = refreshedClaims;
-        });
-      }
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Claim ${result['outcome']}: ${result['reason_code'] ?? ''}'
-            '${refreshError == null ? '' : ' (history refresh failed; pull to refresh)'}',
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              "Claim ${response['outcome']}: ${response['reason_code'] ?? ''}",
+            ),
           ),
-        ),
-      );
+        );
+      }
     } catch (error) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -1294,8 +1346,23 @@ class _MyClaimsPageState extends State<MyClaimsPage> {
         );
       }
     } finally {
-      if (mounted) setState(() => _busy = false);
+      if (mounted) {
+        await _reader.refresh();
+        if (mounted) setState(() => _busy = false);
+      }
     }
+  }
+
+  Future<void> _openDetails(ClaimCard card) async {
+    await Navigator.push<void>(
+      context,
+      MaterialPageRoute(
+        builder: (_) =>
+            widget.detailBuilder?.call(card.claimId) ??
+            ClaimPickupDetailPage(claimId: card.claimId),
+      ),
+    );
+    if (mounted) await _reader.refresh();
   }
 
   Future<void> _audit(String claimId) async {
@@ -1351,146 +1418,174 @@ class _MyClaimsPageState extends State<MyClaimsPage> {
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const Text('My Claims')),
-    body: FutureBuilder<List<Map<String, dynamic>>>(
-      future: _claims,
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          return Center(
-            child: Text('Claim history unavailable: ${snapshot.error}'),
-          );
-        }
-        if (snapshot.connectionState != ConnectionState.done ||
-            !snapshot.hasData) {
-          return const Center(child: CircularProgressIndicator());
-        }
-        final rows = snapshot.data!;
-        if (rows.isEmpty) return const Center(child: Text('No claims yet.'));
-        return RefreshIndicator(
-          onRefresh: () async {
-            final refreshedClaims = _load();
-            setState(() {
-              _claims = refreshedClaims;
-            });
-            await refreshedClaims;
-          },
-          child: ListView.builder(
-            itemCount: rows.length,
-            itemBuilder: (context, index) {
-              final row = rows[index];
-              final claimId = row['claim_id'].toString();
-              final status = row['claim_status']?.toString();
-              final task = row['task_status']?.toString();
-              final active = status == 'ACTIVE';
-              return Card(
-                margin: const EdgeInsets.all(10),
-                child: Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          _StoredImageThumbnail(
-                            path: row['primary_image_path']?.toString(),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  row['title']?.toString() ??
-                                      row['source_type'].toString(),
-                                  style: Theme.of(
-                                    context,
-                                  ).textTheme.titleMedium,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                Text(
-                                  '${row['source_type']} · ${row['listing_weight_kg']} kg',
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      Text('Claim · ${friendlyWorkflowStatus(status)}'),
-                      Text(
-                        'Lease · ${friendlyWorkflowStatus(row['lease_status'])}',
-                      ),
-                      Text(
-                        'Lease expiry (database): ${statusTimestampText(context, row['lease_expires_at']) ?? '—'}',
-                      ),
-                      Text(
-                        active && (task == 'CONFIRMED' || task == 'PLANNED')
-                            ? 'Pickup task · Awaiting Start Pickup'
-                            : 'Pickup task · ${friendlyWorkflowStatus(task)}',
-                      ),
-                      if (status == 'RECONCILIATION_REQUIRED' ||
-                          row['lease_status'] == 'RECONCILIATION_REQUIRED')
-                        const Text(
-                          'Needs reconciliation · the listing is not available while handover remains unresolved.',
-                          style: TextStyle(color: Colors.deepOrange),
-                        ),
-                      Wrap(
-                        spacing: 8,
-                        children: [
-                          if (active &&
-                              (task == 'CONFIRMED' || task == 'PLANNED'))
-                            OutlinedButton(
-                              onPressed: _busy
-                                  ? null
-                                  : () => _run(claimId, 'START_PICKUP'),
-                              child: const Text('Start Pickup'),
-                            ),
-                          OutlinedButton.icon(
-                            onPressed: () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) =>
-                                    ClaimPickupDetailPage(claimId: claimId),
-                              ),
-                            ),
-                            icon: const Icon(Icons.location_on_outlined),
-                            label: const Text('Claim details'),
-                          ),
-                          if (active && task == 'DISPATCHED')
-                            FilledButton(
-                              onPressed: _busy
-                                  ? null
-                                  : () => _run(claimId, 'COMPLETE_PICKUP'),
-                              child: const Text('Confirm Handover'),
-                            ),
-                          if (active && task == 'CONFIRMED')
-                            TextButton(
-                              onPressed: _busy
-                                  ? null
-                                  : () => _cancelClaim(claimId),
-                              child: const Text('Cancel Claim'),
-                            ),
-                          TextButton.icon(
-                            onPressed: () => _audit(claimId),
-                            icon: const Icon(Icons.history),
-                            label: const Text('Audit'),
-                          ),
-                        ],
-                      ),
-                      Text(
-                        'Claim ID: $claimId',
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
-                    ],
+  Widget build(BuildContext context) {
+    final rows = _reader.cards
+        .where((c) => _selectedTab == ClaimTab.all || c.tab == _selectedTab)
+        .toList();
+    return Scaffold(
+      appBar: AppBar(title: const Text('My Claims')),
+      body: Column(
+        children: [
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                for (final tab in ClaimTab.values)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                    child: ChoiceChip(
+                      key: ValueKey('claims-tab-${tab.name}'),
+                      label: Text(switch (tab) {
+                        ClaimTab.active => 'Active',
+                        ClaimTab.expired => 'Expired',
+                        ClaimTab.history => 'History',
+                        ClaimTab.all => 'All',
+                      }),
+                      selected: tab == _selectedTab,
+                      onSelected: (_) => setState(() => _selectedTab = tab),
+                    ),
                   ),
-                ),
-              );
-            },
+              ],
+            ),
           ),
-        );
-      },
+          if (_reader.loading) const LinearProgressIndicator(),
+          Expanded(
+            child: RefreshIndicator(
+              onRefresh: _reader.refresh,
+              child: ListView(
+                key: PageStorageKey('claims-${_selectedTab.name}'),
+                physics: const AlwaysScrollableScrollPhysics(),
+                children: [
+                  if (_reader.error != null)
+                    Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: Column(
+                        children: [
+                          const Text(
+                            'Claim history unavailable. Check your connection and refresh. Actions are disabled.',
+                          ),
+                          TextButton(
+                            onPressed: _reader.refresh,
+                            child: const Text('Retry'),
+                          ),
+                        ],
+                      ),
+                    )
+                  else if (!_reader.loading && rows.isEmpty)
+                    Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: Text(
+                        _reader.cards.isEmpty
+                            ? 'No claims yet.'
+                            : 'No ${_selectedTab.name} claims.',
+                      ),
+                    ),
+                  for (final card in rows) _card(card),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _card(ClaimCard card) => Card(
+    key: ValueKey('claim-${card.claimId}'),
+    margin: const EdgeInsets.all(10),
+    child: Padding(
+      padding: const EdgeInsets.all(12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              _StoredImageThumbnail(path: card.primaryImagePath),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      card.title ?? card.sourceType ?? 'Claim',
+                      style: Theme.of(context).textTheme.titleMedium,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    Text('${card.sourceType} · ${card.listingWeightKg} kg'),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          Chip(label: Text(card.badge)),
+          if (!_reader.fresh)
+            const Text('Refresh required before claim actions.'),
+          Text('Claim · ${friendlyWorkflowStatus(card.claimStatus)}'),
+          Text('Lease · ${friendlyWorkflowStatus(card.leaseStatus)}'),
+          Text(
+            'Lease expiry (database): ${statusTimestampText(context, card.raw['lease_expires_at']) ?? '—'}',
+          ),
+          Text(
+            'Pickup task · ${card.isValidActive && card.taskStatus != 'DISPATCHED' ? 'Awaiting Start Pickup' : friendlyWorkflowStatus(card.taskStatus)}',
+          ),
+          if (card.releaseReason != null)
+            Text('Release reason: ${card.releaseReason}'),
+          if (card.displayStatus == ClaimDisplayStatus.reconciliation)
+            const Text(
+              'The listing is not available while handover remains unresolved.',
+            ),
+          if (card.tab == ClaimTab.expired)
+            const Text(
+              'Expiry does not release this claim or reopen its listing. The database controls recovery.',
+            ),
+          if (card.tab == ClaimTab.expired && card.taskStatus == 'DISPATCHED')
+            const Text('Pickup started — custody requires review.'),
+          Wrap(
+            spacing: 8,
+            children: [
+              if (card.claimStatus == 'ACTIVE' &&
+                  const {'CONFIRMED', 'PLANNED'}.contains(card.taskStatus))
+                OutlinedButton(
+                  onPressed: _allowed(card, 'START_PICKUP')
+                      ? () => _run(card, 'START_PICKUP')
+                      : null,
+                  child: const Text('Start Pickup'),
+                ),
+              OutlinedButton.icon(
+                onPressed: () => _openDetails(card),
+                icon: const Icon(Icons.location_on_outlined),
+                label: const Text('Claim details'),
+              ),
+              if (card.claimStatus == 'ACTIVE' &&
+                  card.taskStatus == 'DISPATCHED')
+                FilledButton(
+                  onPressed: _allowed(card, 'COMPLETE_PICKUP')
+                      ? () => _run(card, 'COMPLETE_PICKUP')
+                      : null,
+                  child: const Text('Confirm Handover'),
+                ),
+              if (card.claimStatus == 'ACTIVE' &&
+                  card.taskStatus == 'CONFIRMED')
+                TextButton(
+                  onPressed: _allowed(card, 'CANCEL_CLAIM')
+                      ? () => _cancelClaim(card)
+                      : null,
+                  child: const Text('Cancel Claim'),
+                ),
+              TextButton.icon(
+                onPressed: () => _audit(card.claimId),
+                icon: const Icon(Icons.history),
+                label: const Text('Audit'),
+              ),
+            ],
+          ),
+          Text(
+            'Claim ID: ${card.claimId}',
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+        ],
+      ),
     ),
   );
 }
@@ -1834,11 +1929,47 @@ class ClaimPickupDetailPage extends StatefulWidget {
   State<ClaimPickupDetailPage> createState() => _ClaimPickupDetailPageState();
 }
 
-class _ClaimPickupDetailPageState extends State<ClaimPickupDetailPage> {
+class _ClaimPickupDetailPageState extends State<ClaimPickupDetailPage>
+    with WidgetsBindingObserver {
   late Future<Map<String, dynamic>> _detail = _load();
   bool _reconciliationBusy = false;
+  Timer? _leaseRefresh;
+  int _generation = 0;
+  StreamSubscription<AuthState>? _authSubscription;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _authSubscription = _db.auth.onAuthStateChange.listen(
+      (_) => _refreshDetail(),
+    );
+  }
+
+  void _refreshDetail() {
+    _leaseRefresh?.cancel();
+    if (mounted) setState(() => _detail = _load());
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    _leaseRefresh?.cancel();
+    if (state == AppLifecycleState.resumed) _refreshDetail();
+  }
+
+  @override
+  void dispose() {
+    ++_generation;
+    WidgetsBinding.instance.removeObserver(this);
+    _authSubscription?.cancel();
+    _leaseRefresh?.cancel();
+    super.dispose();
+  }
 
   Future<Map<String, dynamic>> _load() async {
+    final generation = ++_generation;
+    final userId = _db.auth.currentUser?.id;
+    final elapsed = Stopwatch()..start();
     final response = await _db.rpc(
       'get_claimed_listing_detail',
       params: {'p_claim': widget.claimId},
@@ -1872,12 +2003,13 @@ class _ClaimPickupDetailPageState extends State<ClaimPickupDetailPage> {
           ? photos.map((row) => Map<String, dynamic>.from(row as Map)).toList()
           : <Map<String, dynamic>>[];
     }
-    final cards = await _db.rpc('get_my_claim_cards');
+    final cards = await _db.rpc('get_my_claim_cards_v2');
     if (cards is List) {
       for (final row in cards) {
         final card = Map<String, dynamic>.from(row as Map);
         if (card['claim_id']?.toString() == widget.claimId) {
           result['claim_card'] = card;
+          result['presentation'] = ClaimCard.fromJson(card);
           break;
         }
       }
@@ -1901,6 +2033,22 @@ class _ClaimPickupDetailPageState extends State<ClaimPickupDetailPage> {
     }
     result['audit_events'] = auditRows;
     result['audit_error'] = auditError;
+    if (userId != _db.auth.currentUser?.id) {
+      throw StateError('Account changed. Refresh details.');
+    }
+    final presentation = result['presentation'] as ClaimCard?;
+    if (mounted &&
+        generation == _generation &&
+        presentation?.isValidActive == true) {
+      final delay =
+          presentation!.leaseExpiresAt!.difference(presentation.serverNow!) -
+          elapsed.elapsed;
+      _leaseRefresh?.cancel();
+      _leaseRefresh = Timer(
+        delay > Duration.zero ? delay : const Duration(seconds: 1),
+        _refreshDetail,
+      );
+    }
     return result;
   }
 
@@ -1930,7 +2078,6 @@ class _ClaimPickupDetailPageState extends State<ClaimPickupDetailPage> {
       }
       await prefs.remove(key);
       if (!mounted) return;
-      setState(() => _detail = _load());
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -1949,7 +2096,10 @@ class _ClaimPickupDetailPageState extends State<ClaimPickupDetailPage> {
         );
       }
     } finally {
-      if (mounted) setState(() => _reconciliationBusy = false);
+      if (mounted) {
+        _refreshDetail();
+        setState(() => _reconciliationBusy = false);
+      }
     }
   }
 
@@ -1964,7 +2114,8 @@ class _ClaimPickupDetailPageState extends State<ClaimPickupDetailPage> {
             child: Text('Pickup details unavailable: ${snapshot.error}'),
           );
         }
-        if (!snapshot.hasData) {
+        if (snapshot.connectionState != ConnectionState.done ||
+            !snapshot.hasData) {
           return const Center(child: CircularProgressIndicator());
         }
         final data = snapshot.data!;
@@ -1996,9 +2147,11 @@ class _ClaimPickupDetailPageState extends State<ClaimPickupDetailPage> {
         final claimStatus = data['claim_status']?.toString();
         final leaseStatus = data['lease_status']?.toString();
         final taskStatus = card?['task_status']?.toString();
+        final presentation = data['presentation'] as ClaimCard?;
         final isReconciliationRequired =
-            claimStatus == 'RECONCILIATION_REQUIRED' ||
-            leaseStatus == 'RECONCILIATION_REQUIRED';
+            presentation?.displayStatus == ClaimDisplayStatus.reconciliation &&
+            (claimStatus == 'RECONCILIATION_REQUIRED' ||
+                leaseStatus == 'RECONCILIATION_REQUIRED');
         return ListView(
           padding: const EdgeInsets.all(16),
           children: [
@@ -2011,6 +2164,7 @@ class _ClaimPickupDetailPageState extends State<ClaimPickupDetailPage> {
               'My Claim Status',
               style: Theme.of(context).textTheme.titleMedium,
             ),
+            Chip(label: Text(presentation?.badge ?? 'Status Needs Review')),
             _claimDetailRow('Claim', friendlyWorkflowStatus(claimStatus)),
             _claimDetailRow(
               'Listing availability',
@@ -2082,7 +2236,7 @@ class _ClaimPickupDetailPageState extends State<ClaimPickupDetailPage> {
               ),
             GeoStatusTimeline(
               title: 'Claim and Pickup History',
-              currentStatus: friendlyWorkflowStatus(claimStatus),
+              currentStatus: presentation?.badge ?? 'Status Needs Review',
               events: claimEvents,
               errorMessage: data['audit_error']?.toString(),
               emptyMessage: 'No recorded claim or pickup events are available.',
