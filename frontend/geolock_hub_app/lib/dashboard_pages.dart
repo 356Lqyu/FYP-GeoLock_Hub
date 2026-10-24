@@ -13,6 +13,7 @@ import 'donation_status.dart';
 import 'location/road_routing.dart';
 import 'location/location_picker_page.dart';
 import 'location/location_result.dart';
+import 'routing/ngo_routes_page.dart';
 
 const _mint = Color(0xffedfbf7);
 const _green = Color(0xff2f806c);
@@ -1222,8 +1223,9 @@ class NgoPickupsPage extends StatelessWidget {
   final Future<Object?> Function()? claimsLoader;
   const NgoPickupsPage({super.key, this.refreshSignal = 0, this.claimsLoader});
   @override
-  Widget build(BuildContext context) =>
-      MyClaimsPage(refreshSignal: refreshSignal, claimsLoader: claimsLoader);
+  Widget build(BuildContext context) => claimsLoader != null
+      ? MyClaimsPage(refreshSignal: refreshSignal, claimsLoader: claimsLoader)
+      : NgoRoutesPage(refreshSignal: refreshSignal);
 }
 
 class DonorImpactPage extends StatefulWidget {

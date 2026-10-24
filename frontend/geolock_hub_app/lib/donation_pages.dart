@@ -11,6 +11,7 @@ import 'package:image_picker/image_picker.dart';
 import 'async_request_gate.dart';
 import 'claim_card.dart';
 import 'claim_cards_controller.dart';
+import 'routing/ngo_routes_page.dart';
 import 'location/location_picker_page.dart';
 import 'location/location_result.dart';
 import 'location/road_routing.dart';
@@ -1225,8 +1226,10 @@ class _MyClaimsPageState extends State<MyClaimsPage>
       _reader.cards.contains(card) &&
       !_busy &&
       switch (operation) {
-        'START_PICKUP' => card.canStart,
-        'COMPLETE_PICKUP' => card.canComplete,
+        // Injected runners are test transports. Production pickups use the
+        // route-detail screen and its fresh protected backend authorization.
+        'START_PICKUP' => widget.actionRunner != null && card.canStart,
+        'COMPLETE_PICKUP' => widget.actionRunner != null && card.canComplete,
         'CANCEL_CLAIM' => card.canCancel,
         _ => false,
       };
@@ -1240,10 +1243,8 @@ class _MyClaimsPageState extends State<MyClaimsPage>
       return widget.actionRunner!(operation, claimId, requestId);
     }
     return switch (operation) {
-      'START_PICKUP' => _db.rpc('start_pickup', params: {'p_claim': claimId}),
-      'COMPLETE_PICKUP' => _db.rpc(
-        'complete_pickup',
-        params: {'p_claim': claimId, 'p_handover_confirmed': true},
+      'START_PICKUP' || 'COMPLETE_PICKUP' => throw StateError(
+        'Open an authorized route to perform pickup actions.',
       ),
       'CANCEL_CLAIM' => _db.rpc(
         'cancel_claim',
@@ -1423,7 +1424,19 @@ class _MyClaimsPageState extends State<MyClaimsPage>
         .where((c) => _selectedTab == ClaimTab.all || c.tab == _selectedTab)
         .toList();
     return Scaffold(
-      appBar: AppBar(title: const Text('My Claims')),
+      appBar: AppBar(
+        title: const Text('My Claims'),
+        actions: [
+          IconButton(
+            tooltip: 'Pickup routes',
+            icon: const Icon(Icons.route),
+            onPressed: () => Navigator.push<void>(
+              context,
+              MaterialPageRoute(builder: (_) => const NgoRoutesPage()),
+            ),
+          ),
+        ],
+      ),
       body: Column(
         children: [
           SingleChildScrollView(
@@ -1519,6 +1532,11 @@ class _MyClaimsPageState extends State<MyClaimsPage>
             ],
           ),
           Chip(label: Text(card.badge)),
+          if (widget.actionRunner == null &&
+              (card.canStart || card.canComplete))
+            const Text(
+              'Open Pickup routes for database-authorized pickup actions.',
+            ),
           if (!_reader.fresh)
             const Text('Refresh required before claim actions.'),
           Text('Claim · ${friendlyWorkflowStatus(card.claimStatus)}'),

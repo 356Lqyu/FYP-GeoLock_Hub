@@ -5,7 +5,7 @@ import json
 import unittest
 
 from cancel_claim_audit_contract_test import AUDIT_COLUMNS, split_values
-from claim_recovery_reconciliation_audit_contract_test import body, compact
+from claim_recovery_reconciliation_audit_contract_test import body, compact, without_comments
 
 ROOT = Path(__file__).resolve().parents[2]
 SQL = (ROOT / "supabase/migrations/20261027_persisted_donation_lifecycle.sql").read_text()
@@ -16,6 +16,10 @@ class PersistedDonationLifecycleContracts(unittest.TestCase):
         captured = json.loads((ROOT / "supabase/tests/fixtures/persisted_lifecycle_function_headers.json").read_text())
         normalize = lambda text: re.sub(r"\s+", "", text).lower()
         for name, expected in captured["headers"].items():
+            if name == "create_and_validate_donation":
+                # This one identity intentionally removes the two date inputs.
+                expected = expected.replace(
+                    ", p_availability_start timestamp with time zone DEFAULT NULL::timestamp with time zone, p_availability_end timestamp with time zone DEFAULT NULL::timestamp with time zone", "")
             actual = re.search(
                 r"(CREATE OR REPLACE FUNCTION public\." + name +
                 r"\(.*?)(?=AS\s+\$function\$)", SQL, re.I | re.S).group(1)
@@ -43,7 +47,7 @@ class PersistedDonationLifecycleContracts(unittest.TestCase):
         self.assertIn("then 'AVAILABLE' else 'SUBMITTED'", create)
         self.assertLess(create.index("insert into public.donation_items"), create.index("update public.donations"))
         self.assertNotIn("function public.guard_donation_items", SQL)
-        self.assertNotIn("function public.create_donation_with_images", SQL)
+        self.assertIn("p_items,p_pickup_road_node_id", body(SQL, "create_donation_with_images"))
         self.assertNotIn("function public.require_donation_photo_before_commit", SQL)
         validator = body(SQL, "geolock_assert_donation_lifecycle")
         self.assertIn("DONATION_FINALIZATION_REQUIRED", validator)
@@ -134,18 +138,51 @@ class PersistedDonationLifecycleContracts(unittest.TestCase):
         self.assertLess(donor_cancel.index("from public.listings l where"),
                         donor_cancel.index("into v_owner,v_path,v_previous"))
 
-    def test_resolved_reconciliation_replays_only_after_participant_payload_validation(self):
+    def test_reconciliation_preserves_open_case_replay_and_rejects_resolved_cases(self):
         recon = body(SQL, "submit_claim_reconciliation")
         participant = recon.index("RECONCILIATION_PARTICIPANT_ONLY")
         payload = recon.index("v_prior.case_id<>v_case.case_id")
         replay = recon.index("if v_prior.response is not null then return v_prior.response")
         state = recon.index("RECONCILIATION_STATE_MISMATCH")
+        case = recon.index("where c.claim_id=p_claim and c.case_status in ('OPEN','MANUAL_REVIEW') for update")
+        self.assertLess(state, case)
+        self.assertLess(case, participant)
         self.assertLess(participant, payload)
         self.assertLess(payload, replay)
-        self.assertLess(replay, state)
+        self.assertEqual(recon.count("RECONCILIATION_STATE_MISMATCH"), 1)
         self.assertIn("EVIDENCE_ALREADY_SUBMITTED", recon)
         self.assertIn("set response=v_result where request_id=p_request", recon)
         self.assertIn("'reconciliation_status',v_result->>'outcome'", recon)
+
+    def test_road_backfill_preserves_deployed_body_and_claimed_direct_coverage(self):
+        deployed = body((ROOT / "supabase/migrations/20261020_operational_road_node_resolution.sql").read_text(),
+                        "geolock_backfill_road_nodes")
+        old_filter = "d.donation_status in ('SUBMITTED','READY_FOR_PICKUP','HUB_ASSIGNED')"
+        new_filter = ("(d.donation_status in ('SUBMITTED','AVAILABLE','HUB_ASSIGNED') "
+                      "or (d.donation_status='CLAIMED' and d.collection_path='DIRECT_PICKUP'))")
+        self.assertEqual(compact(without_comments(body(SQL, "geolock_backfill_road_nodes"))),
+                         compact(without_comments(deployed.replace(old_filter, new_filter))))
+        # The claim's pickup location is a task snapshot, not a live donation node.
+        claim = compact(body(SQL, "claim_listing"))
+        self.assertIn("values(v_claim,p_listing,v_actor,v_l.pickup_road_node_id,v_l.listing_weight_kg)", claim)
+        backfill = body(SQL, "geolock_backfill_road_nodes")
+        for table in ("pickup_tasks", "pickup_routes", "pickup_route_stops", "active_task_route_assignments"):
+            self.assertNotIn(f"public.{table}", backfill)
+
+    def test_audit_reader_preserves_authorization_and_only_maps_legacy_columns(self):
+        deployed = body((ROOT / "supabase/migrations/20261019_stage1_claim_recovery_and_reconciliation.sql").read_text(),
+                        "get_authorized_audit_events")
+        expected = deployed.replace("a.donation_id=p_entity_id", "a.details->>'donation_id'=p_entity_id::text").replace(
+            "a.listing_id=p_entity_id", "a.details->>'listing_id'=p_entity_id::text")
+        self.assertEqual(compact(body(SQL, "get_authorized_audit_events")), compact(expected))
+
+    def test_expired_listing_recovery_keeps_coordination_for_reconciliation(self):
+        recovery = body(SQL, "recover_expired_claims")
+        expired = recovery.index("or (v_l.listing_expires_at is not null and v_l.listing_expires_at<=clock_timestamp())")
+        self.assertLess(expired, recovery.index("if v_uncertain then"))
+        validator = body(SQL, "geolock_assert_donation_lifecycle")
+        self.assertIn("c.claim_status in ('ACTIVE','RECONCILIATION_REQUIRED')", validator)
+        self.assertIn("CLAIMED_DONATION_COORDINATION_MISMATCH", validator)
 
     def test_backfill_requires_real_claim_lease_task_evidence(self):
         preflight = SQL.split("$preflight$;")[0]
@@ -185,7 +222,9 @@ class PersistedDonationLifecycleContracts(unittest.TestCase):
         for untouched in ("reserve_hub_capacity", "confirm_hub_receipt",
                           "publish_whole_donation_batch", "guard_batch_immutability"):
             self.assertNotRegex(SQL, r"function public\." + untouched + r"\(")
-        self.assertNotIn("grant ", SQL.lower())
+        # Only the replaced creation identity may restore its captured ACL.
+        grants = re.findall(r"grant execute on function public\.([a-z_]+)", SQL, re.I)
+        self.assertEqual(grants, ["create_and_validate_donation"])
         self.assertNotIn("alter policy", SQL.lower())
         self.assertNotIn("disable row level security", SQL.lower())
         for helper, arguments in (

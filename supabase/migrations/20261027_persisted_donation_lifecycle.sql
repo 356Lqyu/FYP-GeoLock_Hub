@@ -11,6 +11,18 @@ lock table public.donations, public.listings, public.donation_claims,
 -- Abort rather than infer physical progress or discard ambiguous claim evidence.
 do $preflight$
 begin
+  if current_user<>'postgres' then raise exception 'MIGRATION_REQUIRES_POSTGRES'; end if;
+  -- Reject unknown overloads rather than leaving a stale callable identity.
+  if to_regprocedure('public.create_and_validate_donation(text,text,text,double precision,double precision,jsonb,text,timestamptz,timestamptz)') is null
+    or (select count(*) from pg_proc where pronamespace='public'::regnamespace
+      and proname='create_and_validate_donation')<>1 then
+    raise exception 'CREATION_RPC_OVERLOAD_REVIEW_REQUIRED';
+  end if;
+  if (select proowner from pg_proc where oid=to_regprocedure(
+    'public.create_and_validate_donation(text,text,text,double precision,double precision,jsonb,text,timestamptz,timestamptz)'))
+    is distinct from 'postgres'::regrole::oid then
+    raise exception 'CREATION_RPC_OWNER_REVIEW_REQUIRED';
+  end if;
   if not exists(select 1 from public.coordination_config where singleton
     and donation_direct_min_kg=10 and geofence_radius_m=20000
     and claim_lease_minutes=360 and hub_reservation_minutes=120) then
@@ -62,6 +74,13 @@ begin
   end if;
 end;
 $preflight$;
+
+-- Identity changes require DROP/CREATE. Preserve the deployed ACL/grant options.
+-- Historical nullable availability columns and existing data remain untouched.
+create temporary table geolock_lifecycle_creation_acl on commit drop as
+select coalesce(proacl,acldefault('f',proowner)) as acl
+from pg_proc where oid=to_regprocedure(
+  'public.create_and_validate_donation(text,text,text,double precision,double precision,jsonb,text,timestamptz,timestamptz)');
 
 -- The existing transition trigger is removed only within this locked transaction;
 -- no concurrent writer can observe the temporary backfill exemption.
@@ -210,7 +229,9 @@ $function$;
 create trigger trg_donation_transition before update on public.donations
 for each row execute function public.enforce_donation_transition();
 
-CREATE OR REPLACE FUNCTION public.create_and_validate_donation(p_title text, p_description text, p_pickup_address text, p_latitude double precision, p_longitude double precision, p_items jsonb, p_pickup_road_node_id text DEFAULT NULL::text, p_availability_start timestamp with time zone DEFAULT NULL::timestamp with time zone, p_availability_end timestamp with time zone DEFAULT NULL::timestamp with time zone)
+-- RESTRICT aborts on any unreviewed tracked dependency; never drop it with CASCADE.
+drop function public.create_and_validate_donation(text,text,text,double precision,double precision,jsonb,text,timestamptz,timestamptz) restrict;
+CREATE OR REPLACE FUNCTION public.create_and_validate_donation(p_title text, p_description text, p_pickup_address text, p_latitude double precision, p_longitude double precision, p_items jsonb, p_pickup_road_node_id text DEFAULT NULL::text)
  RETURNS uuid
  LANGUAGE plpgsql
  SECURITY DEFINER
@@ -248,10 +269,10 @@ begin
   -- inserts. This row is not externally visible until the whole RPC commits.
   insert into public.donations(
     donor_user_id,title,description,pickup_address,latitude,longitude,
-    pickup_road_node_id,availability_start,availability_end,donation_status
+    pickup_road_node_id,donation_status
   ) values(
     v_actor,p_title,p_description,p_pickup_address,p_latitude,p_longitude,
-    p_pickup_road_node_id,null,null,'SUBMITTED'
+    p_pickup_road_node_id,'SUBMITTED'
   ) returning donation_id into v_donation;
 
   for v_item in select value from jsonb_array_elements(p_items) loop
@@ -302,6 +323,136 @@ begin
     jsonb_build_object('validation_passed',true,'weight_kg',v_weight,
       'collection_path',v_path,'threshold_kg',v_threshold),c.config_version
   from public.coordination_config c where c.singleton;
+  return v_donation;
+end;
+$function$;
+
+
+alter function public.create_and_validate_donation(text,text,text,double precision,double precision,jsonb,text) owner to postgres;
+do $creation_acl$
+declare v_grant record; v_role text;
+begin
+  -- Remove privileges introduced by current default ACLs on the new identity.
+  for v_grant in
+    select x.grantee from pg_proc p,
+      lateral aclexplode(coalesce(p.proacl,acldefault('f',p.proowner))) x
+    where p.oid=to_regprocedure('public.create_and_validate_donation(text,text,text,double precision,double precision,jsonb,text)')
+      and x.grantee<>p.proowner
+  loop
+    v_role:=case when v_grant.grantee=0 then 'PUBLIC'
+      else format('%I',pg_get_userbyid(v_grant.grantee)) end;
+    execute format('revoke all on function public.create_and_validate_donation(text,text,text,double precision,double precision,jsonb,text) from %s',v_role);
+  end loop;
+  -- Copy only the old function's EXECUTE grants, preserving each grant option.
+  for v_grant in
+    select x.* from pg_temp.geolock_lifecycle_creation_acl s,
+      lateral aclexplode(s.acl) x
+    where x.grantee<>'postgres'::regrole::oid and x.privilege_type='EXECUTE'
+  loop
+    v_role:=case when v_grant.grantee=0 then 'PUBLIC'
+      else format('%I',pg_get_userbyid(v_grant.grantee)) end;
+    execute format('grant execute on function public.create_and_validate_donation(text,text,text,double precision,double precision,jsonb,text) to %s%s',
+      v_role,case when v_grant.is_grantable then ' with grant option' else '' end);
+  end loop;
+end;
+$creation_acl$;
+
+-- Sole reviewed database caller: keep photo validation, digest, request replay,
+-- Storage checks and metadata transaction unchanged; only remove the NULL dates.
+CREATE OR REPLACE FUNCTION public.create_donation_with_images(p_request uuid, p_title text, p_description text, p_pickup_address text, p_latitude double precision, p_longitude double precision, p_items jsonb, p_pickup_road_node_id text, p_images jsonb)
+ RETURNS uuid
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'pg_catalog', 'public', 'extensions', 'storage', 'pg_temp'
+AS $function$
+declare
+  v_actor uuid:=auth.uid();
+  v_digest text;
+  v_existing public.donation_create_requests%rowtype;
+  v_donation uuid;
+  v_image jsonb;
+  v_order integer:=0;
+  v_path text;
+  v_type text;
+  v_size integer;
+  v_ext text;
+  v_stored_size bigint;
+  v_stored_type text;
+  v_role text;
+begin
+  if v_actor is null then raise exception 'UNAUTHENTICATED'; end if;
+  if p_request is null then raise exception 'REQUEST_ID_REQUIRED'; end if;
+  if nullif(btrim(p_title),'') is null or char_length(btrim(p_title))>80 then
+    raise exception 'INVALID_DONATION_TITLE';
+  end if;
+  if p_description is not null and char_length(p_description)>1000 then
+    raise exception 'DONATION_DESCRIPTION_TOO_LONG';
+  end if;
+  if jsonb_typeof(p_images) is distinct from 'array'
+     or jsonb_array_length(p_images) not between 1 and 3 then
+    raise exception 'ONE_TO_THREE_PHOTOS_REQUIRED';
+  end if;
+  v_digest:=md5(jsonb_build_object(
+    'title',btrim(p_title),'description',p_description,'address',p_pickup_address,
+    'lat',p_latitude,'lon',p_longitude,'items',p_items,'road_node',p_pickup_road_node_id,
+    'images',p_images
+  )::text);
+  insert into public.donation_create_requests(request_id,donor_user_id,request_digest)
+  values(p_request,v_actor,v_digest) on conflict(request_id) do nothing;
+  select * into v_existing from public.donation_create_requests
+  where request_id=p_request for update;
+  if v_existing.donor_user_id<>v_actor or v_existing.request_digest<>v_digest then
+    raise exception 'IDEMPOTENCY_KEY_REUSED_WITH_DIFFERENT_PAYLOAD';
+  end if;
+  if v_existing.donation_id is not null then return v_existing.donation_id; end if;
+
+  for v_image in select value from jsonb_array_elements(p_images) loop
+    v_order:=v_order+1;
+    v_path:=v_image->>'storage_path';
+    v_type:=v_image->>'content_type';
+    v_size:=nullif(v_image->>'size_bytes','')::integer;
+    v_ext:=lower(split_part(v_path,'.',array_length(string_to_array(v_path,'.'),1)));
+    if v_path !~ ('^'||v_actor::text||'/pending/'||p_request::text||'/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}[.](jpg|jpeg|png|webp)$')
+       or v_size is null or v_size not between 1 and 5242880
+       or v_type not in ('image/jpeg','image/png','image/webp')
+       or (v_ext in ('jpg','jpeg') and v_type<>'image/jpeg')
+       or (v_ext='png' and v_type<>'image/png')
+       or (v_ext='webp' and v_type<>'image/webp') then
+      raise exception 'INVALID_DONATION_IMAGE_%',v_order;
+    end if;
+    select nullif(o.metadata->>'size','')::bigint,o.metadata->>'mimetype'
+      into v_stored_size,v_stored_type
+    from storage.objects o
+    where o.bucket_id='geolock-donation-images' and o.name=v_path;
+    if not found or v_stored_size is null or v_stored_size<>v_size
+       or v_stored_type<>v_type then
+      raise exception 'STAGED_DONATION_IMAGE_MISSING_OR_MISMATCHED_%',v_order;
+    end if;
+  end loop;
+
+  v_donation:=public.create_and_validate_donation(
+    p_title,p_description,p_pickup_address,p_latitude,p_longitude,
+    p_items,p_pickup_road_node_id
+  );
+  v_order:=0;
+  for v_image in select value from jsonb_array_elements(p_images) loop
+    v_order:=v_order+1;
+    insert into public.donation_images(
+      donation_id,owner_user_id,storage_path,content_type,size_bytes,is_primary,display_order
+    ) values(
+      v_donation,v_actor,v_image->>'storage_path',v_image->>'content_type',
+      (v_image->>'size_bytes')::integer,v_order=1,v_order::smallint
+    );
+  end loop;
+  update public.donation_create_requests set donation_id=v_donation
+  where request_id=p_request;
+  select role into v_role from public.user_profiles where user_id=v_actor;
+  insert into public.audit_events(actor_user_id,actor_role,entity_type,entity_id,event_type,
+    requested_state,resulting_state,outcome,details,configuration_version)
+  values(v_actor,v_role,'DONATION',v_donation,'DONATION_PHOTOS_ATTACHED',
+    'ONE_TO_THREE_PHOTOS','ONE_TO_THREE_PHOTOS','SUCCESS',
+    jsonb_build_object('request_id',p_request,'photo_count',v_order),
+    (select config_version from public.coordination_config where singleton));
   return v_donation;
 end;
 $function$;
@@ -731,7 +882,10 @@ begin
     from public.donations d2
     left join lateral public.geolock_resolve_road_node(d2.latitude, d2.longitude) r2 on true
    where d.donation_id = d2.donation_id
-     and d.donation_status in ('SUBMITTED','AVAILABLE','HUB_ASSIGNED')
+     -- READY_FOR_PICKUP previously included claimed direct donations. Tasks
+     -- retain their listing-node snapshot; do not rewrite tasks or route stops.
+     and (d.donation_status in ('SUBMITTED','AVAILABLE','HUB_ASSIGNED')
+       or (d.donation_status='CLAIMED' and d.collection_path='DIRECT_PICKUP'))
      and d.pickup_road_node_id is distinct from r2.node_id;
   get diagnostics v_donations = row_count;
 
@@ -1135,7 +1289,7 @@ declare
   v_le public.claim_leases%rowtype; v_t public.pickup_tasks%rowtype;
   v_d public.donations%rowtype; v_counterpart uuid; v_allowed boolean := false;
   v_prior public.claim_reconciliation_evidence%rowtype; v_values integer; v_true integer;
-  v_result jsonb; v_cfg text; v_did uuid;
+  v_result jsonb; v_cfg text; v_did uuid; v_batch_states text[];
 begin
   if v_actor is null then raise exception 'UNAUTHENTICATED'; end if;
   if p_claim is null or p_request is null or p_handover_confirmed is null then
@@ -1149,9 +1303,14 @@ begin
   if not found then raise exception 'LISTING_NOT_FOUND'; end if;
   select t.* into v_t from public.pickup_tasks t where t.claim_id=p_claim for update;
   if not found then raise exception 'PICKUP_TASK_NOT_FOUND'; end if;
+  if v_c.claim_status<>'RECONCILIATION_REQUIRED'
+     or v_le.lease_status<>'RECONCILIATION_REQUIRED'
+     or v_l.listing_status<>'CLAIMED' then
+    raise exception 'RECONCILIATION_STATE_MISMATCH';
+  end if;
   select p.role into v_role from public.user_profiles p where p.user_id=v_actor;
   select * into v_case from public.claim_reconciliation_cases c
-    where c.claim_id=p_claim for update;
+    where c.claim_id=p_claim and c.case_status in ('OPEN','MANUAL_REVIEW') for update;
   if not found then raise exception 'RECONCILIATION_NOT_OPEN'; end if;
 
   if v_actor=v_c.ngo_user_id and v_role='NGO' then v_allowed:=true; end if;
@@ -1184,14 +1343,6 @@ begin
     end if;
     if v_prior.response is not null then return v_prior.response; end if;
   else
-  if v_c.claim_status<>'RECONCILIATION_REQUIRED'
-     or v_le.lease_status<>'RECONCILIATION_REQUIRED'
-     or v_l.listing_status<>'CLAIMED' then
-    raise exception 'RECONCILIATION_STATE_MISMATCH';
-  end if;
-    if v_case.case_status not in ('OPEN','MANUAL_REVIEW') then
-      raise exception 'RECONCILIATION_NOT_OPEN';
-    end if;
     if exists(select 1 from public.claim_reconciliation_evidence e
         where e.case_id=v_case.case_id and e.actor_user_id=v_actor) then
       select c.config_version into v_cfg from public.coordination_config c where c.singleton;
@@ -1211,22 +1362,27 @@ begin
       values(p_request,v_case.case_id,v_actor,p_handover_confirmed);
   end if;
 
-  if v_c.claim_status<>'RECONCILIATION_REQUIRED'
-     or v_le.lease_status<>'RECONCILIATION_REQUIRED'
-     or v_l.listing_status<>'CLAIMED' then
-    raise exception 'RECONCILIATION_STATE_MISMATCH';
-  end if;
-  if v_case.case_status not in ('OPEN','MANUAL_REVIEW') then
-    raise exception 'RECONCILIATION_NOT_OPEN';
-  end if;
   -- Lock and validate the complete immutable member set before finalizing evidence.
   if not public.geolock_lock_listing_donations(v_l.listing_id,
     array['CLAIMED','PICKUP_IN_PROGRESS','COLLECTED']) then
     raise exception 'RECONCILIATION_DONATION_SET_REQUIRES_REVIEW';
   end if;
+  -- The complete immutable member set is locked above. A partially progressed
+  -- batch is inconsistent custody, even if both participants report handover.
+  if v_l.source_type='HUB_BATCH' then
+    select array_agg(distinct d.donation_status order by d.donation_status)
+      into v_batch_states
+    from public.hub_batch_members m join public.donations d using(donation_id)
+    where m.batch_id=v_l.batch_id and m.membership_status='ACTIVE';
+  end if;
   select count(*),count(*) filter(where e.handover_confirmed)
     into v_values,v_true from public.claim_reconciliation_evidence e where e.case_id=v_case.case_id;
-  if v_values<2 then
+  if cardinality(v_batch_states)>1 then
+    update public.claim_reconciliation_cases set case_status='MANUAL_REVIEW',
+      resolution_reason='MIXED_BATCH_DONATION_STATES' where case_id=v_case.case_id;
+    v_result:=jsonb_build_object('outcome','RECONCILIATION_REQUIRED','case_id',v_case.case_id,
+      'reason_code','MIXED_BATCH_DONATION_STATES');
+  elsif v_values<2 then
     v_result:=jsonb_build_object('outcome','AWAITING_COUNTERPART','case_id',v_case.case_id,
       'reason_code','SECOND_PARTY_CONFIRMATION_REQUIRED');
   elsif v_true not in (0,2) then
@@ -1322,7 +1478,8 @@ begin
     'geolock-stage1-2026-10-19',v_cfg,jsonb_build_object('donation_id',v_l.donation_id,
         'listing_id',v_l.listing_id,'case_id',v_case.case_id,
       'handover_confirmed',p_handover_confirmed,
-      'reconciliation_status',v_result->>'outcome'));
+      'reconciliation_status',v_result->>'outcome',
+      'batch_donation_states',to_jsonb(v_batch_states)));
   return v_result;
 end;
 $function$;
@@ -1343,21 +1500,17 @@ begin
       where l.donation_id=d.donation_id and l.listing_id=p_entity_id)));
   elsif v_role='NGO' then
     v_allowed:=exists(select 1 from public.donation_claims c join public.listings l using(listing_id)
-      where c.ngo_user_id=v_user and (c.claim_id=p_entity_id or l.listing_id=p_entity_id or l.donation_id=p_entity_id or exists(select 1 from public.hub_batch_members m
-        where m.batch_id=l.batch_id and m.donation_id=p_entity_id and m.membership_status='ACTIVE')));
+      where c.ngo_user_id=v_user and (c.claim_id=p_entity_id or l.listing_id=p_entity_id or l.donation_id=p_entity_id));
   elsif v_role='HUB_ADMIN' then
     v_allowed:=exists(select 1 from public.community_hubs h where h.admin_user_id=v_user
       and (h.hub_id=p_entity_id or exists(select 1 from public.hub_reservations r
       where r.hub_id=h.hub_id and r.donation_id=p_entity_id) or exists(select 1 from public.hub_inventory i
-      where i.hub_id=h.hub_id and i.donation_id=p_entity_id) or exists(select 1 from public.hub_batches b
-      where b.hub_id=h.hub_id and b.batch_id=p_entity_id)));
+      where i.hub_id=h.hub_id and i.donation_id=p_entity_id)));
   end if;
   if not v_allowed then raise exception 'AUDIT_NOT_FOUND_OR_FORBIDDEN'; end if;
   return query select a.* from public.audit_events a
     where (a.entity_id=p_entity_id or a.details->>'donation_id'=p_entity_id::text
-      or a.details->>'listing_id'=p_entity_id::text or a.claim_id=p_entity_id
-      or exists(select 1 from public.donation_claims c join public.listings l using(listing_id)
-        where c.claim_id=a.claim_id and (l.donation_id=p_entity_id or l.listing_id=p_entity_id)))
+      or a.details->>'listing_id'=p_entity_id::text or a.claim_id=p_entity_id)
       and (v_role<>'NGO' or a.event_type<>'DONOR_PRIVATE_DATA')
     order by a.occurred_at;
 end;
@@ -1470,8 +1623,8 @@ begin
     'status',d.donation_status,'donation_status',d.donation_status,
     'collection_path',d.collection_path,'total_weight_kg',d.total_weight_kg,
     'pickup_address',d.pickup_address,'latitude',d.latitude,'longitude',d.longitude,
-    'created_at',d.created_at,'updated_at',d.updated_at,
     'availability_start',d.availability_start,'availability_end',d.availability_end,
+    'created_at',d.created_at,'updated_at',d.updated_at,
     'listing_status',l.listing_status,
     'road_node_status',case when l.listing_id is null then null
       when l.pickup_road_node_id is null then case when public.geolock_active_road_snapshot() is null then 'PENDING_NODE' else 'NOT_ROUTABLE' end else 'READY' end,
@@ -1532,7 +1685,7 @@ begin
   else
     select b.* into v_b from public.hub_batches b join public.hub_batch_members m using(batch_id)
       where m.donation_id=p_donation and m.membership_status='ACTIVE';
-    if not found or v_b.batch_status<>case when v_d.donation_status='COLLECTED' then 'COLLECTED' else 'PUBLISHED' end
+    if not found or v_b.batch_status<>(case when v_d.donation_status='COLLECTED' then 'COLLECTED' else 'PUBLISHED' end)
       or (select count(*) from public.hub_batch_members m
         where m.batch_id=v_b.batch_id and m.membership_status='ACTIVE')<>v_b.batch_donation_count
       or exists(select 1 from public.hub_batch_members m join public.donations d using(donation_id)
@@ -1604,4 +1757,6 @@ begin
 end;
 $validate$;
 set constraints all immediate;
+-- Delivered only after successful COMMIT, so PostgREST sees the single new identity.
+notify pgrst,'reload schema';
 commit;

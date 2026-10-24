@@ -159,6 +159,10 @@ Map<String, dynamic> _testListing(String title) => {
 
 Map<String, dynamic> _testClaim() => {
   'claim_id': 'claim-1',
+  'listing_id': 'listing-1',
+  'server_now': '2026-10-22T01:00:00Z',
+  'lease_is_expired': false,
+  'lease_recovery_pending': false,
   'claim_status': 'ACTIVE',
   'claimed_at': '2026-10-22T01:00:00Z',
   'lease_id': 'lease-1',
@@ -313,6 +317,10 @@ void main() {
         return <Map<String, dynamic>>[
           {
             'claim_id': 'claim-1',
+            'listing_id': 'listing-1',
+            'server_now': '2026-10-22T01:00:00Z',
+            'lease_is_expired': false,
+            'lease_recovery_pending': false,
             'claim_status': 'ACTIVE',
             'claimed_at': '2026-10-22T01:00:00Z',
             'lease_id': 'lease-1',

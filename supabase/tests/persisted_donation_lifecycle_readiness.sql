@@ -1,6 +1,8 @@
 -- SELECT-only. Isolated DEV rcgyuwiidqvrgbxswhqj only.
 -- Pre-deployment inspection: run through a connection already verified as DEV.
 -- This file neither invokes lifecycle RPCs nor takes row locks.
+-- The required nine-argument identity below is PRE-deployment only. This revision
+-- replaces it with the seven-argument identity; see POST-deployment checks below.
 
 with required(signature) as (values
   ('public.create_and_validate_donation(text,text,text,double precision,double precision,jsonb,text,timestamptz,timestamptz)'),
@@ -20,6 +22,21 @@ select r.signature,p.oid is not null as exists,
   p.proconfig,p.proacl,pg_get_function_result(p.oid) as result
 from required r left join pg_proc p on p.oid=to_regprocedure(r.signature)
 order by r.signature;
+
+-- Inspect exact overloads, defaults, owners and ACLs before identity replacement.
+select p.oid::regprocedure as signature,pg_get_function_arguments(p.oid) as arguments,
+  pg_get_userbyid(p.proowner) as owner,p.proacl,p.proconfig
+from pg_proc p where p.pronamespace='public'::regnamespace
+  and p.proname in ('create_and_validate_donation','create_donation_with_images');
+-- DROP RESTRICT will abort on any unreviewed tracked dependency; no CASCADE.
+select pg_describe_object(d.classid,d.objid,d.objsubid) as tracked_dependency,d.deptype
+from pg_depend d where d.refclassid='pg_proc'::regclass and d.refobjid=to_regprocedure(
+  'public.create_and_validate_donation(text,text,text,double precision,double precision,jsonb,text,timestamptz,timestamptz)');
+-- PL/pgSQL string bodies do not necessarily record pg_depend edges.
+select p.oid::regprocedure as text_caller
+from pg_proc p where p.pronamespace='public'::regnamespace
+  and p.proname<>'create_and_validate_donation'
+  and position('public.create_and_validate_donation(' in p.prosrc)>0;
 
 -- New helper names must be absent before first deployment; inspect any collision.
 select p.oid::regprocedure as signature,pg_get_userbyid(p.proowner) as owner,
@@ -100,6 +117,15 @@ where n.nspname='public' and p.proname in (
   'geolock_road_eligible_km','geolock_ngo_listing_road_check');
 
 -- Optional post-deployment SELECT-only verification (no RPC invocation).
+-- Expect exactly one date-free identity; no stale nine-argument callable overload.
+select count(*)=1 and bool_and(p.oid=to_regprocedure(
+  'public.create_and_validate_donation(text,text,text,double precision,double precision,jsonb,text)'))
+  as single_date_free_creation_identity
+from pg_proc p where p.pronamespace='public'::regnamespace
+  and p.proname='create_and_validate_donation';
+select column_name,is_nullable,column_default from information_schema.columns
+where table_schema='public' and table_name='donations'
+  and column_name in ('availability_start','availability_end');
 select donation_status,collection_path,count(*) from public.donations
 group by donation_status,collection_path order by collection_path,donation_status;
 select conname,pg_get_constraintdef(oid) from pg_constraint

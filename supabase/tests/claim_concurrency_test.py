@@ -1,8 +1,9 @@
 """Atomic claim acceptance tests for the isolated GeoLock Hub DEV project.
 
 This script is state-changing. It consumes only dedicated, disposable AVAILABLE
-listings supplied in the local test env file. It requires ten distinct,
-legitimately authenticated and already eligible NGO sessions. No fixture
+listings supplied in the local test env file. The original suite requires ten
+distinct NGO sessions; the Stage 3J runner reuses helpers with exactly two.
+All sessions must be legitimately authenticated and eligible. No fixture
 locations or road-node records are created by this test.
 
 Required local env keys are documented in claim_concurrency_test.env.template.
@@ -34,6 +35,12 @@ CONFIRMATION = "I_CONFIRM_DISPOSABLE_DEV_PROJECT"
 COUNTS = (2, 10)
 EXPECTED_CLAIM_LEASE_SECONDS = 360 * 60
 DELAY_OBSERVATION_TIMEOUT_SECONDS = 20
+PROTECTED_LISTINGS = {
+    '95d6cd51-866b-4eec-8a36-36dc24296aec',  # Retained Stage 3I evidence.
+    '2d06b504-d2dd-4121-8840-c8bf893f8a60',
+    'd7953dd2-7809-4cb4-87f3-52fc3294685b',
+    '16e5b6a1-475d-4c5a-9460-d4834dd5640f',
+}
 
 
 def required(name: str) -> str:
@@ -64,7 +71,7 @@ def project_ref(url: str) -> str:
     return host[:-len(suffix)]
 
 
-def safety_gate() -> tuple[str, str, str, str, list[str], list[str]]:
+def safety_gate(actor_count: int = 10, listing_count: int = 4) -> tuple[str, str, str, str, list[str], list[str]]:
     if required("GEOLOCK_TEST_CONFIRMATION") != CONFIRMATION:
         raise RuntimeError("Refusing to run without isolated disposable DEV confirmation.")
     base_url = required("GEOLOCK_TEST_SUPABASE_URL").rstrip("/")
@@ -83,17 +90,18 @@ def safety_gate() -> tuple[str, str, str, str, list[str], list[str]]:
         raise RuntimeError("Publishable-key variable contains a privileged credential.")
     if service_role == publishable:
         raise RuntimeError("Service-role and publishable credentials must be separate values.")
-    tokens = parse_json_list("GEOLOCK_TEST_NGO_JWT_TOKENS", 10)
-    listing_ids = parse_json_list("GEOLOCK_TEST_LISTING_IDS", 4)
+    tokens = parse_json_list("GEOLOCK_TEST_NGO_JWT_TOKENS", actor_count)
+    listing_ids = parse_json_list("GEOLOCK_TEST_LISTING_IDS", listing_count)
     try:
         [str(uuid.UUID(value)) for value in listing_ids]
     except ValueError:
         raise RuntimeError("Every listing ID must be a UUID.") from None
-    if len(set(listing_ids)) != 4:
-        raise RuntimeError("Provide exactly four distinct dedicated AVAILABLE listing UUIDs.")
-    if len(tokens) < 10:
-        raise RuntimeError("At least ten NGO sessions are required.")
-    return base_url, publishable, service_role, ref, tokens[:10], listing_ids
+    listing_ids = [str(uuid.UUID(value)) for value in listing_ids]
+    if len(listing_ids) != listing_count or len(set(listing_ids)) != listing_count:
+        raise RuntimeError(f"Provide exactly {listing_count} distinct dedicated AVAILABLE listing UUIDs.")
+    if PROTECTED_LISTINGS.intersection(listing_ids):
+        raise RuntimeError("Retained controlled-recovery evidence cannot be a claim test fixture.")
+    return base_url, publishable, service_role, ref, tokens[:actor_count], listing_ids
 
 
 def jwt_subject(token: str) -> str:
@@ -153,10 +161,11 @@ def require_success(status: int, result: object, context: str) -> dict:
 
 
 def assert_fresh_fixtures(base: str, service: str, key: str,
-                          tokens: list[str], listing_ids: list[str]) -> list[str]:
+                          tokens: list[str], listing_ids: list[str],
+                          actor_count: int = 10) -> list[str]:
     subjects = [jwt_subject(token) for token in tokens]
-    if len(set(subjects)) != 10:
-        raise RuntimeError("The ten JWTs must belong to ten distinct NGO users.")
+    if len(subjects) != actor_count or len(set(subjects)) != actor_count:
+        raise RuntimeError(f"Sessions must belong to exactly {actor_count} distinct NGO users.")
 
     cfg = rest_rows(base, service, "coordination_config?select=singleton,claim_lease_minutes&singleton=eq.true")
     if len(cfg) != 1 or cfg[0].get("claim_lease_minutes") != 360:
@@ -185,7 +194,7 @@ def assert_fresh_fixtures(base: str, service: str, key: str,
 
     # Check authorization and database eligibility through the actual discovery
     # RPC. Do not seed verification, locations, or road-node values here.
-    eligibility = {
+    eligibility = {listing: tokens for listing in listing_ids} if actor_count == 2 else {
         listing_ids[0]: tokens[:2],
         listing_ids[1]: tokens[:10],
         listing_ids[2]: tokens[:2],
@@ -315,7 +324,7 @@ def assert_committed_round(base: str, service: str, listing_id: str,
 
 
 def assert_unchanged(original: dict, current: dict) -> None:
-    for key in ("claims", "listings", "requests", "audits", "leases", "tasks"):
+    for key in original:
         if original[key] != current[key]:
             raise RuntimeError(f"Unexpected committed changes detected in {key} after an idempotency replay/mismatch.")
 
@@ -366,7 +375,7 @@ def run_discarded_response_retry(base: str, key: str, service: str, listing_id: 
 
 
 def run_delayed_race(base: str, key: str, service: str, db_url: str,
-                     listing_id: str, tokens: list[str], subjects: list[str]) -> None:
+                     listing_id: str, tokens: list[str], subjects: list[str]) -> dict:
     try:
         import psycopg
     except ImportError:
@@ -382,6 +391,9 @@ def run_delayed_race(base: str, key: str, service: str, db_url: str,
     lock_conn = psycopg.connect(db_url, autocommit=False)
     try:
         with lock_conn.cursor() as cursor:
+            cursor.execute("SET LOCAL lock_timeout = '5s'")
+            cursor.execute("SET LOCAL statement_timeout = '30s'")
+            cursor.execute("SET LOCAL stats_fetch_consistency = 'none'")
             cursor.execute("SELECT pg_backend_pid()")
             holder_pid = cursor.fetchone()[0]
             cursor.execute("SELECT listing_id FROM public.listings WHERE listing_id = %s FOR UPDATE", (listing_id,))
@@ -390,30 +402,42 @@ def run_delayed_race(base: str, key: str, service: str, db_url: str,
         def call(attempt: dict) -> dict:
             return claim_attempt(base, key, listing_id, attempt["token"], attempt["request_id"], barrier)
         observed = False
-        try:
-            with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool:
+            try:
                 futures = [pool.submit(call, attempt) for attempt in attempts]
                 deadline = time.monotonic() + DELAY_OBSERVATION_TIMEOUT_SECONDS
                 while time.monotonic() < deadline:
                     with lock_conn.cursor() as cursor:
+                        # Activity snapshots can be cached for the transaction
+                        # holding our row lock. Refresh only this session's view;
+                        # this does not reset counters or change database rows.
+                        cursor.execute("SELECT pg_stat_clear_snapshot()")
                         cursor.execute(
-                            "SELECT count(DISTINCT a.pid) "
-                            "FROM pg_stat_activity AS a "
-                            "WHERE a.datname = current_database() "
-                            "AND a.wait_event_type = 'Lock' "
-                            "AND a.query ILIKE '%claim_listing%' "
-                            "AND %s = ANY(pg_blocking_pids(a.pid))",
-                            (holder_pid,),
+                            "WITH RECURSIVE waiters AS ("
+                            " SELECT a.pid FROM pg_stat_activity a "
+                            " WHERE a.datname=current_database() AND a.wait_event_type='Lock' "
+                            " AND a.query ILIKE %s), "
+                            " blockers(pid,blocker) AS ("
+                            " SELECT pid,unnest(pg_blocking_pids(pid)) FROM waiters "
+                            " UNION SELECT b.pid,unnest(pg_blocking_pids(b.blocker)) FROM blockers b) "
+                            " SELECT count(DISTINCT pid) FROM blockers WHERE blocker=%s",
+                            ('%claim_listing%', holder_pid),
                         )
                         count = cursor.fetchone()[0]
-                    if count >= 2:
+                    if count > 2:
+                        raise RuntimeError("Unexpected competing claim waiters; stop and inspect committed state.")
+                    if count == 2:
                         observed = True
                         break
                     time.sleep(0.2)
-        finally:
-            # Release the blocker before executor shutdown/result collection so
-            # an inconclusive observation cannot strand requests behind a lock.
-            lock_conn.commit()
+            finally:
+                # __exit__ waits for worker threads. Unlock INSIDE the pool's
+                # scope, including observation/submit failures, before it waits.
+                # This connection only reads/locks: rollback releases its locks.
+                try:
+                    lock_conn.rollback()
+                finally:
+                    lock_conn.close()
         responses = [future.result(timeout=90) for future in futures]
         if not observed:
             raise RuntimeError("INCONCLUSIVE: Could not confirm both claim RPC sessions were blocked by this test's lock-holder PID. The requests were released and may have consumed the listing; verify its database state before reuse.")
@@ -423,6 +447,9 @@ def run_delayed_race(base: str, key: str, service: str, db_url: str,
             lock_conn.close()
     assert_committed_round(base, service, listing_id, attempts, responses, subjects[:2])
     print("PASS delayed concurrency: both claim RPC sessions were confirmed blocked by this test's lock-holder PID; one committed winner verified.")
+    return {'holder_pid': holder_pid, 'observed_waiters': count,
+            'method': 'transitive pg_blocking_pids chain to own listing-lock holder',
+            'request_ids': [a['request_id'] for a in attempts]}
 
 
 def main() -> int:

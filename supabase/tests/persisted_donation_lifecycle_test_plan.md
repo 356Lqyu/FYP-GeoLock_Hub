@@ -9,6 +9,11 @@ after approval. Never use the shared project.
 1. Capture function definitions/ACLs and donation/listing/claim/lease/task/batch
    evidence before deployment. Run the SELECT-only readiness file; inspect missing
    signatures, helper-name collisions and ambiguous backfill cases.
+   This revised package intentionally changes only the creation function's identity:
+   the old nine arguments include two donor availability dates; the new seven
+   arguments omit them. Verify there is only the known old overload and review
+   tracked dependencies plus textual callers. DROP RESTRICT aborts on an unexpected
+   tracked dependency. Do not bypass it or use CASCADE.
 2. Pause application writers and wait for running claim/worker transactions to
    finish. Apply 20261027 as postgres in its single explicit transaction. Lock
    acquisition has a five-second limit: retry the whole transaction after resolving
@@ -23,6 +28,8 @@ after approval. Never use the shared project.
 | Direct creation, exactly 10 kg and above | Donation AVAILABLE, listing AVAILABLE, items and 1–3 images committed together; trusted snap <=500 m; pending eligibility hidden |
 | Hub creation below 10 kg | Donation SUBMITTED; no direct listing; donor selects hub; active reservation is 120 minutes |
 | Creation failure after staging/items/images | No donation, item, image metadata, listing, request success or audit success survives |
+| Date-free creation interface | Exactly one seven-argument create_and_validate_donation; old nine-argument identity absent; same uuid result, postgres owner, SECURITY DEFINER/search path and captured EXECUTE/grant options; unchanged nine-argument photo wrapper calls seven arguments |
+| Donor availability removal | No date inputs/pickers/model payload fields; donor detail JSON omits dates; legacy database columns stay nullable and unchanged; listing, lease and reservation expiries remain enforced |
 | Direct claim / same UUID replay / changed payload | One CLAIMED donation/listing, one ACTIVE claim and 360-minute lease, one CONFIRMED task; exact cached replay; changed payload rejected |
 | Hub receipt and batch publication | HUB_ASSIGNED -> AT_HUB -> BATCHED; complete immutable member set; inventory BATCHED and batch PUBLISHED |
 | Hub batch claim | Every active member BATCHED -> CLAIMED in one transaction; no missing/extra member or wrong-hub/missing inventory accepted |
@@ -31,6 +38,7 @@ after approval. Never use the shared project.
 | Route activity, dispatch or expired listing at recovery | No automatic release; RECONCILIATION_REQUIRED; listing remains claimed; donations keep physical-progress state |
 | Reconciliation both false | Safe CONFIRMED/unexpired/no-route case releases all members to the correct path state; unsafe case stays in manual review |
 | Reconciliation both true / conflicting evidence | Valid dispatched handover completes the entire set; conflicting evidence preserves custody and manual review |
+| Mixed-state hub reconciliation | Every combination of CLAIMED/PICKUP_IN_PROGRESS/COLLECTED across members goes to MANUAL_REVIEW with MIXED_BATCH_DONATION_STATES, regardless of participant answers; no donation/inventory/listing/claim/lease changes; evidence, response and audit retain the inconsistent states |
 | Resolved reconciliation replay | Replay each original UUID after resolution, including a lost final response: byte-equivalent recorded response, no extra evidence/mutation; different actor, claim or boolean denied |
 | Claim vs claim / donor cancel | One winner; no partial claim/lease/task/donation writes; request outcomes and audits remain linked |
 | Start vs cancel / expiry vs cancel / complete vs reconciliation | Existing claim -> lease -> listing -> task lock prefix serializes; all members agree with the committed winner; no deadlock, double collection or partial release |
@@ -55,6 +63,19 @@ tests prove source invariants only; they do not establish PostgreSQL compilation
 real lock scheduling, RPC runtime behavior or Storage authorization.
 
 ## Recovery
+
+The Flutter creation page/models were already date-free before this correction:
+they call the unchanged create_donation_with_images RPC with nine photo/request
+arguments, not the old nine-argument internal creation signature. Its body changes
+only the nested call's arity; photo validation, Storage checks, UUID digest/replay
+and metadata writes remain byte-equivalent apart from that call. Local Dart tests
+assert the exact allowed payload keys. External clients calling the old internal
+signature with availability parameters must stop sending them.
+
+All SQL/catalog evidence for this correction comes from the earlier read-only DEV
+capture and local sources. No fresh SQL, migration, RPC or stateful test is executed
+while preparing these corrections. Run the revised readiness file separately
+when read-only SQL execution is authorized.
 
 Before COMMIT any error rolls back the complete migration. After COMMIT do not
 restore old function bodies or relabel CLAIMED rows as READY_FOR_PICKUP while active
