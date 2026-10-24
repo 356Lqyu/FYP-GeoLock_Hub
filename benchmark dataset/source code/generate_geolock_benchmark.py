@@ -1,14 +1,21 @@
 #!/usr/bin/env python3
-"""Generate reusable GeoLock Hub benchmark data, NOT experiment executions.
+"""Generate the reusable GeoLock Hub benchmark dataset (v3.2), NOT experiment executions.
 
-Public inputs: OpenDOSM district population, user-supplied NGO public-reference CSV,
-Geofabrik OSM PBF. Outputs: geographic context, synthetic entities, scenario membership,
-policy-generated labels and frozen directed road distances. No model fitting, E1-E4
-condition outcomes, claim execution, generated pickup tasks or train/test split.
+Public inputs (folder "public dataset"): OpenDOSM district population, the NGO
+reference list and the Geofabrik OSM PBF (via the road cache made by
+extract_osm_python.py). Outputs: real public context (NGOs, OSM hubs, roads),
+synthetic operational records (donors, donations, hub states, vehicles),
+scenario membership, the reference-policy label and frozen directed road distances.
+No model fitting, baseline or experiment outcomes, claims, tasks or train/test split.
 
-The NGO-centred operational sample falls inside Peninsular Malaysia, but does
-NOT cover its entire geography. District sampling labels are EXPLICIT locality
-proxies, not official mapped district boundaries. See generation_manifest.json.
+v3.2 aligns the benchmark rules with the implemented GeoLock Hub backend:
+  * candidate hubs = hubs within the 20 km service radius (straight line) of the donor,
+    as in geolock_donation_hub_routes(); route availability is the directed road path;
+  * hard hub feasibility = item compatibility, capacity, active flag, route available
+    (donor availability windows are not a hub rule in the backend);
+  * every column in every CSV is consumed by a baseline, the system fixture mapping,
+    the reference policy or the dataset dictionary (see DATASET_DICTIONARY.md).
+The study area is the 17 km road-extract window around each of the 11 NGOs.
 """
 import argparse
 import collections
@@ -28,13 +35,19 @@ from scipy.spatial import cKDTree
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent.parent
-INPUTS = ROOT / 'dataset'
+INPUTS = ROOT / 'public dataset'
 OUTPUT = HERE.parent / 'dataset'
 CACHE = HERE.parent / 'road cache'
-VERSION = 'GEOLOCK-BM-v3.1-NGO11-FIXED'
-MATRIX = 'OSM-DIRECTED-v3.0-NGO-REGIONS'
+VERSION = 'GEOLOCK-BM-v3.2'
+MATRIX = 'OSM-DIRECTED-v3.2'
 SEED = 20260915
-HUB_SHORTLIST_SIZE = 8
+# Backend coordination_config: geofence_radius_m = 20000 is also the donor-to-hub
+# search radius used by geolock_donation_hub_routes().
+SERVICE_RADIUS_KM = 20.0
+# Synthetic hub state: stored load up to 95% of capacity so that the capacity rule
+# actually binds for some candidates; reserved load up to 20%, never above remaining.
+HUB_LOAD_FRACTION_MAX = 0.95
+HUB_RESERVED_FRACTION_MAX = 0.20
 ROUTE_SELECTION_SEED_OFFSET = 81029
 LEASE_SELECTION_SEED_OFFSET = 81028
 CATEGORIES = ('clothing', 'books', 'electronics', 'food', 'appliances', 'furniture')
@@ -63,7 +76,7 @@ NGO_DISTRICTS = {
  'NGO006':('Perak','Kinta'),
  'NGO007':('Terengganu','Kemaman'),
  'NGO008':('W.P. Kuala Lumpur','W.P. Kuala Lumpur'),
- 'NGO09':('Negeri Sembilan','Seremban'),
+ 'NGO009':('Negeri Sembilan','Seremban'),
  'NGO010':('Pahang','Kuantan'),
  'NGO011':('Kedah','Kuala Muda'),
 }
@@ -92,10 +105,38 @@ def rows(path):
         yield from csv.DictReader(f)
 
 
+# The published columns of every table. A column is listed only when a baseline,
+# the backend fixture mapping, the reference policy or the provenance of the
+# public data needs it; DATASET_DICTIONARY.md gives the reason for each one.
+# Working values such as remaining hub capacity stay internal to the generator.
+SCHEMA = {
+ 'road_nodes': ['road_node_id','latitude','longitude'],
+ 'road_distance_matrix': ['from_node_id','to_node_id','road_distance_km','travel_time_min','route_available_flag'],
+ 'ngos': ['ngo_id','ngo_name','state','category','status','latitude','longitude','road_node_id','node_snap_distance_m'],
+ 'vehicles': ['vehicle_id','ngo_id','vehicle_type','vehicle_capacity_kg','depot_road_node_id'],
+ 'hubs': ['hub_id','hub_name','latitude','longitude','road_node_id','node_snap_distance_m','osm_type','osm_id','osm_amenity','hub_capacity_kg',
+          'hub_load_kg','hub_reserved_kg','hub_active_flag','accepted_categories'],
+ 'donors': ['donor_id','latitude','longitude','road_node_id'],
+ 'donations': ['donation_id','donor_id','category','weight_kg','availability_start','availability_end',
+               'collection_path','geographic_group_id'],
+ 'donation_hub_candidates': ['donation_id','hub_id','item_compatible_flag','capacity_feasible_flag',
+               'active_feasible_flag','route_available_flag','feasible_flag','road_distance_km',
+               'donation_weight_kg','utilisation_ratio','remaining_capacity_kg','capacity_pressure',
+               'handling_penalty','reference_score','reference_rank','geographic_group_id'],
+ 'listings': ['listing_id','donation_id','pickup_road_node_id','listing_weight_kg','created_at','listing_expires_at'],
+ 'hub_batches': ['batch_id','hub_id','batch_category','batch_weight_kg','batch_item_count','created_at'],
+ 'hub_batch_members': ['batch_id','donation_id'],
+ 'scenarios': ['scenario_id','scenario_type','scenario_profile'],
+ 'scenario_members': ['scenario_id','entity_type','entity_id','scenario_role'],
+ 'claim_initial_states': ['scenario_id','listing_id','ngo_id','input_state','claim_expires_at','replay_at'],
+ 'verification_cases': ['case_id','weight_kg','expected_result'],
+}
+
+
 def write_csv(out,name,data):
     if not data: raise RuntimeError('No records for '+name)
     with (out/(name+'.csv')).open('w',newline='',encoding='utf-8') as f:
-        writer=csv.DictWriter(f,fieldnames=list(data[0]),extrasaction='ignore')
+        writer=csv.DictWriter(f,fieldnames=SCHEMA[name],extrasaction='ignore')
         writer.writeheader();writer.writerows(data)
 
 
@@ -110,17 +151,6 @@ def distance_km(lat,lon,lat2,lon2):
     dy=math.radians(lat2-lat);dx=math.radians(lon2-lon)
     a=math.sin(dy/2)**2+math.cos(math.radians(lat))*math.cos(math.radians(lat2))*math.sin(dx/2)**2
     return 12742*math.asin(min(1,math.sqrt(a)))
-
-
-def operating_overlap(start,end,opening,closing):
-    start,end=dt.datetime.fromisoformat(start),dt.datetime.fromisoformat(end)
-    day=start.date()
-    while day<=end.date():
-        lo=dt.datetime.combine(day,dt.time.fromisoformat(opening))
-        hi=dt.datetime.combine(day,dt.time.fromisoformat(closing))
-        if max(start,lo)<min(end,hi):return True
-        day+=dt.timedelta(days=1)
-    return False
 
 
 def geohash(lat,lon,precision=5):
@@ -147,8 +177,8 @@ def choose_lease_inputs(agents, listings, ngo_lookup, expired_count, active_coun
     eligible = []
     for li in sorted(listings, key=lambda row: row['listing_id']):
         participants = [ag for ag in agents
-                        if ngo_lookup[(ag['ngo_agent_id'], li['listing_id'])][0] is not None
-                        and ngo_lookup[(ag['ngo_agent_id'], li['listing_id'])][0] <= 20]
+                        if ngo_lookup[(ag['ngo_id'], li['listing_id'])][0] is not None
+                        and ngo_lookup[(ag['ngo_id'], li['listing_id'])][0] <= 20]
         if len(participants) >= 2:
             eligible.append((li, participants))
     random.Random(seed + LEASE_SELECTION_SEED_OFFSET).shuffle(eligible)
@@ -159,7 +189,7 @@ def choose_lease_inputs(agents, listings, ngo_lookup, expired_count, active_coun
     for j, (li, participants) in enumerate(eligible[:expired_count + active_count]):
         prior = participants[j % len(participants)]
         replacement = participants[(j+1) % len(participants)]
-        assert prior['ngo_agent_id'] != replacement['ngo_agent_id']
+        assert prior['ngo_id'] != replacement['ngo_id']
         (expired if j < expired_count else active).append((li, prior, replacement))
     return expired, active
 
@@ -171,15 +201,15 @@ def choose_route_plans(agents, listings, vehicles, ngo_lookup, count, seed):
     """
     rng = random.Random(seed + ROUTE_SELECTION_SEED_OFFSET)
     eligible_by_agent = {
-        ag['ngo_agent_id']: sorted(
+        ag['ngo_id']: sorted(
             [li for li in listings
-             if ngo_lookup[(ag['ngo_agent_id'], li['listing_id'])][0] is not None
-             and ngo_lookup[(ag['ngo_agent_id'], li['listing_id'])][0] <= 15],
+             if ngo_lookup[(ag['ngo_id'], li['listing_id'])][0] is not None
+             and ngo_lookup[(ag['ngo_id'], li['listing_id'])][0] <= 15],
             key=lambda li: li['listing_id'])
         for ag in agents
     }
     available_agents = [ag for ag in agents
-                        if len(eligible_by_agent[ag['ngo_agent_id']]) >= 5]
+                        if len(eligible_by_agent[ag['ngo_id']]) >= 5]
     if not available_agents:
         raise ValueError('No NGO with at least five eligible route-listing inputs')
     used_listing_ids = set()
@@ -197,7 +227,7 @@ def choose_route_plans(agents, listings, vehicles, ngo_lookup, count, seed):
         for delta in range(len(available_agents)):
             ai = (cursor + delta) % len(available_agents)
             agent = available_agents[ai]
-            aid = agent['ngo_agent_id']
+            aid = agent['ngo_id']
             unused = [li for li in eligible_by_agent[aid]
                       if li['listing_id'] not in used_listing_ids]
             if len(unused) < 5:
@@ -225,7 +255,7 @@ def choose_route_plans(agents, listings, vehicles, ngo_lookup, count, seed):
         ag, profile, group, ai = selected
         cursor = (ai + 1) % len(available_agents)
         used_listing_ids.update(li['listing_id'] for li in group)
-        fleet = [v for v in vehicles if v['ngo_agent_id'] == ag['ngo_agent_id']]
+        fleet = [v for v in vehicles if v['ngo_id'] == ag['ngo_id']]
         if profile == 'CAPACITY_PRESSURE':
             fleet = [v for v in fleet if v['vehicle_type'] == 'small_car']
         elif profile == 'GEOGRAPHIC_SPREAD':
@@ -321,6 +351,9 @@ def main(a):
         if str(r['status']).upper() not in ('AKTIF','ACTIVE','VERIFIED'):
             raise ValueError('Non-active source NGO row is not admitted: '+r['ngo_id'])
     g=load_network(a.nodes,a.edges)
+    # Donor homes sit on residential-type streets, never on main roads or highways.
+    household_ids=np.loadtxt(a.household_nodes,dtype=np.int64,ndmin=1)
+    g['household']=np.isin(g['ids'],household_ids)
     # Add only OSM amenity-derived candidate hubs, no invented official facilities.
     raw_sites=list(rows(a.osm_hubs))
     sites=[];used_osm=set();bad_site_count=0
@@ -352,59 +385,48 @@ def main(a):
     if len(sites)<4:raise ValueError(f'Only {len(sites)} usable OSM amenity hubs; no synthetic fallback allowed')
     print('Loaded',len(g['ids']),'road nodes and',len(sites),'OSM hub candidates',flush=True)
     tables=collections.OrderedDict()
-    locs=[];locations={};hubs=[];agents=[];vehicles=[];refs=[];donors=[];donations=[]
-    def place(tag,lat,lon,state,district,origin,name='',snap_override=None):
-        admin=(state,district) if tag=='NGO' else administrative(lat,lon)
-        if not admin or not admin[1]:raise RuntimeError('Missing declared district sampling proxy')
-        state,district=admin
+    locs=[];locations={};hubs=[];agents=[];vehicles=[];donors=[];donations=[]
+    def place(tag,lat,lon,origin,snap_override=None):
         snap=snap_override if snap_override is not None else road_snap(g,lat,lon)
-        ix=snap[0] if snap else None
-        item=dict(location_id=f'LOC{len(locs)+1:07d}',location_type=tag,state=state,district=district,
-                  latitude=round(lat,7),longitude=round(lon,7),road_node_id=str(g['ids'][ix]) if ix is not None else '',
-                  route_available_flag=int(ix is not None),node_snap_distance_m=snap[1] if snap else '',
-                  coordinate_origin='SYNTHETIC' if origin.startswith('SYNTHETIC') else 'PUBLIC',
-                  coordinate_source_detail=origin,locality=name,
-                  administrative_assignment='NEAREST_DECLARED_LOCALITY_PROXY',
-                  operational_region=min(ngos,key=lambda n:distance_km(lat,lon,float(n['latitude']),float(n['longitude'])))['ngo_id'])
+        if snap is None:
+            raise RuntimeError(f'{tag} location is not within 500 m of a drivable road node')
+        ix=snap[0]
+        item=dict(location_id=f'LOC{len(locs)+1:07d}',location_type=tag,
+                  latitude=round(lat,7),longitude=round(lon,7),road_node_id=str(g['ids'][ix]),
+                  node_snap_distance_m=snap[1],coordinate_origin=origin)
         locs.append(item);locations[item['location_id']]=item
         return item,ix
+    # NGOs: the real organisations of the public reference list, one benchmark
+    # record each (no separate synthetic "agent" identity).
     for r in ngos:
         lat,lon=float(r['latitude']),float(r['longitude'])
-        normalized_state={'Kuala Lumpur':'W.P. Kuala Lumpur','Putrajaya':'W.P. Putrajaya'}.get(r['state'],r['state'])
-        li,idx=place('NGO',lat,lon,NGO_DISTRICTS[r['ngo_id']][0],NGO_DISTRICTS[r['ngo_id']][1],'PUBLIC_NGO_REFERENCE',r['ngo_name'])
-        if idx is None:raise RuntimeError('NGO outside 500m road snapping: '+r['ngo_id'])
-        refs.append(dict(public_ref_key=r['ngo_id'],organisation_name=r['ngo_name'],state=li['state'],source_state=r['state'],
-            latitude=lat,longitude=lon,category=r.get('category',''),status=r['status'],
-            source_platform='USER_UPLOADED_REFERENCE',coordinate_source='USER_UPLOADED_REFERENCE',
-            registry_verification='NOT_INDEPENDENTLY_VERIFIED',
-            address=r.get('address',''),phone=r.get('phone',''),email=r.get('email',''),website=r.get('website',''),
-            subcategory=r.get('subcategory',''),source_record_id=r['ngo_id'],source_record_type='USER_SUPPLIED_CSV_ROW',
-            source_url=r.get('source_url',''),source_reference='dataset/NGO_references.csv#'+r['ngo_id'],
-            retrieved_date=r.get('retrieved_date',''),verification_level='SUPPLIED_ONLY'))
-        agent_id='AGENT-'+r['ngo_id']
-        agents.append(dict(ngo_agent_id=agent_id,public_ref_key=r['ngo_id'],location_id=li['location_id'],
-            road_node_id=li['road_node_id'],active_flag=1,capability_profile='GENERAL_NONHAZARDOUS_SYNTHETIC',
-            location_freshness_flag=0,location_freshness_status='NOT_INDEPENDENTLY_VERIFIED',
-            benchmark_location_valid_flag=1))
+        li,idx=place('NGO',lat,lon,'PUBLIC')
+        agents.append(dict(ngo_id=r['ngo_id'],ngo_name=r['ngo_name'],state=r['state'],
+            category=r.get('category',''),status=r['status'],location_id=li['location_id'],
+            latitude=li['latitude'],longitude=li['longitude'],node_snap_distance_m=li['node_snap_distance_m'],
+            road_node_id=li['road_node_id']))
         for k,(type_,capacity) in enumerate((('small_car',100),('van',500)),1):
-            vehicles.append(dict(vehicle_id=f'VEH-{r["ngo_id"]}-{k}',ngo_agent_id=agent_id,
-              vehicle_type=type_,vehicle_capacity_kg=capacity,depot_road_node_id=li['road_node_id'],
-              active_flag=1))
+            vehicles.append(dict(vehicle_id=f'VEH-{r["ngo_id"]}-{k}',ngo_id=r['ngo_id'],
+              vehicle_type=type_,vehicle_capacity_kg=capacity,depot_road_node_id=li['road_node_id']))
     hub_idx={};hub_by={}
     for r,lat,lon,snap in sites:
-        # The locality district assignment is a declared sampling proxy, not a polygon.
-        nearest=min(ngos,key=lambda n:distance_km(lat,lon,float(n['latitude']),float(n['longitude'])))
-        li,idx=place('HUB',lat,lon,'','','PUBLIC_OSM_AMENITY',r.get('name',''),snap)
-        accepted=sorted(randomiser.sample(CATEGORIES,k=randomiser.choice((5,6))))
+        li,idx=place('HUB',lat,lon,'PUBLIC',snap)
         cap=randomiser.randint(50,250)
-        stored=round(cap*randomiser.uniform(0,.8),2)
-        reserve=round(min(cap-stored,cap*randomiser.uniform(0,.2)),2)
-        h=dict(hub_id=f'HUB{len(hubs)+1:04d}',location_id=li['location_id'],osm_type=r['osm_type'],
-           osm_id=r['osm_id'],osm_amenity=r['amenity'],osm_name=r.get('name',''),
+        # Accepted categories: a small hall (< 100 kg) does not take furniture;
+        # half of all hubs also decline one further category.
+        accepted=[c for c in CATEGORIES if not (c=='furniture' and cap<100)]
+        if randomiser.random()<.5:
+            accepted.remove(randomiser.choice(accepted))
+        accepted=sorted(accepted)
+        stored=round(cap*randomiser.uniform(0,HUB_LOAD_FRACTION_MAX),2)
+        reserve=round(min(cap-stored,cap*randomiser.uniform(0,HUB_RESERVED_FRACTION_MAX)),2)
+        h=dict(hub_id=f'HUB{len(hubs)+1:04d}',location_id=li['location_id'],
+           latitude=li['latitude'],longitude=li['longitude'],road_node_id=li['road_node_id'],
+           node_snap_distance_m=li['node_snap_distance_m'],hub_name=r.get('name','').strip() or f"Unnamed {r['amenity'].replace('_',' ')} (OSM {r['osm_type']} {r['osm_id']})",
+           osm_type=r['osm_type'],osm_id=r['osm_id'],osm_amenity=r['amenity'],
            hub_capacity_kg=cap,hub_load_kg=stored,hub_reserved_kg=reserve,
            remaining_capacity_kg=round(cap-stored-reserve,2),hub_active_flag=int(randomiser.random()>.05),
-           operating_start='09:00',operating_end='18:00',accepted_categories='|'.join(accepted),
-           facility_approval='NOT_VERIFIED_DONATION_CENTRE')
+           accepted_categories='|'.join(accepted))
         hubs.append(h);hub_idx[h['hub_id']]=idx;hub_by[h['hub_id']]=h
     # Population-weighted sampling of locality proxy anchors, but only where
     # supplied NGO context supports a catchment. Cyberjaya is kept as a small
@@ -423,7 +445,7 @@ def main(a):
         weight=pop[(st,di)]/bydistrict[(st,di)]*exposure
         ldata.append(dict(locality_id=f'AREA{len(ldata)+1:03d}',locality=name,state=st,district=di,
                     anchor_latitude=lat,anchor_longitude=lon,district_population_persons=pop[(st,di)],
-                    synthetic_proximity_factor=round(exposure,6),sampling_weight=weight))
+                    proximity_factor=round(exposure,6),sampling_weight=weight))
     weights=np.array([x['sampling_weight'] for x in ldata],dtype=float)
     expected=weights/weights.sum()*a.donations
     quotas=np.floor(expected).astype(int)
@@ -443,7 +465,8 @@ def main(a):
         closest=np.argmin(((xy[:,None,:]-anchor_xy[None,:,:])**2).sum(axis=2),axis=1)
         good_area=np.asarray([(locality_anchors[k][2],locality_anchors[k][1])==(area['state'],area['district']) for k in closest])
         near_ngo=np.sqrt(((xy[:,None,:]-ngo_xy[None,:,:])**2).sum(axis=2).min(axis=1))<=25
-        pool=[int(ix) for ix in indices[good_area & near_ngo] if int(ix) not in used_donor_nodes]
+        on_street=g['household'][indices]
+        pool=[int(ix) for ix in indices[good_area & near_ngo & on_street] if int(ix) not in used_donor_nodes]
         if len(pool)<max(20,int(n)):
             raise RuntimeError(f"Not enough geographically assigned road nodes in locality {area['locality']}: {len(pool)} for {int(n)} donations")
         randomiser.shuffle(pool)
@@ -451,10 +474,11 @@ def main(a):
             # Never duplicate a synthetic donor's road vertex anywhere in dataset.
             used_donor_nodes.add(idx)
             lat,lon=map(float,g['coord'][idx])
-            li,_=place('DONOR',lat,lon,area['state'],area['district'],'SYNTHETIC_SELECTION_OF_OSM_ROAD_NODE',area['locality'],(idx,0))
+            li,_=place('DONOR',lat,lon,'SYNTHETIC',(idx,0))
             did=f'DON{len(donations)+1:06d}'
             donor_id=f'DNR{len(donors)+1:06d}'
-            donors.append(dict(donor_id=donor_id,location_id=li['location_id'],state=area['state'],district=area['district']))
+            donors.append(dict(donor_id=donor_id,location_id=li['location_id'],latitude=li['latitude'],
+                               longitude=li['longitude'],road_node_id=li['road_node_id']))
             category=randomiser.choice(CATEGORIES)
             minweight, small_fraction=CATEGORY_WEIGHT[category]
             small=randomiser.random()<small_fraction
@@ -464,18 +488,15 @@ def main(a):
             elif i%337==0:wt=10.0
             elif i%339==0:wt=10.1
             start=dt.datetime(2026,11,2,9)+dt.timedelta(minutes=15*randomiser.randint(0,20))
-            finish=start+dt.timedelta(hours=randomiser.randint(8,72))
+            # Available until an evening hour (17:00-21:00) 0-3 days later, at least 8 hours.
+            finish=dt.datetime.combine(start.date()+dt.timedelta(days=randomiser.randint(0,3)),
+                                       dt.time(randomiser.randint(17,21)))
+            if finish-start<dt.timedelta(hours=8):finish+=dt.timedelta(days=1)
             donations.append(dict(donation_id=did,donor_id=donor_id,category=category,
-                weight_kg=wt,received_at=(start-dt.timedelta(minutes=randomiser.randint(30,180))).isoformat(timespec='minutes'),availability_start=start.isoformat(timespec='minutes'),
+                weight_kg=wt,availability_start=start.isoformat(timespec='minutes'),
                 availability_end=finish.isoformat(timespec='minutes'),
                 collection_path='COMMUNITY_HUB' if wt<10 else 'DIRECT_HOUSEHOLD',
-                valid_input_flag=1,classification_reason='BELOW_THRESHOLD' if wt<10 else 'AT_OR_ABOVE_THRESHOLD',
                 geographic_group_id=geohash(lat,lon)))
-    # Include genuine closed-hours candidate tests by modifying a few existing
-    # 8-hour availability windows, rather than duplicating donor records.
-    for d in [d for d in donations if d['collection_path']=='COMMUNITY_HUB'][:8]:
-        d['availability_start']='2026-11-02T19:00'
-        d['availability_end']='2026-11-03T03:00'
     donor_lookup={n['donor_id']:n for n in donors}
     donor_loc={d['donation_id']:locations[donor_lookup[d['donor_id']]['location_id']] for d in donations}
     roadids={str(n):i for i,n in enumerate(g['ids'])}
@@ -483,7 +504,7 @@ def main(a):
     def save_matrix(fromnode,tonode,km,mins):
         key=(str(fromnode),str(tonode))
         if key not in matrix:
-            matrix[key]=dict(matrix_id=MATRIX,from_node_id=key[0],to_node_id=key[1],
+            matrix[key]=dict(from_node_id=key[0],to_node_id=key[1],
                              road_distance_km=round(km,5) if km is not None else '',
                              travel_time_min=round(mins,5) if mins is not None else '',
                              route_available_flag=int(km is not None))
@@ -518,16 +539,22 @@ def main(a):
         if reverse:fromid,toid=toid,fromid
         save_matrix(fromid,toid,km,mins)
         return km,mins
-    # Build the complete benchmark donation-hub candidate groups from nearest
-    # OSM amenity locations. Infeasible rows are retained; no learned rankings.
+    # Candidate hubs per community-hub donation = every hub within the service
+    # radius (straight line) of the donor, exactly as the backend's
+    # geolock_donation_hub_routes() searches. Infeasible rows are retained so the
+    # hard rules stay auditable; no learned rankings are stored.
     candidates=[];feasible_by=collections.defaultdict(list)
     small=[d for d in donations if d['collection_path']=='COMMUNITY_HUB']
     smallidx={d['donation_id']:roadids[donor_loc[d['donation_id']]['road_node_id']] for d in small}
     nearest_hubs={}
     for d in small:
         loc=donor_loc[d['donation_id']]
-        nearest_hubs[d['donation_id']]=sorted(hubs,key=lambda h:distance_km(float(loc['latitude']),float(loc['longitude']),
-                float(locations[h['location_id']]['latitude']),float(locations[h['location_id']]['longitude'])))[:HUB_SHORTLIST_SIZE]
+        within=[]
+        for h in hubs:
+            hl=locations[h['location_id']]
+            km=distance_km(float(loc['latitude']),float(loc['longitude']),float(hl['latitude']),float(hl['longitude']))
+            if km<=SERVICE_RADIUS_KM:within.append((km,h['hub_id'],h))
+        nearest_hubs[d['donation_id']]=[h for _,_,h in sorted(within,key=lambda x:(x[0],x[1]))]
     grouped=collections.defaultdict(list)
     for d in small:
         for h in nearest_hubs[d['donation_id']]:grouped[h['hub_id']].append(d)
@@ -541,14 +568,12 @@ def main(a):
             weight=float(d['weight_kg']);available=float(h['remaining_capacity_kg'])
             compat=int(d['category'] in h['accepted_categories'].split('|'))
             capacity=int(weight<=available)
-            operating=int(operating_overlap(d['availability_start'],d['availability_end'],h['operating_start'],h['operating_end']))
             active=int(h['hub_active_flag'])
-            valid=int(compat and capacity and operating and active and km is not None)
+            valid=int(compat and capacity and active and km is not None)
             row=dict(donation_id=d['donation_id'],hub_id=hid,item_compatible_flag=compat,
-                capacity_feasible_flag=capacity,operating_feasible_flag=operating,active_feasible_flag=active,
+                capacity_feasible_flag=capacity,active_feasible_flag=active,
                 route_available_flag=int(km is not None),feasible_flag=valid,
                 road_distance_km=round(km,5) if km is not None else '',
-                travel_time_min=round(mins,5) if mins is not None else '',
                 donation_weight_kg=weight,
                 utilisation_ratio=round(float(h['hub_load_kg'])/float(h['hub_capacity_kg']),6),
                 remaining_capacity_kg=available,
@@ -569,12 +594,11 @@ def main(a):
     for d in donations:
         if d['collection_path']!='DIRECT_HOUSEHOLD':continue
         loc=donor_loc[d['donation_id']]
-        listings.append(dict(listing_id=f'LST{len(listings)+1:06d}',source_type='DIRECT_DONATION',source_id=d['donation_id'],
-           pickup_location_id=loc['location_id'],pickup_road_node_id=loc['road_node_id'],
-           listing_weight_kg=d['weight_kg'],initial_state='AVAILABLE',created_at=d['availability_start'],
-           listing_expires_at=d['availability_end'],listing_version=1))
+        listings.append(dict(listing_id=f'LST{len(listings)+1:06d}',donation_id=d['donation_id'],
+           pickup_road_node_id=loc['road_node_id'],listing_weight_kg=d['weight_kg'],
+           created_at=d['availability_start'],listing_expires_at=d['availability_end']))
     donor_by={d['donation_id']:d for d in donations};listing_by={r['listing_id']:r for r in listings}
-    agent_ix={r['ngo_agent_id']:roadids[r['road_node_id']] for r in agents}
+    agent_ix={r['ngo_id']:roadids[r['road_node_id']] for r in agents}
     # Freeze full origin-to-listing NGO distance pairs for neutral E2/E4 inputs.
     ngo_lookup={}
     ngo_donation_lookup={}
@@ -589,15 +613,14 @@ def main(a):
             idx=roadids[li['pickup_road_node_id']]
             ngo_lookup[(ag,li['listing_id'])]=record_direct(gi,idx,arr[idx])
     scenarios=[];s_members=[];batch=[];batch_members=[];claim_states=[]
-    def create(kind,n,note=''):
+    def create(kind,n,profile='STANDARD'):
         sid=f'SCN-{kind}-{n:04d}'
-        scenarios.append(dict(scenario_id=sid,scenario_type=kind,scenario_seed=a.seed+len(scenarios),
-              matrix_id=MATRIX,scenario_version=VERSION,created_at='2026-11-01T00:00',
-              scenario_design_note=note,scenario_profile='STANDARD'))
+        scenarios.append(dict(scenario_id=sid,scenario_type=kind,scenario_profile=profile))
         return sid
     def member(sid,typ,id_,role):
         s_members.append(dict(scenario_id=sid,entity_type=typ,entity_id=id_,scenario_role=role))
-    # No E1 train/test partition here; that belongs to baseline model evaluation.
+    # Ranking scenarios need at least two feasible hubs; a one-candidate group
+    # has nothing to rank and would inflate any ranking comparison.
     recommended=[d for d in small if len(feasible_by[d['donation_id']])>=2]
     randomiser.shuffle(recommended)
     if len(recommended)<a.recommendation_scenarios:
@@ -606,11 +629,12 @@ def main(a):
         sid=create('HUB_RECOMMENDATION',i)
         member(sid,'DONATION',d['donation_id'],'SOURCE_DONATION')
         for c in nearest_hubs[d['donation_id']]:member(sid,'HUB',c['hub_id'],'CANDIDATE_HUB')
-    edge=[d for d in small if not feasible_by[d['donation_id']]]
-    if not edge:raise RuntimeError('Missing no-feasible-hub verification inputs')
-    for i,d in enumerate(edge,1):
-        sid=create('HUB_RECOMMENDATION_VERIFICATION',i,'no feasible hub; must return explicit no recommendation')
-        scenarios[-1]['scenario_profile']='NO_FEASIBLE_HUB'
+    # Boundary cases for the deterministic rules: no feasible hub, or exactly one.
+    edge=[(d,'NO_FEASIBLE_HUB') for d in small if not feasible_by[d['donation_id']]]
+    edge+=[(d,'ONE_FEASIBLE_HUB') for d in small if len(feasible_by[d['donation_id']])==1]
+    if not any(p=='NO_FEASIBLE_HUB' for _,p in edge):raise RuntimeError('Missing no-feasible-hub verification inputs')
+    for i,(d,profile) in enumerate(edge,1):
+        sid=create('HUB_RECOMMENDATION_VERIFICATION',i,profile)
         member(sid,'DONATION',d['donation_id'],'SOURCE_DONATION')
         for h in nearest_hubs[d['donation_id']]:member(sid,'HUB',h['hub_id'],'CANDIDATE_HUB')
     # Benchmark claim scenarios are independent initial listing+agent states;
@@ -620,57 +644,55 @@ def main(a):
     # field labels agents as geofence-eligible; E2 rechecks directed distance.
     nearby_list=[]
     for li in listings:
-        nearby=[ag for ag in agents if ngo_lookup[(ag['ngo_agent_id'],li['listing_id'])][0] is not None and
-                ngo_lookup[(ag['ngo_agent_id'],li['listing_id'])][0]<=15]
+        nearby=[ag for ag in agents if ngo_lookup[(ag['ngo_id'],li['listing_id'])][0] is not None and
+                ngo_lookup[(ag['ngo_id'],li['listing_id'])][0]<=15]
         if nearby:nearby_list.append((li,nearby))
     if not nearby_list:raise RuntimeError('No geographically nearby claimable donation')
     randomiser.shuffle(nearby_list)
     contention=[]
     for li in listings:
-        eligible=[ag for ag in agents if ngo_lookup[(ag['ngo_agent_id'],li['listing_id'])][0] is not None and ngo_lookup[(ag['ngo_agent_id'],li['listing_id'])][0]<=20]
+        eligible=[ag for ag in agents if ngo_lookup[(ag['ngo_id'],li['listing_id'])][0] is not None and ngo_lookup[(ag['ngo_id'],li['listing_id'])][0]<=20]
         if len(eligible)>=2:contention.append((li,eligible))
     randomiser.shuffle(contention)
     if not contention:raise RuntimeError('No two-NGO contention scenario; check NGO cluster and donor catchments')
     for i in range(a.claim_scenarios):
         li,nearby=contention[i%len(contention)]
-        sid=create('CLAIM_COORDINATION',i+1,'two or more eligible identities at 20km; 5/10 workers reuse identities; no claim outcome')
+        sid=create('CLAIM_COORDINATION',i+1)
         member(sid,'LISTING',li['listing_id'],'CLAIMABLE_LISTING')
         for ag in nearby:
-            member(sid,'NGO_AGENT',ag['ngo_agent_id'],'POTENTIAL_REQUESTER_UNASSESSED')
+            member(sid,'NGO',ag['ngo_id'],'POTENTIAL_REQUESTER_UNASSESSED')
     for i,(li,nearby) in enumerate(nearby_list[:100],1):
-        sid=create('GEOFENCE_VERIFICATION',i,'all supplied agents included; runner checks eligible and ineligible attempts')
+        sid=create('GEOFENCE_VERIFICATION',i)
         member(sid,'LISTING',li['listing_id'],'CLAIMABLE_LISTING')
-        for ag in agents:member(sid,'NGO_AGENT',ag['ngo_agent_id'],'POTENTIAL_REQUESTER_UNASSESSED')
+        for ag in agents:member(sid,'NGO',ag['ngo_id'],'POTENTIAL_REQUESTER_UNASSESSED')
     # Independent expired and active replay fixtures have distinct eligible
     # alternative NGO identities but contain no precomputed claim outcome.
     expired_inputs, active_inputs = choose_lease_inputs(
         agents, listings, ngo_lookup, a.lease_scenarios, 25, a.seed)
     for i, (li, prior, replacement) in enumerate(expired_inputs, 1):
-        sid = create('LEASE_RECOVERY', i,
-                     'expired ownership; distinct geographically suitable replacement input; no outcome')
+        sid = create('LEASE_RECOVERY', i)
         member(sid, 'LISTING', li['listing_id'], 'CLAIMABLE_LISTING')
-        member(sid, 'NGO_AGENT', prior['ngo_agent_id'], 'PRIOR_CLAIMANT')
-        member(sid, 'NGO_AGENT', replacement['ngo_agent_id'], 'POTENTIAL_REPLACEMENT_CLAIMANT')
+        member(sid, 'NGO', prior['ngo_id'], 'PRIOR_CLAIMANT')
+        member(sid, 'NGO', replacement['ngo_id'], 'POTENTIAL_REPLACEMENT_CLAIMANT')
         claim_states.append(dict(
-            scenario_id=sid, listing_id=li['listing_id'], ngo_agent_id=prior['ngo_agent_id'],
+            scenario_id=sid, listing_id=li['listing_id'], ngo_id=prior['ngo_id'],
             input_state='EXPIRED',
             claim_expires_at=(dt.datetime.fromisoformat(li['created_at']) + dt.timedelta(hours=6)).isoformat(timespec='minutes'),
-            replay_at=(dt.datetime.fromisoformat(li['created_at']) + dt.timedelta(hours=7)).isoformat(timespec='minutes'),
-            handover_status='NOT_TRANSFERRED'))
+            replay_at=(dt.datetime.fromisoformat(li['created_at']) + dt.timedelta(hours=7)).isoformat(timespec='minutes')))
     for i, (li, prior, replacement) in enumerate(active_inputs, 1):
-        sid = create('LEASE_ACTIVE_VERIFICATION', i,
-                     'active lease; distinct potential requester; no precomputed result')
+        sid = create('LEASE_ACTIVE_VERIFICATION', i)
         member(sid, 'LISTING', li['listing_id'], 'CLAIMABLE_LISTING')
-        member(sid, 'NGO_AGENT', prior['ngo_agent_id'], 'PRIOR_CLAIMANT')
-        member(sid, 'NGO_AGENT', replacement['ngo_agent_id'], 'POTENTIAL_REPLACEMENT_CLAIMANT')
+        member(sid, 'NGO', prior['ngo_id'], 'PRIOR_CLAIMANT')
+        member(sid, 'NGO', replacement['ngo_id'], 'POTENTIAL_REPLACEMENT_CLAIMANT')
         claim_states.append(dict(
-            scenario_id=sid, listing_id=li['listing_id'], ngo_agent_id=prior['ngo_agent_id'],
+            scenario_id=sid, listing_id=li['listing_id'], ngo_id=prior['ngo_id'],
             input_state='ACTIVE',
             claim_expires_at=(dt.datetime.fromisoformat(li['created_at']) + dt.timedelta(hours=6)).isoformat(timespec='minutes'),
-            replay_at=(dt.datetime.fromisoformat(li['created_at']) + dt.timedelta(hours=2)).isoformat(timespec='minutes'),
-            handover_status='NOT_TRANSFERRED'))
-    # E3 reusable group templates: membership_state PROPOSED not ACTIVE, no
-    # published batch/listing and NO precomputed hub/direct condition outcomes.
+            replay_at=(dt.datetime.fromisoformat(li['created_at']) + dt.timedelta(hours=2)).isoformat(timespec='minutes')))
+    # E3 batch templates: each small donation goes to its reference-policy hub;
+    # members are taken in drop-off order (availability_start, then donation_id),
+    # the Algorithm 5 rule (3-5 items, <= 30 kg, one category). No published
+    # listing and no hub/direct outcome is precomputed.
     byhubcat=collections.defaultdict(list)
     for d in small:
         if feasible_by[d['donation_id']]:
@@ -678,7 +700,7 @@ def main(a):
             byhubcat[(h,d['category'])].append(d)
     batches=[];used_d=set()
     for (hid,cat),items in sorted(byhubcat.items()):
-        items=sorted(items,key=lambda d:(d['received_at'],d['donation_id']))
+        items=sorted(items,key=lambda d:(d['availability_start'],d['donation_id']))
         ptr=0
         while ptr+3<=len(items):
             take=[];mass=0.
@@ -691,7 +713,7 @@ def main(a):
             if len(take)<3:continue
             if max(d['availability_start'] for d in take)>=min(d['availability_end'] for d in take):continue
             if mass>float(hub_by[hid]['remaining_capacity_kg']):continue
-            compatible_agents=[ag for ag in agents if ngo_hub_lookup[(ag['ngo_agent_id'],hid)][0] is not None and ngo_hub_lookup[(ag['ngo_agent_id'],hid)][0]<=20 and all(ngo_donation_lookup[(ag['ngo_agent_id'],d['donation_id'])][0] is not None and ngo_donation_lookup[(ag['ngo_agent_id'],d['donation_id'])][0]<=20 for d in take)]
+            compatible_agents=[ag for ag in agents if ngo_hub_lookup[(ag['ngo_id'],hid)][0] is not None and ngo_hub_lookup[(ag['ngo_id'],hid)][0]<=20 and all(ngo_donation_lookup[(ag['ngo_id'],d['donation_id'])][0] is not None and ngo_donation_lookup[(ag['ngo_id'],d['donation_id'])][0]<=20 for d in take)]
             if not compatible_agents:continue
             batches.append((hid,cat,take,round(mass,2)))
             for d in take:used_d.add(d['donation_id'])
@@ -699,24 +721,22 @@ def main(a):
     if len(batches)<a.aggregation_scenarios:
         raise ValueError(f'Only {len(batches)} valid nonoverlapping aggregation templates; need {a.aggregation_scenarios}')
     for i,(hid,cat,group,mass) in enumerate(batches[:a.aggregation_scenarios],1):
-        bid=f'BAT{i:06d}';sid=create('HUB_AGGREGATION',i,'same originals available to both later comparison conditions')
+        bid=f'BAT{i:06d}';sid=create('HUB_AGGREGATION',i)
         hub=hub_by[hid];loc=locations[hub['location_id']]
         created=max(d['availability_start'] for d in group)
         batch.append(dict(batch_id=bid,hub_id=hid,batch_category=cat,batch_weight_kg=mass,
-                 batch_item_count=len(group),pickup_location_id=loc['location_id'],pickup_road_node_id=loc['road_node_id'],
-                 initial_state='CREATED',created_at=created,published_at='',batch_version=1,
-                 ))
+                 batch_item_count=len(group),created_at=created))
         member(sid,'HUB',hid,'CANDIDATE_AGGREGATION_SITE');member(sid,'HUB_BATCH',bid,'UNCOMMITTED_GROUP_TEMPLATE')
-        compatible_agents=[ag for ag in agents if ngo_hub_lookup[(ag['ngo_agent_id'],hid)][0] is not None and ngo_hub_lookup[(ag['ngo_agent_id'],hid)][0]<=20 and all(ngo_donation_lookup[(ag['ngo_agent_id'],d['donation_id'])][0] is not None and ngo_donation_lookup[(ag['ngo_agent_id'],d['donation_id'])][0]<=20 for d in group)]
+        compatible_agents=[ag for ag in agents if ngo_hub_lookup[(ag['ngo_id'],hid)][0] is not None and ngo_hub_lookup[(ag['ngo_id'],hid)][0]<=20 and all(ngo_donation_lookup[(ag['ngo_id'],d['donation_id'])][0] is not None and ngo_donation_lookup[(ag['ngo_id'],d['donation_id'])][0]<=20 for d in group)]
         bestngo=min(compatible_agents,key=lambda x:distance_km(float(loc['latitude']),float(loc['longitude']),
                                      float(locations[x['location_id']]['latitude']),float(locations[x['location_id']]['longitude'])))
-        member(sid,'NGO_AGENT',bestngo['ngo_agent_id'],'SAME_COMPARISON_NGO')
+        member(sid,'NGO',bestngo['ngo_id'],'SAME_COMPARISON_NGO')
         for v in vehicles:
-            if v['ngo_agent_id']==bestngo['ngo_agent_id']:member(sid,'VEHICLE',v['vehicle_id'],'SAME_COMPARISON_FLEET')
+            if v['ngo_id']==bestngo['ngo_id']:member(sid,'VEHICLE',v['vehicle_id'],'SAME_COMPARISON_FLEET')
         for d in group:
-            batch_members.append(dict(batch_id=bid,donation_id=d['donation_id'],added_at=created,membership_state='PROPOSED'))
+            batch_members.append(dict(batch_id=bid,donation_id=d['donation_id']))
             member(sid,'DONATION',d['donation_id'],'ORIGINAL_DONATION')
-        selected=[agent_ix[bestngo['ngo_agent_id']],hub_idx[hid]]+[roadids[donor_loc[d['donation_id']]['road_node_id']] for d in group]
+        selected=[agent_ix[bestngo['ngo_id']],hub_idx[hid]]+[roadids[donor_loc[d['donation_id']]['road_node_id']] for d in group]
         for source in sorted(set(selected)):
             ans=calculate(source,selected)
             for target in set(selected):record_direct(source,target,ans[target])
@@ -727,148 +747,136 @@ def main(a):
     for i, (ag, profile, group, chosen_fleet) in enumerate(route_plans, 1):
         if i % 10 == 1:
             print('route scenario distance matrix', i, '/', a.route_scenarios, flush=True)
-        sid = create('ROUTE_PLANNING', i,
-                     'unique unclaimed listing inputs; baseline creates claims and confirmed tasks')
-        scenarios[-1]['scenario_profile'] = profile
-        member(sid, 'NGO_AGENT', ag['ngo_agent_id'], 'INTENDED_CLAIMANT')
+        sid = create('ROUTE_PLANNING', i, profile)
+        member(sid, 'NGO', ag['ngo_id'], 'INTENDED_CLAIMANT')
         for v in chosen_fleet:
             member(sid, 'VEHICLE', v['vehicle_id'], 'AVAILABLE_FLEET')
-        selected = [agent_ix[ag['ngo_agent_id']]] + [roadids[x['pickup_road_node_id']] for x in group]
+        selected = [agent_ix[ag['ngo_id']]] + [roadids[x['pickup_road_node_id']] for x in group]
         for li in group:
             member(sid, 'LISTING', li['listing_id'], 'INITIAL_AVAILABLE_LISTING')
         for source in sorted(set(selected)):
             a_map = calculate(source, selected)
             for target in set(selected):
                 record_direct(source, target, a_map[target])
+    # RO1 verification fixtures: the expected result is the frozen 10 kg rule
+    # (W < 10 -> community hub; W >= 10 -> direct household; W missing/<= 0 -> invalid).
+    def expected_path(w):
+        if w is None or w<=0:return 'INVALID_WEIGHT'
+        return 'COMMUNITY_HUB' if w<10 else 'DIRECT_HOUSEHOLD'
     verification=[dict(case_id=f'WT-{i+1:02d}',weight_kg=w if w is not None else '',
-       input_valid=int(w is not None and w>0),case_type='CLASSIFICATION_BOUNDARY',
-       note='input state only; required outcome determined in RO1 implementation')
+       expected_result=expected_path(w))
        for i,w in enumerate((None,-1,0,.5,9.9,10,10.1,30))]
-    # Export the referenced road node coordinates as a compact, self-contained
-    # counterpart to the (larger) extraction cache, as required by Appendix A.1.
+    # Export the coordinates of every road node the benchmark references.
     used_node_ids=set(str(x['road_node_id']) for x in locs if x['road_node_id'])
     for src,dst in matrix:
         used_node_ids.add(str(src));used_node_ids.add(str(dst))
     road_nodes=[]
     for node_id in sorted(used_node_ids,key=int):
-        ix=roadids[node_id]
-        lat,lon=map(float,g['coord'][ix])
-        st,di=administrative(lat,lon)
-        road_nodes.append(dict(road_node_id=node_id,latitude=round(lat,8),longitude=round(lon,8),
-          state=st,district_key=di.casefold().replace(' ','_'),network_snapshot_id=MATRIX))
+        lat,lon=map(float,g['coord'][roadids[node_id]])
+        road_nodes.append(dict(road_node_id=node_id,latitude=round(lat,8),longitude=round(lon,8)))
     used_pop=sorted(set((x['state'],x['district']) for x in ldata))
-    tables.update(road_nodes=road_nodes,population_context=[dict(state=st,district=di,population_persons=pop[(st,di)],
-           reference_date='2025-01-01',source_units='THOUSAND_PERSONS_MULTIPLIED_1000',
-           state_key=st.casefold().replace(' ','_'),district_key=di.casefold().replace(' ','_'),
-           population_weight=pop[(st,di)]/sum(pop[k] for k in used_pop)) for st,di in used_pop],
-        locality_sampling=ldata,ngo_references=refs,locations=locs,donors=donors,donations=donations,
-        hubs=hubs,ngo_agents=agents,vehicles=vehicles,donation_hub_candidates=candidates,
-        hub_batches=batch,hub_batch_members=batch_members,listings=listings,
-        scenarios=scenarios,scenario_members=s_members,claim_initial_states=claim_states,
-        road_distance_matrix=list(matrix.values()),verification_cases=verification)
-    # Validation is a benchmark-generation assertion, not a baseline result.
+    tables.update(road_nodes=road_nodes,road_distance_matrix=list(matrix.values()),
+        ngos=agents,vehicles=vehicles,hubs=hubs,donors=donors,donations=donations,
+        donation_hub_candidates=candidates,listings=listings,hub_batches=batch,
+        hub_batch_members=batch_members,scenarios=scenarios,scenario_members=s_members,
+        claim_initial_states=claim_states,verification_cases=verification)
+    assert set(tables)==set(SCHEMA), 'Every published table needs a declared schema'
+    # Generation checks: they validate the benchmark artefact, never a method.
     donation_map={d['donation_id']:d for d in donations}
     location_ids={v['location_id'] for v in locs}
+    node_ids={r['road_node_id'] for r in road_nodes}
+    assert all(r['road_node_id'] in node_ids for r in donors+agents+hubs)
     hub_ids={h['hub_id'] for h in hubs}
-    for h in hubs:
-        assert 0 <= float(h['hub_load_kg'])+float(h['hub_reserved_kg']) <= float(h['hub_capacity_kg'])+1e-6
-        assert float(h['remaining_capacity_kg']) >= -1e-6
-    assert all(r['location_id'] in location_ids for r in donors)
-    assert all(r['location_id'] in location_ids for r in agents)
-    assert all(r['hub_id'] in hub_ids for r in candidates)
-    assert all(r['donation_id'] in donation_map for r in candidates)
+    entity_ids=dict(DONATION=set(donation_map),HUB=hub_ids,NGO={r['ngo_id'] for r in agents},
+                    VEHICLE={v['vehicle_id'] for v in vehicles},LISTING={r['listing_id'] for r in listings},
+                    HUB_BATCH={b['batch_id'] for b in batch})
+    capacity_violations=sum(float(h['hub_load_kg'])+float(h['hub_reserved_kg'])>float(h['hub_capacity_kg'])+1e-6 for h in hubs)
+    assert capacity_violations==0
+    assert all(r['location_id'] in location_ids for r in donors+agents+hubs)
+    assert all(r['hub_id'] in hub_ids and r['donation_id'] in donation_map for r in candidates)
+    assert all(m['entity_id'] in entity_ids[m['entity_type']] for m in s_members)
     assert all(r['donation_id'] in donation_map for r in batch_members)
-    assert len({b['donation_id'] for b in batch_members})==len(batch_members), 'Donation repeated in aggregation templates'
+    duplicate_members=len(batch_members)-len({b['donation_id'] for b in batch_members})
+    assert duplicate_members==0, 'Donation repeated in aggregation templates'
     for b in batch:
-        members=[m for m in batch_members if m['batch_id']==b['batch_id']]
-        assert len(members)==b['batch_item_count']
-        assert round(sum(float(donation_map[m['donation_id']]['weight_kg']) for m in members),2)==b['batch_weight_kg']
-        assert all(donation_map[m['donation_id']]['category']==b['batch_category'] for m in members)
+        members=[donation_map[m['donation_id']] for m in batch_members if m['batch_id']==b['batch_id']]
+        assert len(members)==b['batch_item_count'] and 3<=len(members)<=5
+        assert round(sum(float(d['weight_kg']) for d in members),2)==b['batch_weight_kg']<=30
+        assert all(d['category']==b['batch_category'] for d in members)
+    flags=('item_compatible_flag','capacity_feasible_flag','active_feasible_flag','route_available_flag')
     for r in candidates:
-        if int(r['feasible_flag']):
-            assert all(int(r[f])==1 for f in ('item_compatible_flag','capacity_feasible_flag','operating_feasible_flag','active_feasible_flag','route_available_flag'))
-            assert r['reference_score'] != ''
-        else: assert r['reference_score'] == ''
-    active_states=collections.Counter(c['input_state'] for c in claim_states)
+        assert int(r['feasible_flag'])==int(all(int(r[f]) for f in flags))
+        assert (r['reference_score']!='')==bool(int(r['feasible_flag']))
     route_listing_ids=[m['entity_id'] for m in s_members
                        if m['entity_type']=='LISTING' and m['scenario_id'].startswith('SCN-ROUTE_PLANNING-')]
-    assert len(route_listing_ids) == 5*a.route_scenarios
-    assert len(set(route_listing_ids)) == len(route_listing_ids)
-    replacement_roles={(m['scenario_id'],m['entity_id']) for m in s_members
-                       if m['scenario_role']=='POTENTIAL_REPLACEMENT_CLAIMANT'}
-    assert sum(bool(any(sc==s['scenario_id'] for sc,_ in replacement_roles))
-               for s in scenarios if s['scenario_type']=='LEASE_RECOVERY')==a.lease_scenarios
-    assert len({c['listing_id'] for c in claim_states}) == len(claim_states), 'Lease fixtures overlap between replay cases'
-    validation=dict(ngo_count=len(ngos),mapped_ngo_count=len(agents),
+    assert len(route_listing_ids)==5*a.route_scenarios==len(set(route_listing_ids))
+    assert len({c['listing_id'] for c in claim_states})==len(claim_states), 'Lease fixtures overlap between replay cases'
+    per_donation=collections.Counter(r['donation_id'] for r in candidates)
+    sizes=sorted(per_donation.get(d['donation_id'],0) for d in small)
+    feasible_sizes=sorted(len(feasible_by[d['donation_id']]) for d in small)
+    validation=dict(benchmark_version=VERSION,ngo_count=len(agents),hub_count=len(hubs),
+      community_hub_donations=len(small),direct_household_donations=len(listings),
       scenario_type_counts=dict(collections.Counter(x['scenario_type'] for x in scenarios)),
-      recommendation_feasible_groups=len(feasible_by),
-      no_feasible_small_donations=len(edge),
-      route_unavailable_candidate_pairs=sum(int(not x['route_available_flag']) for x in candidates),
-      claim_input_states=dict(active_states),batch_member_duplicates=0,
-      hub_capacity_violations=0,referential_integrity_passed=True,
-      unwanted_origin_fields_excluded=True,
-      distinct_route_listing_memberships=len(set(route_listing_ids)),
-      lease_recovery_with_replacement=a.lease_scenarios,
-      lease_active_with_replacement=25,route_reused_listing_count=0,
-      route_scenarios=a.route_scenarios,hub_shortlist_size=HUB_SHORTLIST_SIZE)
-    (out/'validation_summary.json').write_text(json.dumps(validation,indent=2)+'\n',encoding='utf8')
+      verification_profiles=dict(collections.Counter(x['scenario_profile'] for x in scenarios
+                                                     if x['scenario_type']=='HUB_RECOMMENDATION_VERIFICATION')),
+      candidate_rows=len(candidates),
+      candidate_hubs_per_donation=dict(min=sizes[0],median=sizes[len(sizes)//2],max=sizes[-1]),
+      feasible_hubs_per_donation=dict(min=feasible_sizes[0],median=feasible_sizes[len(feasible_sizes)//2],max=feasible_sizes[-1]),
+      candidate_rows_failing=dict((f,sum(int(r[f])==0 for r in candidates)) for f in flags),
+      claim_input_states=dict(collections.Counter(c['input_state'] for c in claim_states)),
+      aggregation_templates=len(batch),batch_member_duplicates=duplicate_members,
+      hub_capacity_violations=capacity_violations,referential_integrity_passed=True,
+      route_scenarios=a.route_scenarios,route_listing_reuse=len(route_listing_ids)-len(set(route_listing_ids)))
+    (out/'validation_summary.json').write_text(json.dumps(validation,indent=2)+'\n',encoding='utf-8')
     for name,records in tables.items():write_csv(out,name,records)
-    source_files={'population_district.csv':a.population,'NGO_references.csv':a.ngos,
-                  'malaysia-singapore-brunei.osm.pbf':a.pbf}
-    manifest=dict(benchmark_version=VERSION,seed=a.seed,created_at=dt.datetime.now(dt.timezone.utc).isoformat(),
-        fixture_timezone='Asia/Kuala_Lumpur',fixture_epoch='2026-11-01T00:00',
-        operating_boxes=OPERATING_BOXES,donor_max_straight_line_distance_to_reference_km=30,
-        claim_design=dict(independent_replay_scenarios=a.claim_scenarios,possible_reused_initial_listings=True,minimum_eligible_identities=2,eligibility_design_radius_km=20,workers_are_requests_not_new_organisations=True,
-           lease_recovery_positive_cases=a.lease_scenarios,active_lease_cases=25,
-           distinct_replacement_identity_required=True,lease_selection_seed_offset=LEASE_SELECTION_SEED_OFFSET),
-        route_sampling=dict(route_scenarios=a.route_scenarios,unique_direct_listings_per_scenario=5,
-           unique_across_route_scenarios=True,ngo_assignment='round_robin_skipping_exhausted_catchments',
-           profiles=['NORMAL','CAPACITY_PRESSURE','GEOGRAPHIC_SPREAD','CONNECTIVITY_STRESS'],
-           candidate_distance_km=15,seed_offset=ROUTE_SELECTION_SEED_OFFSET),
-        scenario_seed_semantics='full generator seed 20260915; independently seeded lease and route selection; scenario_seed identifies independent replay, not seed used in sampling',
-        thesis_alignment_status='PENINSULAR_BOUNDARY_WITH_NGO_CATCHMENT_OPERATING_SUBSET',
-        source_provenance={
-            'population_district.csv':dict(source_url='https://data.gov.my/data-catalogue/population_district',retrieved_date=None,licence='CC BY 4.0',retrieval_status='ORIGINAL_RETRIEVAL_DATE_NOT_SUPPLIED'),
-            'malaysia-singapore-brunei.osm.pbf':dict(source_url='https://download.geofabrik.de/asia/malaysia-singapore-brunei.html',retrieved_date=None,licence='ODbL 1.0',retrieval_status='ORIGINAL_RETRIEVAL_DATE_NOT_SUPPLIED'),
-            'NGO_references.csv':dict(source_reference='dataset/NGO_references.csv',source_url=None,retrieved_date=None,licence=None,retrieval_status='UPSTREAM_PROVENANCE_NOT_SUPPLIED')},
-        scenario_type_counts=dict(collections.Counter(s['scenario_type'] for s in scenarios)),
-        hub_shortlisting=dict(candidate_count=HUB_SHORTLIST_SIZE,
-            preselection='lowest Haversine distance, tie by hub ID',
-            final_feasibility='item, capacity, opening overlap, active flag and directed OSM road availability',
-            evaluation_distance='directed frozen OSM road distance; no straight-line fallback',
-            caveat='nearest eight by straight line may exclude some road-near alternatives'),
-        row_counts={name:len(r) for name,r in tables.items()},matrix_id=MATRIX,
-        generated_csv_sha256={name:sha(out/(name+'.csv')) for name in tables},
-        source_sha256={name:sha(path) for name,path in source_files.items()},
-        road_cache_sha256={'nodes':sha(a.nodes),'edges':sha(a.edges),'osm_hub_candidates':sha(a.osm_hubs)},
-        source_statement='User supplied NGO names/status/coordinates; sources and operational capacities not independently verified.',
-        population_filter=dict(date='2025-01-01',sex='both',age='overall',ethnicity='overall',
-                               source_unit='thousands',converted_unit='persons'),
-        geographic_scope=dict(thesis='Peninsular Malaysia',generated_subset='17km OSM windows around all 11 supplied NGO coordinates in Peninsular Malaysia',
-             donor_anchors='locality sampling using NGO/district proxies (not official polygons) and 30km NGO proximity',
-             administrative_source='nearest declared NGO/locality district proxy; NOT an official administrative boundary'),
-        generator_rules=dict(osm_amenities=['community_centre','townhall'],snap_radius_m=500,
-            donation_weight_range_kg=[.5,30],boundary_weights_kg=[9.9,10,10.1],hub_capacity_range_kg=[50,250],
-            hub_load_fraction_max=.8,hub_reserved_fraction_max=.2,batch_min_items=3,batch_max_items=5,
-            batch_max_weight_kg=30,road_network='directed; no straight-line fallback',
-            handling_penalties=HANDLING,scenario_sampling_nearby_radius_km=15,
-            hub_shortlist_count=HUB_SHORTLIST_SIZE,
-            hub_shortlist_preselection='eight nearest by Haversine, tie hub ID; hard checks and ranking use frozen directed roads',
-            route_listing_reuse_across_scenarios=False,
-            reclaim_scenario_requires_distinct_eligible_ngo=True,
-            reference_policy_weights=dict(distance=.45,utilisation=.20,capacity_pressure=.25,handling=.10)),
-        exclusions=['train-validation-test split','baseline algorithm and scores','claim commits','pickup task creation',
-             'routing solutions','experiment worker count','lease duration configuration','route horizon',
-             'actual donor behaviour','real NGO operational capacity'],
-        limitations=['district labels for sampled locations are nearest-locality approximations, not official polygon assignments',
-                     'road extracts cover NGO catchment regions, not the full Peninsular Malaysia road network',
-                     'hub amenity does not certify an approved donation drop-off site',
-                     'eight-Haversine-nearest candidate shortlist is a bounded preselection, not a globally exhaustive road-network ranking',
-                     'NGO reference status is copied from supplied CSV, not independently confirmed',
-                     f'{bad_site_count} OSM amenity candidates could not snap to selected road graph',
-                     'synthetic operational attributes are not observed NGO or donor data'])
+    def source(path,url,licence,retrieved):
+        return dict(file=Path(path).name,source_url=url,licence=licence,retrieved_date=retrieved or None,sha256=sha(path))
+    manifest=dict(benchmark_version=VERSION,seed=a.seed,matrix_id=MATRIX,
+        fixture_timezone='Asia/Kuala_Lumpur',fixture_day='2026-11-02',
+        study_area=dict(description='17 km road-extract window around each of the 11 NGOs, Peninsular Malaysia',
+                        windows_lat_lon=OPERATING_BOXES),
+        public_sources=[
+            source(a.population,'https://data.gov.my/data-catalogue/population_district','CC BY 4.0',a.population_retrieved),
+            source(a.pbf,'https://download.geofabrik.de/asia/malaysia-singapore-brunei.html','ODbL 1.0',a.osm_retrieved),
+            source(a.ngos,a.ngo_source_url,None,a.ngo_retrieved)],
+        population_filter=dict(date='2025-01-01',sex='both',age='overall',ethnicity='overall',unit='persons'),
+        donor_sampling=dict(
+            method=('Each locality gets a donor quota proportional to OpenDOSM district population '
+                    '(shared equally by localities in the same district) x proximity factor '
+                    'exp(-max(d-5,0)/19), d = km to the nearest NGO; each donor home is a distinct road '
+                    'node on a residential, living_street, service or unclassified street, within 5.5 km '
+                    'of the locality anchor and 25 km of an NGO.'),
+            district_population=[dict(state=st,district=di,population_persons=pop[(st,di)]) for st,di in used_pop],
+            localities=[dict(locality=x['locality'],state=x['state'],district=x['district'],
+                             anchor_lat_lon=[x['anchor_latitude'],x['anchor_longitude']],
+                             proximity_factor=x['proximity_factor'],sampling_weight=round(x['sampling_weight'],3),
+                             donors=x['sample_count']) for x in ldata]),
+        road_cache_sha256={'nodes':sha(a.nodes),'edges':sha(a.edges),'osm_hub_candidates':sha(a.osm_hubs),
+                           'household_nodes':sha(a.household_nodes)},
+        rules=dict(
+            road_snap_radius_m=500,road_network='directed OSM drivable graph; no straight-line fallback',
+            hub_sites='OSM amenity=community_centre or townhall, at most 18 per NGO window',
+            donation_weight_kg=[.5,30],boundary_weights_kg=[9.9,10,10.1],collection_threshold_kg=10,
+            availability='opens 09:00-14:00 on the fixture day; closes 17:00-21:00, 0-3 days later, >= 8 h',
+            accepted_categories='all six; no furniture below 100 kg capacity; half of hubs decline one more category',
+            hub_capacity_kg=[50,250],hub_load_fraction_max=HUB_LOAD_FRACTION_MAX,
+            hub_reserved_fraction_max=HUB_RESERVED_FRACTION_MAX,hub_inactive_share=0.05,
+            candidate_hubs=f'all hubs within {SERVICE_RADIUS_KM:g} km straight line of the donor (backend geolock_donation_hub_routes)',
+            hard_feasibility='item compatibility AND capacity AND hub active AND directed donor-to-hub route',
+            reference_policy=dict(weights=dict(distance=.45,utilisation=.20,capacity_pressure=.25,handling=.10),
+                                  handling_penalties=HANDLING,distance='min-max normalised within the feasible group',
+                                  tie_break='lower road distance, then hub_id'),
+            recommendation_scenarios='donations with at least two feasible hubs',
+            batch_templates='reference-policy hub; 3-5 donations, one category, <= 30 kg, ordered by availability_start then donation_id',
+            ngo_listing_eligibility_km=20,route_scenario_listing_distance_km=15,
+            route_profiles=['NORMAL','CAPACITY_PRESSURE','GEOGRAPHIC_SPREAD','CONNECTIVITY_STRESS'],
+            lease_selection_seed_offset=LEASE_SELECTION_SEED_OFFSET,route_selection_seed_offset=ROUTE_SELECTION_SEED_OFFSET),
+        not_in_benchmark=['train/validation/test split','baseline or proposed-method outputs','claim commits',
+                          'pickup tasks','route plans','experiment worker counts and lease duration'],
+        row_counts={name:len(r) for name,r in tables.items()},
+        generated_csv_sha256={name:sha(out/(name+'.csv')) for name in tables})
     (out/'generation_manifest.json').write_text(json.dumps(manifest,indent=2,ensure_ascii=False)+'\n',encoding='utf-8')
-    print(json.dumps(dict(rows=manifest['row_counts'],types=manifest['scenario_type_counts']),indent=2),flush=True)
+    print(json.dumps(dict(rows=manifest['row_counts'],checks=validation),indent=2),flush=True)
 
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__)
@@ -878,6 +886,7 @@ if __name__=='__main__':
     p.add_argument('--nodes',type=Path,default=CACHE/'road_nodes.csv')
     p.add_argument('--edges',type=Path,default=CACHE/'road_edges.csv')
     p.add_argument('--osm-hubs',type=Path,default=CACHE/'osm_hub_candidates.csv')
+    p.add_argument('--household-nodes',type=Path,default=CACHE/'household_nodes.csv')
     p.add_argument('--output',type=Path,default=OUTPUT)
     p.add_argument('--seed',type=int,default=SEED)
     p.add_argument('--donations',type=int,default=3800)
@@ -886,4 +895,12 @@ if __name__=='__main__':
     p.add_argument('--lease-scenarios',type=int,default=100)
     p.add_argument('--aggregation-scenarios',type=int,default=100)
     p.add_argument('--route-scenarios',type=int,default=100)
-    main(p.parse_args())
+    p.add_argument('--population-retrieved',default='',help='YYYY-MM-DD the OpenDOSM file was downloaded')
+    p.add_argument('--osm-retrieved',default='',help='YYYY-MM-DD the Geofabrik PBF was downloaded')
+    p.add_argument('--ngo-retrieved',default='',help='YYYY-MM-DD the NGO reference list was compiled')
+    p.add_argument('--ngo-source-url',default=None,help='Public registry/page the NGO reference list was taken from')
+    args=p.parse_args()
+    for path in (args.nodes,args.edges,args.osm_hubs,args.household_nodes):
+        if not path.exists():
+            p.error(f'{path} missing: run extract_osm_python.py on the PBF first (see README)')
+    main(args)

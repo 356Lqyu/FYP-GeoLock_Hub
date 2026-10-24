@@ -1,9 +1,9 @@
-case_id,weight_kg,input_valid,case_type,note
-WT-01,,0,CLASSIFICATION_BOUNDARY,input state only; required outcome determined in RO1 implementation
-WT-02,-1,0,CLASSIFICATION_BOUNDARY,input state only; required outcome determined in RO1 implementation
-WT-03,0,0,CLASSIFICATION_BOUNDARY,input state only; required outcome determined in RO1 implementation
-WT-04,0.5,1,CLASSIFICATION_BOUNDARY,input state only; required outcome determined in RO1 implementation
-WT-05,9.9,1,CLASSIFICATION_BOUNDARY,input state only; required outcome determined in RO1 implementation
-WT-06,10,1,CLASSIFICATION_BOUNDARY,input state only; required outcome determined in RO1 implementation
-WT-07,10.1,1,CLASSIFICATION_BOUNDARY,input state only; required outcome determined in RO1 implementation
-WT-08,30,1,CLASSIFICATION_BOUNDARY,input state only; required outcome determined in RO1 implementation
+case_id,weight_kg,expected_result
+WT-01,,INVALID_WEIGHT
+WT-02,-1,INVALID_WEIGHT
+WT-03,0,INVALID_WEIGHT
+WT-04,0.5,COMMUNITY_HUB
+WT-05,9.9,COMMUNITY_HUB
+WT-06,10,DIRECT_HOUSEHOLD
+WT-07,10.1,DIRECT_HOUSEHOLD
+WT-08,30,DIRECT_HOUSEHOLD

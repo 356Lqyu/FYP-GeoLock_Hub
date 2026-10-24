@@ -146,30 +146,13 @@ The benchmark supports:
 The project’s review notes explicitly recommend using the benchmark to show that the system can perform well under fixed conditions rather than only in a demo environment.
 
 ## 9. Implementation status in this repository
-This repository now contains the Flutter/Supabase application, protected lifecycle
-and coordination SQL, source-contract and isolated PostgreSQL tests, DEV acceptance
-evidence, and the reproducible benchmark/baseline support layer. Source presence
-does not imply that every workflow or production requirement has passed runtime
-acceptance.
-
-Stage 3I Phase 2 has verified supervised automatic recovery of a naturally expired
-20 kg direct-pickup fixture, its atomic lifecycle/audit effects, and real eligibility
-refresh completion. Job 3 is inactive; permanent unattended recovery is **NOT YET
-APPROVED**. The scoped final verifier returned all_checks_pass=true. Five scheduled
-executions were observed; exact pause-window compliance was not independently
-certified. See the [closure results](supabase/tests/review-only/stage3i/closure/RESULTS.md).
-
-The NGO expiry-aware My Claims/Home/detail UI and server reader are implemented.
-Remaining acceptance includes current-version concurrency/stale-holder evidence,
-durable operational monitoring and failure handling, broader hub/geographic cases,
-and comparable benchmark evidence. Existing historical 2/10/50-client results and
-baseline implementations should be reconciled and reused, not counted as absent
-or automatically treated as proof of the current deployed schema.
+This repository contains the GeoLock Hub system (Flutter app in `frontend/`, Supabase schema, migrations and backend tests in `supabase/`) together with the reproducible benchmark and the baseline methods used to evaluate it.
 
 The relevant folders are:
 - `benchmark dataset/` for generated data and benchmark inputs
-- `baseline implementation/` for standalone comparison scripts and result outputs
-- `pubic dataset/` for public geographic input data
+- `baseline implementation/` for the baseline methods: `source code/`, `postgresql/` (claim-baseline test database), `result/` (per-baseline outputs and summaries)
+- `public dataset/` for public geographic input data
+- `experiments/` for experiment set-up and runners
 
 ## 10. Outcome expectation
 A strong GeoLock Hub implementation should demonstrate that deterministic coordination logic ensures correctness and that AI or optimisation modules add value only after feasibility and safety checks are already satisfied. In other words, the system should be auditable, conflict-free, benchmarkable, and explainable.

@@ -22,9 +22,13 @@ The project explicitly separates:
 
 ## Repository structure
 
-- `benchmark dataset/` — benchmark generation inputs, generated dataset tables, and the reusable scenario data used by the experiments
-- `baseline implementation/` — standalone baseline scripts and result exports used for comparison
-- `pubic dataset/` — public reference dataset used for the geographic context
+- `public dataset/` — public inputs: OSM PBF (Geofabrik), OpenDOSM district population, NGO reference list
+- `benchmark dataset/` — generator, road cache and the frozen benchmark tables (see its README and DATASET_DICTIONARY)
+- `baseline implementation/` — the seven baselines of the report plus the weighted reference policy: `source code/` (scripts), `postgresql/` (test-database setup for the two claim baselines), `result/` (one folder per baseline, each with a plain-language `summary.md`)
+- `ai hub ranking/` — the AI hub-ranking model: its frozen train / validation / test split (`data split/`) and, later, the training code
+- `experiments/` — experiment runners
+- `supabase/` — schema, migrations and backend tests of the GeoLock system
+- `frontend/` — the mobile app
 - `README.md` — project overview and usage notes
 - `MF.md` — concise methodology / feature summary
 
@@ -47,43 +51,36 @@ The system evaluates both hub-based coordination and downstream route planning. 
 
 ## Setup
 
-Create a Python environment and install the required dependencies.
-
 ```bash
 python -m pip install -r "benchmark dataset/source code/requirements.txt"
+python -m pip install -r "baseline implementation/source code/requirements.txt"
 ```
 
-## Running the benchmark baselines
+## Generate the benchmark
 
-The baseline implementation is intentionally modular. Each script reads the frozen benchmark dataset, runs a single policy, and writes its own CSV/JSON output.
+See `benchmark dataset/README.md`: build the road cache with `extract_osm_python.py`,
+then run `generate_geolock_benchmark.py`. The same inputs always give byte-identical CSVs.
 
-### Hub recommendation baselines
+## Run the baselines
 
-```bash
-python "baseline implementation/source code/nearest_hub_baseline.py"
-python "baseline implementation/source code/random_hub_baseline.py" --seed 42
-```
+See `baseline implementation/source code/README.md` (PostgreSQL setup:
+`baseline implementation/postgresql/README.md`). Results: `baseline implementation/result/README.md`.
+A baseline only produces its own method output; comparisons with the proposed system are
+made by the experiments E1–E4.
 
-These scripts evaluate different feasible-hub selection strategies using the frozen recommendation scenarios.
-
-### Coordination and route baselines
-
-```bash
-python "baseline implementation/source code/non_atomic_claim_baseline.py"
-python "baseline implementation/source code/protected_claim_without_lease_recovery_baseline.py"
-python "baseline implementation/source code/direct_household_pickup_baseline.py"
-python "baseline implementation/source code/nearest_next_baseline.py"
-python "baseline implementation/source code/fcfs_baseline.py"
-```
-
-Each script writes scenario-specific result files under `baseline implementation/result` and retains the benchmark inputs unchanged.
+| Baseline | Stage | Runs on |
+| --- | --- | --- |
+| Nearest-Hub, Random Hub (+ Weighted reference policy) | 5–6 | Python |
+| Non-Atomic Claim, Protected Claim without Lease Recovery | 2–3 | PostgreSQL test database |
+| Direct Household Pickup | 7 | Python |
+| Nearest-Next, FCFS | 8 | Python |
 
 ## Benchmark and reproducibility notes
 
 The dataset and scripts are designed to support reproducible evaluation:
 - frozen scenario selection
 - deterministic seeded baselines
-- fixed benchmark generation version and matrix IDs
+- fixed benchmark version, seed and per-file SHA-256 in the generation manifest
 - comparison against the same benchmark conditions across policies
 - explicit handling of no-feasible-hub outcomes
 
