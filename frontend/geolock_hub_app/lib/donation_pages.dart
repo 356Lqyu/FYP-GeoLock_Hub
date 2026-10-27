@@ -10,6 +10,7 @@ import 'package:image_picker/image_picker.dart';
 
 import 'async_request_gate.dart';
 import 'claim_card.dart';
+import 'claim_request.dart';
 import 'claim_cards_controller.dart';
 import 'routing/ngo_routes_page.dart';
 import 'location/location_picker_page.dart';
@@ -269,12 +270,14 @@ class MyClaimsPage extends StatefulWidget {
   )?
   actionRunner;
   final Widget Function(String claimId)? detailBuilder;
+  final Widget Function()? routesBuilder;
   const MyClaimsPage({
     super.key,
     this.refreshSignal = 0,
     this.claimsLoader,
     this.actionRunner,
     this.detailBuilder,
+    this.routesBuilder,
   });
   @override
   State<MyClaimsPage> createState() => _MyClaimsPageState();
@@ -1366,6 +1369,16 @@ class _MyClaimsPageState extends State<MyClaimsPage>
     if (mounted) await _reader.refresh();
   }
 
+  Future<void> _openRoutes() async {
+    await Navigator.push<void>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => widget.routesBuilder?.call() ?? const NgoRoutesPage(),
+      ),
+    );
+    if (mounted) await _reader.refresh();
+  }
+
   Future<void> _audit(String claimId) async {
     try {
       final rows = await _db.rpc(
@@ -1430,10 +1443,7 @@ class _MyClaimsPageState extends State<MyClaimsPage>
           IconButton(
             tooltip: 'Pickup routes',
             icon: const Icon(Icons.route),
-            onPressed: () => Navigator.push<void>(
-              context,
-              MaterialPageRoute(builder: (_) => const NgoRoutesPage()),
-            ),
+            onPressed: _openRoutes,
           ),
         ],
       ),
@@ -1535,7 +1545,7 @@ class _MyClaimsPageState extends State<MyClaimsPage>
           if (widget.actionRunner == null &&
               (card.canStart || card.canComplete))
             const Text(
-              'Open Pickup routes for database-authorized pickup actions.',
+              'Open Pickup routes to plan or access an assigned route. A claim alone does not authorize pickup.',
             ),
           if (!_reader.fresh)
             const Text('Refresh required before claim actions.'),
@@ -1545,7 +1555,7 @@ class _MyClaimsPageState extends State<MyClaimsPage>
             'Lease expiry (database): ${statusTimestampText(context, card.raw['lease_expires_at']) ?? '—'}',
           ),
           Text(
-            'Pickup task · ${card.isValidActive && card.taskStatus != 'DISPATCHED' ? 'Awaiting Start Pickup' : friendlyWorkflowStatus(card.taskStatus)}',
+            'Pickup task · ${card.isValidActive && card.taskStatus == 'CONFIRMED' ? 'Awaiting route planning' : friendlyWorkflowStatus(card.taskStatus)}',
           ),
           if (card.releaseReason != null)
             Text('Release reason: ${card.releaseReason}'),
@@ -1562,7 +1572,15 @@ class _MyClaimsPageState extends State<MyClaimsPage>
           Wrap(
             spacing: 8,
             children: [
+              if (widget.actionRunner == null && card.isValidActive)
+                FilledButton.icon(
+                  key: ValueKey('claim-routes-${card.claimId}'),
+                  onPressed: _reader.fresh && !_busy ? _openRoutes : null,
+                  icon: const Icon(Icons.route),
+                  label: const Text('Pickup routes'),
+                ),
               if (card.claimStatus == 'ACTIVE' &&
+                  widget.actionRunner != null &&
                   const {'CONFIRMED', 'PLANNED'}.contains(card.taskStatus))
                 OutlinedButton(
                   onPressed: _allowed(card, 'START_PICKUP')
@@ -1576,6 +1594,7 @@ class _MyClaimsPageState extends State<MyClaimsPage>
                 label: const Text('Claim details'),
               ),
               if (card.claimStatus == 'ACTIVE' &&
+                  widget.actionRunner != null &&
                   card.taskStatus == 'DISPATCHED')
                 FilledButton(
                   onPressed: _allowed(card, 'COMPLETE_PICKUP')
@@ -1655,12 +1674,22 @@ class _NgoListingDetailsPageState extends State<NgoListingDetailsPage> {
     try {
       prefs = await SharedPreferences.getInstance();
       final key = 'geolock_claim_request_${userId}_$listingId';
-      request = prefs.getString(key) ?? const Uuid().v4();
-      await prefs.setString(key, request);
-      rpcStarted = true;
-      final response = await _db.rpc(
-        'claim_listing',
-        params: {'p_listing': listingId, 'p_request': request},
+      final storage = prefs;
+      final response = await sendPersistedClaim<Object?>(
+        readRequest: () => storage.getString(key),
+        writeRequest: (id) => storage.setString(key, id),
+        newRequest: () => const Uuid().v4(),
+        send: (id) async {
+          request = id;
+          if (_db.auth.currentUser?.id != userId) {
+            throw StateError('Your sign-in changed. No claim was sent.');
+          }
+          rpcStarted = true;
+          return _db.rpc(
+            'claim_listing',
+            params: {'p_listing': listingId, 'p_request': id},
+          );
+        },
       );
       if (response is! Map) {
         throw const FormatException(
@@ -1688,6 +1717,15 @@ class _NgoListingDetailsPageState extends State<NgoListingDetailsPage> {
     final outcome = result['outcome']?.toString();
     final reason = result['reason_code']?.toString();
     final claimId = result['claim_id']?.toString();
+    if (isConfirmedClaimFailure(result)) {
+      if (mounted) {
+        setState(() => _claimBusy = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(confirmedClaimFailureMessage(result))),
+        );
+      }
+      return; // Preserve the request UUID; never report an uncertain RPC as failed.
+    }
     final confirmedSuccess =
         outcome == 'SUCCESS' && claimId != null && claimId.isNotEmpty;
     final confirmedRejection =
@@ -1733,7 +1771,11 @@ class _NgoListingDetailsPageState extends State<NgoListingDetailsPage> {
       // A presentation refresh failure must not misreport the committed claim.
     }
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Claim confirmed. Opening My Claims.')),
+      const SnackBar(
+        content: Text(
+          'Claim confirmed. Open Pickup routes in My Claims to plan an authorized pickup.',
+        ),
+      ),
     );
     Navigator.of(
       context,
