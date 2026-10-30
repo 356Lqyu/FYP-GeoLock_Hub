@@ -1,89 +1,81 @@
 # Non-Atomic Claim (baseline 3)
 
-Benchmark GEOLOCK-BM-v3.2, run on PostgreSQL (Supabase project (aws-0-ap-southeast-1.pooler.supabase.com); network delay is included in response times). This describes this method on its own; comparing it with the proposed protected claim is experiment E2.
+Benchmark GEOLOCK-BM-v3.3. Database: Supabase project (aws-0-ap-southeast-1.pooler.supabase.com); response times include the network delay.
 
-**Method.** Read the listing without a lock, check eligibility, wait a race window of 50 ms, then write the claim without checking again. There is no one-active-claim unique index. Several NGOs press "claim" on the same listing at the same moment.
+## What this baseline does
+
+It is the **unsafe "read, then write" claim** that a simple app would use. Each NGO request reads the listing without locking it, sees AVAILABLE, waits a short race window (50 ms, standing for the gap between the app reading and writing), then writes its claim without checking again. Nothing stops a second claim: there is no row lock and no one-active-claim index. When several NGOs press "claim" at the same moment, all of them can win.
+
+## Compared with (experiment E2, RQ2)
+
+| | This baseline | Proposed method (E2) |
+| --- | --- | --- |
+| Claim | unlocked read, then write | `claim_listing()`: row lock, recheck, one-active-claim index, idempotent request ID |
+| Same inputs | | same 150 scenarios, listings, NGOs, request order (2 / 5 / 10 at once), 20 km road geofence, database and retry rule |
+
+Pair the files by `scenario_id`. Main E2 metric: **duplicate committed-claim rate** (`more_than_one_owner`). Expected: this baseline has duplicates; the proposed method has none.
+
+## Results
 
 | Result | Value | Meaning |
 | --- | --- | --- |
-| Contention trials | 150 | One new listing per trial, claimed at the same moment by 2, 5 or 10 NGOs |
-| Claim requests | 850 | One database connection per request |
-| Requests answered SUCCESS | 850 | Each of these NGOs was told it owns the listing |
-| Claims committed in the database | 850 | A listing should never have more than 1 |
-| **Duplicate committed-claim rate** (main safety metric) | 150 of 150 trials (100%) | Trials where more than one NGO owns the listing; the ownership error this method allows |
-| Requests that failed with a database error | 0 | |
+| Contention trials | 150 | One new listing per trial |
+| Requests told SUCCESS | 850 | Each was told it owns the listing |
+| Claims stored | 850 | Correct would be 150 (one per trial) |
+| **Duplicate committed-claim rate** | 150 of 150 (100%) | Trials where more than one NGO owns the listing |
+| Requests failed with a database error | 0 | |
 
-## By number of concurrent requests
+### By number of NGOs claiming at once
 
-| Concurrent requests per trial | Trials | Requests | SUCCESS | CONFLICT | ERROR | Retries | Trials with exactly 1 committed claim | Trials with a duplicate claim | Median latency (ms) |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 2 | 50 | 100 | 100 | 0 | 0 | 0 | 0 | 50 | 69 |
-| 5 | 50 | 250 | 250 | 0 | 0 | 0 | 0 | 50 | 71 |
-| 10 | 50 | 500 | 500 | 0 | 0 | 0 | 0 | 50 | 76 |
-| All | 150 | 850 | 850 | 0 | 0 | 0 | 0 | 150 | 72 |
+| NGOs claiming at once | Trials | SUCCESS | CONFLICT | ERROR | Trials with 1 stored claim | Trials with a duplicate | Median response (ms) |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 2 | 50 | 100 | 0 | 0 | 0 | 50 | 68 |
+| 5 | 50 | 250 | 0 | 0 | 0 | 50 | 71 |
+| 10 | 50 | 500 | 0 | 0 | 0 | 50 | 76 |
+| All | 150 | 850 | 0 | 0 | 0 | 150 | 72 |
 
-## Request outcomes
+## How a trial runs
 
-| Outcome | Meaning |
-| --- | --- |
-| SUCCESS | The function answered that this NGO now holds the listing. |
-| CONFLICT | The function answered that the listing is already claimed by another NGO (reason code CLAIM_CONFLICT). |
-| INELIGIBLE | The NGO failed an eligibility rule (geofence, location, listing expired). |
-| ERROR | The database aborted the request (e.g. deadlock) and it also failed its one retry; nothing was committed for it. |
-
-## How the method works
-
-1. For each trial, create a new AVAILABLE listing copied from the benchmark listing.
-2. N NGOs (2, 5 or 10) each open their own database connection, sign in, and press "claim" at the same moment.
-3. Each request reads the listing WITHOUT locking it and sees AVAILABLE; it checks the NGO is eligible.
-4. It waits the race window (default 50 ms, standing for the gap between the app reading and writing).
-5. It writes its claim and marks the listing CLAIMED, without checking again. No unique index stops a second claim.
-6. After the trial, the script counts how many claims are actually stored for the listing.
-
-## What to expect
-
-- This is the classic read-then-write race on shared data: two transactions both read the listing as available before either commits, and each then writes its own claim. Database research treats it as a concurrency-control problem that needs locking or an equivalent rule [1, 2]; it is known as the "lost update" anomaly [3]. PostgreSQL's default READ COMMITTED isolation does not stop it unless the code locks the row or a constraint rejects the second write [4].
-- Here every request reads before any request writes, so the expected result is that every request succeeds: N claims stored per trial and a duplicate in every trial (duplicate committed-claim rate 100%). This failure is the point of the baseline: it shows what goes wrong without protection.
+1. A new AVAILABLE listing is made from the benchmark listing (same location, weight and claim window).
+2. Each NGO is checked against the 20 km road geofence using the benchmark road matrix.
+3. Every request opens its own signed-in connection; all are released at the same moment.
+4. Each request reads the listing without a lock, waits the race window and writes its claim.
+5. A deadlock gets one retry with the same request ID; a CONFLICT is never retried.
+6. The claims actually stored for the listing are read back from the database.
 
 ## How to read the results
 
-- **Requests answered SUCCESS**: how many NGOs were told "the listing is yours".
-- **Claims committed in the database**: what is really stored. A correct system stores at most 1 per trial.
-- **Duplicate committed-claim rate** is the key number (main safety metric): the share of trials with more than one committed active claim. 0% means safe; anything above 0% means two or more NGOs would drive to the same food.
-- The table by number of concurrent requests shows the effect of more NGOs at once. **Median latency** is the time from pressing claim to getting the answer (it includes the 50 ms race window).
-- `results_per_scenario.csv` has one row per trial (`more_than_one_owner` = YES marks a duplicate); `details/requests.csv` has one row per request.
-
-## References
-
-- [1] Gray, J. N., Lorie, R. A., Putzolu, G. R., & Traiger, I. L. (1976). Granularity of locks and degrees of consistency in a shared data base. In G. M. Nijssen (Ed.), *Modelling in Data Base Management Systems* (pp. 365-394). North-Holland. *(in the report reference list)*
-- [2] Bernstein, P. A., & Goodman, N. (1981). Concurrency control in distributed database systems. *ACM Computing Surveys*, 13(2), 185-221. https://doi.org/10.1145/356842.356846 *(in the report reference list)*
-- [3] Berenson, H., Bernstein, P., Gray, J., Melton, J., O'Neil, E., & O'Neil, P. (1995). A critique of ANSI SQL isolation levels. *Proceedings of ACM SIGMOD 1995*, 1-10. https://doi.org/10.1145/223784.223785 (the "lost update" anomaly) *(not yet in the report: add it if you cite it)*
-- [4] PostgreSQL Global Development Group. (2026a). Transaction isolation. *PostgreSQL 18 documentation*. https://www.postgresql.org/docs/18/transaction-iso.html *(in the report reference list)*
+- `claims_stored` above 1 (`more_than_one_owner` = YES) means two or more NGOs would drive to the same donation. This is the failure the baseline is meant to show (the "lost update" race).
+- Response times include the race window, and the network delay when the database is a Supabase project.
 
 ## Files
 
 | File | Content |
 | --- | --- |
-| `results_per_scenario.csv` | **The main result.** One row per contention trial. |
-| `details/requests.csv` | Every single claim request (for checking response times and errors). |
-| `run_info.md` | What produced this run (date, database, PostgreSQL version, script fingerprint, command). |
+| `results_per_scenario.csv` | One row per contention trial |
+| `details/requests.csv` | Every claim request: NGO, road distance, answer, reason, retries, response time |
+| `run_info.md` | Database, PostgreSQL version, script fingerprint, settings |
 
 ### Columns of results_per_scenario.csv
 
 | Column | Meaning |
 | --- | --- |
-| `scenario_id` | Benchmark contention scenario (one listing, several NGOs claiming at the same moment) |
-| `listing_id` | Benchmark listing that was copied into the database for this trial |
-| `ngos_competing` | How many NGOs pressed "claim" at the same moment (2, 5 or 10) |
-| `told_success` | NGOs told "the listing is yours" |
-| `told_already_claimed` | NGOs told "already claimed" (CONFLICT) |
-| `told_not_eligible` | NGOs refused by an eligibility rule |
-| `failed_with_error` | Requests aborted by the database (deadlock) even after one retry; nothing was stored for them |
+| `scenario_id` | Benchmark contention scenario: the key used to pair this row with the proposed method |
+| `listing_id` | Benchmark listing copied into the database for this trial |
+| `ngos_competing` | Claim requests sent at the same moment (2, 5 or 10) |
+| `different_ngos` | Different NGOs among them (the scenario has 2-4 nearby NGOs, reused in turn) |
+| `told_success` | Requests told "the listing is yours" |
+| `told_already_claimed` | Requests told "already claimed" (CONFLICT) |
+| `told_not_eligible` | Requests refused by the 20 km road geofence or another eligibility rule |
+| `failed_with_error` | Requests aborted by the database even after one retry (nothing stored) |
 | `retries_after_deadlock` | Retries used after a deadlock or serialization failure |
-| `claims_stored` | Active claims actually stored for the listing afterwards (correct = 1) |
-| `more_than_one_owner` | YES if more than one NGO owns the listing (a duplicate claim) |
-| `listing_status_after` | Listing status afterwards (CLAIMED) |
-| `median_response_ms` | Middle response time of the requests in this trial |
-| `slowest_response_ms` | Slowest response time in this trial |
+| `claims_stored` | Active claims stored for the listing afterwards (correct = 1) |
+| `more_than_one_owner` | YES = duplicate committed claim (the E2 safety metric) |
+| `listing_status_after` | Listing status afterwards |
+| `median_response_ms` | Middle response time of the requests |
+| `slowest_response_ms` | Slowest response time |
 
-`details/requests.csv`: one row per request (NGO, answer, reason code, retries, error message, response time in ms, request and claim IDs).
+## References
+
+- Berenson, H., Bernstein, P., Gray, J., Melton, J., O'Neil, E., & O'Neil, P. (1995). A critique of ANSI SQL isolation levels. *Proceedings of ACM SIGMOD 1995*, 1-10. https://doi.org/10.1145/223784.223785
+- PostgreSQL Global Development Group. (2026). Transaction isolation. *PostgreSQL 18 documentation*. https://www.postgresql.org/docs/18/transaction-iso.html

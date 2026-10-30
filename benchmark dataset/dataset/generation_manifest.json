@@ -1,11 +1,27 @@
 {
-  "benchmark_version": "GEOLOCK-BM-v3.2",
+  "benchmark_version": "GEOLOCK-BM-v3.3",
   "seed": 20260915,
-  "matrix_id": "OSM-DIRECTED-v3.2",
+  "matrix_id": "OSM-DIRECTED-v3.3",
   "fixture_timezone": "Asia/Kuala_Lumpur",
-  "fixture_day": "2026-11-02",
+  "timeline": {
+    "first_day": "2025-01-01",
+    "last_day": "2026-04-30",
+    "weekend_weight": 1.5,
+    "episode_gap_days": 7,
+    "timeline_seed_offset": 81030,
+    "rule": "every availability window starts and ends between 1 Jan 2025 and 30 Apr 2026; each aggregation template and each route scenario is dated as one episode (base day + 0/1-day offsets, windows share a common interval); every other donation gets an independent day (weekends x1.5); no other donation with the same reference hub and category starts or ends within 7 days of a batch episode; IDs are numbered in order of availability_start"
+  },
   "study_area": {
-    "description": "17 km road-extract window around each of the 11 NGOs, Peninsular Malaysia",
+    "description": "Peninsular Malaysia (11 states + Kuala Lumpur and Putrajaya); benchmark points are sampled inside the 17 km road-extract window around each of the 11 NGOs",
+    "boundary": {
+      "locations": "study_boundary.wkt",
+      "roads": "road_area.wkt",
+      "rule": "donor, hub and NGO points must lie inside the state boundary; roads inside the states plus a 0.05 deg coastal band, minus Singapore (same rule as the app road network)",
+      "sha256": {
+        "study_boundary.wkt": "a844925f4f491266135a4460b278fd475e12bd63022e6270e5b240a0f25d2880",
+        "road_area.wkt": "dffe15a62ad14b7ba8dd3050f51c0ddd8ebbd3e889fc843a8151db6686ce9199"
+      }
+    },
     "windows_lat_lon": [
       [
         2.9606533021582733,
@@ -88,7 +104,8 @@
       "source_url": "https://download.geofabrik.de/asia/malaysia-singapore-brunei.html",
       "licence": "ODbL 1.0",
       "retrieved_date": null,
-      "sha256": "3576b2ef5c7f03e0f4a6ae7c2cb67730e14c06a427ef5712b7735f028d0e17ad"
+      "sha256": "3576b2ef5c7f03e0f4a6ae7c2cb67730e14c06a427ef5712b7735f028d0e17ad",
+      "osm_replication_timestamp": "2026-07-19T20:21:00Z"
     },
     {
       "file": "NGO_references.csv",
@@ -463,17 +480,43 @@
       10.1
     ],
     "collection_threshold_kg": 10,
-    "availability": "opens 09:00-14:00 on the fixture day; closes 17:00-21:00, 0-3 days later, >= 8 h",
+    "availability": "opens 09:00-14:00; closes 17:00-21:00 the same day or up to 3 days later; lasts 8-72 h",
+    "hub_opening_hours": {
+      "profiles": [
+        {
+          "opens": "09:00",
+          "closes": "17:00",
+          "share": 0.55
+        },
+        {
+          "opens": "08:00",
+          "closes": "22:00",
+          "share": 0.25
+        },
+        {
+          "opens": "08:00",
+          "closes": "12:00",
+          "share": 0.1
+        },
+        {
+          "opens": "18:00",
+          "closes": "22:00",
+          "share": 0.1
+        }
+      ],
+      "repeats": "daily",
+      "min_handover_minutes": 30
+    },
     "accepted_categories": "all six; no furniture below 100 kg capacity; half of hubs decline one more category",
     "hub_capacity_kg": [
       50,
       250
     ],
-    "hub_load_fraction_max": 0.95,
+    "hub_load_fraction_max": 0.8,
     "hub_reserved_fraction_max": 0.2,
     "hub_inactive_share": 0.05,
     "candidate_hubs": "all hubs within 20 km straight line of the donor (backend geolock_donation_hub_routes)",
-    "hard_feasibility": "item compatibility AND capacity AND hub active AND directed donor-to-hub route",
+    "hard_feasibility": "item compatibility AND capacity AND operating window (>= 30 min overlap of the availability window with the daily opening hours) AND hub active AND directed donor-to-hub route",
     "reference_policy": {
       "weights": {
         "distance": 0.45,
@@ -493,7 +536,7 @@
       "tie_break": "lower road distance, then hub_id"
     },
     "recommendation_scenarios": "donations with at least two feasible hubs",
-    "batch_templates": "reference-policy hub; 3-5 donations, one category, <= 30 kg, ordered by availability_start then donation_id",
+    "batch_templates": "reference-policy hub; 3-5 donations, one category, <= 30 kg; one accumulation episode each; added_at = first opening-hours handover; members ordered by added_at then donation_id; created_at = last added_at",
     "ngo_listing_eligibility_km": 20,
     "route_scenario_listing_distance_km": 15,
     "route_profiles": [
@@ -513,38 +556,1381 @@
     "route plans",
     "experiment worker counts and lease duration"
   ],
+  "provenance": {
+    "ngos": [
+      {
+        "ngo_id": "NGO001",
+        "state": "Kuala Lumpur",
+        "category": "charity organization and social welfare",
+        "status": "AKTIF",
+        "node_snap_distance_m": 45.4
+      },
+      {
+        "ngo_id": "NGO002",
+        "state": "Kuala Lumpur",
+        "category": "humanitarian, welfare, and charitable services",
+        "status": "AKTIF",
+        "node_snap_distance_m": 64.4
+      },
+      {
+        "ngo_id": "NGO003",
+        "state": "Johor",
+        "category": "Children Charitable and Cares Organisation",
+        "status": "AKTIF",
+        "node_snap_distance_m": 5.6
+      },
+      {
+        "ngo_id": "NGO004",
+        "state": "Selangor",
+        "category": "Education and Youth Development",
+        "status": "AKTIF",
+        "node_snap_distance_m": 30.2
+      },
+      {
+        "ngo_id": "NGO005",
+        "state": "Penang",
+        "category": "Special Needs Care and Welfare",
+        "status": "AKTIF",
+        "node_snap_distance_m": 2.1
+      },
+      {
+        "ngo_id": "NGO006",
+        "state": "Perak",
+        "category": "Disability Vocational Training and Support",
+        "status": "AKTIF",
+        "node_snap_distance_m": 6.5
+      },
+      {
+        "ngo_id": "NGO007",
+        "state": "Terengganu",
+        "category": "Environmental Conservation and Wildlife Protection",
+        "status": "AKTIF",
+        "node_snap_distance_m": 35.4
+      },
+      {
+        "ngo_id": "NGO008",
+        "state": "Kuala Lumpur",
+        "category": "Humanitarian Relief and Disaster Medical Aid",
+        "status": "AKTIF",
+        "node_snap_distance_m": 6.5
+      },
+      {
+        "ngo_id": "NGO009",
+        "state": "Negeri Sembilan",
+        "category": "Special Needs and Learning Disabilities Welfare",
+        "status": "AKTIF",
+        "node_snap_distance_m": 1.9
+      },
+      {
+        "ngo_id": "NGO010",
+        "state": "Pahang",
+        "category": "Orphanage and Child Welfare",
+        "status": "AKTIF",
+        "node_snap_distance_m": 10.9
+      },
+      {
+        "ngo_id": "NGO011",
+        "state": "Kedah",
+        "category": "Orphanage and Child Welfare",
+        "status": "AKTIF",
+        "node_snap_distance_m": 26.1
+      }
+    ],
+    "hubs": [
+      {
+        "hub_id": "HUB0001",
+        "osm_type": "node",
+        "osm_id": "1681026497",
+        "osm_amenity": "townhall",
+        "node_snap_distance_m": 37.4
+      },
+      {
+        "hub_id": "HUB0002",
+        "osm_type": "node",
+        "osm_id": "1681098841",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 14.6
+      },
+      {
+        "hub_id": "HUB0003",
+        "osm_type": "node",
+        "osm_id": "2589199577",
+        "osm_amenity": "townhall",
+        "node_snap_distance_m": 27.0
+      },
+      {
+        "hub_id": "HUB0004",
+        "osm_type": "node",
+        "osm_id": "3789207261",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 4.2
+      },
+      {
+        "hub_id": "HUB0005",
+        "osm_type": "node",
+        "osm_id": "4229223190",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 17.9
+      },
+      {
+        "hub_id": "HUB0006",
+        "osm_type": "node",
+        "osm_id": "4312479910",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 19.1
+      },
+      {
+        "hub_id": "HUB0007",
+        "osm_type": "node",
+        "osm_id": "4986962824",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 70.2
+      },
+      {
+        "hub_id": "HUB0008",
+        "osm_type": "node",
+        "osm_id": "5269222021",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 8.7
+      },
+      {
+        "hub_id": "HUB0009",
+        "osm_type": "node",
+        "osm_id": "6164944387",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 5.5
+      },
+      {
+        "hub_id": "HUB0010",
+        "osm_type": "node",
+        "osm_id": "6565323909",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 26.9
+      },
+      {
+        "hub_id": "HUB0011",
+        "osm_type": "node",
+        "osm_id": "6624627638",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 38.3
+      },
+      {
+        "hub_id": "HUB0012",
+        "osm_type": "node",
+        "osm_id": "7252153778",
+        "osm_amenity": "townhall",
+        "node_snap_distance_m": 24.1
+      },
+      {
+        "hub_id": "HUB0013",
+        "osm_type": "node",
+        "osm_id": "7309205453",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 12.2
+      },
+      {
+        "hub_id": "HUB0014",
+        "osm_type": "node",
+        "osm_id": "7709379885",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 23.9
+      },
+      {
+        "hub_id": "HUB0015",
+        "osm_type": "node",
+        "osm_id": "9271020817",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 28.8
+      },
+      {
+        "hub_id": "HUB0016",
+        "osm_type": "node",
+        "osm_id": "10052838708",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 13.4
+      },
+      {
+        "hub_id": "HUB0017",
+        "osm_type": "node",
+        "osm_id": "10092066245",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 20.0
+      },
+      {
+        "hub_id": "HUB0018",
+        "osm_type": "node",
+        "osm_id": "10694270705",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 36.4
+      },
+      {
+        "hub_id": "HUB0019",
+        "osm_type": "node",
+        "osm_id": "10739639446",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 28.8
+      },
+      {
+        "hub_id": "HUB0020",
+        "osm_type": "node",
+        "osm_id": "11340950708",
+        "osm_amenity": "townhall",
+        "node_snap_distance_m": 25.1
+      },
+      {
+        "hub_id": "HUB0021",
+        "osm_type": "node",
+        "osm_id": "11536460839",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 29.7
+      },
+      {
+        "hub_id": "HUB0022",
+        "osm_type": "node",
+        "osm_id": "11675740370",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 8.2
+      },
+      {
+        "hub_id": "HUB0023",
+        "osm_type": "node",
+        "osm_id": "12018185013",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 34.3
+      },
+      {
+        "hub_id": "HUB0024",
+        "osm_type": "node",
+        "osm_id": "12484115114",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 22.7
+      },
+      {
+        "hub_id": "HUB0025",
+        "osm_type": "node",
+        "osm_id": "13014889960",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 16.7
+      },
+      {
+        "hub_id": "HUB0026",
+        "osm_type": "node",
+        "osm_id": "13038496596",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 7.4
+      },
+      {
+        "hub_id": "HUB0027",
+        "osm_type": "node",
+        "osm_id": "13245218993",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 42.7
+      },
+      {
+        "hub_id": "HUB0028",
+        "osm_type": "node",
+        "osm_id": "13378194303",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 37.1
+      },
+      {
+        "hub_id": "HUB0029",
+        "osm_type": "node",
+        "osm_id": "13390518220",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 26.5
+      },
+      {
+        "hub_id": "HUB0030",
+        "osm_type": "node",
+        "osm_id": "13428966986",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 42.0
+      },
+      {
+        "hub_id": "HUB0031",
+        "osm_type": "node",
+        "osm_id": "13577408814",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 33.0
+      },
+      {
+        "hub_id": "HUB0032",
+        "osm_type": "node",
+        "osm_id": "13758435527",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 11.5
+      },
+      {
+        "hub_id": "HUB0033",
+        "osm_type": "node",
+        "osm_id": "13938559706",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 25.3
+      },
+      {
+        "hub_id": "HUB0034",
+        "osm_type": "node",
+        "osm_id": "14003525911",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 28.3
+      },
+      {
+        "hub_id": "HUB0035",
+        "osm_type": "way",
+        "osm_id": "26818379",
+        "osm_amenity": "townhall",
+        "node_snap_distance_m": 44.2
+      },
+      {
+        "hub_id": "HUB0036",
+        "osm_type": "way",
+        "osm_id": "139100500",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 51.6
+      },
+      {
+        "hub_id": "HUB0037",
+        "osm_type": "way",
+        "osm_id": "157191379",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 20.2
+      },
+      {
+        "hub_id": "HUB0038",
+        "osm_type": "way",
+        "osm_id": "168665091",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 35.3
+      },
+      {
+        "hub_id": "HUB0039",
+        "osm_type": "way",
+        "osm_id": "173370320",
+        "osm_amenity": "townhall",
+        "node_snap_distance_m": 19.2
+      },
+      {
+        "hub_id": "HUB0040",
+        "osm_type": "way",
+        "osm_id": "187888833",
+        "osm_amenity": "townhall",
+        "node_snap_distance_m": 29.6
+      },
+      {
+        "hub_id": "HUB0041",
+        "osm_type": "way",
+        "osm_id": "270791017",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 14.3
+      },
+      {
+        "hub_id": "HUB0042",
+        "osm_type": "way",
+        "osm_id": "275431077",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 28.3
+      },
+      {
+        "hub_id": "HUB0043",
+        "osm_type": "way",
+        "osm_id": "277749104",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 32.2
+      },
+      {
+        "hub_id": "HUB0044",
+        "osm_type": "way",
+        "osm_id": "278141617",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 14.7
+      },
+      {
+        "hub_id": "HUB0045",
+        "osm_type": "way",
+        "osm_id": "287211189",
+        "osm_amenity": "townhall",
+        "node_snap_distance_m": 26.4
+      },
+      {
+        "hub_id": "HUB0046",
+        "osm_type": "way",
+        "osm_id": "289018328",
+        "osm_amenity": "townhall",
+        "node_snap_distance_m": 21.6
+      },
+      {
+        "hub_id": "HUB0047",
+        "osm_type": "way",
+        "osm_id": "323488616",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 42.0
+      },
+      {
+        "hub_id": "HUB0048",
+        "osm_type": "way",
+        "osm_id": "368252385",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 30.5
+      },
+      {
+        "hub_id": "HUB0049",
+        "osm_type": "way",
+        "osm_id": "370667922",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 60.4
+      },
+      {
+        "hub_id": "HUB0050",
+        "osm_type": "way",
+        "osm_id": "371917226",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 20.0
+      },
+      {
+        "hub_id": "HUB0051",
+        "osm_type": "way",
+        "osm_id": "383391563",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 22.4
+      },
+      {
+        "hub_id": "HUB0052",
+        "osm_type": "way",
+        "osm_id": "385199799",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 25.0
+      },
+      {
+        "hub_id": "HUB0053",
+        "osm_type": "way",
+        "osm_id": "403561853",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 39.2
+      },
+      {
+        "hub_id": "HUB0054",
+        "osm_type": "way",
+        "osm_id": "452169805",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 51.7
+      },
+      {
+        "hub_id": "HUB0055",
+        "osm_type": "way",
+        "osm_id": "495546956",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 16.7
+      },
+      {
+        "hub_id": "HUB0056",
+        "osm_type": "way",
+        "osm_id": "495731340",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 47.1
+      },
+      {
+        "hub_id": "HUB0057",
+        "osm_type": "way",
+        "osm_id": "495772480",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 18.4
+      },
+      {
+        "hub_id": "HUB0058",
+        "osm_type": "way",
+        "osm_id": "497048307",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 31.3
+      },
+      {
+        "hub_id": "HUB0059",
+        "osm_type": "way",
+        "osm_id": "505024881",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 40.4
+      },
+      {
+        "hub_id": "HUB0060",
+        "osm_type": "way",
+        "osm_id": "505080631",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 28.1
+      },
+      {
+        "hub_id": "HUB0061",
+        "osm_type": "way",
+        "osm_id": "516269730",
+        "osm_amenity": "townhall",
+        "node_snap_distance_m": 58.6
+      },
+      {
+        "hub_id": "HUB0062",
+        "osm_type": "way",
+        "osm_id": "523755126",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 22.7
+      },
+      {
+        "hub_id": "HUB0063",
+        "osm_type": "way",
+        "osm_id": "543358731",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 28.1
+      },
+      {
+        "hub_id": "HUB0064",
+        "osm_type": "way",
+        "osm_id": "544118020",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 11.2
+      },
+      {
+        "hub_id": "HUB0065",
+        "osm_type": "way",
+        "osm_id": "544118021",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 16.1
+      },
+      {
+        "hub_id": "HUB0066",
+        "osm_type": "way",
+        "osm_id": "544483577",
+        "osm_amenity": "townhall",
+        "node_snap_distance_m": 28.1
+      },
+      {
+        "hub_id": "HUB0067",
+        "osm_type": "way",
+        "osm_id": "546157356",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 40.7
+      },
+      {
+        "hub_id": "HUB0068",
+        "osm_type": "way",
+        "osm_id": "548927949",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 28.6
+      },
+      {
+        "hub_id": "HUB0069",
+        "osm_type": "way",
+        "osm_id": "549907663",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 31.2
+      },
+      {
+        "hub_id": "HUB0070",
+        "osm_type": "way",
+        "osm_id": "551373295",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 17.7
+      },
+      {
+        "hub_id": "HUB0071",
+        "osm_type": "way",
+        "osm_id": "553076389",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 15.7
+      },
+      {
+        "hub_id": "HUB0072",
+        "osm_type": "way",
+        "osm_id": "554816497",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 30.7
+      },
+      {
+        "hub_id": "HUB0073",
+        "osm_type": "way",
+        "osm_id": "556277533",
+        "osm_amenity": "townhall",
+        "node_snap_distance_m": 43.3
+      },
+      {
+        "hub_id": "HUB0074",
+        "osm_type": "way",
+        "osm_id": "577206007",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 20.9
+      },
+      {
+        "hub_id": "HUB0075",
+        "osm_type": "way",
+        "osm_id": "579880368",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 28.7
+      },
+      {
+        "hub_id": "HUB0076",
+        "osm_type": "way",
+        "osm_id": "579880369",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 28.8
+      },
+      {
+        "hub_id": "HUB0077",
+        "osm_type": "way",
+        "osm_id": "581758535",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 38.0
+      },
+      {
+        "hub_id": "HUB0078",
+        "osm_type": "way",
+        "osm_id": "591502989",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 28.1
+      },
+      {
+        "hub_id": "HUB0079",
+        "osm_type": "way",
+        "osm_id": "605040905",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 15.3
+      },
+      {
+        "hub_id": "HUB0080",
+        "osm_type": "way",
+        "osm_id": "629601857",
+        "osm_amenity": "townhall",
+        "node_snap_distance_m": 1.2
+      },
+      {
+        "hub_id": "HUB0081",
+        "osm_type": "way",
+        "osm_id": "639973572",
+        "osm_amenity": "townhall",
+        "node_snap_distance_m": 23.7
+      },
+      {
+        "hub_id": "HUB0082",
+        "osm_type": "way",
+        "osm_id": "652391973",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 12.6
+      },
+      {
+        "hub_id": "HUB0083",
+        "osm_type": "way",
+        "osm_id": "662568284",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 28.3
+      },
+      {
+        "hub_id": "HUB0084",
+        "osm_type": "way",
+        "osm_id": "672317496",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 25.3
+      },
+      {
+        "hub_id": "HUB0085",
+        "osm_type": "way",
+        "osm_id": "683308828",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 16.7
+      },
+      {
+        "hub_id": "HUB0086",
+        "osm_type": "way",
+        "osm_id": "683865661",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 21.2
+      },
+      {
+        "hub_id": "HUB0087",
+        "osm_type": "way",
+        "osm_id": "683955045",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 21.1
+      },
+      {
+        "hub_id": "HUB0088",
+        "osm_type": "way",
+        "osm_id": "699022632",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 17.3
+      },
+      {
+        "hub_id": "HUB0089",
+        "osm_type": "way",
+        "osm_id": "699534735",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 28.2
+      },
+      {
+        "hub_id": "HUB0090",
+        "osm_type": "way",
+        "osm_id": "705549142",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 12.1
+      },
+      {
+        "hub_id": "HUB0091",
+        "osm_type": "way",
+        "osm_id": "705578457",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 38.4
+      },
+      {
+        "hub_id": "HUB0092",
+        "osm_type": "way",
+        "osm_id": "707180754",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 15.6
+      },
+      {
+        "hub_id": "HUB0093",
+        "osm_type": "way",
+        "osm_id": "725051635",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 74.7
+      },
+      {
+        "hub_id": "HUB0094",
+        "osm_type": "way",
+        "osm_id": "736724930",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 46.9
+      },
+      {
+        "hub_id": "HUB0095",
+        "osm_type": "way",
+        "osm_id": "745471554",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 20.9
+      },
+      {
+        "hub_id": "HUB0096",
+        "osm_type": "way",
+        "osm_id": "747323677",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 27.8
+      },
+      {
+        "hub_id": "HUB0097",
+        "osm_type": "way",
+        "osm_id": "749766127",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 44.4
+      },
+      {
+        "hub_id": "HUB0098",
+        "osm_type": "way",
+        "osm_id": "755430191",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 22.1
+      },
+      {
+        "hub_id": "HUB0099",
+        "osm_type": "way",
+        "osm_id": "755885415",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 43.0
+      },
+      {
+        "hub_id": "HUB0100",
+        "osm_type": "way",
+        "osm_id": "756327372",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 43.0
+      },
+      {
+        "hub_id": "HUB0101",
+        "osm_type": "way",
+        "osm_id": "761435772",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 15.1
+      },
+      {
+        "hub_id": "HUB0102",
+        "osm_type": "way",
+        "osm_id": "762775532",
+        "osm_amenity": "townhall",
+        "node_snap_distance_m": 36.7
+      },
+      {
+        "hub_id": "HUB0103",
+        "osm_type": "way",
+        "osm_id": "787839622",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 26.9
+      },
+      {
+        "hub_id": "HUB0104",
+        "osm_type": "way",
+        "osm_id": "793835990",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 14.8
+      },
+      {
+        "hub_id": "HUB0105",
+        "osm_type": "way",
+        "osm_id": "793847560",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 22.6
+      },
+      {
+        "hub_id": "HUB0106",
+        "osm_type": "way",
+        "osm_id": "804547445",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 69.4
+      },
+      {
+        "hub_id": "HUB0107",
+        "osm_type": "way",
+        "osm_id": "804713587",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 19.6
+      },
+      {
+        "hub_id": "HUB0108",
+        "osm_type": "way",
+        "osm_id": "804844338",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 28.0
+      },
+      {
+        "hub_id": "HUB0109",
+        "osm_type": "way",
+        "osm_id": "804934132",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 31.9
+      },
+      {
+        "hub_id": "HUB0110",
+        "osm_type": "way",
+        "osm_id": "810545545",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 10.0
+      },
+      {
+        "hub_id": "HUB0111",
+        "osm_type": "way",
+        "osm_id": "815790193",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 69.9
+      },
+      {
+        "hub_id": "HUB0112",
+        "osm_type": "way",
+        "osm_id": "816793118",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 24.4
+      },
+      {
+        "hub_id": "HUB0113",
+        "osm_type": "way",
+        "osm_id": "817332421",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 12.1
+      },
+      {
+        "hub_id": "HUB0114",
+        "osm_type": "way",
+        "osm_id": "819108397",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 18.6
+      },
+      {
+        "hub_id": "HUB0115",
+        "osm_type": "way",
+        "osm_id": "820509821",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 27.9
+      },
+      {
+        "hub_id": "HUB0116",
+        "osm_type": "way",
+        "osm_id": "826046500",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 26.3
+      },
+      {
+        "hub_id": "HUB0117",
+        "osm_type": "way",
+        "osm_id": "826493878",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 18.3
+      },
+      {
+        "hub_id": "HUB0118",
+        "osm_type": "way",
+        "osm_id": "827853159",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 8.8
+      },
+      {
+        "hub_id": "HUB0119",
+        "osm_type": "way",
+        "osm_id": "828482763",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 17.1
+      },
+      {
+        "hub_id": "HUB0120",
+        "osm_type": "way",
+        "osm_id": "857052014",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 31.0
+      },
+      {
+        "hub_id": "HUB0121",
+        "osm_type": "way",
+        "osm_id": "860930328",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 37.1
+      },
+      {
+        "hub_id": "HUB0122",
+        "osm_type": "way",
+        "osm_id": "879181736",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 16.6
+      },
+      {
+        "hub_id": "HUB0123",
+        "osm_type": "way",
+        "osm_id": "884272762",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 23.6
+      },
+      {
+        "hub_id": "HUB0124",
+        "osm_type": "way",
+        "osm_id": "885833728",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 23.7
+      },
+      {
+        "hub_id": "HUB0125",
+        "osm_type": "way",
+        "osm_id": "888675034",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 27.9
+      },
+      {
+        "hub_id": "HUB0126",
+        "osm_type": "way",
+        "osm_id": "894481590",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 14.5
+      },
+      {
+        "hub_id": "HUB0127",
+        "osm_type": "way",
+        "osm_id": "899677942",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 18.1
+      },
+      {
+        "hub_id": "HUB0128",
+        "osm_type": "way",
+        "osm_id": "907089124",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 20.8
+      },
+      {
+        "hub_id": "HUB0129",
+        "osm_type": "way",
+        "osm_id": "911067227",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 5.2
+      },
+      {
+        "hub_id": "HUB0130",
+        "osm_type": "way",
+        "osm_id": "928091125",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 17.7
+      },
+      {
+        "hub_id": "HUB0131",
+        "osm_type": "way",
+        "osm_id": "929622742",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 14.2
+      },
+      {
+        "hub_id": "HUB0132",
+        "osm_type": "way",
+        "osm_id": "940924583",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 67.6
+      },
+      {
+        "hub_id": "HUB0133",
+        "osm_type": "way",
+        "osm_id": "940924584",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 38.1
+      },
+      {
+        "hub_id": "HUB0134",
+        "osm_type": "way",
+        "osm_id": "955908333",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 33.2
+      },
+      {
+        "hub_id": "HUB0135",
+        "osm_type": "way",
+        "osm_id": "965674611",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 16.8
+      },
+      {
+        "hub_id": "HUB0136",
+        "osm_type": "way",
+        "osm_id": "983512565",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 26.5
+      },
+      {
+        "hub_id": "HUB0137",
+        "osm_type": "way",
+        "osm_id": "1009848184",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 28.1
+      },
+      {
+        "hub_id": "HUB0138",
+        "osm_type": "way",
+        "osm_id": "1027284691",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 27.5
+      },
+      {
+        "hub_id": "HUB0139",
+        "osm_type": "way",
+        "osm_id": "1027625212",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 12.0
+      },
+      {
+        "hub_id": "HUB0140",
+        "osm_type": "way",
+        "osm_id": "1039362589",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 35.5
+      },
+      {
+        "hub_id": "HUB0141",
+        "osm_type": "way",
+        "osm_id": "1039521675",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 51.5
+      },
+      {
+        "hub_id": "HUB0142",
+        "osm_type": "way",
+        "osm_id": "1052658170",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 16.7
+      },
+      {
+        "hub_id": "HUB0143",
+        "osm_type": "way",
+        "osm_id": "1059495591",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 30.2
+      },
+      {
+        "hub_id": "HUB0144",
+        "osm_type": "way",
+        "osm_id": "1068067577",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 23.1
+      },
+      {
+        "hub_id": "HUB0145",
+        "osm_type": "way",
+        "osm_id": "1073053214",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 37.3
+      },
+      {
+        "hub_id": "HUB0146",
+        "osm_type": "way",
+        "osm_id": "1075630002",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 17.0
+      },
+      {
+        "hub_id": "HUB0147",
+        "osm_type": "way",
+        "osm_id": "1081390923",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 31.3
+      },
+      {
+        "hub_id": "HUB0148",
+        "osm_type": "way",
+        "osm_id": "1089426875",
+        "osm_amenity": "townhall",
+        "node_snap_distance_m": 20.9
+      },
+      {
+        "hub_id": "HUB0149",
+        "osm_type": "way",
+        "osm_id": "1101300581",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 13.8
+      },
+      {
+        "hub_id": "HUB0150",
+        "osm_type": "way",
+        "osm_id": "1107327058",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 26.1
+      },
+      {
+        "hub_id": "HUB0151",
+        "osm_type": "way",
+        "osm_id": "1126815142",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 19.7
+      },
+      {
+        "hub_id": "HUB0152",
+        "osm_type": "way",
+        "osm_id": "1136664744",
+        "osm_amenity": "townhall",
+        "node_snap_distance_m": 17.0
+      },
+      {
+        "hub_id": "HUB0153",
+        "osm_type": "way",
+        "osm_id": "1136710736",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 35.2
+      },
+      {
+        "hub_id": "HUB0154",
+        "osm_type": "way",
+        "osm_id": "1151924981",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 46.3
+      },
+      {
+        "hub_id": "HUB0155",
+        "osm_type": "way",
+        "osm_id": "1152718670",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 19.8
+      },
+      {
+        "hub_id": "HUB0156",
+        "osm_type": "way",
+        "osm_id": "1155801660",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 39.2
+      },
+      {
+        "hub_id": "HUB0157",
+        "osm_type": "way",
+        "osm_id": "1196371045",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 31.2
+      },
+      {
+        "hub_id": "HUB0158",
+        "osm_type": "way",
+        "osm_id": "1215530501",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 30.4
+      },
+      {
+        "hub_id": "HUB0159",
+        "osm_type": "way",
+        "osm_id": "1218406763",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 22.6
+      },
+      {
+        "hub_id": "HUB0160",
+        "osm_type": "way",
+        "osm_id": "1231284946",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 39.1
+      },
+      {
+        "hub_id": "HUB0161",
+        "osm_type": "way",
+        "osm_id": "1253417731",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 44.3
+      },
+      {
+        "hub_id": "HUB0162",
+        "osm_type": "way",
+        "osm_id": "1259323840",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 21.7
+      },
+      {
+        "hub_id": "HUB0163",
+        "osm_type": "way",
+        "osm_id": "1279663027",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 33.0
+      },
+      {
+        "hub_id": "HUB0164",
+        "osm_type": "way",
+        "osm_id": "1320432947",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 6.9
+      },
+      {
+        "hub_id": "HUB0165",
+        "osm_type": "way",
+        "osm_id": "1333679691",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 26.4
+      },
+      {
+        "hub_id": "HUB0166",
+        "osm_type": "way",
+        "osm_id": "1363509920",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 43.0
+      },
+      {
+        "hub_id": "HUB0167",
+        "osm_type": "way",
+        "osm_id": "1370788404",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 24.7
+      },
+      {
+        "hub_id": "HUB0168",
+        "osm_type": "way",
+        "osm_id": "1371024280",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 27.5
+      },
+      {
+        "hub_id": "HUB0169",
+        "osm_type": "way",
+        "osm_id": "1386545173",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 18.8
+      },
+      {
+        "hub_id": "HUB0170",
+        "osm_type": "way",
+        "osm_id": "1389253776",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 16.8
+      },
+      {
+        "hub_id": "HUB0171",
+        "osm_type": "way",
+        "osm_id": "1427939450",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 33.0
+      },
+      {
+        "hub_id": "HUB0172",
+        "osm_type": "way",
+        "osm_id": "1433244989",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 21.3
+      },
+      {
+        "hub_id": "HUB0173",
+        "osm_type": "way",
+        "osm_id": "1434319854",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 26.4
+      },
+      {
+        "hub_id": "HUB0174",
+        "osm_type": "way",
+        "osm_id": "1449326801",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 15.0
+      },
+      {
+        "hub_id": "HUB0175",
+        "osm_type": "way",
+        "osm_id": "1452811811",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 22.3
+      },
+      {
+        "hub_id": "HUB0176",
+        "osm_type": "way",
+        "osm_id": "1470167571",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 25.2
+      },
+      {
+        "hub_id": "HUB0177",
+        "osm_type": "way",
+        "osm_id": "1478851221",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 19.3
+      },
+      {
+        "hub_id": "HUB0178",
+        "osm_type": "way",
+        "osm_id": "1489042112",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 23.2
+      },
+      {
+        "hub_id": "HUB0179",
+        "osm_type": "way",
+        "osm_id": "1528969262",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 30.0
+      },
+      {
+        "hub_id": "HUB0180",
+        "osm_type": "way",
+        "osm_id": "1529352775",
+        "osm_amenity": "community_centre",
+        "node_snap_distance_m": 16.2
+      }
+    ]
+  },
   "row_counts": {
-    "road_nodes": 3991,
-    "road_distance_matrix": 141175,
+    "road_nodes": 3990,
+    "road_distance_matrix": 142514,
     "ngos": 11,
     "vehicles": 22,
     "hubs": 180,
     "donors": 3800,
     "donations": 3800,
-    "donation_hub_candidates": 91675,
-    "listings": 1185,
+    "donation_hub_candidates": 92941,
+    "listings": 1172,
     "hub_batches": 100,
-    "hub_batch_members": 417,
+    "hub_batch_members": 424,
     "scenarios": 2594,
-    "scenario_members": 76562,
+    "scenario_members": 77962,
     "claim_initial_states": 125,
     "verification_cases": 8
   },
   "generated_csv_sha256": {
-    "road_nodes": "a3b5654c2e3ca833b0060927d928dcf1df580e38ea454b6beb792e5ef8357046",
-    "road_distance_matrix": "375d3afe27111acd4ff3041bcbffce62b2e7575a6c4b00a0d992cec16dfb6396",
-    "ngos": "37734bf57cdc5e2db18f95db6c140fd1855b90aaca5b65e6b5da42cdf1287e90",
+    "road_nodes": "a8905fb29f95b6ba02c099fd60a188f98ae92f01c7586995295b096b673df6ea",
+    "road_distance_matrix": "ed89667e0c15fa9bd193945a77f86cf8f0b663f4197d037d45a75f0077e86585",
+    "ngos": "ddc14fe9958c272c7d8b7dc32b23ad6bfffd2a066f1b158a05a7cd3e5c535eaa",
     "vehicles": "79be6284565e0f544914bcb6b0fb5a847a0756a6039808bfc03920046f571413",
-    "hubs": "9fda881fbf007bea9f3b2fa043c97bab41af47c45e64bb49e41e2f9a8b118d24",
-    "donors": "c3a896e759a8d219639f2f3c63b2613fd1a623df5ef162e7326bf7e584516896",
-    "donations": "5d37cd6432f91774d2e6eee0de7aa35aac4078113a5c0c27c87df87b45f20dd5",
-    "donation_hub_candidates": "0c75836927ee3f373a8935bbccb85516b5c9c13c7118b3cda5aa9c0062a2d4b5",
-    "listings": "70e9ba33e1606af0b9d5de012f885619c77b9060de74f98f01a1a74bae84a306",
-    "hub_batches": "baa3e0b168ebba85439b80bdb8c089cdfe2c9ddbb8c216401cb51330013cd980",
-    "hub_batch_members": "604b1801a5a83f62e3e699622f8085da4e98453a1374f3609e569e32b1104d1f",
+    "hubs": "fc635158465891de7c21e672f81c28745d316de9bde435d95e03b44d6af94811",
+    "donors": "a44c5694c30c4032fb0a048aa1f2b7b8f879af29bb0b610317675f19c87a3000",
+    "donations": "2c1f9cf2a21bc0e6c8fb3cfac40df9246010a5b533a4e7d54e9a63240e862060",
+    "donation_hub_candidates": "22f5c482bb3d0cd87de725fee39147c6f572690695fcfe5dd5f081dd6a199268",
+    "listings": "6bcf4e2ef708cb2672c4e1c4a8ba5c8bd48c6dcd665fdaa73b41d878d6d4b889",
+    "hub_batches": "0aef3007370f55fdf39385d31371293d16f8f832ff3915165a4b3f211749a444",
+    "hub_batch_members": "134118e37c1f083b5277145c99750c8fd575007525f5cce3958bb3076619c06f",
     "scenarios": "973d91972df90c0e39501a35ca2ae181d1a6af37d5ccb83c56e4b4bf2d5c966c",
-    "scenario_members": "94b510a3e6dcdf161fa50bd5d876a2676fbeedd879dbf69ae0cb18cee4610725",
-    "claim_initial_states": "70dbf6544198122555336e4f8d4ad887552f30d64b1ff4f44c18d768502b3ae3",
+    "scenario_members": "edaaefbd4fc12e9367f3fe2af4d6c7903732575ac3bcae7fd9fb9660d2fa046d",
+    "claim_initial_states": "862f99beafa3dacd6d79144898d1f478be684f9dbd827b7a347fba3503b16529",
     "verification_cases": "740d57558291543ab9716188be59d5a96e97d41d5e6d83e26bf2a0027b28cc3a"
   }
 }

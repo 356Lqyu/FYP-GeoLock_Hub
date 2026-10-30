@@ -1,7 +1,7 @@
 """Nearest feasible hub baseline (comparison method).
 
 Rule: keep the candidate hubs that pass every hard rule (item compatibility,
-capacity, hub active, directed donor-to-hub route), sort them by directed road
+capacity, operating window, hub active, directed donor-to-hub route), sort them by directed road
 distance, tie-break by hub_id, recommend the first. This is the ordering the
 backend's get_eligible_hubs() returns.
 
@@ -22,9 +22,10 @@ import sys
 
 FOLDER = "1_nearest_hub"
 TITLE = "Nearest-Hub (baseline 1)"
-WHAT = ("Among the hubs that pass all four hard rules, recommend the one with the shortest road distance from the donor (ties: hub ID). Same order as the backend get_eligible_hubs().")
+WHAT = ("Among the hubs that pass all five hard rules, recommend the one with the shortest road distance from the donor (ties: hub ID). Same order as the backend get_eligible_hubs().")
+COMPARE = ['## Compared with (experiment E1, RQ1)', '', '| | This baseline | Proposed method (E1) |', '| --- | --- | --- |', '| Ranking | shortest road distance | AI model (Random Forest / XGBoost) that predicts the reference score |', '| Same inputs | | same feasible hubs (five hard rules), same road distances, same tie rule (shorter distance, then hub ID), Top-k = 3 |', '', 'Score only the 349 held-out test donations listed in `ai hub ranking/data split/split/test_scenario_ids.csv`, pairing rows by `scenario_id`. Main metric: **Top-1 agreement** with the weighted reference policy (`../ref_weighted_hub/`); NDCG@3 and Top-3 coverage come from `details/hub_ranking.csv`. This baseline tests whether road distance alone can reproduce the reference ranking (report Section 3.5.3).', '']
 METHOD = "nearest"
-HARD_RULES = ("item_compatible_flag", "capacity_feasible_flag", "active_feasible_flag", "route_available_flag")
+HARD_RULES = ("item_compatible_flag", "capacity_feasible_flag", "operating_feasible_flag", "active_feasible_flag", "route_available_flag")
 TABLES = ("donations", "donors", "hubs", "donation_hub_candidates",
           "road_distance_matrix", "scenarios", "scenario_members")
 
@@ -152,7 +153,7 @@ SPREAD_NOTE = ("How to read a spread such as \"median 3.8 km (10th-90th percenti
                "single largest value.")
 GUIDE = dict(
  how=["Take every hub within 20 km (straight line) of the donor as a candidate.",
-      "Remove each candidate that fails a hard rule (category, free capacity, active, road route).",
+      "Remove each candidate that fails a hard rule (category, free capacity, opening hours, active, road route).",
       "Sort the rest by road distance from the donor, shortest first (ties: hub ID).",
       "Rank 1 is the recommendation. If no hub is left, the answer is NO_FEASIBLE_HUB."],
  expect=["Assigning each demand point to its closest open facility (\"closest assignment\") is the standard "
@@ -193,7 +194,7 @@ def write_summary(path, recommendations, rankings, manifest, seed):
     rows = [
         ("Scenarios", f"{len(recommendations):,}",
          "Small donations (< 10 kg), each with every hub within 20 km as a candidate"),
-        ("Hub recommended", f"{len(rec):,}", "At least one hub passed all four hard rules"),
+        ("Hub recommended", f"{len(rec):,}", "At least one hub passed all five hard rules"),
         ("No feasible hub", f"{len(none):,}", "No hub passed the hard rules, so the method correctly recommends nothing"),
         ("Feasible hubs per donation", spread([r["feasible_candidate_count"] for r in rec], "hubs", 0),
          "How many hubs the method could choose from"),
@@ -202,11 +203,10 @@ def write_summary(path, recommendations, rankings, manifest, seed):
     ]
     if METHOD == "random":
         rows.append(("Random seed", str(seed), "Same seed, same recommendations"))
-    lines = [f"# {TITLE}", "", f"Benchmark {manifest['benchmark_version']}. This describes this method on its own; "
-             "comparing methods is done in experiment E1.", "", f"**Method.** {WHAT}", "",
-             "**Hard rules** (a hub must pass all four): accepts the donation's category; weight <= capacity - stored - "
-             "reserved; hub active; a directed road route from the donor exists.", "",
-             "| Result | Value | Meaning |", "| --- | --- | --- |"]
+    lines = [f"# {TITLE}", "", f"Benchmark {manifest['benchmark_version']}.", "", "## What this baseline does", "", WHAT, "", *COMPARE,
+             "**Hard rules** (a hub must pass all five): accepts the donation's category; weight <= capacity - stored - "
+             "reserved; the donation window overlaps the hub opening hours by at least 30 min; hub active; a directed road route from the donor exists.", "",
+             "## Results", "", "| Result | Value | Meaning |", "| --- | --- | --- |"]
     lines += [f"| {a} | {b} | {c} |" for a, b, c in rows]
     lines += guide_lines(recommendations, rankings)
     lines += ["", "## Files", "", "| File | Content |", "| --- | --- |",
@@ -216,7 +216,7 @@ def write_summary(path, recommendations, rankings, manifest, seed):
               "### Columns of results_per_scenario.csv", "", "| Column | Meaning |", "| --- | --- |",
               "| `scenario_id` | Benchmark scenario (one small donation looking for a hub) |",
               "| `donation_id` | The donation |",
-              "| `status` | RECOMMENDED, or NO_FEASIBLE_HUB when no hub passes the four hard rules |",
+              "| `status` | RECOMMENDED, or NO_FEASIBLE_HUB when no hub passes the five hard rules |",
               "| `feasible_hubs` | How many hubs passed the hard rules (the method's choices) |",
               "| `recommended_hub` | The method's first choice (empty when NO_FEASIBLE_HUB) |",
               "| `distance_to_recommended_hub_km` | Road distance from the donor to that hub |",
@@ -288,7 +288,7 @@ def main():
     rows = common_run_rows(args.dataset_dir / "generation_manifest.json", __file__,
                            f"python {Path(__file__).name}" + (f" --seed {args.seed}" if METHOD == "random" and args.seed != 42 else ""))
     rows += [("Scenarios run", f"{len(recommendations):,}" + (" (selected with --scenario-ids)" if selected else " (all hub scenarios)")),
-             ("Settings", "20 km candidate radius; four hard rules" + (f"; random seed {args.seed}" if METHOD == "random" else "")
+             ("Settings", "20 km candidate radius; five hard rules" + (f"; random seed {args.seed}" if METHOD == "random" else "")
               + ("; weights 0.45 / 0.20 / 0.25 / 0.10" if METHOD == "weighted" else ""))]
     write_run_info(out / "run_info.md", TITLE, rows)
     write_summary(out / "summary.md", recommendations, rankings, manifest, args.seed)

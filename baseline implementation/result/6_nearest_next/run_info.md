@@ -4,9 +4,9 @@ This file only records what produced the results in this folder, so the run can 
 
 | Item | Value |
 | --- | --- |
-| Run at | 2026-10-23 18:39 Malay Peninsula Standard Time |
-| Benchmark | GEOLOCK-BM-v3.2 (generation_manifest.json SHA-256 4ef29e205fd09eba...; every input CSV was checked against this manifest) |
-| Script | `nearest_next_baseline.py` (SHA-256 7c39d13d514c81cf...) |
+| Run at | 2026-10-28 17:46 Malay Peninsula Standard Time |
+| Benchmark | GEOLOCK-BM-v3.3 (generation_manifest.json SHA-256 9c69e28601990a3a...; every input CSV was checked against this manifest) |
+| Script | `nearest_next_baseline.py` (SHA-256 d434cd3a92055e31...) |
 | Python | 3.12.10 |
 | Command to repeat | `python nearest_next_baseline.py` |
 | Scenarios run | 100 (all) |

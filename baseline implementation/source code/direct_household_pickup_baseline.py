@@ -12,6 +12,7 @@ by the E3 experiment on the same scenarios, NGO, fleet and routing rule.
 FOLDER = '5_direct_household_pickup'
 TITLE = 'Direct Household Pickup (baseline 5)'
 WHAT = ("No community hub. The NGO claims every original small donation of the aggregation scenario and collects each one from the donor's home, using the Nearest-Next routing rule and the same NGO fleet that the hub condition will use in E3.")
+COMPARE = ['## Compared with (experiment E3, RQ3)', '', '| | This baseline | Proposed method (E3) |', '| --- | --- | --- |', "| Collection | every small donation picked up at the donor's home | donations dropped at the community hub, batched (3-5 items, <= 30 kg), one pickup per batch |", '| Same inputs | | same 100 aggregation scenarios, original donations, NGO, fleet, depot, road matrix, Nearest-Next routing, 240-min route limit, 10 min per stop |', '', 'Pair the files by `scenario_id`. Main metric: **total NGO road distance** (paired difference). Also compare pickup trips, **donor travel burden** (km donors drive to the hub; 0 here) and the benchmark cost (1.00 x NGO km + 5.00 x trips + 0.50 per donation handled at a hub), so a lower NGO distance cannot hide travel moved onto donors (report Section 3.8.2).', '']
 # Benchmark cost index (cost units, not money), used in the direct-pickup summary only.
 COST_PER_KM = 1.00
 COST_PER_TRIP = 5.00
@@ -53,7 +54,7 @@ def positive(value, label, allow_zero=False):
 
 
 def timestamp(value):
-    # Fixture timestamps are local Asia/Kuala_Lumpur; no host clock is used.
+    # Benchmark timestamps are local Asia/Kuala_Lumpur; no host clock is used.
     return datetime.fromisoformat(value)
 
 
@@ -155,7 +156,7 @@ class Benchmark:
                     matrix_id=self.manifest['matrix_id'],
                     input_sha256=self.hashes, runner_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
                     python_version=sys.version.split()[0], configuration=configuration, configuration_id=digest(configuration),
-                    fixture_timezone=self.manifest['fixture_timezone'],
+                    timezone=self.manifest['fixture_timezone'],
                     run_type='BASELINE_METHOD_OUTPUT_NOT_EXPERIMENT_RESULT',
                     backend='IN_MEMORY_SIMULATION_NOT_POSTGRESQL', dispatch_authority_issued=False)
 
@@ -550,10 +551,8 @@ def write_summary(path, data, results, task_rows, snapshots):
              ('**Hard-constraint violations**', f'{violations} (routes of all {len(results)} scenarios pass)'
               if not violations else f'{violations} scenarios fail',
               'Independent check: capacity, 240-min duration, lease, NGO ownership, road route, each task once')]
-    lines = [f'# {TITLE}', '', f"Benchmark {data.manifest['benchmark_version']}. This describes this method on its own; "
-             f"comparing methods is done in experiment {'E3' if CONDITION == 'direct' else 'E4'}.", '',
-             f'**Method.** {WHAT}', '',
-             '| Result | Value | Meaning |', '| --- | --- | --- |']
+    lines = [f'# {TITLE}', '', f"Benchmark {data.manifest['benchmark_version']}.", '', '## What this baseline does', '', WHAT, '',
+             *COMPARE, '## Results', '', '| Result | Value | Meaning |', '| --- | --- | --- |']
     lines += [f'| {a} | {b} | {c} |' for a, b, c in rows]
     profiles = sorted({r['scenario_profile'] for r in results})
     if len(profiles) > 1:

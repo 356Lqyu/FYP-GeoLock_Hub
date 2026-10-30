@@ -8,6 +8,7 @@ experiment runner, on the same sealed snapshots.
 FOLDER = '6_nearest_next'
 TITLE = 'Nearest-Next routing (baseline 6)'
 WHAT = ("Vehicles are used one at a time in ascending vehicle ID. From the current position, a vehicle drives to the nearest (road distance) confirmed task it can still legally add; when no task fits, it returns to its depot and the next vehicle starts.")
+COMPARE = ['## Compared with (experiment E4, RQ4)', '', '| | This baseline | Proposed method (E4) |', '| --- | --- | --- |', '| Routing | nearest feasible next task | constrained route optimiser (OR-Tools: path cheapest arc, guided local search, 30 s per snapshot) |', '| Same inputs | | same 100 planning snapshots (`details/planning_snapshots.json`), vehicles, depot, road matrix, vehicle capacity, 240-min route limit, 10 min per stop |', '', 'Pair the files by `scenario_id`. Check **valid-task coverage** and **hard-constraint violations** first; compare total road distance and travel time only when both methods pass (report Section 3.7).', '']
 # Benchmark cost index (cost units, not money), used in the direct-pickup summary only.
 COST_PER_KM = 1.00
 COST_PER_TRIP = 5.00
@@ -49,7 +50,7 @@ def positive(value, label, allow_zero=False):
 
 
 def timestamp(value):
-    # Fixture timestamps are local Asia/Kuala_Lumpur; no host clock is used.
+    # Benchmark timestamps are local Asia/Kuala_Lumpur; no host clock is used.
     return datetime.fromisoformat(value)
 
 
@@ -151,7 +152,7 @@ class Benchmark:
                     matrix_id=self.manifest['matrix_id'],
                     input_sha256=self.hashes, runner_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
                     python_version=sys.version.split()[0], configuration=configuration, configuration_id=digest(configuration),
-                    fixture_timezone=self.manifest['fixture_timezone'],
+                    timezone=self.manifest['fixture_timezone'],
                     run_type='BASELINE_METHOD_OUTPUT_NOT_EXPERIMENT_RESULT',
                     backend='IN_MEMORY_SIMULATION_NOT_POSTGRESQL', dispatch_authority_issued=False)
 
@@ -537,10 +538,8 @@ def write_summary(path, data, results, task_rows, snapshots):
              ('**Hard-constraint violations**', f'{violations} (routes of all {len(results)} scenarios pass)'
               if not violations else f'{violations} scenarios fail',
               'Independent check: capacity, 240-min duration, lease, NGO ownership, road route, each task once')]
-    lines = [f'# {TITLE}', '', f"Benchmark {data.manifest['benchmark_version']}. This describes this method on its own; "
-             f"comparing methods is done in experiment {'E3' if CONDITION == 'direct' else 'E4'}.", '',
-             f'**Method.** {WHAT}', '',
-             '| Result | Value | Meaning |', '| --- | --- | --- |']
+    lines = [f'# {TITLE}', '', f"Benchmark {data.manifest['benchmark_version']}.", '', '## What this baseline does', '', WHAT, '',
+             *COMPARE, '## Results', '', '| Result | Value | Meaning |', '| --- | --- | --- |']
     lines += [f'| {a} | {b} | {c} |' for a, b, c in rows]
     profiles = sorted({r['scenario_profile'] for r in results})
     if len(profiles) > 1:

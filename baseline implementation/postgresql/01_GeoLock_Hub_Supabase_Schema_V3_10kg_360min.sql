@@ -1,13 +1,7 @@
--- GEOLOCK HUB V2 | Fresh-install PostgreSQL/Supabase schema and protected workflows
--- IMPORTANT: Execute on a NEW project after review. Not an in-place migration.
--- Design: 20 km straight-line geofence for discovery/claim; road network for routing.
--- Fixed classification: weight < 10 kg -> HUB_COLLECTION; weight >= 10 kg -> DIRECT_PICKUP.
--- Claim lease duration: 360 minutes (6 hours).
--- Route feasibility (road network, time windows) requires an external trusted validator.
--- No automatic lease renewal. Backend must invoke recovery periodically.
--- Security: no direct client table writes; RPCs validate auth.uid() and role.
--- WARNING: Auth bootstrap for HUB_ADMIN must be provisioned by trusted backend.
--- The script deliberately DOES NOT grant a public function to self-assign HUB_ADMIN.
+-- GeoLock Hub V3 schema for the baseline database (fresh install; run after 00 on plain PostgreSQL).
+-- Rules: 10 kg threshold, 360-minute claim lease, no renewal. Geofence here is 20 km straight line;
+-- the baseline scripts also check the 20 km road distance (report Table A.4) before each claim.
+-- claim_listing() locks the listing FOR NO KEY UPDATE (no deadlock with the claim_requests foreign key).
 
 create extension if not exists pgcrypto;
 create schema if not exists extensions;
@@ -60,8 +54,7 @@ create table public.coordination_config (
  check(batch_min_donations<=batch_max_donations)
 );
 insert into public.coordination_config(singleton) values(true);
--- The fixed 10 kg threshold and 360-minute lease are initialized above.
--- Examples: 9.999 kg -> HUB_COLLECTION; 10.000 kg -> DIRECT_PICKUP.
+-- 9.999 kg -> HUB_COLLECTION; 10.000 kg -> DIRECT_PICKUP.
 
 -- 2. Categories, hubs, donations
 create table public.donation_categories (
@@ -335,7 +328,7 @@ create table public.audit_events (
 create index idx_audit_entity on public.audit_events(entity_type,entity_id,occurred_at);
 create index idx_audit_request on public.audit_events(request_id);
 
--- 7. Guard functions (including defense against privileged accidental status skipping)
+-- 7. Guard functions
 create function public.prevent_role_change() returns trigger
 language plpgsql set search_path=public,pg_temp as $$
 begin
@@ -474,9 +467,7 @@ begin
  return v_user;
 end $$;
 
--- 9. Donation creation and validation: item array inserted in same transaction.
--- p_items JSON array objects: category_id, item_name, quantity, unit_weight_kg,
--- optional description, unit_label, item_condition.
+-- 9. Donation creation and validation (items inserted in the same transaction).
 create function public.create_and_validate_donation(
  p_title text,p_description text,p_pickup_address text,
  p_latitude double precision,p_longitude double precision,
@@ -646,8 +637,7 @@ begin
  return v_receipt;
 end $$;
 
--- 13. Batch publication: whole-donation aggregation, no edits after publish.
--- p_donation_ids must be distinct, 3-5 items (configurable) and <=30 kg.
+-- 13. Batch publication: 3-5 whole donations, <= 30 kg, no edits after publish.
 create function public.publish_whole_donation_batch(p_hub uuid,p_donation_ids uuid[])
 returns uuid language plpgsql security definer
 set search_path=public,extensions,pg_temp as $$
@@ -676,8 +666,7 @@ begin
  select coalesce(sum(hr.received_weight_kg),0) into v_weight
  from public.hub_receipts hr where hr.donation_id=any(p_donation_ids);
  if v_weight>v_limit then raise exception 'BATCH_WEIGHT_EXCEEDED'; end if;
- -- Single-category compatibility for whole donations; mixed-category donations
- -- cannot join a single-category batch without an approved alternative rule.
+ -- One category per batch.
  select count(distinct di.category_id) into v_cat_count
  from public.donation_items di where di.donation_id=any(p_donation_ids);
  select di.category_id into v_cat from public.donation_items di
@@ -704,9 +693,7 @@ begin
  return v_batch;
 end $$;
 
--- 14. Eligibility-filtered discovery (20 km geographic distance).
--- SECURITY DEFINER prevents clients from querying private donor tables directly.
--- The result deliberately excludes donor address and precise coordinates.
+-- 14. Discovery of eligible listings (20 km); donor address and exact coordinates are not returned.
 create function public.discover_eligible_listings()
 returns table(listing_id uuid,source_type text,listing_weight_kg numeric,
  listing_created_at timestamptz)
@@ -735,9 +722,7 @@ begin
  order by l.created_at desc;
 end $$;
 
--- 15. Atomic claim, idempotent by request_id, one commit.
--- Request ID replay returns original outcome; a different payload is rejected.
--- Rejected attempts are logged in the same committed RPC transaction.
+-- 15. Atomic claim: one commit, idempotent by request_id, rejected attempts audited.
 create function public.claim_listing(p_listing uuid,p_request uuid)
 returns jsonb language plpgsql security definer
 set search_path=public,extensions,pg_temp as $$
@@ -760,7 +745,7 @@ begin
   return jsonb_build_object('outcome',v_req.outcome,'claim_id',v_req.result_claim_id,
     'reason_code',v_req.reason_code,'replayed',true);
  end if;
- select * into v_l from public.listings where listing_id=p_listing for update;
+ select * into v_l from public.listings where listing_id=p_listing for no key update;
  if not found then v_reason='LISTING_NOT_FOUND';
  elsif v_l.listing_status<>'AVAILABLE' then v_reason='CLAIM_CONFLICT';
  elsif v_l.listing_expires_at is not null and v_l.listing_expires_at<=clock_timestamp()
@@ -810,8 +795,7 @@ begin
    'reason_code',v_reason,'replayed',false);
 end $$;
 
--- 16. Pickup start and handover: require live lease and same NGO.
--- A collected donation is physically transferred, even if later lease expires.
+-- 16. Pickup start and handover: live lease and same NGO required.
 create function public.start_pickup(p_claim uuid)
 returns void language plpgsql security definer
 set search_path=public,extensions,pg_temp as $$
@@ -888,8 +872,7 @@ begin
  'COLLECTED','COLLECTED','SUCCESS');
 end $$;
 
--- 17. Recovery: backend worker only. NEVER give this RPC to authenticated clients.
--- Distinguish expiry from safe release; dispatched/physical uncertainty requires reconciliation.
+-- 17. Lease recovery (service role only): safe release, or reconciliation if handover is uncertain.
 create function public.recover_expired_claims(p_limit integer default 100)
 returns integer language plpgsql security definer
 set search_path=public,extensions,pg_temp as $$
@@ -943,8 +926,7 @@ begin
  return v_processed;
 end $$;
 
--- 18. Route task assignment: atomic uniqueness, owner check.
--- This does not replace the independent external route feasibility validator.
+-- 18. Route task assignment: one active route per task, owner check.
 create function public.assign_task_to_route(p_route uuid,p_task uuid,p_stop_order integer)
 returns void language plpgsql security definer
 set search_path=public,extensions,pg_temp as $$
@@ -987,10 +969,8 @@ begin
  ] loop execute format('alter table public.%I enable row level security',t); end loop;
 end $$;
 
--- No direct client writes. These revokes assume default grants may be broad.
 revoke all on all tables in schema public from anon,authenticated;
 revoke all on all sequences in schema public from anon,authenticated;
--- Explicitly control RPC access. Functions are PUBLIC-executable by default in PostgreSQL.
 revoke all on function public.register_role_profile(text,text,text,text,text,text,double precision,double precision,text) from public;
 revoke all on function public.create_and_validate_donation(text,text,text,double precision,double precision,jsonb,text,timestamptz,timestamptz) from public;
 revoke all on function public.register_community_hub(text,text,double precision,double precision,numeric,text) from public;
@@ -1021,15 +1001,3 @@ grant execute on function public.start_pickup(uuid) to authenticated;
 grant execute on function public.complete_pickup(uuid,boolean) to authenticated;
 grant execute on function public.assign_task_to_route(uuid,uuid,integer) to authenticated;
 grant execute on function public.recover_expired_claims(integer) to service_role;
-
--- 20. Required trusted backend work before deployment:
--- A. Provision HUB_ADMIN via trusted service role (no self-registration endpoint).
--- B. Geocode and verify NGO address/pin; never blindly trust user-supplied coordinates.
--- C. Provision hub accepted categories via controlled admin workflow.
--- D. Implement read RPCs for owner data, listing detail, task and route detail.
--- E. Implement protected vehicle/route creation, route cancellation and route validation.
--- F. Implement route authorization with trusted road-network/time-window proof and revalidation.
--- G. Implement donor cancellation, delivery confirmation, and reconciliation resolution.
--- H. Schedule recover_expired_claims from trusted backend; verify auth.role() behavior.
--- I. Add tests for races, stale holders, transaction rollback, rejected attempts, hub capacity.
--- J. Review function-owner privileges, schema exposure, default privileges and RLS.

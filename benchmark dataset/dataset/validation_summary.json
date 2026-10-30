@@ -1,9 +1,9 @@
 {
-  "benchmark_version": "GEOLOCK-BM-v3.2",
+  "benchmark_version": "GEOLOCK-BM-v3.3",
   "ngo_count": 11,
   "hub_count": 180,
-  "community_hub_donations": 2615,
-  "direct_household_donations": 1185,
+  "community_hub_donations": 2628,
+  "direct_household_donations": 1172,
   "scenario_type_counts": {
     "HUB_RECOMMENDATION": 2000,
     "HUB_RECOMMENDATION_VERIFICATION": 19,
@@ -17,22 +17,23 @@
   "verification_profiles": {
     "NO_FEASIBLE_HUB": 19
   },
-  "candidate_rows": 91675,
+  "candidate_rows": 92941,
   "candidate_hubs_per_donation": {
     "min": 5,
-    "median": 32,
+    "median": 31,
     "max": 67
   },
   "feasible_hubs_per_donation": {
     "min": 0,
-    "median": 21,
-    "max": 52
+    "median": 24,
+    "max": 62
   },
   "candidate_rows_failing": {
-    "item_compatible_flag": 9987,
-    "capacity_feasible_flag": 12758,
-    "active_feasible_flag": 5125,
-    "route_available_flag": 1528
+    "item_compatible_flag": 8884,
+    "capacity_feasible_flag": 424,
+    "operating_feasible_flag": 285,
+    "active_feasible_flag": 5103,
+    "route_available_flag": 1476
   },
   "claim_input_states": {
     "EXPIRED": 100,
@@ -42,6 +43,50 @@
   "batch_member_duplicates": 0,
   "hub_capacity_violations": 0,
   "referential_integrity_passed": true,
+  "geography": {
+    "admitted_points_outside_boundary": 0,
+    "rejected": {
+      "donor_node_outside_study_boundary": 178,
+      "hub_site_outside_study_boundary": 42
+    },
+    "road_nodes_removed_outside_road_area": 636814
+  },
   "route_scenarios": 100,
-  "route_listing_reuse": 0
+  "route_listing_reuse": 0,
+  "timeline": {
+    "first_availability_start": "2025-01-01T10:15",
+    "last_availability_end": "2026-04-30T21:00",
+    "availability_hours": {
+      "min": 8.0,
+      "median": 35.0,
+      "max": 60.0
+    },
+    "donations_per_month": {
+      "2025-01": 229,
+      "2025-02": 249,
+      "2025-03": 237,
+      "2025-04": 215,
+      "2025-05": 251,
+      "2025-06": 231,
+      "2025-07": 227,
+      "2025-08": 251,
+      "2025-09": 226,
+      "2025-10": 256,
+      "2025-11": 257,
+      "2025-12": 223,
+      "2026-01": 269,
+      "2026-02": 214,
+      "2026-03": 220,
+      "2026-04": 245
+    },
+    "weekend_share": 0.37,
+    "batch_episode_conflicts": 0,
+    "route_groups_with_common_window": 100
+  },
+  "hub_opening_hours": {
+    "08:00-12:00": 19,
+    "18:00-22:00": 19,
+    "09:00-17:00": 93,
+    "08:00-22:00": 49
+  }
 }

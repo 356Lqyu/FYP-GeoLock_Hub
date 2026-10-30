@@ -1,8 +1,21 @@
 # First-Come-First-Served routing (baseline 7)
 
-Benchmark GEOLOCK-BM-v3.2. This describes this method on its own; comparing methods is done in experiment E4.
+Benchmark GEOLOCK-BM-v3.3.
 
-**Method.** Vehicles are used one at a time in ascending vehicle ID. A vehicle always takes the earliest-confirmed task it can still legally add, whatever its distance; a task that does not fit is skipped, not allowed to block later tasks. When nothing fits, it returns to its depot.
+## What this baseline does
+
+Vehicles are used one at a time in ascending vehicle ID. A vehicle always takes the earliest-confirmed task it can still legally add, whatever its distance; a task that does not fit is skipped, not allowed to block later tasks. When nothing fits, it returns to its depot.
+
+## Compared with (experiment E4, RQ4)
+
+| | This baseline | Proposed method (E4) |
+| --- | --- | --- |
+| Routing | earliest-confirmed task first | constrained route optimiser (OR-Tools: path cheapest arc, guided local search, 30 s per snapshot) |
+| Same inputs | | same 100 planning snapshots as Nearest-Next (`../6_nearest_next/details/planning_snapshots.json`), vehicles, depot, road matrix, vehicle capacity, 240-min route limit, 10 min per stop |
+
+Pair the files by `scenario_id`. FCFS is the optional, descriptive comparison of report Section 3.8.2. Check **valid-task coverage** and **hard-constraint violations** first; compare distance and time after.
+
+## Results
 
 | Result | Value | Meaning |
 | --- | --- | --- |
@@ -11,21 +24,21 @@ Benchmark GEOLOCK-BM-v3.2. This describes this method on its own; comparing meth
 | **Valid-task coverage** (main metric) | 454 of 500 (90.8%) | Share of valid confirmed tasks placed on a valid route |
 | Unserved tasks | 46 | 44 FLEET_CAPACITY_OR_ROUTE_BUDGET_EXHAUSTED; 2 ROUTE_UNAVAILABLE |
 | Excluded before planning | 0 | none |
-| Total route distance | 4,802.7 km | Depot to pickups and back to the depot, all routes |
-| Total travel time | 5,576 min | Driving only; service time (10 min per stop) is counted in route duration |
-| Road distance per collected task | 10.58 km | Total distance / collected tasks |
-| Pickup trips (vehicles used) | 122 of 150 available | Each vehicle makes at most one trip |
-| Route duration | median 87.2 min (10th-90th percentile 26.8-127.8; max 172.4) | Driving + 10 min service per stop + return; limit 240 min |
+| Total route distance | 4,597.6 km | Depot to pickups and back to the depot, all routes |
+| Total travel time | 5,370 min | Driving only; service time (10 min per stop) is counted in route duration |
+| Road distance per collected task | 10.13 km | Total distance / collected tasks |
+| Pickup trips (vehicles used) | 116 of 150 available | Each vehicle makes at most one trip |
+| Route duration | median 87.9 min (10th-90th percentile 33.4-119.2; max 174.7) | Driving + 10 min service per stop + return; limit 240 min |
 | **Hard-constraint violations** | 0 (routes of all 100 scenarios pass) | Independent check: capacity, 240-min duration, lease, NGO ownership, road route, each task once |
 
 ## By scenario profile
 
 | Profile | Scenarios | Tasks | Collected | Not collected | Road distance (km) | Trips |
 | --- | --- | --- | --- | --- | --- | --- |
-| CAPACITY_PRESSURE | 25 | 125 | 81 | 44 | 801.0 | 25 |
-| CONNECTIVITY_STRESS | 25 | 125 | 125 | 0 | 1,320.5 | 37 |
-| GEOGRAPHIC_SPREAD | 25 | 125 | 125 | 0 | 1,480.2 | 25 |
-| NORMAL | 25 | 125 | 123 | 2 | 1,201.0 | 35 |
+| CAPACITY_PRESSURE | 25 | 125 | 81 | 44 | 814.4 | 25 |
+| CONNECTIVITY_STRESS | 25 | 125 | 124 | 1 | 1,168.5 | 33 |
+| GEOGRAPHIC_SPREAD | 25 | 125 | 125 | 0 | 1,430.0 | 25 |
+| NORMAL | 25 | 125 | 124 | 1 | 1,184.7 | 33 |
 
 ## Reason codes
 

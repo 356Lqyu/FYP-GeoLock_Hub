@@ -1,21 +1,34 @@
 # Direct Household Pickup (baseline 5)
 
-Benchmark GEOLOCK-BM-v3.2. This describes this method on its own; comparing methods is done in experiment E3.
+Benchmark GEOLOCK-BM-v3.3.
 
-**Method.** No community hub. The NGO claims every original small donation of the aggregation scenario and collects each one from the donor's home, using the Nearest-Next routing rule and the same NGO fleet that the hub condition will use in E3.
+## What this baseline does
+
+No community hub. The NGO claims every original small donation of the aggregation scenario and collects each one from the donor's home, using the Nearest-Next routing rule and the same NGO fleet that the hub condition will use in E3.
+
+## Compared with (experiment E3, RQ3)
+
+| | This baseline | Proposed method (E3) |
+| --- | --- | --- |
+| Collection | every small donation picked up at the donor's home | donations dropped at the community hub, batched (3-5 items, <= 30 kg), one pickup per batch |
+| Same inputs | | same 100 aggregation scenarios, original donations, NGO, fleet, depot, road matrix, Nearest-Next routing, 240-min route limit, 10 min per stop |
+
+Pair the files by `scenario_id`. Main metric: **total NGO road distance** (paired difference). Also compare pickup trips, **donor travel burden** (km donors drive to the hub; 0 here) and the benchmark cost (1.00 x NGO km + 5.00 x trips + 0.50 per donation handled at a hub), so a lower NGO distance cannot hide travel moved onto donors (report Section 3.8.2).
+
+## Results
 
 | Result | Value | Meaning |
 | --- | --- | --- |
 | Scenarios | 100 | One NGO with its own vehicles and a set of pickups |
-| Original donations | 417 | Every small donation (< 10 kg) of the aggregation scenario, each picked up at the donor's home |
-| Collected | 417 of 417 (100.0%) | Assigned to a valid route |
-| **Total NGO road distance** (main metric) | 2,780.7 km | Depot to every household and back, all routes |
+| Original donations | 424 | Every small donation (< 10 kg) of the aggregation scenario, each picked up at the donor's home |
+| Collected | 424 of 424 (100.0%) | Assigned to a valid route |
+| **Total NGO road distance** (main metric) | 2,617.7 km | Depot to every household and back, all routes |
 | Pickup trips (NGO dispatches) | 100 of 200 vehicles available | Each vehicle makes at most one trip |
 | Donor travel burden | 0 km | Donors stay at home in this condition |
-| Calculated benchmark cost | 3,280.7 units | 1.00 x NGO km + 5.00 x trips; a benchmark index, not real money |
-| Calculated cost per original donation | 7.87 units | Cost / donations |
-| NGO road distance per donation | 6.67 km | Total distance / donations |
-| Route duration | median 76.0 min (10th-90th percentile 57.0-92.0; max 134.4) | Driving + 10 min service per stop + return; limit 240 min |
+| Calculated benchmark cost | 3,117.7 units | 1.00 x NGO km + 5.00 x trips; a benchmark index, not real money |
+| Calculated cost per original donation | 7.35 units | Cost / donations |
+| NGO road distance per donation | 6.17 km | Total distance / donations |
+| Route duration | median 75.9 min (10th-90th percentile 51.2-96.6; max 111.1) | Driving + 10 min service per stop + return; limit 240 min |
 | **Hard-constraint violations** | 0 (routes of all 100 scenarios pass) | Independent check: capacity, 240-min duration, lease, NGO ownership, road route, each task once |
 
 ## How the method works

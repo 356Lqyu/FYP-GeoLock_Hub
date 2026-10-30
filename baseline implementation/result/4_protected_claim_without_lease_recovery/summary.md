@@ -1,116 +1,109 @@
-# Protected Claim without Lease Recovery (baseline 4)
+# Protected Claim without Lease Recovery
 
-Benchmark GEOLOCK-BM-v3.2, run on PostgreSQL (Supabase project (aws-0-ap-southeast-1.pooler.supabase.com); network delay is included in response times). This describes this method on its own; comparing it with the proposed recovery-enabled claim is experiment E2.
+Benchmark GEOLOCK-BM-v3.3. Database: Supabase project (aws-0-ap-southeast-1.pooler.supabase.com); response times include the network delay.
 
-**Method.** The GeoLock claim function `public.claim_listing()` (row lock, recheck, one-active-claim unique index, idempotent request ID), but the job that releases expired claims (`public.recover_expired_claims()`) is never run.
+## What this baseline does
 
-## Part 1 - Several NGOs claim the same listing at the same moment
+It is the GeoLock claim **without lease recovery**. Claims are protected exactly as in the proposed system: the real `public.claim_listing()` locks the listing row, checks again that it is still AVAILABLE, and a unique index allows only one active claim per listing. The difference is that the job that releases expired claims, `public.recover_expired_claims()`, is never run. So an NGO that claims a listing and never collects it keeps it blocked, even after its 360-minute lease has expired.
+
+## Compared with (experiment E2, RQ2)
+
+| | This baseline | Proposed method (E2) |
+| --- | --- | --- |
+| Claim | `claim_listing()` | the same `claim_listing()` |
+| Expired leases | never released | `recover_expired_claims()` runs before the second NGO claims |
+| Same inputs | | same scenarios, listings, NGOs, request order, 20 km road geofence, 360-min lease, database and retry rule |
+
+Pair the files by `scenario_id`. Main E2 metrics: **duplicate committed-claim rate** (`more_than_one_owner`) and **lease recovery success** (`second_ngo_got_listing` in the "lease expired" cases). Expected: both methods 0 duplicates; only the proposed method recovers expired leases; neither may take over a lease that is still running.
+
+## Part 1 - several NGOs claim the same listing at the same moment
 
 | Result | Value | Meaning |
 | --- | --- | --- |
-| Contention trials | 150 | One new listing per trial, claimed at the same moment by 2, 5 or 10 NGOs |
-| Trials with exactly 1 committed claim | 150 of 150 | Correct ownership |
-| **Duplicate committed-claim rate** (main safety metric) | 0 of 150 trials (0%) | Must be 0% |
-| Requests that failed with a database error | 602 of 850 | Deadlock even after one retry; nothing was committed for these requests, but the NGO got an error instead of a clear CONFLICT answer |
+| Contention trials | 150 | One new listing per trial |
+| Trials with exactly 1 stored claim | 150 of 150 | Correct ownership |
+| **Duplicate committed-claim rate** | 0 of 150 (0%) | Must be 0% |
+| Requests told CONFLICT | 700 | Clear "already claimed" answers |
+| Requests failed with a database error | 0 | Should be 0 |
 
-### By number of concurrent requests
+### By number of NGOs claiming at once
 
-| Concurrent requests per trial | Trials | Requests | SUCCESS | CONFLICT | ERROR | Retries | Trials with exactly 1 committed claim | Trials with a duplicate claim | Median latency (ms) |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 2 | 50 | 100 | 50 | 50 | 0 | 39 | 50 | 0 | 1,022 |
-| 5 | 50 | 250 | 50 | 24 | 176 | 221 | 50 | 0 | 6,087 |
-| 10 | 50 | 500 | 50 | 24 | 426 | 477 | 50 | 0 | 13,026 |
-| All | 150 | 850 | 150 | 98 | 602 | 737 | 150 | 0 | 9,064 |
+| NGOs claiming at once | Trials | SUCCESS | CONFLICT | ERROR | Trials with 1 stored claim | Trials with a duplicate | Median response (ms) |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 2 | 50 | 50 | 50 | 0 | 50 | 0 | 19 |
+| 5 | 50 | 50 | 200 | 0 | 50 | 0 | 28 |
+| 10 | 50 | 50 | 450 | 0 | 50 | 0 | 31 |
+| All | 150 | 150 | 700 | 0 | 150 | 0 | 27 |
 
-## Part 2 - Another NGO tries to claim a listing whose claim was made earlier
+## Part 2 - another NGO claims a listing that was claimed earlier
 
-| Prior claim at replay time | Cases | Replacement NGO got the listing | Answer to the replacement NGO | Prior claim still ACTIVE afterwards | Listing status afterwards |
-| --- | --- | --- | --- | --- | --- |
-| ACTIVE (lease still running) | 25 | 0 | CONFLICT CLAIM_CONFLICT | 25 | CLAIMED |
-| EXPIRED (lease expired) | 100 | 0 | CONFLICT CLAIM_CONFLICT | 100 | CLAIMED |
+| Earlier claim at replay time | Cases | Second NGO got the listing | Earlier claim still active | Median response (ms) |
+| --- | --- | --- | --- | --- |
+| lease expired | 100 | 0 | 100 | 17 |
+| lease still running | 25 | 0 | 25 | 18 |
 
-**Lease recovery success** (main metric): 0 of 100 expired-lease cases (0%) were released and reclaimed.
+**Lease recovery success**: 0 of 100 expired-lease listings (0%) could be claimed by another NGO. Without recovery the expired claim is never released, so the listing stays blocked; this is the gap the proposed method must close.
 
-Without lease recovery, 100 of 100 listings whose lease had already expired stayed blocked: the expired claim was never released, so no other NGO could collect the food. Refusing the replacement NGO is correct only while the lease is still running.
+## How a trial runs
 
-## Request outcomes
-
-| Outcome | Meaning |
-| --- | --- |
-| SUCCESS | The function answered that this NGO now holds the listing. |
-| CONFLICT | The function answered that the listing is already claimed by another NGO (reason code CLAIM_CONFLICT). |
-| INELIGIBLE | The NGO failed an eligibility rule (geofence, location, listing expired). |
-| ERROR | The database aborted the request (e.g. deadlock) and it also failed its one retry; nothing was committed for it. |
-
-## How the method works
-
-1. Part 1: for each trial, create a new AVAILABLE listing; N NGOs (2, 5 or 10) press "claim" at the same moment, each on its own signed-in connection.
-2. Each request calls the real `public.claim_listing()`: it records the request ID, locks the listing row (`SELECT ... FOR UPDATE`), checks again that it is still AVAILABLE, then writes the claim with a 360-minute lease. A unique index allows only one active claim per listing; repeating a request ID returns the same answer.
-3. Part 2: a listing already has a claim made earlier, with its lease either expired or still running at the replay time. Another NGO then tries to claim it.
-4. The recovery job `public.recover_expired_claims()` is never run, so an expired claim is never released.
-
-## What to expect
-
-- Locking the row and checking again turns the claims into a queue: the first request wins and every later one sees CLAIMED and gets CONFLICT [1, 2]. Expected: exactly 1 claim in every trial, no duplicates.
-- A lease limits how long a holder can block others, but only if expired leases are actually taken back [3]. Without recovery, an expired claim keeps the listing CLAIMED forever. Expected: 0 expired listings reclaimed (the problem), and 0 active ones reclaimed (correct).
-- Known side effect in the current function: recording the request first makes PostgreSQL take a key-share lock on the listing (foreign key), and `FOR UPDATE` conflicts with that lock [2]. Concurrent requests then wait for each other (deadlock) and PostgreSQL aborts one of them [2]. Expected: database errors that grow with the number of simultaneous NGOs, with nothing wrongly committed. Using `FOR NO KEY UPDATE` removes it (see `postgresql/README.md`).
+1. A new AVAILABLE listing is made from the benchmark listing (same location, weight and claim window).
+2. Each NGO is checked against the 20 km road geofence using the benchmark road matrix.
+3. Part 1: every request opens its own signed-in connection; all are released at the same moment and call `claim_listing()`. Part 2: the earlier claim is written first, timed so that "now" is the benchmark replay time, then the second NGO calls `claim_listing()`.
+4. A deadlock gets one retry with the same request ID; a CONFLICT is never retried.
+5. The claims actually stored for the listing are read back from the database.
 
 ## How to read the results
 
-- **Trials with exactly 1 committed claim** must equal the number of trials: that is the safety result.
-- **Duplicate committed-claim rate** must be 0%.
-- **Lease recovery success** is the share of expired-lease cases that another NGO could claim; without recovery it is expected to be 0%, which is the gap the proposed lease recovery must close.
-- **Requests that failed with a database error** are requests aborted by a deadlock. They wrote nothing, so safety holds, but the NGO got an error instead of a clear "already claimed". Read it together with **Median latency**: seconds instead of milliseconds also come from deadlock waiting.
-- Part 2 table: in the EXPIRED row, **Replacement NGO got the listing** = 0 and **Prior claim still ACTIVE** = all cases is the lease-recovery problem this baseline is meant to show. In the ACTIVE row, 0 is the correct answer (the lease is still running).
-- `results_per_scenario.csv` (Part 1), `lease_results_per_scenario.csv` (Part 2) and `details/requests.csv` (every request) hold the details.
-
-## References
-
-- [1] PostgreSQL Global Development Group. (2026b). SELECT (the locking clause: FOR UPDATE, FOR NO KEY UPDATE). *PostgreSQL 18 documentation*. https://www.postgresql.org/docs/18/sql-select.html *(in the report reference list)*
-- [2] PostgreSQL Global Development Group. (2026). Explicit locking (row-level lock conflicts, deadlocks). *PostgreSQL 18 documentation*. https://www.postgresql.org/docs/18/explicit-locking.html *(not yet in the report: add it if you cite it)*
-- [3] Gray, C. G., & Cheriton, D. R. (1989). Leases: An efficient fault-tolerant mechanism for distributed file cache consistency. *Proceedings of the Twelfth ACM Symposium on Operating Systems Principles*, 202-210. https://doi.org/10.1145/74850.74870 *(in the report reference list)*
+- `claims_stored` = 1 and `more_than_one_owner` = NO in every trial means ownership is safe.
+- In "lease expired" cases, `second_ngo_got_listing` = NO is the problem this baseline shows; in "lease still running" cases NO is the correct answer.
+- Response times include the network delay when the database is a Supabase project.
 
 ## Files
 
 | File | Content |
 | --- | --- |
-| `results_per_scenario.csv` | **Main result, part 1.** One row per contention trial. |
-| `lease_results_per_scenario.csv` | **Main result, part 2.** One row per lease case. |
-| `details/requests.csv` | Every single claim request (for checking response times and errors). |
-| `run_info.md` | What produced this run (date, database, PostgreSQL version, script fingerprint, command). |
+| `results_per_scenario.csv` | Part 1: one row per contention trial |
+| `lease_results_per_scenario.csv` | Part 2: one row per lease case |
+| `details/requests.csv` | Every claim request: NGO, road distance, answer, reason, retries, response time |
+| `run_info.md` | Database, PostgreSQL version, script fingerprint, settings |
 
 ### Columns of results_per_scenario.csv
 
 | Column | Meaning |
 | --- | --- |
-| `scenario_id` | Benchmark contention scenario (one listing, several NGOs claiming at the same moment) |
-| `listing_id` | Benchmark listing that was copied into the database for this trial |
-| `ngos_competing` | How many NGOs pressed "claim" at the same moment (2, 5 or 10) |
-| `told_success` | NGOs told "the listing is yours" |
-| `told_already_claimed` | NGOs told "already claimed" (CONFLICT) |
-| `told_not_eligible` | NGOs refused by an eligibility rule |
-| `failed_with_error` | Requests aborted by the database (deadlock) even after one retry; nothing was stored for them |
+| `scenario_id` | Benchmark contention scenario: the key used to pair this row with the proposed method |
+| `listing_id` | Benchmark listing copied into the database for this trial |
+| `ngos_competing` | Claim requests sent at the same moment (2, 5 or 10) |
+| `different_ngos` | Different NGOs among them (the scenario has 2-4 nearby NGOs, reused in turn) |
+| `told_success` | Requests told "the listing is yours" |
+| `told_already_claimed` | Requests told "already claimed" (CONFLICT) |
+| `told_not_eligible` | Requests refused by the 20 km road geofence or another eligibility rule |
+| `failed_with_error` | Requests aborted by the database even after one retry (nothing stored) |
 | `retries_after_deadlock` | Retries used after a deadlock or serialization failure |
-| `claims_stored` | Active claims actually stored for the listing afterwards (correct = 1) |
-| `more_than_one_owner` | YES if more than one NGO owns the listing (a duplicate claim) |
-| `listing_status_after` | Listing status afterwards (CLAIMED) |
-| `median_response_ms` | Middle response time of the requests in this trial |
-| `slowest_response_ms` | Slowest response time in this trial |
+| `claims_stored` | Active claims stored for the listing afterwards (correct = 1) |
+| `more_than_one_owner` | YES = duplicate committed claim (the E2 safety metric) |
+| `listing_status_after` | Listing status afterwards |
+| `median_response_ms` | Middle response time of the requests |
+| `slowest_response_ms` | Slowest response time |
 
 ### Columns of lease_results_per_scenario.csv
 
 | Column | Meaning |
 | --- | --- |
-| `scenario_id` | Benchmark lease scenario |
-| `case` | "lease expired" (the first claim should be released) or "lease still running" (it should be kept) |
+| `scenario_id` | Benchmark lease scenario: the key used to pair this row with the proposed method |
+| `case` | "lease expired" (should be released) or "lease still running" (should be kept) |
 | `listing_id` | Benchmark listing |
 | `first_ngo` | NGO that claimed the listing earlier |
 | `second_ngo` | Another eligible NGO that now tries to claim it |
-| `second_ngo_answer` | Answer given to the second NGO (SUCCESS / CONFLICT) |
-| `second_ngo_reason` | Reason code of that answer (CLAIM_CONFLICT = listing still claimed) |
-| `second_ngo_got_listing` | YES if the second NGO got the listing |
-| `first_claim_still_active` | YES if the first NGO still holds the listing afterwards |
+| `second_ngo_answer` | Answer to the second NGO (SUCCESS / CONFLICT) |
+| `second_ngo_reason` | Reason code (CLAIM_CONFLICT = listing still claimed) |
+| `second_ngo_got_listing` | YES if the second NGO got the listing (lease recovery success) |
+| `first_claim_still_active` | YES if the first NGO still holds the listing |
 | `active_claims_after` | Active claims on the listing afterwards (correct = 1) |
 | `listing_status_after` | Listing status afterwards |
+| `second_ngo_response_ms` | Time from the second NGO pressing claim to its answer |
 
-`details/requests.csv`: one row per request (NGO, answer, reason code, retries, error message, response time in ms, request and claim IDs).
+## References
+
+- PostgreSQL Global Development Group. (2026). SELECT: the locking clause. *PostgreSQL 18 documentation*. https://www.postgresql.org/docs/18/sql-select.html
+- Gray, C. G., & Cheriton, D. R. (1989). Leases: An efficient fault-tolerant mechanism for distributed file cache consistency. *Proceedings of the 12th ACM SOSP*, 202-210. https://doi.org/10.1145/74850.74870
