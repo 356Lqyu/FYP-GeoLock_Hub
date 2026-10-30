@@ -1,7 +1,7 @@
 /// User-facing labels for the persisted donation lifecycle states.
 ///
-/// `VALIDATED` is mapped only for backwards-compatible display of legacy rows;
-/// the forward migration removes it as a committed state.
+/// `VALIDATED` and `READY_FOR_PICKUP` are display-only compatibility for
+/// historical audit events and responses, never new operational states.
 String donationStatusLabel({
   required String? status,
   String? collectionPath,
@@ -20,11 +20,16 @@ String donationStatusLabel({
     return 'Awaiting Drop-off';
   }
   if (status == 'HUB_ASSIGNED') return 'Hub Assignment Needs Review';
-  if (inventoryStatus == 'STORED' || status == 'AT_HUB') return 'At Hub';
-  if (listingStatus == 'CLAIMED') return 'Claimed';
-  if (status == 'READY_FOR_PICKUP') return 'Ready for Pickup';
+  // Persisted donation state takes precedence over listing/inventory records.
+  // A listing stays CLAIMED throughout pickup; inventory stays BATCHED.
   if (status == 'PICKUP_IN_PROGRESS') return 'Pickup in Progress';
   if (status == 'COLLECTED') return 'Collected';
   if (status == 'CANCELLED') return 'Cancelled';
+  if (status == 'CLAIMED') return 'Claimed';
+  if (status == 'AVAILABLE') return 'Available';
+  if (status == 'BATCHED') return 'Included in a Batch';
+  if (status == 'AT_HUB') return 'At Hub';
+  // Historical audit/replay compatibility only; never an operational state.
+  if (status == 'READY_FOR_PICKUP') return 'Ready for Pickup';
   return (status ?? 'Unknown').replaceAll('_', ' ');
 }

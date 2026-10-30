@@ -140,6 +140,31 @@ def audit_exists(entity_id: str, event_type: str, request_id: str | None = None)
         raise AssertionError(f"Missing committed {event_type} audit evidence for {entity_id}")
 
 
+def assert_persisted_donations(claim: str, state: str):
+    """Post-redesign assertion; also validates every member of a hub listing."""
+    row = one("donation_claims", f"select=listing_id&claim_id=eq.{claim}", "claim listing")
+    listing = one("listings",
+                  f"select=source_type,donation_id,batch_id&listing_id=eq.{row['listing_id']}", "listing source")
+    expected = state
+    if listing["source_type"] == "DIRECT_DONATION":
+        ids = [listing["donation_id"]]
+    else:
+        if state == "AVAILABLE":
+            expected = "BATCHED"
+        batch = one("hub_batches",
+                    f"select=batch_donation_count&batch_id=eq.{listing['batch_id']}", "batch count")
+        members = ok(read("hub_batch_members",
+                          f"select=donation_id&batch_id=eq.{listing['batch_id']}&membership_status=eq.ACTIVE"),
+                     "active members")
+        ids = [member["donation_id"] for member in members]
+        if not ids or len(ids) != batch["batch_donation_count"]:
+            raise AssertionError("Incomplete hub batch membership")
+    for donation in ids:
+        row = one("donations", f"select=donation_status&donation_id=eq.{donation}", "persisted donation")
+        if row["donation_status"] != expected:
+            raise AssertionError(f"Expected every donation to be {expected}")
+
+
 def run(label, action):
     action()
     print(f"PASS {label}")
@@ -186,6 +211,7 @@ def test_overlapping_recovery():
         if (le["lease_status"], t["task_status"], l["listing_status"]) != expected_pair:
             raise AssertionError("Recovery left inconsistent claim, lease, task, and listing states")
         audit_exists(claim, "LEASE_RECOVERY")
+        assert_persisted_donations(claim, "AVAILABLE" if expected == "RELEASED" else "CLAIMED")
 
 
 def test_same_request_cancel():
@@ -205,6 +231,7 @@ def test_same_request_cancel():
     expect_rejected(rpc("start_pickup", required("GEOLOCK_DEV_NGO_JWT"), {
         "p_claim": claim}), "old holder after cancellation")
     audit_exists(claim, "CANCEL_CLAIM", request)
+    assert_persisted_donations(claim, "AVAILABLE")
 
 
 def test_distinct_request_cancel_race():
@@ -221,6 +248,7 @@ def test_distinct_request_cancel_race():
     lease = one("claim_leases", f"select=claim_id,lease_status&claim_id=eq.{claim}", "race lease state")
     if (state["claim_status"], lease["lease_status"]) != ("RELEASED", "RELEASED"):
         raise AssertionError("Claim/lease committed states diverged after cancellation race")
+    assert_persisted_donations(claim, "AVAILABLE")
 
 
 def test_cancel_vs_start():
@@ -260,6 +288,7 @@ def test_cancel_vs_start():
     audit_exists(claim, "CANCEL_CLAIM", args["p_request"])
     if start_committed:
         audit_exists(claim, "START_PICKUP")
+    assert_persisted_donations(claim, "PICKUP_IN_PROGRESS" if start_committed else "AVAILABLE")
 
 
 def test_expired_lease_rejects_pickup():
@@ -319,11 +348,12 @@ def test_positive_reconciliation():
     claim = required("GEOLOCK_DEV_RECONCILE_POSITIVE_CLAIM_ID")
     ngo = required("GEOLOCK_DEV_NGO_JWT")
     counterpart = required("GEOLOCK_DEV_RECONCILE_COUNTERPART_JWT")
+    first_request, second_request = str(uuid.uuid4()), str(uuid.uuid4())
     # Submissions are independent authenticated evidence; one from each party.
     first = ok(rpc("submit_claim_reconciliation", ngo, {
-        "p_claim": claim, "p_handover_confirmed": True, "p_request": str(uuid.uuid4())}), "NGO evidence")
+        "p_claim": claim, "p_handover_confirmed": True, "p_request": first_request}), "NGO evidence")
     second = ok(rpc("submit_claim_reconciliation", counterpart, {
-        "p_claim": claim, "p_handover_confirmed": True, "p_request": str(uuid.uuid4())}), "counterpart evidence")
+        "p_claim": claim, "p_handover_confirmed": True, "p_request": second_request}), "counterpart evidence")
     if first.get("outcome") != "AWAITING_COUNTERPART" or second.get("outcome") != "SUCCESS":
         raise AssertionError("Matching handover evidence did not resolve")
     c = one("donation_claims", f"select=claim_id,claim_status&claim_id=eq.{claim}", "reconciled claim")
@@ -336,6 +366,18 @@ def test_positive_reconciliation():
     if row["listing_status"] != "CLOSED":
         raise AssertionError("Collected listing is not closed")
     audit_exists(claim, "CLAIM_RECONCILIATION_EVIDENCE")
+    assert_persisted_donations(claim, "COLLECTED")
+    # Resolved cases must replay both original UUID responses, including the
+    # final response lost in transit, without creating additional evidence/audits.
+    before = ok(read("audit_events", f"select=event_id&claim_id=eq.{claim}&order=event_id"), "audit before replay")
+    for actor, request, expected in ((ngo, first_request, first), (counterpart, second_request, second)):
+        replay = ok(rpc("submit_claim_reconciliation", actor, {
+            "p_claim": claim, "p_handover_confirmed": True, "p_request": request}), "resolved evidence replay")
+        if replay != expected:
+            raise AssertionError("Resolved reconciliation did not replay its recorded response")
+    after = ok(read("audit_events", f"select=event_id&claim_id=eq.{claim}&order=event_id"), "audit after replay")
+    if before != after:
+        raise AssertionError("Resolved reconciliation replay wrote duplicate audit history")
 
 
 def test_negative_after_dispatch_stays_review():
@@ -393,6 +435,7 @@ def test_safe_no_handover_releases():
     if (c["claim_status"], le["lease_status"], task["task_status"], listing_row["listing_status"]) != (
         "RELEASED", "RELEASED", "STALE", "AVAILABLE"):
         raise AssertionError("No-handover release committed inconsistent claim/listing/task states")
+    assert_persisted_donations(claim, "AVAILABLE")
 
 
 def test_role_scoped_audit():

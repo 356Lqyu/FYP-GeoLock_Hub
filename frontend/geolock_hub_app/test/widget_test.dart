@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:geolock_hub_app/auth/auth_pages.dart';
+import 'package:geolock_hub_app/donation_pages.dart';
 import 'package:geolock_hub_app/main.dart';
 
 void main() {
@@ -94,6 +95,110 @@ void main() {
     );
     expect(profileLookups, 1);
     expect(find.text('account-a · DONOR'), findsNothing);
+  });
+
+  testWidgets(
+    'incomplete NGO onboarding blocks dashboard until location setup',
+    (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: SessionRouter(
+            userId: 'ngo-account',
+            isUserCurrent: (id) => id == 'ngo-account',
+            roleLoader: (_) async => 'NGO',
+            profileLoader: (_) async => {
+              'role': 'NGO',
+              'ngo_location_setup_required': true,
+            },
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('Set up your NGO location'), findsOneWidget);
+      expect(find.text('Choose operating location'), findsOneWidget);
+      expect(find.text('Validate and continue'), findsOneWidget);
+      expect(find.text('Discover'), findsNothing);
+    },
+  );
+
+  testWidgets('incomplete Hub Admin onboarding opens hub registration', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: SessionRouter(
+          userId: 'hub-account',
+          isUserCurrent: (id) => id == 'hub-account',
+          roleLoader: (_) async => 'HUB_ADMIN',
+          profileLoader: (_) async => {
+            'role': 'HUB_ADMIN',
+            'hub_setup_required': true,
+          },
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.byType(RegisterHubPage), findsOneWidget);
+    expect(find.text('Register Community Hub'), findsOneWidget);
+    expect(find.text('Total capacity (kg)'), findsOneWidget);
+  });
+
+  testWidgets('NGO sees eligibility updating after location validation', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: SessionRouter(
+          userId: 'ngo-account',
+          isUserCurrent: (id) => id == 'ngo-account',
+          roleLoader: (_) async => 'NGO',
+          profileLoader: (_) async => {
+            'role': 'NGO',
+            'ngo_location_setup_required': false,
+          },
+          eligibilityStatusLoader: (_) async => 'PENDING',
+        ),
+      ),
+    );
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 20));
+    expect(find.text('Eligibility updating'), findsOneWidget);
+    expect(
+      find.textContaining('Your location was validated and saved'),
+      findsOneWidget,
+    );
+    expect(find.text('Discover'), findsNothing);
+  });
+
+  testWidgets('eligibility refresh failure is not shown as location failure', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: SessionRouter(
+          userId: 'ngo-account',
+          isUserCurrent: (id) => id == 'ngo-account',
+          roleLoader: (_) async => 'NGO',
+          profileLoader: (_) async => {
+            'role': 'NGO',
+            'ngo_location_setup_required': false,
+          },
+          eligibilityStatusLoader: (_) async => 'FAILED',
+        ),
+      ),
+    );
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 20));
+    expect(find.text('Eligibility update needs attention'), findsOneWidget);
+    expect(
+      find.textContaining('Your location was validated and saved'),
+      findsOneWidget,
+    );
+    expect(find.text('Retry eligibility update'), findsOneWidget);
+    expect(
+      find.textContaining('location could not be validated'),
+      findsNothing,
+    );
   });
 }
 

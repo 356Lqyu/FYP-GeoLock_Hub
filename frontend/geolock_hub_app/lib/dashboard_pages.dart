@@ -1,11 +1,19 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show debugPrint, kDebugMode;
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'async_request_gate.dart';
+import 'claim_cards_controller.dart';
 import 'auth/auth_navigation.dart';
+import 'auth/auth_controller.dart';
 import 'donation_pages.dart';
 import 'donation_status.dart';
 import 'location/road_routing.dart';
+import 'location/location_picker_page.dart';
+import 'location/location_result.dart';
+import 'routing/ngo_routes_page.dart';
 
 const _mint = Color(0xffedfbf7);
 const _green = Color(0xff2f806c);
@@ -28,6 +36,7 @@ class RoleNavigationShell extends StatefulWidget {
 
 class _RoleNavigationShellState extends State<RoleNavigationShell> {
   int _index = 0;
+  final List<int> _ngoTabRefreshSignals = List<int>.filled(5, 0);
   late final List<_RoleTab> _tabs = _tabsFor(widget.role);
 
   List<_RoleTab> _tabsFor(String role) {
@@ -103,8 +112,24 @@ class _RoleNavigationShellState extends State<RoleNavigationShell> {
   }
 
   void _select(int index) {
-    if (!mounted) return;
-    setState(() => _index = index);
+    if (!mounted || index == _index) return;
+    setState(() {
+      _index = index;
+      if (widget.role == 'NGO') {
+        _ngoTabRefreshSignals[index]++;
+      }
+    });
+  }
+
+  Widget _ngoTab(int index) {
+    final signal = _ngoTabRefreshSignals[index];
+    return switch (index) {
+      0 => NgoHomePage(refreshSignal: signal),
+      1 => EligibleListingsPage(refreshSignal: signal),
+      2 => MyClaimsPage(refreshSignal: signal),
+      3 => NgoPickupsPage(refreshSignal: signal),
+      _ => RoleProfilePage(role: 'NGO', refreshSignal: signal),
+    };
   }
 
   @override
@@ -125,7 +150,10 @@ class _RoleNavigationShellState extends State<RoleNavigationShell> {
           bottom: false,
           child: IndexedStack(
             index: _index,
-            children: [for (final tab in _tabs) tab.page],
+            children: [
+              for (var index = 0; index < _tabs.length; index++)
+                if (widget.role == 'NGO') _ngoTab(index) else _tabs[index].page,
+            ],
           ),
         ),
         bottomNavigationBar: RoleNavigationBar(
@@ -402,6 +430,8 @@ String _greeting() {
 
 bool _active(String? s) => const {
   'SUBMITTED',
+  'AVAILABLE',
+  'CLAIMED',
   // Keep legacy rows visible until the forward migration converts them.
   'VALIDATED',
   'READY_FOR_PICKUP',
@@ -445,9 +475,6 @@ class _DonorMyDonationsPageState extends State<DonorMyDonationsPage> {
 
   bool _matches(Map<String, dynamic> d) {
     final status = d['donation_status']?.toString();
-    final listing = d['listing_status']?.toString();
-    final inventory = d['inventory_status']?.toString();
-    final receipt = d['receipt_status']?.toString();
     final query = _search.text.trim().toLowerCase();
     if (query.isNotEmpty &&
         !d['title'].toString().toLowerCase().contains(query)) {
@@ -455,13 +482,8 @@ class _DonorMyDonationsPageState extends State<DonorMyDonationsPage> {
     }
     return switch (_filter) {
       'Active' => _active(status),
-      'At Hub' =>
-        receipt == 'CONFIRMED' ||
-            inventory == 'STORED' ||
-            inventory == 'BATCHED' ||
-            status == 'AT_HUB' ||
-            status == 'BATCHED',
-      'Claimed' => listing == 'CLAIMED',
+      'At Hub' => status == 'AT_HUB' || status == 'BATCHED',
+      'Claimed' => status == 'CLAIMED',
       'Picked Up' => status == 'PICKUP_IN_PROGRESS' || status == 'COLLECTED',
       'Completed' => status == 'COLLECTED',
       'Cancelled' => status == 'CANCELLED',
@@ -612,19 +634,99 @@ class _DonorMyDonationsPageState extends State<DonorMyDonationsPage> {
 }
 
 class NgoHomePage extends StatefulWidget {
-  const NgoHomePage({super.key});
+  final int refreshSignal;
+  final Future<Object?> Function()? listingsLoader;
+  final Future<Object?> Function()? claimsLoader;
+  final Future<bool> Function()? routingLoader;
+  final Future<String?> Function()? ngoNameLoader;
+
+  const NgoHomePage({
+    super.key,
+    this.refreshSignal = 0,
+    this.listingsLoader,
+    this.claimsLoader,
+    this.routingLoader,
+    this.ngoNameLoader,
+  });
   @override
   State<NgoHomePage> createState() => _NgoHomePageState();
 }
 
-class _NgoHomePageState extends State<NgoHomePage> {
-  late Future<List<Map<String, dynamic>>> _listings = _loadListings();
-  late Future<List<Map<String, dynamic>>> _claims = _loadClaims();
-  late Future<bool> _trustedRouting = _loadTrustedRouting();
-  late Future<String?> _ngoName = _loadNgoName();
+class _NgoHomePageState extends State<NgoHomePage> with WidgetsBindingObserver {
+  final _listingsGate = AsyncRequestGate();
+  late final ClaimCardsController _claimReader;
+  late Future<void> _claimsRefresh;
+  StreamSubscription<AuthState>? _authSubscription;
+  final _routingGate = AsyncRequestGate();
+  final _nameGate = AsyncRequestGate();
+  late Future<List<Map<String, dynamic>>> _listings;
+  late Future<bool> _trustedRouting;
+  late Future<String?> _ngoName;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _claimReader = ClaimCardsController(
+      load: () =>
+          widget.claimsLoader?.call() ??
+          _dashboardDb.rpc('get_my_claim_cards_v2'),
+      identity: () => widget.claimsLoader != null
+          ? 'injected'
+          : _dashboardDb.auth.currentUser?.id,
+    );
+    if (widget.claimsLoader == null) {
+      _authSubscription = _dashboardDb.auth.onAuthStateChange.listen(
+        (_) => _refresh(),
+      );
+    }
+    _assignRefreshFutures();
+  }
+
+  @override
+  void didUpdateWidget(covariant NgoHomePage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.refreshSignal != widget.refreshSignal) _refresh();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _refresh();
+    } else {
+      _claimReader.invalidate();
+    }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _authSubscription?.cancel();
+    _claimReader.dispose();
+    super.dispose();
+  }
+
+  void _assignRefreshFutures() {
+    _listings = _listingsGate.run(_loadListings);
+    _claimsRefresh = _claimReader.refresh();
+    _trustedRouting = _routingGate.run(_loadTrustedRouting);
+    _ngoName = _nameGate.run(_loadNgoName);
+  }
+
+  void _refresh() {
+    _assignRefreshFutures();
+    if (mounted) setState(() {});
+  }
+
+  Future<void> _refreshAndWait() async {
+    _refresh();
+    await Future.wait([_listings, _claimsRefresh, _trustedRouting, _ngoName]);
+  }
 
   Future<String?> _loadNgoName() async {
-    final profile = await _dashboardDb.rpc('get_my_profile');
+    final profile = widget.ngoNameLoader == null
+        ? await _dashboardDb.rpc('get_my_profile')
+        : await widget.ngoNameLoader!();
     return profile is Map ? profile['ngo_name']?.toString() : null;
   }
 
@@ -632,7 +734,9 @@ class _NgoHomePageState extends State<NgoHomePage> {
     // The card RPC returns the fields rendered by ListingPreviewCard. The
     // legacy discover_eligible_listings RPC omits titles, images and routing
     // readiness, so using it here produced incomplete dashboard cards.
-    final rows = await _dashboardDb.rpc('discover_eligible_listing_cards');
+    final rows = widget.listingsLoader == null
+        ? await _dashboardDb.rpc('discover_eligible_listing_cards')
+        : await widget.listingsLoader!();
     if (rows is! List) {
       throw const FormatException(
         'Listing discovery returned an invalid response.',
@@ -641,17 +745,8 @@ class _NgoHomePageState extends State<NgoHomePage> {
     return rows.map((r) => Map<String, dynamic>.from(r as Map)).toList();
   }
 
-  Future<List<Map<String, dynamic>>> _loadClaims() async {
-    final rows = await _dashboardDb.rpc('get_my_claims');
-    if (rows is! List) {
-      throw const FormatException(
-        'Claim history returned an invalid response.',
-      );
-    }
-    return rows.map((r) => Map<String, dynamic>.from(r as Map)).toList();
-  }
-
   Future<bool> _loadTrustedRouting() async {
+    if (widget.routingLoader != null) return widget.routingLoader!();
     try {
       final result = await _dashboardDb.rpc('geolock_app_capabilities');
       return result is Map && result['road_node_resolution'] == true;
@@ -662,15 +757,7 @@ class _NgoHomePageState extends State<NgoHomePage> {
 
   @override
   Widget build(BuildContext context) => RefreshIndicator(
-    onRefresh: () async {
-      setState(() {
-        _listings = _loadListings();
-        _claims = _loadClaims();
-        _trustedRouting = _loadTrustedRouting();
-        _ngoName = _loadNgoName();
-      });
-      await Future.wait([_listings, _claims, _trustedRouting, _ngoName]);
-    },
+    onRefresh: _refreshAndWait,
     child: ListView(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 28),
       children: [
@@ -695,35 +782,27 @@ class _NgoHomePageState extends State<NgoHomePage> {
           ),
         ),
         const SizedBox(height: 12),
-        FutureBuilder<List<Map<String, dynamic>>>(
-          future: _claims,
-          builder: (context, c) => FutureBuilder<List<Map<String, dynamic>>>(
+        ListenableBuilder(
+          listenable: _claimReader,
+          builder: (context, _) => FutureBuilder<List<Map<String, dynamic>>>(
             future: _listings,
             builder: (context, l) {
-              if (c.hasError || l.hasError) {
+              if (_claimReader.error != null || l.hasError) {
                 return DashboardErrorCard(
                   message:
-                      'NGO counts require the secure claim-history read RPC and eligible-listing discovery.\n${c.error ?? l.error}',
-                  onRetry: () => setState(() {
-                    _claims = _loadClaims();
-                    _listings = _loadListings();
-                  }),
+                      'NGO counts require the secure claim-history read RPC and eligible-listing discovery.\n${_claimReader.error ?? l.error}',
+                  onRetry: _refresh,
                 );
               }
-              if (!c.hasData || !l.hasData) {
+              if (_claimReader.loading ||
+                  l.connectionState != ConnectionState.done ||
+                  !l.hasData) {
                 return const DashboardLoadingCard(height: 116);
               }
-              final active = c.data!
-                  .where((r) => r['claim_status'] == 'ACTIVE')
-                  .length;
-              final pickups = c.data!
-                  .where(
-                    (r) =>
-                        r['task_status'] == 'CONFIRMED' ||
-                        r['task_status'] == 'PLANNED' ||
-                        r['task_status'] == 'DISPATCHED',
-                  )
-                  .length;
+              final active = _claimReader.fresh
+                  ? _claimReader.cards.where((c) => c.isValidActive).length
+                  : 0;
+              final pickups = active;
               return Row(
                 children: [
                   Expanded(
@@ -794,10 +873,11 @@ class _NgoHomePageState extends State<NgoHomePage> {
             if (snapshot.hasError) {
               return DashboardErrorCard(
                 message: 'Eligible listings unavailable: ${snapshot.error}',
-                onRetry: () => setState(() => _listings = _loadListings()),
+                onRetry: _refresh,
               );
             }
-            if (!snapshot.hasData) {
+            if (snapshot.connectionState != ConnectionState.done ||
+                !snapshot.hasData) {
               return const DashboardLoadingCard(height: 96);
             }
             if (snapshot.data!.isEmpty) {
@@ -811,7 +891,20 @@ class _NgoHomePageState extends State<NgoHomePage> {
             return Column(
               children: [
                 for (final row in snapshot.data!.take(3))
-                  ListingPreviewCard(row: row),
+                  ListingPreviewCard(
+                    row: row,
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => NgoListingDetailsPage(
+                          listing: row,
+                          onClaimConfirmed: () {
+                            if (mounted) _refresh();
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
               ],
             );
           },
@@ -876,7 +969,7 @@ class _HubAdminHomePageState extends State<HubAdminHomePage> {
               icon: Icons.home_work_outlined,
               title: 'No hub is linked to this account',
               message:
-                  'Hub administrators are provisioned by an authorized administrator.',
+                  'Create your community hub here. Its location and capacity are validated by the database before activation.',
             ),
             OutlinedButton.icon(
               onPressed: () =>
@@ -887,7 +980,7 @@ class _HubAdminHomePageState extends State<HubAdminHomePage> {
                     if (created == true) setState(() => _hubs = _loadHubs());
                   }),
               icon: const Icon(Icons.add_business),
-              label: const Text('Register authorized hub'),
+              label: const Text('Register Community Hub'),
             ),
           ],
         );
@@ -1115,7 +1208,7 @@ class _HubOperationsTabState extends State<HubOperationsTab> {
           body: const EmptyStateCard(
             icon: Icons.home_work_outlined,
             title: 'No managed hub',
-            message: 'No authorized hub is linked to this account.',
+            message: 'No community hub is linked to this account yet.',
           ),
         );
       }
@@ -1126,9 +1219,13 @@ class _HubOperationsTabState extends State<HubOperationsTab> {
 }
 
 class NgoPickupsPage extends StatelessWidget {
-  const NgoPickupsPage({super.key});
+  final int refreshSignal;
+  final Future<Object?> Function()? claimsLoader;
+  const NgoPickupsPage({super.key, this.refreshSignal = 0, this.claimsLoader});
   @override
-  Widget build(BuildContext context) => const MyClaimsPage();
+  Widget build(BuildContext context) => claimsLoader != null
+      ? MyClaimsPage(refreshSignal: refreshSignal, claimsLoader: claimsLoader)
+      : NgoRoutesPage(refreshSignal: refreshSignal);
 }
 
 class DonorImpactPage extends StatefulWidget {
@@ -1215,19 +1312,35 @@ class _DonorImpactPageState extends State<DonorImpactPage> {
 
 class RoleProfilePage extends StatefulWidget {
   final String role;
-  const RoleProfilePage({super.key, required this.role});
+  final int refreshSignal;
+  final Future<Object?> Function()? profileLoader;
+  const RoleProfilePage({
+    super.key,
+    required this.role,
+    this.refreshSignal = 0,
+    this.profileLoader,
+  });
 
   @override
   State<RoleProfilePage> createState() => _RoleProfilePageState();
 }
 
 class _RoleProfilePageState extends State<RoleProfilePage> {
-  late Future<Map<String, dynamic>> _profile = _loadProfile();
+  final _profileGate = AsyncRequestGate();
+  late Future<Map<String, dynamic>> _profile = _profileGate.run(_loadProfile);
+
+  @override
+  void didUpdateWidget(covariant RoleProfilePage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.refreshSignal != widget.refreshSignal) _refresh();
+  }
 
   Future<Map<String, dynamic>> _loadProfile() async {
     final userId = _dashboardDb.auth.currentUser?.id;
     if (userId == null) throw StateError('Your session has ended.');
-    final response = await _dashboardDb.rpc('get_my_profile');
+    final response = widget.profileLoader == null
+        ? await _dashboardDb.rpc('get_my_profile')
+        : await widget.profileLoader!();
     if (_dashboardDb.auth.currentUser?.id != userId) {
       throw StateError('Account changed while the profile was loading.');
     }
@@ -1274,7 +1387,166 @@ class _RoleProfilePageState extends State<RoleProfilePage> {
     return result;
   }
 
-  void _refresh() => setState(() => _profile = _loadProfile());
+  void _refresh() {
+    final refreshed = _profileGate.run(_loadProfile);
+    if (mounted) {
+      setState(() {
+        _profile = refreshed;
+      });
+    }
+  }
+
+  Future<void> _editProfile(Map<String, dynamic> profile) async {
+    final name = TextEditingController(text: '${profile['full_name'] ?? ''}');
+    final phone = TextEditingController(
+      text: '${profile['phone_number'] ?? ''}',
+    );
+    final ngoName = TextEditingController(text: '${profile['ngo_name'] ?? ''}');
+    final registration = TextEditingController(
+      text: '${profile['registration_number'] ?? ''}',
+    );
+    try {
+      final values = await showDialog<List<String>>(
+        context: context,
+        builder: (dialogContext) => AlertDialog(
+          title: const Text('Edit profile'),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: name,
+                  decoration: const InputDecoration(labelText: 'Full name'),
+                ),
+                TextField(
+                  controller: phone,
+                  decoration: const InputDecoration(labelText: 'Phone number'),
+                ),
+                if (widget.role == 'NGO') ...[
+                  TextField(
+                    controller: ngoName,
+                    decoration: const InputDecoration(labelText: 'NGO name'),
+                  ),
+                  TextField(
+                    controller: registration,
+                    decoration: const InputDecoration(
+                      labelText: 'Registration number',
+                    ),
+                  ),
+                ],
+                const SizedBox(height: 8),
+                const Text(
+                  'Email and account role are managed by Supabase Auth and cannot be changed here.',
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: const Text('Cancel'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(dialogContext, [
+                name.text,
+                phone.text,
+                ngoName.text,
+                registration.text,
+              ]),
+              child: const Text('Save'),
+            ),
+          ],
+        ),
+      );
+      if (values == null) return;
+      await _dashboardDb.rpc(
+        'update_my_profile',
+        params: {
+          'p_full_name': values[0].trim(),
+          'p_phone': values[1].trim().isEmpty ? null : values[1].trim(),
+          'p_ngo_name': widget.role == 'NGO' ? values[2].trim() : null,
+          'p_registration_number':
+              widget.role == 'NGO' && values[3].trim().isNotEmpty
+              ? values[3].trim()
+              : null,
+        },
+      );
+      if (mounted) _refresh();
+    } catch (error) {
+      if (mounted) _showProfileError(error);
+    } finally {
+      name.dispose();
+      phone.dispose();
+      ngoName.dispose();
+      registration.dispose();
+    }
+  }
+
+  Future<void> _changeNgoLocation(Map<String, dynamic> profile) async {
+    final latitude = double.tryParse('${profile['latitude']}');
+    final longitude = double.tryParse('${profile['longitude']}');
+    final initial = latitude == null || longitude == null
+        ? null
+        : LocationResult(
+            address: '${profile['operating_address'] ?? ''}',
+            latitude: latitude,
+            longitude: longitude,
+            method: LocationSelectionMethod.mapPin,
+          );
+    final selected = await Navigator.push<LocationResult>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => LocationPickerPage(
+          title: 'NGO Operating Location',
+          initialLocation: initial,
+          roadAccess: RoadAccessRequirement.required,
+          hint:
+              'Road access is previewed here and validated again by PostgreSQL before saving.',
+        ),
+      ),
+    );
+    if (selected == null) return;
+    try {
+      await _dashboardDb.rpc(
+        'set_ngo_operating_location',
+        params: {
+          'p_operating_address': selected.address,
+          'p_latitude': selected.latitude,
+          'p_longitude': selected.longitude,
+        },
+      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Location saved. NGO listing eligibility is updating; discovery may take a moment to refresh.',
+            ),
+          ),
+        );
+        _refresh();
+      }
+    } catch (error) {
+      if (mounted) _showProfileError(error);
+    }
+  }
+
+  Future<void> _editHub(Map<String, dynamic> hub) async {
+    final result = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(builder: (_) => RegisterHubPage(initialHub: hub)),
+    );
+    if (result == true && mounted) _refresh();
+  }
+
+  void _showProfileError(Object error) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          'Profile change was not confirmed: ${AuthController.message(error)}',
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) => FutureBuilder<Map<String, dynamic>>(
@@ -1296,7 +1568,8 @@ class _RoleProfilePageState extends State<RoleProfilePage> {
           ],
         );
       }
-      if (!snapshot.hasData) {
+      if (snapshot.connectionState != ConnectionState.done ||
+          !snapshot.hasData) {
         return ListView(
           padding: const EdgeInsets.all(16),
           children: [
@@ -1368,6 +1641,15 @@ class _RoleProfilePageState extends State<RoleProfilePage> {
               ],
             ),
           ),
+          const SizedBox(height: 10),
+          Align(
+            alignment: Alignment.centerRight,
+            child: OutlinedButton.icon(
+              onPressed: () => _editProfile(profile),
+              icon: const Icon(Icons.edit_outlined),
+              label: const Text('Edit profile'),
+            ),
+          ),
           const SizedBox(height: 16),
           _ProfileSection(
             title: 'Account information',
@@ -1415,10 +1697,10 @@ class _RoleProfilePageState extends State<RoleProfilePage> {
                   label: 'Organization',
                   value: _profileValue(profile['ngo_name']),
                 ),
-                const _ProfileField(
+                _ProfileField(
                   icon: Icons.confirmation_number_outlined,
                   label: 'Registration number',
-                  value: 'Not available from the current profile read',
+                  value: _profileValue(profile['registration_number']),
                 ),
                 _ProfileField(
                   icon: Icons.location_on_outlined,
@@ -1428,6 +1710,12 @@ class _RoleProfilePageState extends State<RoleProfilePage> {
                 _ProfileLocationStatus(
                   status: profile['location_status']?.toString(),
                   verifiedAt: profile['location_verified_at'],
+                ),
+                const SizedBox(height: 8),
+                OutlinedButton.icon(
+                  onPressed: () => _changeNgoLocation(profile),
+                  icon: const Icon(Icons.location_searching_outlined),
+                  label: const Text('Change operating location'),
                 ),
               ],
             ),
@@ -1456,6 +1744,14 @@ class _RoleProfilePageState extends State<RoleProfilePage> {
                           summaries[hubs[index]['hub_id']?.toString()]
                               as Map<String, dynamic>?,
                     ),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: TextButton.icon(
+                        onPressed: () => _editHub(hubs[index]),
+                        icon: const Icon(Icons.edit_outlined),
+                        label: const Text('Edit hub details'),
+                      ),
+                    ),
                   ],
               ],
             ),
@@ -1482,7 +1778,7 @@ class _RoleProfilePageState extends State<RoleProfilePage> {
               Padding(
                 padding: EdgeInsets.only(top: 10),
                 child: Text(
-                  'Profile details are read-only here. Secure profile editing is not available in the current backend.',
+                  'Email and account role are fixed for this account. Personal details and permitted role information can be updated securely.',
                 ),
               ),
             ],
@@ -1666,7 +1962,9 @@ class _ProfileLocationStatus extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final verified = status == 'VERIFIED' || verifiedAt != null;
-    final label = verified ? 'Verified location' : 'Pending verification';
+    final label = verified
+        ? 'Road location validated'
+        : 'Road location not validated';
     final color = verified ? _green : const Color(0xff98681b);
     return Padding(
       padding: const EdgeInsets.only(top: 10),
@@ -1692,9 +1990,13 @@ class _ProfileLocationStatus extends StatelessWidget {
                   label,
                   style: TextStyle(color: color, fontWeight: FontWeight.w700),
                 ),
+                const Text(
+                  'Confirms road-network access only; it does not verify NGO identity.',
+                  style: TextStyle(fontSize: 12),
+                ),
                 if (verified && verifiedAt != null)
                   Text(
-                    'Verified ${_profileDate(verifiedAt)}',
+                    'Validated ${_profileDate(verifiedAt)}',
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
               ],
@@ -2039,41 +2341,50 @@ class DonationImage extends StatelessWidget {
 
 class ListingPreviewCard extends StatelessWidget {
   final Map<String, dynamic> row;
-  const ListingPreviewCard({super.key, required this.row});
+  final VoidCallback? onTap;
+  const ListingPreviewCard({super.key, required this.row, this.onTap});
   @override
   Widget build(BuildContext context) => Card(
     margin: const EdgeInsets.only(bottom: 10),
-    child: Padding(
-      padding: const EdgeInsets.all(12),
-      child: Row(
-        children: [
-          DonationImage(path: row['primary_image_path']?.toString(), size: 58),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  '${row['title'] ?? (row['source_type'] == 'HUB_BATCH' ? 'Community hub batch' : 'Donation')} · ${row['listing_weight_kg']} kg',
-                  style: const TextStyle(fontWeight: FontWeight.w700),
-                ),
-                Text(
-                  row['collection_path'] == 'HUB_COLLECTION'
-                      ? 'Community Hub Collection'
-                      : 'Direct Pickup',
-                ),
-                if (row['distance_m'] != null)
-                  Text(
-                    '${(_number(row['distance_m']) / 1000).toStringAsFixed(1)} km by road',
-                  ),
-                Text(
-                  'Routing: ${roadStatusLine(row['routing_status'])}',
-                  style: Theme.of(context).textTheme.labelSmall,
-                ),
-              ],
+    child: InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Row(
+          children: [
+            DonationImage(
+              path: row['primary_image_path']?.toString(),
+              size: 58,
             ),
-          ),
-        ],
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '${row['title'] ?? (row['source_type'] == 'HUB_BATCH' ? 'Community hub batch' : 'Donation')} · ${row['listing_weight_kg']} kg',
+                    style: const TextStyle(fontWeight: FontWeight.w700),
+                  ),
+                  Text(
+                    row['collection_path'] == 'HUB_COLLECTION'
+                        ? 'Community Hub Collection'
+                        : 'Direct Pickup',
+                  ),
+                  if (row['distance_m'] != null)
+                    Text(
+                      '${(_number(row['distance_m']) / 1000).toStringAsFixed(1)} km by road',
+                    ),
+                  Text(
+                    'Routing: ${roadStatusLine(row['routing_status'])}',
+                    style: Theme.of(context).textTheme.labelSmall,
+                  ),
+                ],
+              ),
+            ),
+            if (onTap != null) const Icon(Icons.chevron_right),
+          ],
+        ),
       ),
     ),
   );

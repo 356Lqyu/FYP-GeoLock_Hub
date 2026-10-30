@@ -52,6 +52,17 @@ void main() {
       );
       expect(payload, isNot(contains('p_availability_start')));
       expect(payload, isNot(contains('p_availability_end')));
+      expect(payload.keys.toSet(), {
+        'p_request',
+        'p_title',
+        'p_description',
+        'p_pickup_address',
+        'p_latitude',
+        'p_longitude',
+        'p_pickup_road_node_id',
+        'p_items',
+        'p_images',
+      });
       expect(payload['p_title'], 'Study desk');
       expect(payload['p_description'], 'Minor scratches');
     });
