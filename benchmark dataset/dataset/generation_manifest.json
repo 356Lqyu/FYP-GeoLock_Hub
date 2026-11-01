@@ -18,8 +18,8 @@
       "roads": "road_area.wkt",
       "rule": "donor, hub and NGO points must lie inside the state boundary; roads inside the states plus a 0.05 deg coastal band, minus Singapore (same rule as the app road network)",
       "sha256": {
-        "study_boundary.wkt": "a844925f4f491266135a4460b278fd475e12bd63022e6270e5b240a0f25d2880",
-        "road_area.wkt": "dffe15a62ad14b7ba8dd3050f51c0ddd8ebbd3e889fc843a8151db6686ce9199"
+        "study_boundary.wkt": "6f8743f43ba54b9a3cdb8ca6f06699531647f2863f0026b2a8ce662bdaec2702",
+        "road_area.wkt": "445fdffe6ef4dde732879ca0f197fa8ad190699d553a22e1ee709676d2c68695"
       }
     },
     "windows_lat_lon": [
@@ -461,10 +461,10 @@
     ]
   },
   "road_cache_sha256": {
-    "nodes": "a6d42f795724a35001cf82fe608645a0a64e03c82d1a9fe98c38f57bba24adef",
-    "edges": "2b8259ae87142b37f32f2d05c01447f23150cdf8328936e08d493258dcf94fa9",
-    "osm_hub_candidates": "50903ec7a9a750c22914da07c794555eeaa2b2f64072783b4e4730fe1ed90e8c",
-    "household_nodes": "b41cb1e7cc6408146436f60270f3a8a01d4680cd1b84e0cfeb79a9758fb73603"
+    "nodes": "0353795c9daff60d9207cd4795ce7575f3619753d3ccefd12c56e6d0d14484d0",
+    "edges": "9bd777e31bc7e81dd2dffa3f733d06eee8a7c6a77ca78553849ab4510de30adb",
+    "osm_hub_candidates": "809ff579f78e30cc9bdc962a86d506f20a50c17240d0cd8c8fea18f5e4d1efc3",
+    "household_nodes": "1e21ec34c630f171398a89425108906959694eaf0e03b8b68582a28497f6e7f6"
   },
   "rules": {
     "road_snap_radius_m": 500,
@@ -526,14 +526,74 @@
       },
       "handling_penalties": {
         "clothing": 0.1,
-        "books": 0.2,
+        "books": 0.1,
         "electronics": 0.4,
         "food": 0.6,
         "appliances": 0.8,
-        "furniture": 1.0
+        "furniture": 0.8
       },
+      "handling_base_from_needs": {
+        "none": 0.1,
+        "fragile_shelving": 0.4,
+        "lockable_storeroom": 0.4,
+        "food_safe_storage": 0.6,
+        "vehicle_access": 0.8
+      },
+      "handling_at_hub": "P_di = base from the hardest storage need x (1 - 0.5 x share of the needs the hub has)",
       "distance": "min-max normalised within the feasible group",
       "tie_break": "lower road distance, then hub_id"
+    },
+    "hub_storage": {
+      "facilities": [
+        "food_safe_storage",
+        "fragile_shelving",
+        "lockable_storeroom",
+        "vehicle_access"
+      ],
+      "category_needs": {
+        "clothing": [],
+        "books": [],
+        "electronics": [
+          "fragile_shelving",
+          "lockable_storeroom"
+        ],
+        "food": [
+          "food_safe_storage"
+        ],
+        "appliances": [
+          "lockable_storeroom",
+          "vehicle_access"
+        ],
+        "furniture": [
+          "vehicle_access"
+        ]
+      },
+      "building_type": "hall or office from the OSM name (Dewan/Balai = hall; Persatuan/Pejabat/Pusat/Majlis = office), else townhall = office",
+      "chance_at_150_kg": {
+        "hall": {
+          "food_safe_storage": 0.55,
+          "fragile_shelving": 0.45,
+          "lockable_storeroom": 0.45,
+          "vehicle_access": 0.8
+        },
+        "office": {
+          "food_safe_storage": 0.35,
+          "fragile_shelving": 0.65,
+          "lockable_storeroom": 0.7,
+          "vehicle_access": 0.5
+        }
+      },
+      "capacity_effect_per_100_kg": {
+        "food_safe_storage": 0.3,
+        "fragile_shelving": 0.3,
+        "lockable_storeroom": 0.3,
+        "vehicle_access": 0.1
+      },
+      "accepts_bonus": 0.1,
+      "decline_factor": 0.3,
+      "decline_rule": "only a category the hub chose to decline (not furniture below 100 kg)",
+      "seed_offset": 81031,
+      "relief": 0.5
     },
     "recommendation_scenarios": "donations with at least two feasible hubs",
     "batch_templates": "reference-policy hub; 3-5 donations, one category, <= 30 kg; one accumulation episode each; added_at = first opening-hours handover; members ordered by added_at then donation_id; created_at = last added_at",
@@ -1901,7 +1961,7 @@
   },
   "row_counts": {
     "road_nodes": 3990,
-    "road_distance_matrix": 142514,
+    "road_distance_matrix": 142643,
     "ngos": 11,
     "vehicles": 22,
     "hubs": 180,
@@ -1910,27 +1970,27 @@
     "donation_hub_candidates": 92941,
     "listings": 1172,
     "hub_batches": 100,
-    "hub_batch_members": 424,
+    "hub_batch_members": 438,
     "scenarios": 2594,
-    "scenario_members": 77962,
+    "scenario_members": 77976,
     "claim_initial_states": 125,
     "verification_cases": 8
   },
   "generated_csv_sha256": {
     "road_nodes": "a8905fb29f95b6ba02c099fd60a188f98ae92f01c7586995295b096b673df6ea",
-    "road_distance_matrix": "ed89667e0c15fa9bd193945a77f86cf8f0b663f4197d037d45a75f0077e86585",
+    "road_distance_matrix": "b9a272d2396354695ae2ec6fd744a17510f1b5e7c61989fe7b404d2d0e0133e1",
     "ngos": "ddc14fe9958c272c7d8b7dc32b23ad6bfffd2a066f1b158a05a7cd3e5c535eaa",
     "vehicles": "79be6284565e0f544914bcb6b0fb5a847a0756a6039808bfc03920046f571413",
-    "hubs": "fc635158465891de7c21e672f81c28745d316de9bde435d95e03b44d6af94811",
-    "donors": "a44c5694c30c4032fb0a048aa1f2b7b8f879af29bb0b610317675f19c87a3000",
-    "donations": "2c1f9cf2a21bc0e6c8fb3cfac40df9246010a5b533a4e7d54e9a63240e862060",
-    "donation_hub_candidates": "22f5c482bb3d0cd87de725fee39147c6f572690695fcfe5dd5f081dd6a199268",
-    "listings": "6bcf4e2ef708cb2672c4e1c4a8ba5c8bd48c6dcd665fdaa73b41d878d6d4b889",
-    "hub_batches": "0aef3007370f55fdf39385d31371293d16f8f832ff3915165a4b3f211749a444",
-    "hub_batch_members": "134118e37c1f083b5277145c99750c8fd575007525f5cce3958bb3076619c06f",
+    "hubs": "1709d42ecdf1aa4dfe7e671315e8620587cebd161099d0f9769da10d77462ade",
+    "donors": "aefee7b3fc9b0c955f7ae3d60238dd4ec7cea49885dcd0545706acb797604e63",
+    "donations": "057dbd5b9486c79984ae2c64144daad2a4c4db6b8c0fbc233c1bcae9eb9b288b",
+    "donation_hub_candidates": "51e68ae42c7b3de39c5016615b29a157d4a0f12693ba356b3f0e005b0d42e7ca",
+    "listings": "71f8552af8731ac8b0ddfb205f32c78413088ba3bd3e2a1d4aa9830abe5e532f",
+    "hub_batches": "3ce5ceb404a4807f2885f5cbae3392ff309c536fb30181701970c2507ee5c3f4",
+    "hub_batch_members": "9c14be844ff948bd0a3c08ef7be7b1697b3cac279b602ba3c0263c23c25e8367",
     "scenarios": "973d91972df90c0e39501a35ca2ae181d1a6af37d5ccb83c56e4b4bf2d5c966c",
-    "scenario_members": "edaaefbd4fc12e9367f3fe2af4d6c7903732575ac3bcae7fd9fb9660d2fa046d",
-    "claim_initial_states": "862f99beafa3dacd6d79144898d1f478be684f9dbd827b7a347fba3503b16529",
+    "scenario_members": "7c09e2a9a040726458078c6d23370978a3cba6f155cb2b68aa2bbc356518e6d0",
+    "claim_initial_states": "30e5f3bbd933fd3827bcafb9d119d036ece0dbe1e17f0172f66b919cf98d1065",
     "verification_cases": "740d57558291543ab9716188be59d5a96e97d41d5e6d83e26bf2a0027b28cc3a"
   }
 }

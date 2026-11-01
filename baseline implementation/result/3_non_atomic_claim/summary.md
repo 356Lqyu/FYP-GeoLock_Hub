@@ -29,10 +29,10 @@ Pair the files by `scenario_id`. Main E2 metric: **duplicate committed-claim rat
 
 | NGOs claiming at once | Trials | SUCCESS | CONFLICT | ERROR | Trials with 1 stored claim | Trials with a duplicate | Median response (ms) |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 2 | 50 | 100 | 0 | 0 | 0 | 50 | 68 |
-| 5 | 50 | 250 | 0 | 0 | 0 | 50 | 71 |
-| 10 | 50 | 500 | 0 | 0 | 0 | 50 | 76 |
-| All | 150 | 850 | 0 | 0 | 0 | 150 | 72 |
+| 2 | 50 | 100 | 0 | 0 | 0 | 50 | 69 |
+| 5 | 50 | 250 | 0 | 0 | 0 | 50 | 76 |
+| 10 | 50 | 500 | 0 | 0 | 0 | 50 | 80 |
+| All | 150 | 850 | 0 | 0 | 0 | 150 | 75 |
 
 ## How a trial runs
 

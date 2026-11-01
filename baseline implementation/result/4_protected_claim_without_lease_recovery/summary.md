@@ -30,17 +30,17 @@ Pair the files by `scenario_id`. Main E2 metrics: **duplicate committed-claim ra
 
 | NGOs claiming at once | Trials | SUCCESS | CONFLICT | ERROR | Trials with 1 stored claim | Trials with a duplicate | Median response (ms) |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 2 | 50 | 50 | 50 | 0 | 50 | 0 | 19 |
-| 5 | 50 | 50 | 200 | 0 | 50 | 0 | 28 |
-| 10 | 50 | 50 | 450 | 0 | 50 | 0 | 31 |
-| All | 150 | 150 | 700 | 0 | 150 | 0 | 27 |
+| 2 | 50 | 50 | 50 | 0 | 50 | 0 | 30 |
+| 5 | 50 | 50 | 200 | 0 | 50 | 0 | 32 |
+| 10 | 50 | 50 | 450 | 0 | 50 | 0 | 34 |
+| All | 150 | 150 | 700 | 0 | 150 | 0 | 32 |
 
 ## Part 2 - another NGO claims a listing that was claimed earlier
 
 | Earlier claim at replay time | Cases | Second NGO got the listing | Earlier claim still active | Median response (ms) |
 | --- | --- | --- | --- | --- |
-| lease expired | 100 | 0 | 100 | 17 |
-| lease still running | 25 | 0 | 25 | 18 |
+| lease expired | 100 | 0 | 100 | 19 |
+| lease still running | 25 | 0 | 25 | 19 |
 
 **Lease recovery success**: 0 of 100 expired-lease listings (0%) could be claimed by another NGO. Without recovery the expired claim is never released, so the listing stays blocked; this is the gap the proposed method must close.
 

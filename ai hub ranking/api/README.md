@@ -1,6 +1,19 @@
 # AI hub-ranking API (FastAPI)
 
-Serves the frozen model in `../model/` to the Flutter app.
+**What it is:** the small web service that lets the Flutter app use the AI model. The app
+cannot run a Python model itself, so when a donor opens "Choose a drop-off hub", the app sends
+the donation ID here; this service loads the model from `../model/`, ranks the hubs and sends
+the order back. Render runs this folder online (`Dockerfile`, `render.yaml` at the repository
+root), so the app works without your laptop. If it is down, the app falls back to "nearest
+first".
+
+| File | What it does |
+| --- | --- |
+| `main.py` | the service: reads the hubs from Supabase, ranks them with the model, returns the order |
+| `requirements.txt` | the packages it needs (FastAPI, uvicorn, httpx, plus the model libraries) |
+| `Dockerfile` | how Render builds it (copies `main.py` and `../model/`) |
+| `start_api.bat` | run it on your own PC for testing (http://localhost:8000) |
+| `.env.example` | Supabase URL and public key for a local run (copy to `.env`) |
 
 ```
 Flutter (donor signed in)
@@ -9,6 +22,7 @@ Flutter (donor signed in)
 FastAPI (this folder)
    ├─ Supabase RPC get_hub_options(p_donation)        ← database hard rules decide "feasible"
    ├─ Supabase RPC get_my_donation_detail(p_donation)  ← weight + item categories
+   ├─ Supabase tables donation_categories.needs_* / community_hubs.has_*  ← storage the items need / hubs have
    ├─ rank ONLY feasible hubs: model score (lower = better), ties → road km → hub_id
    │      model missing/broken → REFERENCE_FALLBACK (the weighted reference rule)
    └─ returns all hubs: feasible in ranked order (+ rank, ai_score, recommended,
@@ -59,6 +73,9 @@ Errors from the database (e.g. `DONATION_NOT_HUB_ELIGIBLE`, `UNAUTHENTICATED`) c
 HTTP 400 with `detail.message`. When the service fails, the app falls back to `get_hub_options`
 directly, which shows the same database error to the donor.
 
+Each ranked hub in the response also has `handling_penalty` and `storage_note` (e.g. "Has the
+storage these items need" or "No lockable storeroom"), which the app shows as a chip.
+
 ## Recommendation log
 
 Every response is appended to `logs/recommendations.jsonl` (recommendation id, donation,
@@ -74,7 +91,7 @@ authoritative state.
 | utilisation_ratio | `get_hub_options.utilisation_ratio` (stored / capacity) |
 | capacity_pressure | `get_hub_options.capacity_pressure` (weight / remaining capacity) |
 | donation_weight_kg | `get_my_donation_detail.total_weight_kg` |
-| handling_penalty | highest penalty among the donation's item categories (clothing 0.1, books 0.2, electronics 0.4, food 0.6, appliances 0.8, furniture 1.0). Any other category name uses `UNKNOWN_CATEGORY_PENALTY` (0.5) and is reported in `features_assumed`. |
+| handling_penalty | Hub-specific. The donation's storage needs are the ticks of its item categories (`donation_categories.needs_*`); each hub's facilities are its ticks (`community_hubs.has_*`), both read directly from the tables (column-level grants, no extra function). Base = highest need (none 0.10, fragile shelving 0.40, lockable storeroom 0.40, food-safe storage 0.60, vehicle access 0.80); value at a hub = base × (1 − 0.5 × share of the needs the hub meets). Nobody enters a number, and new categories need no retraining. A category with nothing ticked is guessed from its name. If the columns are not there yet, needs are guessed from the category names and every hub gets the base value (`storage_needs_source` says which). |
 
 ## Put it online (for public use)
 

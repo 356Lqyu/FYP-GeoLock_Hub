@@ -175,8 +175,8 @@ GUIDE = dict(
       "farthest = 1).",
       "Score = 0.45 x scaled distance + 0.20 x utilisation (stored load / capacity: how full the hub already "
       "is) + 0.25 x capacity pressure (donation weight / remaining capacity: how much of the free space this "
-      "donation would take) + 0.10 x handling penalty (by item category, clothing 0.1 up to furniture 1.0; the "
-      "same for every hub of one donation, so it does not change the order). Lower is better.",
+      "donation would take) + 0.10 x handling penalty P_di (from the item's hardest storage need, 0.1 to 0.8, "
+      "halved in proportion to the needs the hub's storage meets, so it can differ between hubs). Lower is better.",
       "Sort by score, lowest first (ties: shorter distance, then hub ID). Rank 1 is the recommendation."],
  expect=["This is a weighted-sum rule (simple additive weighting), a multi-criteria rule [1]. Distance has the largest "
          "weight, so it usually picks a near hub, but it will accept a somewhat longer trip to avoid a hub that "

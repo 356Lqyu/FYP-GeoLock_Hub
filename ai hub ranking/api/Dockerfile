@@ -7,7 +7,6 @@ COPY ["ai hub ranking/requirements.txt", "./requirements.txt"]
 COPY ["ai hub ranking/api/requirements.txt", "./api/requirements.txt"]
 RUN pip install --no-cache-dir -r api/requirements.txt
 
-COPY ["ai hub ranking/hub_ranking_core.py", "./"]
 COPY ["ai hub ranking/model", "./model"]
 COPY ["ai hub ranking/api/main.py", "./api/"]
 

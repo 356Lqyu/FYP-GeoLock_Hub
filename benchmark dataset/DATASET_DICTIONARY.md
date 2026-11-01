@@ -38,6 +38,17 @@ All timestamps are local time (Asia/Kuala_Lumpur, ISO 8601 without offset) betwe
 | hub_active_flag | 0 = hub cannot receive donations | HUB, SYS |
 | operating_start, operating_end | Daily opening hours (HH:MM, same every day) | HUB, AGG, SYS |
 | accepted_categories | Categories the hub accepts, `|`-separated | HUB, AGG, SYS |
+| building_type | `hall` or `office`, from the OSM name (Dewan/Balai = hall; Persatuan/Pejabat/Pusat/Majlis = office), else townhall = office | AI (storage) |
+| has_food_safe_storage | 1 = closed, pest-proof storage off the floor (synthetic) | AI |
+| has_fragile_shelving | 1 = shelves or cabinets for items that break easily (synthetic) | AI |
+| has_lockable_storeroom | 1 = a room or cabinet that can be locked (synthetic) | AI |
+| has_vehicle_access | 1 = ground-floor entrance a car or van can stop next to (synthetic) | AI |
+
+Storage needs per category are in `generation_manifest.json` → `rules.hub_storage.category_needs`:
+clothing, books: none; electronics: fragile shelving + lockable storeroom; food: food-safe storage;
+appliances: lockable storeroom + vehicle access; furniture: vehicle access. They set the
+handling penalty P_di in `donation_hub_candidates.csv` (a hub with the storage a category needs
+handles it more easily), and so the reference score.
 
 ## donors.csv (synthetic)
 | Column | Meaning | Used by |
@@ -71,7 +82,7 @@ All timestamps are local time (Asia/Kuala_Lumpur, ISO 8601 without offset) betwe
 | donation_weight_kg | Donation weight, repeated so the table is a complete training table | AI |
 | utilisation_ratio | hub_load / capacity | HUB, AI |
 | capacity_pressure | weight / remaining capacity | HUB, AI |
-| handling_penalty | clothing 0.1, books 0.2, electronics 0.4, food 0.6, appliances 0.8, furniture 1.0 | HUB, AI |
+| handling_penalty | P_di: base from the category's hardest storage need (none 0.10; fragile shelving or lockable storeroom 0.40; food-safe storage 0.60; vehicle access 0.80 → clothing, books 0.10; electronics 0.40; food 0.60; appliances, furniture 0.80) × (1 − 0.5 × share of the needs the hub has) | HUB, AI |
 | reference_score | Weighted deterministic score of feasible rows (lower is better); the AI training target | HUB, AI |
 | geographic_group_id | Split key, repeated from donations | AI |
 

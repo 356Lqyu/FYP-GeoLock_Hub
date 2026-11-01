@@ -7,6 +7,8 @@ extract_osm_python.py). Outputs: real public context (NGOs, OSM hubs, roads),
 synthetic operational records (donors, donations, hub states, vehicles),
 scenario membership, the reference-policy label and frozen directed road distances.
 No model fitting, baseline or experiment outcomes, claims, tasks or train/test split.
+Hub storage facilities (hubs.csv has_* columns) are synthetic and seeded per hub; the handling
+penalty P_di is the category base (from its storage needs), lowered at a hub with that storage.
 
 Rules (report Section 3.3, Tables A.2 and A.3; candidate search as the backend):
   * candidate hubs = hubs within the 20 km service radius (straight line) of the donor,
@@ -79,12 +81,114 @@ ROUTE_SELECTION_SEED_OFFSET = 81029
 LEASE_SELECTION_SEED_OFFSET = 81028
 TIMELINE_SEED_OFFSET = 81030
 CATEGORIES = ('clothing', 'books', 'electronics', 'food', 'appliances', 'furniture')
-HANDLING = {'clothing':.10,'books':.20,'electronics':.40,'food':.60,'appliances':.80,'furniture':1.00}
 # Synthetic category-aware quantity envelopes reduce implausible 0.5 kg furniture.
 CATEGORY_WEIGHT = {
  'clothing':(.5,.86),'books':(.5,.82),'electronics':(.8,.76),
  'food':(.5,.82),'appliances':(3.0,.55),'furniture':(7.0,.33)
 }
+
+# Hub storage (synthetic, seeded per hub). Four yes/no facilities a hub may have; each category
+# needs some of them. The handling penalty P_di of a donation at a hub starts from the category
+# base (HANDLING, from its hardest need) and is lower at a hub that has the storage it needs.
+STORAGE = ('food_safe_storage', 'fragile_shelving', 'lockable_storeroom', 'vehicle_access')
+STORAGE_NEEDS = {'clothing': (), 'books': (),
+                 'electronics': ('fragile_shelving', 'lockable_storeroom'),   # breaks, valuable
+                 'food': ('food_safe_storage',),                              # pests, spoilage
+                 'appliances': ('lockable_storeroom', 'vehicle_access'),      # valuable, heavy
+                 'furniture': ('vehicle_access',)}                            # bulky
+# Base handling value of a category = its hardest storage need (same rule as the app's API).
+NEED_BASE = {'none': .10, 'fragile_shelving': .40, 'lockable_storeroom': .40,
+             'food_safe_storage': .60, 'vehicle_access': .80}
+HANDLING = {c: max([NEED_BASE[n] for n in needs], default=NEED_BASE['none'])
+            for c, needs in STORAGE_NEEDS.items()}
+# Building type from the OSM name, else from the OSM amenity.
+HALL_WORDS = ('dewan', 'balai', 'kompleks', 'hall', '礼堂', '堂')
+OFFICE_WORDS = ('persatuan', 'pejabat', 'pusat', 'majlis', 'association', 'office', 'centre', 'center')
+# Chance of each facility for a 150 kg hub. Halls: ground floor with a car park, often a
+# kitchen store. Offices: lockable rooms and cabinets, more often upstairs or in shophouses.
+STORAGE_CHANCE = {
+    'hall':   dict(food_safe_storage=.55, fragile_shelving=.45, lockable_storeroom=.45, vehicle_access=.80),
+    'office': dict(food_safe_storage=.35, fragile_shelving=.65, lockable_storeroom=.70, vehicle_access=.50)}
+STORAGE_CAPACITY_EFFECT = dict(food_safe_storage=.30, fragile_shelving=.30, lockable_storeroom=.30,
+                               vehicle_access=.10)    # per 100 kg above/below 150 kg
+STORAGE_ACCEPTS_BONUS = .10      # accepts every category that needs the facility
+STORAGE_DECLINE_FACTOR = .30     # chose to decline a category that needs it (often the reason)
+STORAGE_SEED_OFFSET = 81031
+STORAGE_RELIEF = .5             # every need met -> half the base value
+
+
+def handling_at_hub(category, hub):
+    """P_di: the category base (HANDLING, from its storage needs), lowered when the hub has
+    the storage the category needs: base x (1 - STORAGE_RELIEF x share of the needs met)."""
+    needs = STORAGE_NEEDS[category]
+    if not needs:
+        return HANDLING[category]
+    met = sum(hub['has_' + f] for f in needs)
+    return round(HANDLING[category] * (1 - STORAGE_RELIEF * met / len(needs)), 6)
+
+
+def building_type(name, amenity):
+    n = (name or '').lower()
+    if any(w in n for w in HALL_WORDS):
+        return 'hall'
+    if any(w in n for w in OFFICE_WORDS):
+        return 'office'
+    return 'office' if amenity == 'townhall' else 'hall'
+
+
+def assign_hub_storage(hubs, seed):
+    """Add the four storage columns to every hub and check they are consistent."""
+    for h in hubs:
+        rng = random.Random(f"{seed + STORAGE_SEED_OFFSET}-{h['hub_id']}")
+        kind = building_type(h['hub_name'], h['osm_amenity'])
+        accepted = set(h['accepted_categories'].split('|'))
+        cap = float(h['hub_capacity_kg'])
+        h['building_type'] = kind
+        for f in STORAGE:
+            chance = STORAGE_CHANCE[kind][f] + STORAGE_CAPACITY_EFFECT[f] * (cap - 150) / 100
+            needing = {c for c, needs in STORAGE_NEEDS.items() if f in needs}
+            # A hub under 100 kg never takes furniture because of its size, not its storage.
+            declined = needing - accepted - ({'furniture'} if cap < 100 else set())
+            if declined:
+                chance *= STORAGE_DECLINE_FACTOR
+            elif needing <= accepted:
+                chance += STORAGE_ACCEPTS_BONUS
+            h['has_' + f] = int(rng.random() < min(.95, max(.05, chance)))
+    # Consistency checks: the same direction as real hubs, or generation stops.
+    share = lambda rows, f: sum(r['has_' + f] for r in rows) / len(rows)
+    count = lambda rows: sum(sum(r['has_' + f] for f in STORAGE) for r in rows) / len(rows)
+    by_cap = sorted(hubs, key=lambda r: float(r['hub_capacity_kg']))
+    third = len(by_cap) // 3
+    small, large = by_cap[:third], by_cap[-third:]
+    halls = [r for r in hubs if r['building_type'] == 'hall']
+    offices = [r for r in hubs if r['building_type'] == 'office']
+    checks = dict(
+        larger_hubs_have_more_facilities=count(large) > count(small),
+        halls_more_vehicle_access=share(halls, 'vehicle_access') > share(offices, 'vehicle_access'),
+        offices_more_lockable_rooms=share(offices, 'lockable_storeroom') > share(halls, 'lockable_storeroom'),
+        every_facility_share_between_25_and_90=all(.25 <= share(hubs, f) <= .90 for f in STORAGE))
+    acceptance = {}
+    for c, needs in STORAGE_NEEDS.items():
+        takes = [r for r in hubs if c in r['accepted_categories'].split('|')]
+        declines = [r for r in hubs if c not in r['accepted_categories'].split('|')
+                    and not (c == 'furniture' and float(r['hub_capacity_kg']) < 100)]
+        for f in needs:
+            acceptance[f'{c}:{f}'] = dict(accepting=round(share(takes, f), 3),
+                                         declining=round(share(declines, f), 3) if declines else None)
+            if len(declines) >= 5:
+                checks[f'hubs_taking_{c}_more_often_have_{f}'] = share(takes, f) > share(declines, f)
+    failed = [k for k, ok in checks.items() if not ok]
+    assert not failed, f'Hub storage is not consistent: {failed}'
+    return dict(
+        facility_share={f: round(share(hubs, f), 3) for f in STORAGE},
+        building_types=dict(collections.Counter(r['building_type'] for r in hubs)),
+        facilities_per_hub=dict(sorted(collections.Counter(
+            sum(r['has_' + f] for f in STORAGE) for r in hubs).items())),
+        mean_facilities=dict(smallest_third=round(count(small), 2), largest_third=round(count(large), 2)),
+        share_by_building_type={k: {f: round(share(rows, f), 3) for f in STORAGE}
+                                for k, rows in (('hall', halls), ('office', offices))},
+        share_by_acceptance=acceptance, checks=checks)
+
 
 # Extraction/catchment regions are generated from the supplied 11 NGO references.
 # These are NOT official administrative polygons and NOT experiment geofences.
@@ -143,7 +247,8 @@ SCHEMA = {
  'ngos': ['ngo_id','ngo_name','latitude','longitude','road_node_id'],
  'vehicles': ['vehicle_id','ngo_id','vehicle_type','vehicle_capacity_kg','depot_road_node_id'],
  'hubs': ['hub_id','hub_name','latitude','longitude','road_node_id','hub_capacity_kg',
-          'hub_load_kg','hub_reserved_kg','hub_active_flag','operating_start','operating_end','accepted_categories'],
+          'hub_load_kg','hub_reserved_kg','hub_active_flag','operating_start','operating_end','accepted_categories',
+          'building_type','has_food_safe_storage','has_fragile_shelving','has_lockable_storeroom','has_vehicle_access'],
  'donors': ['donor_id','latitude','longitude','road_node_id'],
  'donations': ['donation_id','donor_id','category','weight_kg','availability_start','availability_end',
                'collection_path','geographic_group_id'],
@@ -556,6 +661,7 @@ def main(a):
            remaining_capacity_kg=round(cap-stored-reserve,2),hub_active_flag=int(randomiser.random()>.05),
            operating_start=opens,operating_end=closes,accepted_categories='|'.join(accepted))
         hubs.append(h);hub_idx[h['hub_id']]=idx;hub_by[h['hub_id']]=h
+    storage_summary=assign_hub_storage(hubs,a.seed)
     # Population-weighted sampling of locality proxy anchors, but only where
     # supplied NGO context supports a catchment. Cyberjaya is kept as a small
     # explicit potentially-ineligible scenario stratum, NOT assumed eligible.
@@ -714,7 +820,7 @@ def main(a):
                 utilisation_ratio=round(float(h['hub_load_kg'])/float(h['hub_capacity_kg']),6),
                 remaining_capacity_kg=available,
                 capacity_pressure=round(weight/available,6) if available else '',
-                handling_penalty=HANDLING[d['category']],reference_score='',reference_rank='',
+                handling_penalty=handling_at_hub(d['category'],h),reference_score='',reference_rank='',
                 geographic_group_id=d['geographic_group_id'])
             candidates.append(row)
             if valid:feasible_by[d['donation_id']].append(row)
@@ -1095,7 +1201,8 @@ def main(a):
                     weekend_share=round(sum(s0.weekday()>=5 for s0 in starts)/len(starts),3),
                     batch_episode_conflicts=episode_conflicts,
                     route_groups_with_common_window=len(route_groups)),
-      hub_opening_hours=dict(collections.Counter(f"{h['operating_start']}-{h['operating_end']}" for h in hubs)))
+      hub_opening_hours=dict(collections.Counter(f"{h['operating_start']}-{h['operating_end']}" for h in hubs)),
+      hub_storage=storage_summary)
     (out/'validation_summary.json').write_text(json.dumps(validation,indent=2)+'\n',encoding='utf-8')
     for name,records in tables.items():write_csv(out,name,records)
     def source(path,url,licence,retrieved,**extra):
@@ -1154,8 +1261,17 @@ def main(a):
                               'availability window with the daily opening hours) AND hub active AND '
                               'directed donor-to-hub route'),
             reference_policy=dict(weights=dict(distance=.45,utilisation=.20,capacity_pressure=.25,handling=.10),
-                                  handling_penalties=HANDLING,distance='min-max normalised within the feasible group',
+                                  handling_penalties=HANDLING,
+                                  handling_base_from_needs=NEED_BASE,
+                                  handling_at_hub='P_di = base from the hardest storage need x (1 - 0.5 x share of the needs the hub has)',distance='min-max normalised within the feasible group',
                                   tie_break='lower road distance, then hub_id'),
+            hub_storage=dict(
+                facilities=list(STORAGE),category_needs={c:list(v) for c,v in STORAGE_NEEDS.items()},
+                building_type='hall or office from the OSM name (Dewan/Balai = hall; Persatuan/Pejabat/Pusat/Majlis = office), else townhall = office',
+                chance_at_150_kg=STORAGE_CHANCE,capacity_effect_per_100_kg=STORAGE_CAPACITY_EFFECT,
+                accepts_bonus=STORAGE_ACCEPTS_BONUS,decline_factor=STORAGE_DECLINE_FACTOR,decline_rule='only a category the hub chose to decline (not furniture below 100 kg)',
+                seed_offset=STORAGE_SEED_OFFSET,
+                relief=STORAGE_RELIEF),
             recommendation_scenarios='donations with at least two feasible hubs',
             batch_templates=('reference-policy hub; 3-5 donations, one category, <= 30 kg; one accumulation '
                              'episode each; added_at = first opening-hours handover; members ordered by '

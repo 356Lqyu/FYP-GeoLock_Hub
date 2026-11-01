@@ -20,15 +20,15 @@ Pair the files by `scenario_id`. Main metric: **total NGO road distance** (paire
 | Result | Value | Meaning |
 | --- | --- | --- |
 | Scenarios | 100 | One NGO with its own vehicles and a set of pickups |
-| Original donations | 424 | Every small donation (< 10 kg) of the aggregation scenario, each picked up at the donor's home |
-| Collected | 424 of 424 (100.0%) | Assigned to a valid route |
-| **Total NGO road distance** (main metric) | 2,617.7 km | Depot to every household and back, all routes |
+| Original donations | 438 | Every small donation (< 10 kg) of the aggregation scenario, each picked up at the donor's home |
+| Collected | 438 of 438 (100.0%) | Assigned to a valid route |
+| **Total NGO road distance** (main metric) | 2,689.4 km | Depot to every household and back, all routes |
 | Pickup trips (NGO dispatches) | 100 of 200 vehicles available | Each vehicle makes at most one trip |
 | Donor travel burden | 0 km | Donors stay at home in this condition |
-| Calculated benchmark cost | 3,117.7 units | 1.00 x NGO km + 5.00 x trips; a benchmark index, not real money |
-| Calculated cost per original donation | 7.35 units | Cost / donations |
-| NGO road distance per donation | 6.17 km | Total distance / donations |
-| Route duration | median 75.9 min (10th-90th percentile 51.2-96.6; max 111.1) | Driving + 10 min service per stop + return; limit 240 min |
+| Calculated benchmark cost | 3,189.4 units | 1.00 x NGO km + 5.00 x trips; a benchmark index, not real money |
+| Calculated cost per original donation | 7.28 units | Cost / donations |
+| NGO road distance per donation | 6.14 km | Total distance / donations |
+| Route duration | median 79.5 min (10th-90th percentile 59.7-93.7; max 109.2) | Driving + 10 min service per stop + return; limit 240 min |
 | **Hard-constraint violations** | 0 (routes of all 100 scenarios pass) | Independent check: capacity, 240-min duration, lease, NGO ownership, road route, each task once |
 
 ## How the method works

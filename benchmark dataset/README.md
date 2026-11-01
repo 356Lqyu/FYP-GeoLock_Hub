@@ -20,6 +20,7 @@ their own results elsewhere.
 | **Study boundary** enforced: no point or road in Singapore (v3.2 had 8 hubs and 19 donors in Singapore, from the Johor Bahru window) | Report 3.3.1 and Table 3.3 (geography check) |
 | Only columns that a baseline, the AI model or the test fixtures read are kept; provenance (hub OSM IDs, NGO registry fields, snap distances) moved to `generation_manifest.json` → `provenance`; batch members get `added_at` | Leaner tables; Table A.2 names are mapped in `DATASET_DICTIONARY.md` |
 | IDs follow time (DON000001 is the earliest donation; same for DNR, LST, BAT) | Readable ordering |
+| Hub **storage** (`hubs.csv` has_* columns) and a hub-specific **handling penalty P_di** | A hub with the storage an item needs handles it more easily; P_di = base from the category's hardest storage need, lowered at such a hub |
 
 ## Folder
 
@@ -55,8 +56,11 @@ python "benchmark dataset/source code/extract_osm_python.py" "public dataset/mal
 python "benchmark dataset/source code/extract_study_boundary.py"
 
 # step 2 (about 3.5 minutes)
-python "benchmark dataset/source code/generate_geolock_benchmark.py" --population-retrieved 2026-09-08 --osm-retrieved 2026-09-08 --ngo-retrieved 2026-09-13 --ngo-source-url https://www.ros.gov.my/portal-main/semakan2
+python "benchmark dataset/source code/generate_geolock_benchmark.py" 
 ```
+
+The road cache and the PBF are larger than GitHub allows, so they are kept locally and listed in
+`.gitignore`. Without them only step 1 can rebuild them (from the PBF).
 
 The `--...-retrieved` dates and the NGO source URL are only recorded in the manifest
 (values above are the retrieval dates in the report's reference list). The same inputs
@@ -67,16 +71,16 @@ and seed (20260915) always produce byte-identical CSVs.
 | File | Rows | Content | Real or synthetic |
 | --- | --- | --- | --- |
 | `ngos.csv` | 11 | NGOs with coordinates and road node | Real |
-| `hubs.csv` | 180 | OSM community centres / town halls as candidate hubs | Location real; capacity, load, opening hours, categories synthetic |
+| `hubs.csv` | 180 | OSM community centres / town halls as candidate hubs, with their storage facilities | Location real; capacity, load, opening hours, categories, storage synthetic |
 | `donors.csv` | 3,800 | Donor home coordinates (each on a real residential-type street node) | Synthetic |
 | `donations.csv` | 3,800 | Category, weight, dated availability window, collection path | Synthetic |
 | `donation_hub_candidates.csv` | 92,941 | Every hub within 20 km of each small donation, five hard-rule flags, reference score | Derived |
 | `listings.csv` | 1,172 | Claimable pickups (direct-household donations) | Derived |
 | `vehicles.csv` | 22 | Per NGO: one car (100 kg), one van (500 kg) | Synthetic |
-| `hub_batches.csv`, `hub_batch_members.csv` | 100 / 424 | Batch templates of small donations at one hub | Derived |
+| `hub_batches.csv`, `hub_batch_members.csv` | 100 / 432 | Batch templates of small donations at one hub | Derived |
 | `road_nodes.csv` | 3,990 | Coordinates of every road node used | Real (OSM) |
-| `road_distance_matrix.csv` | 142,514 | Directed road distance and travel time between nodes | Real (OSM) |
-| `scenarios.csv`, `scenario_members.csv` | 2,594 / 77,962 | Test cases and the records each one uses | Selection |
+| `road_distance_matrix.csv` | 142,595 | Directed road distance and travel time between nodes | Real (OSM) |
+| `scenarios.csv`, `scenario_members.csv` | 2,594 / 77,970 | Test cases and the records each one uses | Selection |
 | `claim_initial_states.csv` | 125 | Prior claim state for lease replay cases | Synthetic |
 | `verification_cases.csv` | 8 | Weight inputs and expected collection path | Fixed |
 | `generation_manifest.json` | — | Version, seed, sources, boundary, timeline, rules, donor-sampling record, provenance of NGOs and hubs, row counts, SHA-256 per file | — |
@@ -101,9 +105,10 @@ Kemaman and Kuala Muda — and must also lie inside the state boundary (no Singa
 | Hub state | Capacity 50–250 kg; stored load 0–80 %; reserved 0–20 % (never above what remains); 5 % inactive |
 | Hub opening hours | Daily: 09:00–17:00 (55 %), 08:00–22:00 (25 %), 08:00–12:00 (10 %), 18:00–22:00 (10 %) |
 | Hub categories | All six, except: no furniture below 100 kg capacity; half the hubs decline one more category |
+| Hub storage | Four yes/no facilities per hub (food-safe storage, shelves for fragile items, lockable storeroom, vehicle access). Chance by building type (halls: ground floor and car park, often a kitchen store, vehicle access 0.80; offices: lockable rooms 0.70, vehicle access 0.50), +0.30 per 100 kg of capacity above 150 kg (vehicle access +0.10), +0.10 if the hub takes every category that needs the facility, ×0.30 if it chose to decline one (furniture below 100 kg is declined for size, not storage). Own seed per hub. Rules in the manifest (`rules.hub_storage`) |
 | Candidate hubs | Every hub within 20 km (straight line) of the donor |
 | Hard feasibility (five rules) | Category accepted AND weight ≤ remaining capacity AND the availability window overlaps the opening hours for ≥ 30 min AND hub active AND a directed donor-to-hub route |
-| Reference score | 0.45 × road distance (min-max within the feasible hubs) + 0.20 × utilisation + 0.25 × capacity pressure + 0.10 × handling penalty; lower is better; ties by distance, then hub ID |
+| Reference score | 0.45 × road distance (min-max within the feasible hubs) + 0.20 × utilisation + 0.25 × capacity pressure + 0.10 × handling penalty P_di (base from the category's hardest storage need: none 0.10, fragile or valuable 0.40, pest-sensitive 0.60, bulky 0.80; × (1 − 0.5 × share of the needs the hub has)); lower is better; ties by distance, then hub ID |
 | NGO eligibility | Directed NGO-to-pickup road distance ≤ 20 km |
 | Batch template | Small donations whose top reference-score hub is the same; one category; 3–5 items; ≤ 30 kg. Each template is one accumulation episode: the windows overlap, `added_at` = first opening-hours handover, `created_at` = last `added_at`, and no other donation of the same hub and category is dated within 7 days, so "earliest received_at, then donation_id" selects exactly the members |
 | Route scenario | 5 listings of one NGO within 15 km by road, dated as one planning episode (common collection window) |
@@ -142,11 +147,15 @@ All pass for v3.3 (counts in `validation_summary.json`):
 - No lease case shares a listing; lease replay happens before listing expiry.
 - Every window starts on or after 1 Jan 2025, ends before 1 May 2026 and lasts 8–72 h; IDs are in time order.
 - Boundary weights are classified as 9.9 → COMMUNITY_HUB, 10.0 and 10.1 → DIRECT_HOUSEHOLD.
+- Hub storage is consistent (`validation_summary.json` → `hub_storage.checks`): larger hubs have more facilities; halls have vehicle access more often than offices, offices a lockable room more often than halls; hubs that take a category have its facility more often than hubs that chose to decline it; every facility is held by 25–90 % of hubs.
 
 Every baseline checks each CSV against the SHA-256 in `generation_manifest.json` and
 stops if a file has been changed.
 
 ## Key figures
+
+Row counts above and the figures below depend on the generation run; the exact values of the
+current dataset are in `generation_manifest.json` (`row_counts`) and `validation_summary.json`.
 
 | Figure | Value |
 | --- | --- |
@@ -155,12 +164,12 @@ stops if a file has been changed.
 | Candidate rows rejected by rule | category 8,884; capacity 424; opening hours 285; inactive hub 5,103; no route 1,476 |
 | Directed road speed (free flow) | median about 55 km/h |
 | Donor distance to nearest feasible hub | median 3.4 km |
-| Donor distance to top reference-score hub | median 4.2 km |
-| Top reference-score hub = nearest feasible hub | 48 % of recommendation scenarios |
+| Donor distance to top reference-score hub | median 4.3 km |
+| Top reference-score hub = nearest feasible hub | 47 % of recommendation scenarios |
 
 ## Limits
 
-- Donations, hub load and capacity, opening hours, accepted categories and vehicles are synthetic;
+- Donations, hub load and capacity, opening hours, accepted categories, hub storage and vehicles are synthetic;
   they test the mechanisms under controlled conditions and do not describe real NGO volumes.
 - Travel times are free-flow from the OSM speed profile; there is no congestion.
 - OSM community halls are candidate locations, not approved donation centres.

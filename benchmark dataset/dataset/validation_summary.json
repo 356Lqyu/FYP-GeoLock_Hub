@@ -54,7 +54,7 @@
   "route_scenarios": 100,
   "route_listing_reuse": 0,
   "timeline": {
-    "first_availability_start": "2025-01-01T10:15",
+    "first_availability_start": "2025-01-01T09:30",
     "last_availability_end": "2026-04-30T21:00",
     "availability_hours": {
       "min": 8.0,
@@ -62,24 +62,24 @@
       "max": 60.0
     },
     "donations_per_month": {
-      "2025-01": 229,
-      "2025-02": 249,
-      "2025-03": 237,
-      "2025-04": 215,
-      "2025-05": 251,
-      "2025-06": 231,
-      "2025-07": 227,
-      "2025-08": 251,
-      "2025-09": 226,
-      "2025-10": 256,
-      "2025-11": 257,
-      "2025-12": 223,
-      "2026-01": 269,
-      "2026-02": 214,
-      "2026-03": 220,
-      "2026-04": 245
+      "2025-01": 206,
+      "2025-02": 243,
+      "2025-03": 240,
+      "2025-04": 233,
+      "2025-05": 264,
+      "2025-06": 248,
+      "2025-07": 233,
+      "2025-08": 253,
+      "2025-09": 239,
+      "2025-10": 241,
+      "2025-11": 239,
+      "2025-12": 225,
+      "2026-01": 277,
+      "2026-02": 198,
+      "2026-03": 211,
+      "2026-04": 250
     },
-    "weekend_share": 0.37,
+    "weekend_share": 0.381,
     "batch_episode_conflicts": 0,
     "route_groups_with_common_window": 100
   },
@@ -88,5 +88,80 @@
     "18:00-22:00": 19,
     "09:00-17:00": 93,
     "08:00-22:00": 49
+  },
+  "hub_storage": {
+    "facility_share": {
+      "food_safe_storage": 0.611,
+      "fragile_shelving": 0.567,
+      "lockable_storeroom": 0.55,
+      "vehicle_access": 0.7
+    },
+    "building_types": {
+      "hall": 121,
+      "office": 59
+    },
+    "facilities_per_hub": {
+      "0": 6,
+      "1": 28,
+      "2": 64,
+      "3": 47,
+      "4": 35
+    },
+    "mean_facilities": {
+      "smallest_third": 1.77,
+      "largest_third": 2.93
+    },
+    "share_by_building_type": {
+      "hall": {
+        "food_safe_storage": 0.645,
+        "fragile_shelving": 0.554,
+        "lockable_storeroom": 0.446,
+        "vehicle_access": 0.802
+      },
+      "office": {
+        "food_safe_storage": 0.542,
+        "fragile_shelving": 0.593,
+        "lockable_storeroom": 0.763,
+        "vehicle_access": 0.492
+      }
+    },
+    "share_by_acceptance": {
+      "electronics:fragile_shelving": {
+        "accepting": 0.602,
+        "declining": 0.143
+      },
+      "electronics:lockable_storeroom": {
+        "accepting": 0.578,
+        "declining": 0.214
+      },
+      "food:food_safe_storage": {
+        "accepting": 0.66,
+        "declining": 0.167
+      },
+      "appliances:lockable_storeroom": {
+        "accepting": 0.577,
+        "declining": 0.167
+      },
+      "appliances:vehicle_access": {
+        "accepting": 0.726,
+        "declining": 0.333
+      },
+      "furniture:vehicle_access": {
+        "accepting": 0.792,
+        "declining": 0.091
+      }
+    },
+    "checks": {
+      "larger_hubs_have_more_facilities": true,
+      "halls_more_vehicle_access": true,
+      "offices_more_lockable_rooms": true,
+      "every_facility_share_between_25_and_90": true,
+      "hubs_taking_electronics_more_often_have_fragile_shelving": true,
+      "hubs_taking_electronics_more_often_have_lockable_storeroom": true,
+      "hubs_taking_food_more_often_have_food_safe_storage": true,
+      "hubs_taking_appliances_more_often_have_lockable_storeroom": true,
+      "hubs_taking_appliances_more_often_have_vehicle_access": true,
+      "hubs_taking_furniture_more_often_have_vehicle_access": true
+    }
   }
 }

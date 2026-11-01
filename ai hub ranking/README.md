@@ -13,21 +13,66 @@ All hubs -> hard rules (database) -> feasible hubs -> AI ranking -> top 3 -> rec
 
 The FastAPI service in `api/` serves the frozen model to the Flutter app.
 
+## Handling penalty depends on the hub
+
+The handling penalty P_di (report Eq. 3.1) says how hard donation d is to look after at hub i.
+It starts from the category's hardest storage need and is lower at a hub that has the storage the
+category needs. The benchmark stores P_di in `donation_hub_candidates.csv`, so training reads it
+like every other feature. In the app, the API works it out the same way from tick boxes:
+
+| Who | What they do | Sees a number? |
+| --- | --- | --- |
+| Donor | picks the item category | no |
+| Whoever adds a category | ticks what it needs (or leaves it: guessed from the name) | no |
+| Hub admin | ticks what the hub has | no |
+| System | works out the penalty | – |
+
+Four storage facilities, the same on both sides:
+
+| Facility | A category needs it when… | Example |
+| --- | --- | --- |
+| food-safe storage | it can attract pests or spoil | food |
+| shelves for fragile items | it breaks when stacked | electronics, glassware |
+| lockable storeroom | it is valuable | phones, laptops, appliances |
+| vehicle access | it is bulky or heavy | furniture, appliances |
+
+```
+base     = highest need: none 0.10, shelves 0.40, lockable room 0.40, food-safe 0.60, vehicle access 0.80
+          (same rule in the benchmark and the app)
+at a hub = base × (1 − 0.5 × share of the needs the hub has)
+```
+
+A donation of a laptop (needs shelves + lockable room, base 0.4) gets 0.2 at a hub with both,
+0.3 at a hub with one and 0.4 at a hub with neither. Clothing needs nothing, so it is 0.1
+everywhere. A donation with several categories uses all their needs together.
+
+The model has the report's five features; new app categories need no retraining. Hard rules are unchanged: a hub that
+does not accept a category is never offered (e.g. fresh food at a hub without a fridge).
+
+Hub storage in the benchmark is the `has_*` columns of `hubs.csv`, made by
+`benchmark dataset/source code/generate_geolock_benchmark.py` (synthetic, by building type,
+capacity and accepted categories; checked for consistency at generation). The category needs
+are in `generation_manifest.json` → `rules.hub_storage`; P_di is computed there too.
+
 ## Folder
 
 ```
 ai hub ranking/
 ├── data split/               frozen train / validation / test split
-├── hub_ranking_core.py       shared contract: feature order, tie rule, reference score, metrics, model loading
 ├── requirements.txt          numpy, scikit-learn, joblib, xgboost (pinned: the saved model needs these versions)
-├── 1_train_and_select.py     step 1: train and choose the model (train + validation only)
-├── 2_evaluate_on_test.py     step 2: score the frozen model on the test part, once (experiment E1)
+├── 1_train_and_select.py     step 1: train and choose the model (train + validation only);
+│                             also holds the shared rules (features, reference score, metrics)
+├── 2_evaluate_on_test.py     step 2: score the frozen model on the test part, once (experiment E1);
+│                             uses the rules of step 1
 ├── model/                    written by step 1: frozen model, model_metadata.json, training_record.json, model_card.md
 ├── development/              written by step 1: every configuration tried, validation_summary.md
 ├── test result/              written by step 2: results, comparison with the baselines, summary.md
-└── api/                      FastAPI service for the Flutter app (see api/README.md)
+└── api/                      the web service the Flutter app calls for the AI recommendation
+                              (Render runs it; see api/README.md)
     ├── main.py
     ├── requirements.txt
+    ├── Dockerfile            used by Render (render.yaml at the repository root)
+    ├── start_api.bat         start the API locally on Windows
     ├── .env.example          copy to .env (Supabase URL + publishable key)
     └── README.md
 ```
@@ -61,13 +106,14 @@ Keep these exact versions: a model saved with one scikit-learn version may not l
 ## How to run (from the repository root, with .venv active)
 
 ```powershell
-python "ai hub ranking/data split/freeze_split.py"     # optional: checks the split is unchanged
-python "ai hub ranking/1_train_and_select.py" 
-python "ai hub ranking/2_evaluate_on_test.py"
+python "ai hub ranking/1_train_and_select.py"       # step 1: writes model/ and development/
+python "ai hub ranking/2_evaluate_on_test.py"       # step 2 (E1): writes test result/
 ```
 
-Step 2 compares the model with the Nearest-Hub and Random Hub baselines, so their results must
-exist in `baseline implementation/result/` first.
+Training takes a while (60 configurations, 5 folds each). If it stops, run the same command
+again: finished configurations are kept in `development/search_progress.jsonl`.
+Step 2 runs once; to score again, delete `test result/` first. It compares the model with the
+Nearest-Hub and Random Hub results in `baseline implementation/result/` (report Table 3.6).
 
 Then start the API and the app:
 
@@ -123,7 +169,7 @@ the realised counts to report in Chapter 5.
 | --- | --- |
 | Rows | Each scenario's CANDIDATE_HUB members with `feasible_flag = 1` |
 | Features, in order | `road_distance_km`, `utilisation_ratio`, `capacity_pressure`, `donation_weight_kg`, `handling_penalty` (no scaling) |
-| Target | `reference_score` of each feasible donation–hub pair |
+| Target | `reference_score` of each feasible donation–hub pair, recomputed with the hub-specific handling penalty (same weights 0.45 / 0.20 / 0.25 / 0.10) |
 | Model families | RandomForestRegressor, XGBRegressor |
 | Search | 30 seeded random configurations per family, each scored by 5-fold GroupKFold (by geographic group) inside the train part |
 | Best configuration per family | CV Top-1 agreement, then NDCG@3, then lower score MAE |
@@ -151,15 +197,21 @@ Metrics (report Section 3.7.2):
 - **Top-1 agreement** (primary): the model's first hub is the same as the reference policy's first hub.
 - **NDCG@3**: relevance is 1 − (score − min)/(max − min) within each donation, with gain 2^rel − 1. All-equal groups are excluded.
 - **Top-3 coverage**: the reference policy's first hub appears in the model's top 3.
-- **Statistics:** 95 % percentile-bootstrap intervals (10,000 resamples) and an exact McNemar test of the model against Nearest-Hub and against Random Hub.
+- **Statistics** (report Section 3.8, Table A.4): Wilson 95 % intervals for Top-1 and Top-3 coverage; exact McNemar test for Top-1 (paired binary); Wilcoxon signed-rank (Pratt zero handling) with the Hodges-Lehmann estimate and a 95 % bootstrap interval (10,000 resamples, seed 20260915) for NDCG@3; primary test = Top-1 against Nearest-Hub; the other tests are Holm-adjusted; alpha = 0.05.
+
+### E1 result
+
+The numbers are written by step 2; read them in `test result/summary.md` after running.
+
 
 Each test donation gets one complete record in `test result/details/recommendation_records.jsonl`:
 feasible candidates and their features, model version, every candidate's score, the full ranking,
 the top 3, the selected hub, a plain explanation, the hard rules passed, the ranking mode, the score
 margin between the 1st and 2nd hub (confidence) and a timestamp.
 
-If the model cannot be loaded, the reference score is used instead (`REFERENCE_FALLBACK`). Such
-results are labelled as fallback and are not counted as model results. The script refuses to run
+If the model cannot be loaded, step 2 stops without scoring: a reference-policy fallback is model
+unavailability, not an RQ1 result (report Algorithm 3). The app's API still uses the fallback for
+operational continuity (`ranking_mode = REFERENCE_FALLBACK`). The script refuses to run
 a second time over an existing `test result/metrics.json`, because E1 is scored once.
 
 ## The API (`api/`) and authority

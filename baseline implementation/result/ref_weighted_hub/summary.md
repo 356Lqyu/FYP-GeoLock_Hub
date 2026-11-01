@@ -26,13 +26,13 @@ In E1, compare the AI model, Nearest-Hub and Random Hub against this ranking on 
 | Hub recommended | 2,000 | At least one hub passed all five hard rules |
 | No feasible hub | 19 | No hub passed the hard rules, so the method correctly recommends nothing |
 | Feasible hubs per donation | median 26 hubs (10th-90th percentile 10-54; max 62) | How many hubs the method could choose from |
-| Road distance from donor to the recommended hub | median 4.2 km (10th-90th percentile 1.5-8.3; max 13.9) | Candidates are within 20 km in a straight line; the road distance can be longer |
+| Road distance from donor to the recommended hub | median 4.2 km (10th-90th percentile 1.6-8.4; max 14.0) | Candidates are within 20 km in a straight line; the road distance can be longer |
 
 ## How the method works
 
 1. Take the feasible hubs (all five hard rules pass).
 2. For each hub, scale its road distance to 0-1 within this donation's feasible hubs (nearest = 0, farthest = 1).
-3. Score = 0.45 x scaled distance + 0.20 x utilisation (stored load / capacity: how full the hub already is) + 0.25 x capacity pressure (donation weight / remaining capacity: how much of the free space this donation would take) + 0.10 x handling penalty (by item category, clothing 0.1 up to furniture 1.0; the same for every hub of one donation, so it does not change the order). Lower is better.
+3. Score = 0.45 x scaled distance + 0.20 x utilisation (stored load / capacity: how full the hub already is) + 0.25 x capacity pressure (donation weight / remaining capacity: how much of the free space this donation would take) + 0.10 x handling penalty P_di (from the item's hardest storage need, 0.1 to 0.8, halved in proportion to the needs the hub's storage meets, so it can differ between hubs). Lower is better.
 4. Sort by score, lowest first (ties: shorter distance, then hub ID). Rank 1 is the recommendation.
 
 ## What to expect

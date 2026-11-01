@@ -21,24 +21,24 @@ Pair the files by `scenario_id`. FCFS is the optional, descriptive comparison of
 | --- | --- | --- |
 | Scenarios | 100 | One NGO with its own vehicles and a set of pickups |
 | Confirmed pickup tasks | 500 | Pickups the NGO legally holds (protected claim, inside its 20 km road geofence) |
-| **Valid-task coverage** (main metric) | 454 of 500 (90.8%) | Share of valid confirmed tasks placed on a valid route |
-| Unserved tasks | 46 | 44 FLEET_CAPACITY_OR_ROUTE_BUDGET_EXHAUSTED; 2 ROUTE_UNAVAILABLE |
+| **Valid-task coverage** (main metric) | 453 of 500 (90.6%) | Share of valid confirmed tasks placed on a valid route |
+| Unserved tasks | 47 | 45 FLEET_CAPACITY_OR_ROUTE_BUDGET_EXHAUSTED; 2 ROUTE_UNAVAILABLE |
 | Excluded before planning | 0 | none |
-| Total route distance | 4,597.6 km | Depot to pickups and back to the depot, all routes |
-| Total travel time | 5,370 min | Driving only; service time (10 min per stop) is counted in route duration |
-| Road distance per collected task | 10.13 km | Total distance / collected tasks |
+| Total route distance | 4,575.2 km | Depot to pickups and back to the depot, all routes |
+| Total travel time | 5,307 min | Driving only; service time (10 min per stop) is counted in route duration |
+| Road distance per collected task | 10.10 km | Total distance / collected tasks |
 | Pickup trips (vehicles used) | 116 of 150 available | Each vehicle makes at most one trip |
-| Route duration | median 87.9 min (10th-90th percentile 33.4-119.2; max 174.7) | Driving + 10 min service per stop + return; limit 240 min |
+| Route duration | median 88.5 min (10th-90th percentile 31.4-122.9; max 153.5) | Driving + 10 min service per stop + return; limit 240 min |
 | **Hard-constraint violations** | 0 (routes of all 100 scenarios pass) | Independent check: capacity, 240-min duration, lease, NGO ownership, road route, each task once |
 
 ## By scenario profile
 
 | Profile | Scenarios | Tasks | Collected | Not collected | Road distance (km) | Trips |
 | --- | --- | --- | --- | --- | --- | --- |
-| CAPACITY_PRESSURE | 25 | 125 | 81 | 44 | 814.4 | 25 |
-| CONNECTIVITY_STRESS | 25 | 125 | 124 | 1 | 1,168.5 | 33 |
-| GEOGRAPHIC_SPREAD | 25 | 125 | 125 | 0 | 1,430.0 | 25 |
-| NORMAL | 25 | 125 | 124 | 1 | 1,184.7 | 33 |
+| CAPACITY_PRESSURE | 25 | 125 | 80 | 45 | 757.3 | 25 |
+| CONNECTIVITY_STRESS | 25 | 125 | 124 | 1 | 1,176.9 | 33 |
+| GEOGRAPHIC_SPREAD | 25 | 125 | 125 | 0 | 1,466.0 | 25 |
+| NORMAL | 25 | 125 | 124 | 1 | 1,174.9 | 33 |
 
 ## Reason codes
 

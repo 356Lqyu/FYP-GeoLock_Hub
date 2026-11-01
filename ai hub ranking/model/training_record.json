@@ -1,9 +1,9 @@
 {
   "metadata": {
-    "model_version": "hubrank-xg-2026-10-30-dc363fd2",
+    "model_version": "hubrank-xg-2026-11-01-894d3223",
     "family": "XGBRegressor",
     "model_file": "hub_ranker_xgb.json",
-    "model_sha256": "dc363fd24a5aab45fde733eb8bb1ee469b95c75a741c680e1ece305bd232ee14",
+    "model_sha256": "894d3223e7c45846622f32b4554fc6321f99066addcafa855a8e7c933d10c2e4",
     "features": [
       "road_distance_km",
       "utilisation_ratio",
@@ -14,14 +14,19 @@
     "target": "reference_score",
     "score_direction": "lower_is_better",
     "tie_rule": "ascending predicted score (9 dp), then lower road_distance_km, then hub_id",
+    "preprocessing": "none: the five raw features in the frozen order, no scaling or encoding",
+    "preprocessing_version": "raw-features-v1",
     "top_k": 3,
     "handling_penalty": {
-      "clothing": 0.1,
-      "books": 0.2,
-      "electronics": 0.4,
-      "food": 0.6,
-      "appliances": 0.8,
-      "furniture": 1.0
+      "category_values": {
+        "clothing": 0.1,
+        "books": 0.1,
+        "electronics": 0.4,
+        "food": 0.6,
+        "appliances": 0.8,
+        "furniture": 0.8
+      },
+      "at_hub": "read from the benchmark: base from the hardest storage need, lowered at a hub with that storage"
     },
     "reference_weights": {
       "distance": 0.45,
@@ -32,7 +37,7 @@
     "seed": 20260915,
     "benchmark_version": "GEOLOCK-BM-v3.3",
     "split": {
-      "split_id": "3375392a244c0e17c4b69542c01bacaf45082cd60fe7c7a81b75c7fe7a443a95",
+      "split_id": "d639954a5414e4ae2106521599172254abbd14286bf4de7adec31c214754f971",
       "seed": 20260915,
       "realized_scenario_counts": {
         "train": 1347,
@@ -40,7 +45,7 @@
         "test": 349
       }
     },
-    "trained_at_utc": "2026-10-30T09:42:29+00:00",
+    "trained_at_utc": "2026-11-01T14:37:02+00:00",
     "environment": {
       "python": "3.12.10",
       "platform": "Windows-11-10.0.26200-SP0",
@@ -49,16 +54,95 @@
       "xgboost": "2.1.4"
     },
     "params": {
-      "n_estimators": 200,
+      "n_estimators": 800,
       "max_depth": 5,
-      "learning_rate": 0.1,
-      "subsample": 0.85,
+      "learning_rate": 0.02,
+      "subsample": 0.7,
       "colsample_bytree": 0.8,
-      "min_child_weight": 5,
-      "reg_lambda": 1.0
+      "min_child_weight": 3,
+      "reg_lambda": 5.0
     }
   },
   "protocol": {
+    "selected_features": [
+      "road_distance_km",
+      "utilisation_ratio",
+      "capacity_pressure",
+      "donation_weight_kg",
+      "handling_penalty"
+    ],
+    "preprocessing": "none: the five raw features in the frozen order, no scaling or encoding",
+    "search_space": {
+      "RandomForestRegressor": {
+        "n_estimators": [
+          100,
+          200,
+          300,
+          400
+        ],
+        "max_depth": [
+          null,
+          8,
+          12,
+          16,
+          20,
+          24
+        ],
+        "min_samples_leaf": [
+          1,
+          2,
+          4,
+          8
+        ],
+        "max_features": [
+          1.0,
+          0.8,
+          0.6
+        ]
+      },
+      "XGBRegressor": {
+        "n_estimators": [
+          200,
+          400,
+          600,
+          800
+        ],
+        "max_depth": [
+          3,
+          4,
+          5,
+          6,
+          8
+        ],
+        "learning_rate": [
+          0.02,
+          0.05,
+          0.1,
+          0.2
+        ],
+        "subsample": [
+          0.7,
+          0.85,
+          1.0
+        ],
+        "colsample_bytree": [
+          0.8,
+          1.0
+        ],
+        "min_child_weight": [
+          1,
+          3,
+          5,
+          10
+        ],
+        "reg_lambda": [
+          0.1,
+          1.0,
+          5.0
+        ]
+      }
+    },
+    "validation_metric": "Top-1 agreement, then NDCG@3, then lower score MAE",
     "configs_per_family": 30,
     "cv": "5-fold GroupKFold by geographic_group_id inside train",
     "config_choice": "CV Top-1, then NDCG@3, then lower MAE",
@@ -83,71 +167,71 @@
         "bootstrap": true
       },
       "cv": {
-        "top1_agreement": 0.829271650832989,
-        "ndcg_at_3": 0.9878427414143516,
-        "top3_coverage": 0.9918463444857497,
-        "score_mae": 0.03217773756124176,
-        "top1_fold_sd": 0.05040097615054356
+        "top1_agreement": 0.8389233099270272,
+        "ndcg_at_3": 0.9885642654588572,
+        "top3_coverage": 0.9888696131075312,
+        "score_mae": 0.03180551444948172,
+        "top1_fold_sd": 0.06357139952677947
       },
       "validation": {
         "groups": 304,
-        "top1_agreement": 0.819078947368421,
-        "top1_count": 249,
-        "ndcg_at_3": 0.9932843272325212,
+        "top1_agreement": 0.805921052631579,
+        "top1_count": 245,
+        "ndcg_at_3": 0.9926956138228612,
         "ndcg_groups": 304,
         "degenerate_groups": 0,
         "top3_coverage": 0.9835526315789473,
         "top3_count": 299,
-        "score_mae": 0.027697011545088728
+        "score_mae": 0.02742143252776432
       }
     },
     "XGBRegressor": {
-      "config_no": 22,
+      "config_no": 9,
       "params": {
-        "n_estimators": 200,
+        "n_estimators": 800,
         "max_depth": 5,
-        "learning_rate": 0.1,
-        "subsample": 0.85,
+        "learning_rate": 0.02,
+        "subsample": 0.7,
         "colsample_bytree": 0.8,
-        "min_child_weight": 5,
-        "reg_lambda": 1.0
+        "min_child_weight": 3,
+        "reg_lambda": 5.0
       },
       "cv": {
-        "top1_agreement": 0.8626931020239571,
-        "ndcg_at_3": 0.9926045941312698,
-        "top3_coverage": 0.9955528018725044,
-        "score_mae": 0.03053888504110493,
-        "top1_fold_sd": 0.04042979324455012
+        "top1_agreement": 0.8589921520033045,
+        "ndcg_at_3": 0.9920177363088545,
+        "top3_coverage": 0.9948010463995594,
+        "score_mae": 0.030255205668157953,
+        "top1_fold_sd": 0.05662715203647487
       },
       "validation": {
         "groups": 304,
-        "top1_agreement": 0.8388157894736842,
-        "top1_count": 255,
-        "ndcg_at_3": 0.9927880507340555,
+        "top1_agreement": 0.8421052631578947,
+        "top1_count": 256,
+        "ndcg_at_3": 0.9930820970899669,
         "ndcg_groups": 304,
         "degenerate_groups": 0,
-        "top3_coverage": 0.9802631578947368,
-        "top3_count": 298,
-        "score_mae": 0.025801333393121854
+        "top3_coverage": 0.993421052631579,
+        "top3_count": 302,
+        "score_mae": 0.025896400926874657
       }
     }
   },
   "chosen_family": "XGBRegressor",
   "nearest_hub_on_validation": {
     "groups": 304,
-    "top1_agreement": 0.46381578947368424,
-    "top1_count": 141,
-    "ndcg_at_3": 0.9198589825632804,
+    "top1_agreement": 0.4473684210526316,
+    "top1_count": 136,
+    "ndcg_at_3": 0.9185382036147548,
     "ndcg_groups": 304,
     "degenerate_groups": 0,
-    "top3_coverage": 0.8125,
-    "top3_count": 247,
+    "top3_coverage": 0.8256578947368421,
+    "top3_count": 251,
     "score_mae": null
   },
   "input_sha256": {
-    "donation_hub_candidates.csv": "22f5c482bb3d0cd87de725fee39147c6f572690695fcfe5dd5f081dd6a199268",
-    "scenario_members.csv": "edaaefbd4fc12e9367f3fe2af4d6c7903732575ac3bcae7fd9fb9660d2fa046d",
-    "generation_manifest.json": "9c69e28601990a3aaaec58e70bd7b5ba2cec3750901fdfc8a5bfca9a013258d4"
+    "donation_hub_candidates.csv": "51e68ae42c7b3de39c5016615b29a157d4a0f12693ba356b3f0e005b0d42e7ca",
+    "scenario_members.csv": "7c09e2a9a040726458078c6d23370978a3cba6f155cb2b68aa2bbc356518e6d0",
+    "generation_manifest.json": "5fdafca9baa69c4e1c84eb843d180ff0e2ea6319fccf02ae033a6d3fb595d16a"
   },
-  "runtime_seconds": 938.6
+  "runtime_seconds": 504.4
 }
