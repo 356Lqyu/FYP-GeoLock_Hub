@@ -9,7 +9,7 @@ import logging
 import os
 import time
 import uuid
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from pathlib import Path
 
 import httpx
@@ -132,6 +132,9 @@ app.add_middleware(CORSMiddleware, allow_origins=['*'], allow_methods=['GET', 'P
 
 class RankRequest(BaseModel):
     donation_id: str = Field(..., description='donations.donation_id (uuid)')
+    dropoff_date: date | None = Field(
+        None, description='Day the donor will bring the donation (YYYY-MM-DD, Malaysia time); '
+                          'default today. The database accepts today up to 6 days ahead.')
 
 
 # ----------------------------------------------------------------------------- Supabase
@@ -263,7 +266,10 @@ async def rank_hubs(body: RankRequest, authorization: str | None = Header(defaul
     started = time.perf_counter()
     async with httpx.AsyncClient(timeout=TIMEOUT) as client:
         # Fails here for a donation the user does not own or that is not a hub donation.
-        options = await supabase_rpc(client, 'get_hub_options', {'p_donation': body.donation_id}, token)
+        params = {'p_donation': body.donation_id}
+        if body.dropoff_date is not None:
+            params['p_dropoff_date'] = body.dropoff_date.isoformat()
+        options = await supabase_rpc(client, 'get_hub_options', params, token)
         detail = await supabase_rpc(client, 'get_my_donation_detail', {'p_donation': body.donation_id}, token)
         if not isinstance(options, list) or not isinstance(detail, dict):
             raise HTTPException(status_code=502, detail=dict(message='Unexpected Supabase response'))
@@ -306,6 +312,7 @@ async def rank_hubs(body: RankRequest, authorization: str | None = Header(defaul
                                       storage_note=storage_note(needs, hub_facilities.get(str(o['hub_id'])))))
     result = dict(
         donation_id=body.donation_id, recommendation_id=str(uuid.uuid4()),
+        dropoff_date=body.dropoff_date.isoformat() if body.dropoff_date else None,
         ranking_mode=mode if ranked else 'NO_FEASIBLE_HUB',
         model_version=META.get('model_version') if mode == 'MODEL' else None,
         preprocessing_version=META.get('preprocessing_version') if mode == 'MODEL' else None,
@@ -323,7 +330,7 @@ def _log_recommendation(result, rows, ranked, seconds):
     """Append the recommendation to the log file."""
     try:
         LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
-        record = {k: result[k] for k in ('recommendation_id', 'donation_id', 'ranking_mode', 'model_version',
+        record = {k: result[k] for k in ('recommendation_id', 'donation_id', 'dropoff_date', 'ranking_mode', 'model_version',
                                           'preprocessing_version',
                                           'top_k', 'recommended_hub_id', 'confidence_margin',
                                           'storage_needs', 'storage_needs_source', 'generated_at')}

@@ -20,7 +20,7 @@ Flutter (donor signed in)
    │  POST /v1/hub-ranking  {donation_id}   Authorization: Bearer <Supabase access token>
    ▼
 FastAPI (this folder)
-   ├─ Supabase RPC get_hub_options(p_donation)        ← database hard rules decide "feasible"
+   ├─ Supabase RPC get_hub_options(p_donation, p_dropoff_date) ← hard rules for that day decide "feasible"
    ├─ Supabase RPC get_my_donation_detail(p_donation)  ← weight + item categories
    ├─ Supabase tables donation_categories.needs_* / community_hubs.has_*  ← storage the items need / hubs have
    ├─ rank ONLY feasible hubs: model score (lower = better), ties → road km → hub_id
@@ -67,7 +67,7 @@ the first time it asks.
 | Method | Path | Purpose |
 | --- | --- | --- |
 | GET | `/health` | Status, ranking mode, model version |
-| POST | `/v1/hub-ranking` | Rank the hubs for one donation (body `{"donation_id": "<uuid>"}`) |
+| POST | `/v1/hub-ranking` | Rank the hubs for one donation and drop-off day (body `{"donation_id": "<uuid>", "dropoff_date": "2026-11-05"}`; `dropoff_date` is optional: default today, up to 6 days ahead) |
 
 Errors from the database (e.g. `DONATION_NOT_HUB_ELIGIBLE`, `UNAUTHENTICATED`) come back as
 HTTP 400 with `detail.message`. When the service fails, the app falls back to `get_hub_options`
