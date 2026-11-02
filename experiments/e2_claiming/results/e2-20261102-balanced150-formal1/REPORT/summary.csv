@@ -1,0 +1,7 @@
+condition,concurrency,completed_trials,planned_trials,duplicate_trials,duplicate_rate,wilson95_low,wilson95_high,invariant_violation_rate,invariant_wilson95_low,invariant_wilson95_high,invariant_preserved_trials,invariant_violation_trials,zero_winner_trials,request_count,timeouts,request_errors,request_error_rate,request_error_outcome_counts,request_error_reason_counts,latency_sample_count,min_request_latency_ms,median_request_latency_ms,p95_request_latency_ms,max_request_latency_ms
+NON_ATOMIC_BASELINE,2,20,20,20,1.0,0.8388748419471806,1.0,1.0,0.8388748419471806,1.0,0,20,0,40,0,0,0.0,{},{},40,86.807,108.1505,124.80534999999998,139.497
+NON_ATOMIC_BASELINE,5,20,20,20,1.0,0.8388748419471806,1.0,1.0,0.8388748419471806,1.0,0,20,0,100,0,0,0.0,{},{},100,93.73,136.688,168.7104,191.919
+NON_ATOMIC_BASELINE,10,20,20,20,1.0,0.8388748419471806,1.0,1.0,0.8388748419471806,1.0,0,20,0,200,0,0,0.0,{},{},200,98.456,179.079,260.29234999999994,296.812
+PROTECTED_ATOMIC,2,20,20,0,0.0,0.0,0.16112515805281938,0.0,0.0,0.16112515805281938,20,0,0,40,0,20,0.5,"{""ERROR"": 20}","{""CLAIM_TRANSACTION_ROLLED_BACK"": 20}",40,1021.909,1049.9115,1076.8224500000001,1087.345
+PROTECTED_ATOMIC,5,20,20,0,0.0,0.0,0.16112515805281938,0.0,0.0,0.16112515805281938,20,0,0,100,0,80,0.8,"{""ERROR"": 80}","{""CLAIM_TRANSACTION_ROLLED_BACK"": 80}",100,1020.186,3061.2345,4104.88485,4125.369
+PROTECTED_ATOMIC,10,20,20,0,0.0,0.0,0.16112515805281938,0.0,0.0,0.16112515805281938,20,0,0,200,0,179,0.895,"{""ERROR"": 179}","{""CLAIM_TRANSACTION_ROLLED_BACK"": 179}",200,49.756,5098.238,9166.2947,9184.758
