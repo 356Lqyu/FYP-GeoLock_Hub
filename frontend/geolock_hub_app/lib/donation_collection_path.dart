@@ -1,12 +1,5 @@
-/// Client-side preview of the backend collection-path rule.
-///
-/// Preview only: the server's `coordination_config.donation_direct_min_kg` is
-/// authoritative and create_donation_with_images decides the committed path.
-/// Keep this value in step with the DEV configuration.
 const double donationDirectMinKgPreview = 10;
 
-/// Σ quantity × unit weight, rounded to grams like the server's numeric(12,3).
-/// Incomplete rows (null or non-positive values) contribute nothing.
 double donationTotalWeightKg(
   Iterable<({int? quantity, double? unitWeightKg})> items,
 ) {

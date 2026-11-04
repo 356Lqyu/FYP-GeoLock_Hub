@@ -80,7 +80,7 @@ String roadOutcomeMessage(String? code) {
     'ROUTE_UNAVAILABLE' => 'No drivable road route connects these locations',
     'ELIGIBILITY_UNDETERMINED' =>
       'Road eligibility has not been calculated yet; try again shortly',
-    'CLAIM_CONFLICT' => 'Another NGO has already claimed this listing',
+    'CLAIM_CONFLICT' => 'This listing is no longer available to claim',
     'LISTING_EXPIRED' => 'This listing has expired',
     'LISTING_NOT_FOUND' => 'This listing no longer exists or is not visible',
     'DONATION_NOT_READY' => 'The donation is not ready for pickup',

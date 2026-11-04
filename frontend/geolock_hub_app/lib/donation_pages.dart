@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart' show debugPrint, kDebugMode;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uuid/uuid.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -11,7 +12,6 @@ import 'package:image_picker/image_picker.dart';
 import 'async_request_gate.dart';
 import 'claim_card.dart';
 import 'claim_cards_controller.dart';
-import 'routing/ngo_routes_page.dart';
 import 'location/location_picker_page.dart';
 import 'location/location_result.dart';
 import 'location/road_routing.dart';
@@ -19,6 +19,8 @@ import 'donation_collection_path.dart';
 import 'donation_photo_rules.dart';
 import 'donation_photo_errors.dart';
 import 'donation_status.dart';
+import 'hub_admin/hub_service.dart';
+import 'hub_admin/hub_widgets.dart';
 import 'status_timeline.dart';
 
 final _db = Supabase.instance.client;
@@ -280,892 +282,6 @@ class MyClaimsPage extends StatefulWidget {
   State<MyClaimsPage> createState() => _MyClaimsPageState();
 }
 
-const hubLocationHint =
-    'Choose the hub entrance on or next to a road where vehicles can stop';
-
-/// Hub location picker: the entrance must be within reach of a drivable road.
-LocationPickerPage buildHubLocationPicker({
-  LocationResult? initialLocation,
-  RoadAccessCheck? roadAccessCheck,
-}) => LocationPickerPage(
-  title: 'Hub Address and Location',
-  initialLocation: initialLocation,
-  roadAccess: RoadAccessRequirement.required,
-  roadAccessCheck: roadAccessCheck,
-  hint: hubLocationHint,
-);
-
-class RegisterHubPage extends StatefulWidget {
-  final Map<String, dynamic>? initialHub;
-  final Future<void> Function()? onRegistered;
-  const RegisterHubPage({super.key, this.initialHub, this.onRegistered});
-  @override
-  State<RegisterHubPage> createState() => _RegisterHubPageState();
-}
-
-class _RegisterHubPageState extends State<RegisterHubPage> {
-  final _name = TextEditingController();
-  final _capacity = TextEditingController(text: '100');
-  LocationResult? _location;
-  bool _busy = false;
-  @override
-  void initState() {
-    super.initState();
-    final hub = widget.initialHub;
-    if (hub != null) {
-      _name.text = '${hub['hub_name'] ?? ''}';
-      _capacity.text = '${hub['capacity_kg'] ?? 100}';
-      final latitude = double.tryParse('${hub['latitude']}');
-      final longitude = double.tryParse('${hub['longitude']}');
-      if (latitude != null && longitude != null) {
-        _location = LocationResult(
-          address: '${hub['address_text'] ?? ''}',
-          latitude: latitude,
-          longitude: longitude,
-          method: LocationSelectionMethod.mapPin,
-        );
-      }
-    }
-  }
-
-  @override
-  void dispose() {
-    _name.dispose();
-    _capacity.dispose();
-    super.dispose();
-  }
-
-  Future<void> _pickLocation() async {
-    final result = await Navigator.push<LocationResult>(
-      context,
-      MaterialPageRoute(
-        builder: (_) => buildHubLocationPicker(initialLocation: _location),
-      ),
-    );
-    if (result != null && mounted) setState(() => _location = result);
-  }
-
-  Future<void> _submit() async {
-    final name = _name.text.trim();
-    final capacity = double.tryParse(_capacity.text.trim());
-    if (name.isEmpty ||
-        _location == null ||
-        capacity == null ||
-        capacity < 50 ||
-        capacity > 250) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Enter a hub name, confirm a location, and set capacity from 50 to 250 kg.',
-          ),
-        ),
-      );
-      return;
-    }
-    setState(() => _busy = true);
-    try {
-      if (widget.initialHub == null) {
-        await _db.rpc(
-          'register_community_hub',
-          params: {
-            'p_name': name,
-            'p_address': _location!.address,
-            'p_lat': _location!.latitude,
-            'p_lon': _location!.longitude,
-            'p_capacity_kg': capacity,
-            // The backend resolves and validates its own trusted road node.
-            'p_road_node': null,
-          },
-        );
-      } else {
-        await _db.rpc(
-          'update_my_hub',
-          params: {
-            'p_hub': widget.initialHub!['hub_id'],
-            'p_name': name,
-            'p_address': _location!.address,
-            'p_lat': _location!.latitude,
-            'p_lon': _location!.longitude,
-            'p_capacity_kg': capacity,
-          },
-        );
-      }
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            widget.initialHub == null
-                ? 'Hub registered and its road location was validated.'
-                : 'Hub details saved and validated.',
-          ),
-        ),
-      );
-      final callback = widget.onRegistered;
-      if (callback != null) {
-        await callback();
-      } else {
-        Navigator.pop(context, true);
-      }
-    } catch (error) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Hub registration was not confirmed: $error')),
-        );
-      }
-    } finally {
-      if (mounted) setState(() => _busy = false);
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(
-      title: Text(
-        widget.initialHub == null
-            ? 'Register Community Hub'
-            : 'Edit Community Hub',
-      ),
-    ),
-    body: ListView(
-      padding: const EdgeInsets.all(16),
-      children: [
-        TextField(
-          controller: _name,
-          decoration: const InputDecoration(labelText: 'Hub name'),
-        ),
-        TextField(
-          controller: _capacity,
-          keyboardType: const TextInputType.numberWithOptions(decimal: true),
-          decoration: const InputDecoration(
-            labelText: 'Total capacity (kg)',
-            helperText: 'Allowed range: 50–250 kg',
-          ),
-        ),
-        const SizedBox(height: 12),
-        OutlinedButton.icon(
-          onPressed: _pickLocation,
-          icon: const Icon(Icons.location_on),
-          label: Text(
-            _location == null ? 'Select hub location' : 'Change hub location',
-          ),
-        ),
-        if (_location != null)
-          Text(
-            '${_location!.address}\n${_location!.latitude.toStringAsFixed(6)}, ${_location!.longitude.toStringAsFixed(6)}',
-          ),
-        const SizedBox(height: 16),
-        FilledButton(
-          onPressed: _busy ? null : _submit,
-          child: Text(
-            _busy
-                ? 'Saving…'
-                : widget.initialHub == null
-                ? 'Register Hub'
-                : 'Save Hub Details',
-          ),
-        ),
-      ],
-    ),
-  );
-}
-
-class HubOperationsPage extends StatefulWidget {
-  final Map<String, dynamic> hub;
-  final String section;
-  const HubOperationsPage({super.key, required this.hub, this.section = 'All'});
-  @override
-  State<HubOperationsPage> createState() => _HubOperationsPageState();
-}
-
-class _HubOperationsPageState extends State<HubOperationsPage> {
-  late Future<Map<String, List<Map<String, dynamic>>>> _data = _load();
-  bool _busy = false;
-
-  Future<Map<String, List<Map<String, dynamic>>>> _load() async {
-    final responses = await Future.wait([
-      _db.rpc(
-        'get_my_hub_reservations',
-        params: {'p_hub': widget.hub['hub_id']},
-      ),
-      _db.rpc('get_my_hub_inventory', params: {'p_hub': widget.hub['hub_id']}),
-      _db.rpc(
-        'get_my_hub_batches_dashboard',
-        params: {'p_hub': widget.hub['hub_id']},
-      ),
-      _db.rpc(
-        'get_hub_donation_covers',
-        params: {'p_hub': widget.hub['hub_id']},
-      ),
-    ]);
-    if (responses.any((value) => value is! List)) {
-      throw const FormatException('Hub operation RPC returned invalid data.');
-    }
-    final covers = <String, String>{};
-    for (final row in (responses[3] as List)) {
-      final cover = Map<String, dynamic>.from(row as Map);
-      if (cover['primary_image_path'] != null) {
-        covers[cover['donation_id'].toString()] = cover['primary_image_path']
-            .toString();
-      }
-    }
-    final reservations = (responses[0] as List)
-        .map((r) => Map<String, dynamic>.from(r as Map))
-        .toList();
-    final inventory = (responses[1] as List)
-        .map((r) => Map<String, dynamic>.from(r as Map))
-        .toList();
-    for (final row in [...reservations, ...inventory]) {
-      row['primary_image_path'] = covers[row['donation_id'].toString()];
-    }
-    return {
-      'reservations': reservations,
-      'inventory': inventory,
-      'batches': (responses[2] as List)
-          .map((r) => Map<String, dynamic>.from(r as Map))
-          .toList(),
-    };
-  }
-
-  Future<void> _confirmReceipt(Map<String, dynamic> reservation) async {
-    final weight = TextEditingController(
-      text: reservation['reserved_weight_kg'].toString(),
-    );
-    final entered = await showDialog<double>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Confirm physical receipt'),
-        content: TextField(
-          controller: weight,
-          autofocus: true,
-          keyboardType: const TextInputType.numberWithOptions(decimal: true),
-          decoration: const InputDecoration(
-            labelText: 'Measured received weight (kg)',
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () =>
-                Navigator.pop(context, double.tryParse(weight.text)),
-            child: const Text('Confirm'),
-          ),
-        ],
-      ),
-    );
-    weight.dispose();
-    if (entered == null) return;
-    setState(() => _busy = true);
-    try {
-      final receipt = await _db.rpc(
-        'confirm_hub_receipt',
-        params: {
-          'p_reservation': reservation['reservation_id'],
-          'p_received_weight': entered,
-        },
-      );
-      if (receipt == null || receipt.toString().trim().isEmpty) {
-        throw const FormatException(
-          'The database did not confirm hub receipt.',
-        );
-      }
-      if (mounted) {
-        setState(() => _data = _load());
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Hub receipt committed.')));
-      }
-    } catch (error) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Receipt not confirmed: $error')),
-        );
-      }
-    } finally {
-      if (mounted) setState(() => _busy = false);
-    }
-  }
-
-  Future<void> _publishBatch(List<Map<String, dynamic>> inventory) async {
-    final selected = <String>{};
-    final categories = <String, String>{};
-    final totals = <String, double>{};
-    for (final row in inventory) {
-      final id = row['donation_id'].toString();
-      final rawCategories = row['category_ids'];
-      final rowCategories = rawCategories is List
-          ? rawCategories.map((value) => value.toString()).toList()
-          : <String>[];
-      categories[id] = rowCategories.join('|');
-      totals[id] = double.tryParse('${row['received_weight_kg']}') ?? 0;
-    }
-    final chosen = await showDialog<Set<String>>(
-      context: context,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setDialog) => AlertDialog(
-          title: const Text('Select whole donations for batch'),
-          content: SizedBox(
-            width: 440,
-            child: ListView(
-              shrinkWrap: true,
-              children: inventory.map((row) {
-                final id = row['donation_id'].toString();
-                return CheckboxListTile(
-                  value: selected.contains(id),
-                  title: Text(
-                    '${row['title']} · ${row['received_weight_kg']} kg',
-                  ),
-                  subtitle: Text('Category ${row['category_name'] ?? '—'}'),
-                  onChanged: row['inventory_status'] != 'STORED'
-                      ? null
-                      : (value) => setDialog(() {
-                          if (value == true) {
-                            selected.add(id);
-                          } else {
-                            selected.remove(id);
-                          }
-                        }),
-                );
-              }).toList(),
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel'),
-            ),
-            FilledButton(
-              onPressed: () => Navigator.pop(context, selected),
-              child: const Text('Publish batch'),
-            ),
-          ],
-        ),
-      ),
-    );
-    if (chosen == null) return;
-    final ids = chosen.toList();
-    final categorySet = ids
-        .expand(
-          (id) => (categories[id] ?? '')
-              .split('|')
-              .where((value) => value.isNotEmpty),
-        )
-        .toSet();
-    final total = ids.fold<double>(0, (sum, id) => sum + (totals[id] ?? 0));
-    final anyMixed = ids.any(
-      (id) =>
-          (categories[id] ?? '')
-              .split('|')
-              .where((value) => value.isNotEmpty)
-              .length !=
-          1,
-    );
-    if (ids.length < 3 ||
-        ids.length > 5 ||
-        categorySet.length != 1 ||
-        anyMixed ||
-        total > 30) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              'A batch requires 3–5 whole donations, one compatible category, and no more than 30 kg.',
-            ),
-          ),
-        );
-      }
-      return;
-    }
-    setState(() => _busy = true);
-    try {
-      await _db.rpc(
-        'publish_whole_donation_batch',
-        params: {'p_hub': widget.hub['hub_id'], 'p_donation_ids': ids},
-      );
-      final updated = await _load();
-      if (mounted) {
-        setState(() => _data = Future.value(updated));
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Batch publication committed.')),
-        );
-      }
-    } catch (error) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Batch not published: $error')));
-      }
-    } finally {
-      if (mounted) setState(() => _busy = false);
-    }
-  }
-
-  Future<void> _showHubAudit() async {
-    try {
-      final response = await _db.rpc(
-        'get_authorized_audit_events',
-        params: {'p_entity_type': 'HUB', 'p_entity_id': widget.hub['hub_id']},
-      );
-      if (response is! List) {
-        throw const FormatException('Invalid hub audit response.');
-      }
-      if (!mounted) return;
-      final rows = response
-          .map((row) => Map<String, dynamic>.from(row as Map))
-          .toList();
-      await showModalBottomSheet<void>(
-        context: context,
-        builder: (context) => SafeArea(
-          child: ListView(
-            children: [
-              const ListTile(title: Text('Hub audit timeline')),
-              if (rows.isEmpty)
-                const ListTile(title: Text('No audit events found.')),
-              ...rows.map(
-                (event) => ListTile(
-                  title: Text(event['event_type']?.toString() ?? 'Event'),
-                  subtitle: Text(
-                    '${event['previous_state'] ?? '—'} → ${event['resulting_state'] ?? '—'} · ${event['reason_code'] ?? event['outcome']}',
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-    } catch (error) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Hub audit unavailable: $error')),
-        );
-      }
-    }
-  }
-
-  Future<void> _addBatchImage(Map<String, dynamic> batch) async {
-    final userId = _db.auth.currentUser?.id;
-    if (userId == null) return;
-    try {
-      final image = await ImagePicker().pickImage(
-        source: ImageSource.gallery,
-        imageQuality: 82,
-        maxWidth: 1800,
-      );
-      if (image == null || !mounted) return;
-      final ext = image.path.split('.').last.toLowerCase();
-      if (!const {'jpg', 'jpeg', 'png', 'webp'}.contains(ext) ||
-          await image.length() > 5 * 1024 * 1024) {
-        throw StateError('Choose a JPG, PNG or WebP image up to 5 MB.');
-      }
-      final mime = ext == 'png'
-          ? 'image/png'
-          : (ext == 'webp' ? 'image/webp' : 'image/jpeg');
-      final batchId = batch['batch_id'].toString();
-      final path = '$userId/batches/$batchId/${const Uuid().v4()}.$ext';
-      final storage = _db.storage.from('geolock-donation-images');
-      await storage.upload(
-        path,
-        File(image.path),
-        fileOptions: FileOptions(contentType: mime, upsert: false),
-      );
-      try {
-        await _db.rpc(
-          'add_hub_batch_image',
-          params: {
-            'p_batch': batchId,
-            'p_storage_path': path,
-            'p_content_type': mime,
-            'p_size_bytes': await image.length(),
-          },
-        );
-      } catch (_) {
-        try {
-          await storage.remove([path]);
-        } catch (_) {}
-        rethrow;
-      }
-      if (!mounted) return;
-      setState(() => _data = _load());
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Batch photo attached.')));
-    } catch (error) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(donationPhotoFailureMessage(error))),
-        );
-      }
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(
-      title: Text(
-        widget.section == 'All'
-            ? widget.hub['hub_name'].toString()
-            : '${widget.hub['hub_name']} · ${widget.section}',
-      ),
-    ),
-    body: FutureBuilder<Map<String, List<Map<String, dynamic>>>>(
-      future: _data,
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          return Center(
-            child: Text('Hub operations unavailable: ${snapshot.error}'),
-          );
-        }
-        if (snapshot.connectionState != ConnectionState.done ||
-            !snapshot.hasData) {
-          return const Center(child: CircularProgressIndicator());
-        }
-        final data = snapshot.data!;
-        final reservations = data['reservations']!;
-        final inventory = data['inventory']!;
-        final batches = data['batches']!;
-        return RefreshIndicator(
-          onRefresh: () async => setState(() => _data = _load()),
-          child: ListView(
-            padding: const EdgeInsets.all(12),
-            children: [
-              Text(
-                'Capacity ${widget.hub['capacity_kg']} kg · ${widget.hub['address_text']}',
-              ),
-              OutlinedButton.icon(
-                onPressed: _showHubAudit,
-                icon: const Icon(Icons.history),
-                label: const Text('View hub audit timeline'),
-              ),
-              if (widget.section == 'All' || widget.section == 'Receive') ...[
-                const SizedBox(height: 16),
-                Text(
-                  'Pending donor drop-offs',
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
-                if (reservations.where((r) => r['status'] == 'ACTIVE').isEmpty)
-                  const ListTile(
-                    title: Text('No active reservations awaiting receipt.'),
-                  ),
-                ...reservations.map(
-                  (row) => Card(
-                    child: Row(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(10),
-                          child: _StoredImageThumbnail(
-                            path: row['primary_image_path']?.toString(),
-                          ),
-                        ),
-                        Expanded(
-                          child: ListTile(
-                            title: Text(
-                              '${row['title']} · ${row['reserved_weight_kg']} kg',
-                            ),
-                            subtitle: Text(
-                              '${row['status'] == 'ACTIVE' ? 'Recorded as Active · validity depends on database expiry' : friendlyWorkflowStatus(row['status'])} · deadline ${statusTimestampText(context, row['expires_at']) ?? '—'}',
-                            ),
-                            onTap: () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => HubDonationDetailsPage(
-                                  hub: widget.hub,
-                                  donationId: row['donation_id'].toString(),
-                                ),
-                              ),
-                            ),
-                            trailing: row['status'] == 'ACTIVE'
-                                ? FilledButton(
-                                    onPressed: _busy
-                                        ? null
-                                        : () => _confirmReceipt(row),
-                                    child: const Text('Receive'),
-                                  )
-                                : null,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-              if (widget.section == 'All' || widget.section == 'Inventory') ...[
-                const SizedBox(height: 16),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        'Stored donations',
-                        style: Theme.of(context).textTheme.titleLarge,
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: _busy || inventory.length < 3
-                          ? null
-                          : () => _publishBatch(inventory),
-                      child: const Text('Publish batch'),
-                    ),
-                  ],
-                ),
-                if (inventory.isEmpty)
-                  const ListTile(title: Text('No stored donations.')),
-                ...inventory.map(
-                  (row) => Card(
-                    child: ListTile(
-                      leading: _StoredImageThumbnail(
-                        path: row['primary_image_path']?.toString(),
-                      ),
-                      title: Text(
-                        '${row['title']} · ${row['received_weight_kg']} kg',
-                      ),
-                      subtitle: Text(
-                        '${friendlyWorkflowStatus(row['inventory_status'])} · ${row['category_name'] ?? '—'}',
-                      ),
-                      trailing: const Icon(Icons.chevron_right),
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => HubDonationDetailsPage(
-                            hub: widget.hub,
-                            donationId: row['donation_id'].toString(),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-              if (widget.section == 'All' ||
-                  widget.section == 'Collections') ...[
-                const SizedBox(height: 16),
-                if (widget.section == 'Collections')
-                  OutlinedButton.icon(
-                    onPressed: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) =>
-                            const MyReconciliationCasesPage(role: 'HUB_ADMIN'),
-                      ),
-                    ),
-                    icon: const Icon(Icons.rule_folder_outlined),
-                    label: const Text('Handover cases'),
-                  ),
-                if (widget.section == 'Collections') const SizedBox(height: 8),
-                Text(
-                  'Published batches',
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
-                if (batches.isEmpty)
-                  const ListTile(title: Text('No published batches.')),
-                ...batches.map(
-                  (row) => Card(
-                    child: ListTile(
-                      leading: _StoredImageThumbnail(
-                        path: row['primary_image_path']?.toString(),
-                      ),
-                      title: Text('Batch ${row['batch_id']}'),
-                      subtitle: Text(
-                        '${friendlyWorkflowStatus(row['batch_status'])} · ${row['batch_donation_count']} donations · ${row['batch_weight_kg']} kg',
-                      ),
-                      trailing: row['primary_image_path'] == null
-                          ? IconButton(
-                              tooltip: 'Add batch photo',
-                              onPressed: _busy
-                                  ? null
-                                  : () => _addBatchImage(row),
-                              icon: const Icon(
-                                Icons.add_photo_alternate_outlined,
-                              ),
-                            )
-                          : const Icon(Icons.photo_outlined),
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => HubBatchDetailsPage(
-                            batchId: row['batch_id'].toString(),
-                            hubId: widget.hub['hub_id'].toString(),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ],
-          ),
-        );
-      },
-    ),
-  );
-}
-
-class MyReconciliationCasesPage extends StatefulWidget {
-  final String role;
-  const MyReconciliationCasesPage({super.key, required this.role});
-  @override
-  State<MyReconciliationCasesPage> createState() =>
-      _MyReconciliationCasesPageState();
-}
-
-class _MyReconciliationCasesPageState extends State<MyReconciliationCasesPage> {
-  late Future<List<Map<String, dynamic>>> _cases = _load();
-  bool _busy = false;
-
-  Future<List<Map<String, dynamic>>> _load() async {
-    final response = await _db.rpc('get_my_reconciliation_cases');
-    if (response is! List) {
-      throw const FormatException('Invalid reconciliation inbox response.');
-    }
-    return response
-        .map((row) => Map<String, dynamic>.from(row as Map))
-        .toList();
-  }
-
-  Future<void> _submit(Map<String, dynamic> row, bool handoverConfirmed) async {
-    final caseId = row['case_id'].toString();
-    final choice = handoverConfirmed ? 'yes' : 'no';
-    final prefs = await SharedPreferences.getInstance();
-    final key =
-        'geolock_reconcile_${_db.auth.currentUser?.id}_${caseId}_$choice';
-    final requestId = prefs.getString(key) ?? const Uuid().v4();
-    await prefs.setString(key, requestId);
-    setState(() => _busy = true);
-    try {
-      final response = await _db.rpc(
-        'submit_claim_reconciliation',
-        params: {
-          'p_claim': row['claim_id'],
-          'p_handover_confirmed': handoverConfirmed,
-          'p_request': requestId,
-        },
-      );
-      if (response is! Map) {
-        throw const FormatException('Reconciliation outcome missing.');
-      }
-      final result = Map<String, dynamic>.from(response);
-      if (result['outcome'] == null) {
-        throw const FormatException('Reconciliation outcome is missing.');
-      }
-      await prefs.remove(key);
-      List<Map<String, dynamic>>? refreshed;
-      Object? refreshError;
-      try {
-        refreshed = await _load();
-      } catch (error) {
-        refreshError = error;
-      }
-      if (!mounted) return;
-      if (refreshed != null) {
-        setState(() => _cases = Future.value(refreshed));
-      } else {
-        setState(() => _cases = _load());
-      }
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            '${result['outcome']}: ${result['reason_code'] ?? 'Evidence recorded'}'
-            '${refreshError == null ? '' : ' (case refresh failed; retry refresh)'}',
-          ),
-        ),
-      );
-    } catch (error) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'No result was confirmed. Retry will reuse request $requestId. $error',
-            ),
-          ),
-        );
-      }
-    } finally {
-      if (mounted) setState(() => _busy = false);
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const Text('Handover Reconciliation')),
-    body: FutureBuilder<List<Map<String, dynamic>>>(
-      future: _cases,
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          return Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text('Reconciliation cases unavailable: ${snapshot.error}'),
-                TextButton(
-                  onPressed: () => setState(() => _cases = _load()),
-                  child: const Text('Retry'),
-                ),
-              ],
-            ),
-          );
-        }
-        if (!snapshot.hasData) {
-          return const Center(child: CircularProgressIndicator());
-        }
-        final rows = snapshot.data!;
-        if (rows.isEmpty) {
-          return const Center(
-            child: Text('No handover cases require your response.'),
-          );
-        }
-        return ListView.builder(
-          padding: const EdgeInsets.all(12),
-          itemCount: rows.length,
-          itemBuilder: (context, index) {
-            final row = rows[index];
-            final open = row['case_status'] == 'OPEN';
-            return Card(
-              child: Padding(
-                padding: const EdgeInsets.all(14),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Case ${row['case_id']}',
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                    Text('${row['source_type']} · ${row['case_status']}'),
-                    Text(
-                      'Claim ${row['claim_id']} · opened ${row['opened_at']}',
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      open
-                          ? 'Confirm whether the physical handover occurred. The NGO and donor or hub administrator must submit matching answers.'
-                          : 'This case needs trusted manual review. Your response will not change the pickup or listing state.',
-                    ),
-                    if (open &&
-                        widget.role == 'HUB_ADMIN' &&
-                        row['source_type'] == 'HUB_BATCH')
-                      Wrap(
-                        spacing: 8,
-                        children: [
-                          FilledButton.tonal(
-                            onPressed: _busy ? null : () => _submit(row, true),
-                            child: const Text('Handover occurred'),
-                          ),
-                          OutlinedButton(
-                            onPressed: _busy ? null : () => _submit(row, false),
-                            child: const Text('No handover'),
-                          ),
-                        ],
-                      ),
-                  ],
-                ),
-              ),
-            );
-          },
-        );
-      },
-    ),
-  );
-}
-
 class _MyClaimsPageState extends State<MyClaimsPage>
     with WidgetsBindingObserver {
   late final ClaimCardsController _reader;
@@ -1226,10 +342,6 @@ class _MyClaimsPageState extends State<MyClaimsPage>
       _reader.cards.contains(card) &&
       !_busy &&
       switch (operation) {
-        // Injected runners are test transports. Production pickups use the
-        // route-detail screen and its fresh protected backend authorization.
-        'START_PICKUP' => widget.actionRunner != null && card.canStart,
-        'COMPLETE_PICKUP' => widget.actionRunner != null && card.canComplete,
         'CANCEL_CLAIM' => card.canCancel,
         _ => false,
       };
@@ -1243,39 +355,12 @@ class _MyClaimsPageState extends State<MyClaimsPage>
       return widget.actionRunner!(operation, claimId, requestId);
     }
     return switch (operation) {
-      'START_PICKUP' || 'COMPLETE_PICKUP' => throw StateError(
-        'Open an authorized route to perform pickup actions.',
-      ),
       'CANCEL_CLAIM' => _db.rpc(
         'cancel_claim',
         params: {'p_claim': claimId, 'p_request': requestId},
       ),
       _ => throw ArgumentError.value(operation),
     };
-  }
-
-  Future<void> _run(ClaimCard card, String operation) async {
-    if (!_allowed(card, operation)) return;
-    setState(() => _busy = true);
-    try {
-      await _callAction(operation, card.claimId);
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('$operation committed by the database.')),
-        );
-      }
-    } catch (error) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('$operation was not confirmed: $error')),
-        );
-      }
-    } finally {
-      if (mounted) {
-        await _reader.refresh();
-        if (mounted) setState(() => _busy = false);
-      }
-    }
   }
 
   Future<void> _cancelClaim(ClaimCard card) async {
@@ -1424,19 +509,7 @@ class _MyClaimsPageState extends State<MyClaimsPage>
         .where((c) => _selectedTab == ClaimTab.all || c.tab == _selectedTab)
         .toList();
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('My Claims'),
-        actions: [
-          IconButton(
-            tooltip: 'Pickup routes',
-            icon: const Icon(Icons.route),
-            onPressed: () => Navigator.push<void>(
-              context,
-              MaterialPageRoute(builder: (_) => const NgoRoutesPage()),
-            ),
-          ),
-        ],
-      ),
+      appBar: AppBar(title: const Text('My Claims')),
       body: Column(
         children: [
           SingleChildScrollView(
@@ -1532,11 +605,6 @@ class _MyClaimsPageState extends State<MyClaimsPage>
             ],
           ),
           Chip(label: Text(card.badge)),
-          if (widget.actionRunner == null &&
-              (card.canStart || card.canComplete))
-            const Text(
-              'Open Pickup routes for database-authorized pickup actions.',
-            ),
           if (!_reader.fresh)
             const Text('Refresh required before claim actions.'),
           Text('Claim · ${friendlyWorkflowStatus(card.claimStatus)}'),
@@ -1544,9 +612,7 @@ class _MyClaimsPageState extends State<MyClaimsPage>
           Text(
             'Lease expiry (database): ${statusTimestampText(context, card.raw['lease_expires_at']) ?? '—'}',
           ),
-          Text(
-            'Pickup task · ${card.isValidActive && card.taskStatus != 'DISPATCHED' ? 'Awaiting Start Pickup' : friendlyWorkflowStatus(card.taskStatus)}',
-          ),
+          Text('Pickup task · ${friendlyWorkflowStatus(card.taskStatus)}'),
           if (card.releaseReason != null)
             Text('Release reason: ${card.releaseReason}'),
           if (card.displayStatus == ClaimDisplayStatus.reconciliation)
@@ -1562,27 +628,11 @@ class _MyClaimsPageState extends State<MyClaimsPage>
           Wrap(
             spacing: 8,
             children: [
-              if (card.claimStatus == 'ACTIVE' &&
-                  const {'CONFIRMED', 'PLANNED'}.contains(card.taskStatus))
-                OutlinedButton(
-                  onPressed: _allowed(card, 'START_PICKUP')
-                      ? () => _run(card, 'START_PICKUP')
-                      : null,
-                  child: const Text('Start Pickup'),
-                ),
               OutlinedButton.icon(
                 onPressed: () => _openDetails(card),
                 icon: const Icon(Icons.location_on_outlined),
                 label: const Text('Claim details'),
               ),
-              if (card.claimStatus == 'ACTIVE' &&
-                  card.taskStatus == 'DISPATCHED')
-                FilledButton(
-                  onPressed: _allowed(card, 'COMPLETE_PICKUP')
-                      ? () => _run(card, 'COMPLETE_PICKUP')
-                      : null,
-                  child: const Text('Confirm Handover'),
-                ),
               if (card.claimStatus == 'ACTIVE' &&
                   card.taskStatus == 'CONFIRMED')
                 TextButton(
@@ -1655,12 +705,16 @@ class _NgoListingDetailsPageState extends State<NgoListingDetailsPage> {
     try {
       prefs = await SharedPreferences.getInstance();
       final key = 'geolock_claim_request_${userId}_$listingId';
-      request = prefs.getString(key) ?? const Uuid().v4();
-      await prefs.setString(key, request);
+      final id = prefs.getString(key) ?? const Uuid().v4();
+      request = id;
+      await prefs.setString(key, id);
+      if (_db.auth.currentUser?.id != userId) {
+        throw StateError('Your sign-in changed. No claim was sent.');
+      }
       rpcStarted = true;
       final response = await _db.rpc(
         'claim_listing',
-        params: {'p_listing': listingId, 'p_request': request},
+        params: {'p_listing': listingId, 'p_request': id},
       );
       if (response is! Map) {
         throw const FormatException(
@@ -2366,7 +1420,17 @@ class DonationItemInput {
 class DonationCategory {
   final String id;
   final String name;
-  const DonationCategory(this.id, this.name);
+
+  /// Storage the category needs (hubNeedKeys), e.g. food-safe storage for food.
+  final Set<String> needs;
+  const DonationCategory(this.id, this.name, [this.needs = const <String>{}]);
+
+  DonationCategory.fromInfo(DonationCategoryInfo info)
+    : this(info.id, info.name, info.needs);
+
+  String? get needsText => needs.isEmpty
+      ? null
+      : 'Needs ${needs.map((n) => hubNeedLabels[n]!.toLowerCase()).join(', ')}';
 }
 
 class DonationPhotoSelection {
@@ -2511,21 +1575,8 @@ class _CreateDonationPageState extends State<CreateDonationPage> {
 
   void retryCategories() => setState(() => categories = _loadCategories());
 
-  Future<List<DonationCategory>> _loadCategories() async {
-    final response = await _db.rpc('get_active_donation_categories');
-    if (response is! List) {
-      throw const FormatException(
-        'The categories RPC returned an invalid response.',
-      );
-    }
-    return response.map((row) {
-      final map = Map<String, dynamic>.from(row as Map);
-      return DonationCategory(
-        map['category_id'].toString(),
-        map['category_name'].toString(),
-      );
-    }).toList();
-  }
+  Future<List<DonationCategory>> _loadCategories() async =>
+      (await HubService.categories()).map(DonationCategory.fromInfo).toList();
 
   static const _directPickupHint =
       'Choose a spot where a vehicle can stop (roadside, gate or lobby)';
@@ -2613,7 +1664,7 @@ class _CreateDonationPageState extends State<CreateDonationPage> {
     try {
       final imagePayload = await _uploadDonationImages();
       if (mounted) {
-        setState(() => progressMessage = 'Saving donation securely…');
+        setState(() => progressMessage = 'Saving your donation…');
       }
       final id = await _db.rpc(
         'create_donation_with_images',
@@ -2636,7 +1687,7 @@ class _CreateDonationPageState extends State<CreateDonationPage> {
         throw const FormatException('The database did not return a donation.');
       }
       if (mounted) {
-        setState(() => progressMessage = 'Reading the saved donation…');
+        setState(() => progressMessage = 'Almost done…');
       }
       // Show only committed state: re-read the donation the RPC just created.
       Map<String, dynamic>? detail;
@@ -2833,35 +1884,23 @@ class _CreateDonationPageState extends State<CreateDonationPage> {
                 ),
               const SizedBox(height: 10),
               Text(
-                'Pickup location',
+                _directPickupPreview ? 'Pickup location' : 'Your location',
                 style: Theme.of(context).textTheme.titleSmall,
               ),
-              if (_directPickupPreview)
-                Text(
-                  _directPickupHint,
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
+              Text(
+                _directPickupPreview
+                    ? _directPickupHint
+                    : 'Used to find community hubs near you',
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
               OutlinedButton.icon(
                 onPressed: busy ? null : selectPickupLocation,
                 icon: const Icon(Icons.location_on_outlined),
                 label: Text(
-                  pickupLocation == null
-                      ? 'Select pickup location'
-                      : 'Change pickup location',
+                  pickupLocation == null ? 'Select location' : 'Change location',
                 ),
               ),
-              if (pickupLocation != null) ...[
-                Text(pickupLocation!.address),
-                Text(
-                  '${pickupLocation!.latitude.toStringAsFixed(6)}, ${pickupLocation!.longitude.toStringAsFixed(6)}',
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
-                if (pickupLocation!.roadAccess != null)
-                  Text(
-                    'Road access: ${pickupLocation!.roadAccess!.summary}',
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-              ],
+              if (pickupLocation != null) Text(pickupLocation!.address),
               const SizedBox(height: 12),
               const Divider(),
               ...items.asMap().entries.map((entry) {
@@ -2911,6 +1950,29 @@ class _CreateDonationPageState extends State<CreateDonationPage> {
                           validator: (v) =>
                               v == null ? 'Select category' : null,
                         ),
+                        if (_categoryNeedsText(choices, item.category).isNotEmpty)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 4),
+                            child: Row(
+                              children: [
+                                const Icon(
+                                  Icons.warehouse_outlined,
+                                  size: 14,
+                                  color: HubColors.muted,
+                                ),
+                                const SizedBox(width: 4),
+                                Expanded(
+                                  child: Text(
+                                    _categoryNeedsText(choices, item.category),
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      color: HubColors.muted,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         TextFormField(
                           controller: item.name,
                           readOnly: busy,
@@ -2943,7 +2005,7 @@ class _CreateDonationPageState extends State<CreateDonationPage> {
                             _resetCreateRequest();
                           }),
                           decoration: const InputDecoration(
-                            labelText: 'Unit weight (kg)',
+                            labelText: 'Weight of one piece (kg)',
                           ),
                         ),
                         DropdownButtonFormField<String>(
@@ -3003,83 +2065,6 @@ class _CreateDonationPageState extends State<CreateDonationPage> {
   );
 }
 
-class MyDonationsPage extends StatefulWidget {
-  const MyDonationsPage({super.key});
-
-  @override
-  State<MyDonationsPage> createState() => _MyDonationsPageState();
-}
-
-class _MyDonationsPageState extends State<MyDonationsPage> {
-  late Future<List<Map<String, dynamic>>> _donations = _load();
-
-  Future<List<Map<String, dynamic>>> _load() async {
-    final response = await _db.rpc('get_my_donation_dashboard_v2');
-    if (response is! List) {
-      throw const FormatException('Invalid donation history response.');
-    }
-    return response
-        .map((row) => Map<String, dynamic>.from(row as Map))
-        .toList();
-  }
-
-  @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(
-      title: const Text('My Donations'),
-      actions: [
-        IconButton(
-          tooltip: 'Refresh donations',
-          onPressed: () => setState(() => _donations = _load()),
-          icon: const Icon(Icons.refresh),
-        ),
-      ],
-    ),
-    body: FutureBuilder<List<Map<String, dynamic>>>(
-      future: _donations,
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          return Center(
-            child: Text('Unable to load donations: ${snapshot.error}'),
-          );
-        }
-        if (!snapshot.hasData) {
-          return const Center(child: CircularProgressIndicator());
-        }
-        final rows = snapshot.data!;
-        if (rows.isEmpty) return const Center(child: Text('No donations yet.'));
-        return ListView.builder(
-          itemCount: rows.length,
-          itemBuilder: (context, i) {
-            final d = rows[i];
-            return Card(
-              margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-              child: ListTile(
-                leading: _StoredImageThumbnail(
-                  path: d['primary_image_path']?.toString(),
-                ),
-                title: Text('${d['title']}'),
-                subtitle: Text(
-                  '${d['collection_path']} • ${donationStatusLabel(status: d['donation_status']?.toString(), collectionPath: d['collection_path']?.toString())} • ${d['total_weight_kg'] ?? '—'} kg${d['listing_routing_status'] == null ? '' : ' • route node ${d['listing_routing_status']}'}',
-                ),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => DonationDetailPage(
-                      donationId: d['donation_id'].toString(),
-                    ),
-                  ),
-                ),
-              ),
-            );
-          },
-        );
-      },
-    ),
-  );
-}
-
 class CollectionPathPreviewCard extends StatelessWidget {
   final double totalKg;
   const CollectionPathPreviewCard({super.key, required this.totalKg});
@@ -3095,12 +2080,13 @@ class CollectionPathPreviewCard extends StatelessWidget {
         ),
         title: Text(
           totalKg <= 0
-              ? 'Enter quantities and unit weights to preview the collection path'
+              ? 'Enter quantity and weight to see how it is collected'
               : collectionPathPreviewText(totalKg),
         ),
         subtitle: Text(
-          'Preview: ${donationDirectMinKgPreview.toStringAsFixed(0)} kg or more '
-          'is collected directly. The server confirms the path when you submit.',
+          'Under ${donationDirectMinKgPreview.toStringAsFixed(0)} kg: you bring it to a '
+          'community hub. ${donationDirectMinKgPreview.toStringAsFixed(0)} kg or more: an '
+          'NGO collects it from you.',
         ),
       ),
     );
@@ -3121,20 +2107,26 @@ class DonationResultDialog extends StatelessWidget {
     final hub = path == 'HUB_COLLECTION';
     return AlertDialog(
       title: const Text('Donation submitted'),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _detailLine(
-            'Status',
-            donationStatusLabel(status: status, collectionPath: path),
-          ),
-          _detailLine('Collection path', collectionPathLabel(path)),
-          if (detail['total_weight_kg'] != null)
-            _detailLine('Total weight', '${detail['total_weight_kg']} kg'),
-          _detailLine('Road status', routingStatusExplanation(road)),
-        ],
-      ),
+      content: hub
+          ? Text(
+              '${detail['total_weight_kg'] == null ? 'It is' : 'At ${detail['total_weight_kg']} kg it is'} '
+              'under 10 kg, so you bring it to a community hub. Next, choose the hub '
+              'and the day you will come.',
+            )
+          : Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _detailLine(
+                  'Status',
+                  donationStatusLabel(status: status, collectionPath: path),
+                ),
+                _detailLine('Collection', collectionPathLabel(path)),
+                if (detail['total_weight_kg'] != null)
+                  _detailLine('Total weight', '${detail['total_weight_kg']} kg'),
+                _detailLine('Road', routingStatusExplanation(road)),
+              ],
+            ),
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context, false),
@@ -3287,85 +2279,10 @@ class _DonationDetailPageState extends State<DonationDetailPage> {
   }
 
   Future<void> _reserveHub() async {
-    setState(() => _busy = true);
-    try {
-      final response = await _db.rpc(
-        'get_eligible_hubs',
-        params: {'p_donation': widget.donationId},
-      );
-      if (response is! List) {
-        throw const FormatException('Invalid hub list response.');
-      }
-      final hubs = response
-          .map((row) => Map<String, dynamic>.from(row as Map))
-          .toList();
-      if (!mounted) return;
-      if (hubs.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('No compatible hub has available capacity.'),
-          ),
-        );
-        return;
-      }
-      final selected = await showModalBottomSheet<Map<String, dynamic>>(
-        context: context,
-        builder: (context) => SafeArea(
-          child: ListView(
-            shrinkWrap: true,
-            children: [
-              const ListTile(title: Text('Choose a community hub')),
-              ...hubs.map(
-                (hub) => ListTile(
-                  title: Text(hub['hub_name'].toString()),
-                  subtitle: Text(
-                    '${hub['address_text']}\nAvailable: ${hub['available_capacity_kg']} kg',
-                  ),
-                  isThreeLine: true,
-                  onTap: () => Navigator.pop(context, hub),
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-      if (selected == null || !mounted) return;
-      final reservation = await _db.rpc(
-        'reserve_hub_capacity',
-        params: {'p_donation': widget.donationId, 'p_hub': selected['hub_id']},
-      );
-      final reservationId = reservation?.toString().trim() ?? '';
-      if (reservationId.isEmpty) {
-        throw const FormatException(
-          'The database did not confirm a hub reservation.',
-        );
-      }
-      if (!mounted) return;
-      setState(() => _detail = _load());
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Hub reservation committed. You may deliver to this hub.',
-          ),
-        ),
-      );
-    } catch (error) {
-      if (mounted) {
-        // A failed RPC may race with expiry, cancellation, or capacity changes.
-        // Refresh authoritative state before inviting the donor to retry.
-        setState(() => _detail = _load());
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Hub reservation failed: '
-              '${'$error'.contains('ROUTE_UNAVAILABLE') ? roadOutcomeMessage('ROUTE_UNAVAILABLE') : error}',
-            ),
-          ),
-        );
-      }
-    } finally {
-      if (mounted) setState(() => _busy = false);
-    }
+    // Hubs are ranked by the AI service (or nearest first if it is down); the
+    // booking itself is re-checked by reserve_hub_capacity.
+    final booked = await openHubChooser(context, widget.donationId);
+    if (booked && mounted) setState(() => _detail = _load());
   }
 
   Future<void> _cancel() async {
@@ -3374,7 +2291,7 @@ class _DonationDetailPageState extends State<DonationDetailPage> {
       builder: (context) => AlertDialog(
         title: const Text('Cancel this donation?'),
         content: const Text(
-          'The database will check current claims, custody and hub state. The donation is cancelled only if the backend permits it.',
+          'Any hub booking for it is released. You cannot undo this.',
         ),
         actions: [
           TextButton(
@@ -3383,7 +2300,7 @@ class _DonationDetailPageState extends State<DonationDetailPage> {
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Request cancellation'),
+            child: const Text('Cancel donation'),
           ),
         ],
       ),
@@ -3410,14 +2327,14 @@ class _DonationDetailPageState extends State<DonationDetailPage> {
       }
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Donation cancellation committed.')),
+          const SnackBar(content: Text('Donation cancelled.')),
         );
         Navigator.pop(context);
       }
     } catch (error) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Cancellation was not confirmed: $error')),
+          SnackBar(content: Text('Not cancelled: ${hubErrorMessage(error)}')),
         );
       }
     } finally {
@@ -3494,10 +2411,6 @@ class _DonationDetailPageState extends State<DonationDetailPage> {
             'CANCEL_DONATION',
           },
         );
-        final reservationEvents = recordedAuditEvents(
-          auditEvents,
-          allowedEventTypes: const {'RESERVE_HUB', 'EXPIRE_HUB_RESERVATION'},
-        );
         final hubHistoryIsClear = reservations.every(
           (reservation) => reservation['receipt_status'] == null,
         );
@@ -3514,15 +2427,10 @@ class _DonationDetailPageState extends State<DonationDetailPage> {
                     hubHistoryIsClear &&
                     (latestReservationStatus == 'ACTIVE' ||
                         latestReservationStatus == 'EXPIRED')));
-        final needsHub =
-            d['collection_path'] == 'HUB_COLLECTION' &&
-            (d['status'] == 'SUBMITTED' ||
-                (d['status'] == 'HUB_ASSIGNED' &&
-                    latestReservationStatus == 'EXPIRED'));
         final statusLabel =
             d['status'] == 'HUB_ASSIGNED' &&
                 latestReservationStatus == 'EXPIRED'
-            ? 'Hub reservation expired'
+            ? 'Booking ended'
             : donationStatusLabel(
                 status: d['status']?.toString(),
                 collectionPath: d['collection_path']?.toString(),
@@ -3589,6 +2497,15 @@ class _DonationDetailPageState extends State<DonationDetailPage> {
                           ),
                         ],
                       ),
+                      // What the donor has to do next comes first.
+                      if (isHubCollection) ...[
+                        const SizedBox(height: 14),
+                        HubDropOffCard(
+                          key: ObjectKey(_detail),
+                          donationId: widget.donationId,
+                          onChanged: () => setState(() => _detail = _load()),
+                        ),
+                      ],
                       if (d['pickup_address']?.toString().isNotEmpty == true)
                         Padding(
                           padding: const EdgeInsets.only(top: 14),
@@ -3608,7 +2525,7 @@ class _DonationDetailPageState extends State<DonationDetailPage> {
                                     children: [
                                       Text(
                                         isHubCollection
-                                            ? 'Pickup location'
+                                            ? 'Your location'
                                             : 'Collection location',
                                         style: Theme.of(context)
                                             .textTheme
@@ -3633,14 +2550,6 @@ class _DonationDetailPageState extends State<DonationDetailPage> {
                         events: donationEvents,
                         auditError: d['audit_error']?.toString(),
                       ),
-                      if (isHubCollection) ...[
-                        const SizedBox(height: 18),
-                        _DonorHubReservationSection(
-                          reservations: reservations,
-                          effectiveStatus: latestReservationStatus,
-                          events: reservationEvents,
-                        ),
-                      ],
                       const SizedBox(height: 18),
                       _DonorSectionCard(
                         child: Column(
@@ -3677,19 +2586,29 @@ class _DonationDetailPageState extends State<DonationDetailPage> {
                           ],
                         ),
                       ),
+                      if (cancellable)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 12),
+                          child: Center(
+                            child: TextButton.icon(
+                              onPressed: _busy ? null : _cancel,
+                              icon: const Icon(Icons.close),
+                              label: Text(
+                                _busy ? 'Please wait…' : 'Cancel this donation',
+                              ),
+                              style: TextButton.styleFrom(
+                                foregroundColor: Theme.of(
+                                  context,
+                                ).colorScheme.error,
+                              ),
+                            ),
+                          ),
+                        ),
                     ],
                   ),
                 ),
               ),
             ),
-            if (needsHub || cancellable)
-              _DonorDetailActions(
-                isBusy: _busy,
-                needsHub: needsHub,
-                canCancel: cancellable,
-                onChooseHub: _reserveHub,
-                onCancel: _cancel,
-              ),
           ],
         );
       },
@@ -3981,130 +2900,6 @@ class _DonorTimelineRow extends StatelessWidget {
   }
 }
 
-class _DonorHubReservationSection extends StatelessWidget {
-  final List<Map> reservations;
-  final Object? effectiveStatus;
-  final List<StatusTimelineEvent> events;
-
-  const _DonorHubReservationSection({
-    required this.reservations,
-    required this.effectiveStatus,
-    required this.events,
-  });
-
-  Widget _reservationTile(
-    BuildContext context,
-    Map reservation, {
-    required bool latest,
-  }) {
-    final status = reservationStatusLabel(
-      recordedStatus: reservation['status'],
-      effectiveStatus: effectiveStatus,
-      isLatest: latest,
-    );
-    final receivedAt = statusTimestampText(context, reservation['received_at']);
-    final reservedAt = statusTimestampText(context, reservation['reserved_at']);
-    final expiresAt = statusTimestampText(context, reservation['expires_at']);
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 7),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Icon(Icons.storefront_outlined, color: Color(0xff287764)),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  reservation['hub_name']?.toString() ?? 'Community Hub',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
-                ),
-                const SizedBox(height: 3),
-                Text(status),
-                if (reservedAt != null) Text('Reserved · $reservedAt'),
-                if (expiresAt != null) Text('Reservation expires · $expiresAt'),
-                if (reservation['receipt_status'] != null) ...[
-                  const SizedBox(height: 5),
-                  Text(
-                    'Physical receipt · ${friendlyWorkflowStatus(reservation['receipt_status'])}',
-                    style: const TextStyle(fontWeight: FontWeight.w600),
-                  ),
-                  if (receivedAt != null) Text('Received · $receivedAt'),
-                ],
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) => _DonorSectionCard(
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Community hub',
-          style: Theme.of(
-            context,
-          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          'A reservation holds capacity. It is not confirmation that the hub has received your donation.',
-          style: Theme.of(
-            context,
-          ).textTheme.bodySmall?.copyWith(color: const Color(0xff687a73)),
-        ),
-        const SizedBox(height: 8),
-        if (reservations.isEmpty)
-          const ListTile(
-            contentPadding: EdgeInsets.zero,
-            leading: Icon(Icons.store_mall_directory_outlined),
-            title: Text('No hub selected yet'),
-            subtitle: Text('Choose a community hub when you are ready.'),
-          )
-        else ...[
-          _reservationTile(context, reservations.first, latest: true),
-          if (reservations.length > 1)
-            ExpansionTile(
-              tilePadding: EdgeInsets.zero,
-              childrenPadding: EdgeInsets.zero,
-              title: Text('Previous reservations (${reservations.length - 1})'),
-              children: [
-                for (final reservation in reservations.skip(1))
-                  _reservationTile(context, reservation, latest: false),
-              ],
-            ),
-        ],
-        if (events.isNotEmpty) ...[
-          const SizedBox(height: 4),
-          for (final event in events)
-            Padding(
-              padding: const EdgeInsets.only(top: 4),
-              child: Row(
-                children: [
-                  const Icon(Icons.history, size: 16, color: Color(0xff687a73)),
-                  const SizedBox(width: 8),
-                  Expanded(child: Text(event.title)),
-                  if (event.occurredAt != null)
-                    Text(
-                      statusTimestampText(context, event.occurredAt) ?? '',
-                      style: Theme.of(context).textTheme.bodySmall,
-                    ),
-                ],
-              ),
-            ),
-        ],
-      ],
-    ),
-  );
-}
-
 class _DonorItemRow extends StatelessWidget {
   final Map item;
   final bool isLast;
@@ -4178,80 +2973,6 @@ class _DonorItemRow extends StatelessWidget {
       ],
     );
   }
-}
-
-class _DonorDetailActions extends StatelessWidget {
-  final bool isBusy;
-  final bool needsHub;
-  final bool canCancel;
-  final VoidCallback onChooseHub;
-  final VoidCallback onCancel;
-
-  const _DonorDetailActions({
-    required this.isBusy,
-    required this.needsHub,
-    required this.canCancel,
-    required this.onChooseHub,
-    required this.onCancel,
-  });
-
-  @override
-  Widget build(BuildContext context) => SafeArea(
-    top: false,
-    child: Container(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 10),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        border: Border(top: BorderSide(color: Color(0xffe2ebe6))),
-      ),
-      child: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 680),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (needsHub)
-                SizedBox(
-                  width: double.infinity,
-                  child: FilledButton.icon(
-                    onPressed: isBusy ? null : onChooseHub,
-                    icon: const Icon(Icons.storefront_outlined),
-                    label: Text(
-                      isBusy ? 'Please wait…' : 'Choose a community hub',
-                    ),
-                  ),
-                ),
-              if (canCancel)
-                SizedBox(
-                  width: double.infinity,
-                  child: needsHub
-                      ? TextButton.icon(
-                          onPressed: isBusy ? null : onCancel,
-                          icon: const Icon(Icons.close),
-                          label: const Text('Cancel donation'),
-                          style: TextButton.styleFrom(
-                            foregroundColor: Theme.of(
-                              context,
-                            ).colorScheme.error,
-                          ),
-                        )
-                      : OutlinedButton.icon(
-                          onPressed: isBusy ? null : onCancel,
-                          icon: const Icon(Icons.close),
-                          label: const Text('Cancel donation'),
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: Theme.of(
-                              context,
-                            ).colorScheme.error,
-                          ),
-                        ),
-                ),
-            ],
-          ),
-        ),
-      ),
-    ),
-  );
 }
 
 class _StoredImageThumbnail extends StatelessWidget {
@@ -4354,349 +3075,6 @@ class _DonationPhotosPageState extends State<DonationPhotosPage> {
         return Padding(
           padding: const EdgeInsets.all(16),
           child: DonationPhotoCarousel(paths: snapshot.data!),
-        );
-      },
-    ),
-  );
-}
-
-class HubBatchDetailsPage extends StatefulWidget {
-  final String batchId;
-  final String hubId;
-  const HubBatchDetailsPage({
-    super.key,
-    required this.batchId,
-    required this.hubId,
-  });
-
-  @override
-  State<HubBatchDetailsPage> createState() => _HubBatchDetailsPageState();
-}
-
-class HubDonationDetailsPage extends StatefulWidget {
-  final Map<String, dynamic> hub;
-  final String donationId;
-
-  const HubDonationDetailsPage({
-    super.key,
-    required this.hub,
-    required this.donationId,
-  });
-
-  @override
-  State<HubDonationDetailsPage> createState() => _HubDonationDetailsPageState();
-}
-
-class _HubDonationDetailsPageState extends State<HubDonationDetailsPage> {
-  late final Future<Map<String, dynamic>> _details = _load();
-
-  Future<Map<String, dynamic>> _load() async {
-    final responses = await Future.wait([
-      _db.rpc('get_my_hub_inventory', params: {'p_hub': widget.hub['hub_id']}),
-      _db.rpc(
-        'get_my_hub_reservations',
-        params: {'p_hub': widget.hub['hub_id']},
-      ),
-    ]);
-    if (responses.any((response) => response is! List)) {
-      throw const FormatException('Hub donation details are unavailable.');
-    }
-    final inventory = (responses[0] as List)
-        .map((row) => Map<String, dynamic>.from(row as Map))
-        .where((row) => row['donation_id']?.toString() == widget.donationId)
-        .toList();
-    final reservations = (responses[1] as List)
-        .map((row) => Map<String, dynamic>.from(row as Map))
-        .where((row) => row['donation_id']?.toString() == widget.donationId)
-        .toList();
-    if (inventory.isEmpty && reservations.isEmpty) {
-      throw const FormatException('Donation not found for this hub.');
-    }
-    var audit = <Map<String, dynamic>>[];
-    String? auditError;
-    try {
-      final result = await _db.rpc(
-        'get_authorized_audit_events',
-        params: {'p_entity_type': 'DONATION', 'p_entity_id': widget.donationId},
-      );
-      if (result is List) {
-        audit = result
-            .map((row) => Map<String, dynamic>.from(row as Map))
-            .toList();
-      }
-    } catch (_) {
-      auditError = 'Recorded event history is not available for this donation.';
-    }
-    return {
-      'inventory': inventory.isEmpty ? null : inventory.first,
-      'reservations': reservations,
-      'audit': audit,
-      'audit_error': auditError,
-    };
-  }
-
-  @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const Text('Hub Donation Details')),
-    body: FutureBuilder<Map<String, dynamic>>(
-      future: _details,
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          return Center(
-            child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: Text('Donation details unavailable: ${snapshot.error}'),
-            ),
-          );
-        }
-        if (!snapshot.hasData) {
-          return const Center(child: CircularProgressIndicator());
-        }
-        final data = snapshot.data!;
-        final inventory = data['inventory'] as Map<String, dynamic>?;
-        final reservations = (data['reservations'] as List)
-            .cast<Map<String, dynamic>>();
-        final donationStatus = inventory?['donation_status']?.toString();
-        final path =
-            inventory?['collection_path']?.toString() ?? 'HUB_COLLECTION';
-        final auditRows = (data['audit'] as List).cast<Map<String, dynamic>>();
-        final donationEvents = recordedAuditEvents(
-          auditRows,
-          allowedEventTypes: const {
-            'CONFIRM_HUB_RECEIPT',
-            'CANCEL_DONATION',
-            'DONATION_STATUS_CHANGED',
-            'DONATION_STATUS_BACKFILL',
-          },
-        );
-        final reservationEvents = recordedAuditEvents(
-          auditRows,
-          allowedEventTypes: const {'RESERVE_HUB', 'EXPIRE_HUB_RESERVATION'},
-        );
-        return ListView(
-          padding: const EdgeInsets.all(16),
-          children: [
-            Text(
-              inventory?['title']?.toString() ?? 'Reserved donation',
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            if (donationStatus != null)
-              Text('Donation · ${friendlyWorkflowStatus(donationStatus)}'),
-            if (inventory?['received_weight_kg'] != null)
-              Text('Received weight · ${inventory!['received_weight_kg']} kg'),
-            GeoStatusTimeline(
-              title: 'Donation Progress',
-              currentStatus: donationStatus == null
-                  ? null
-                  : friendlyWorkflowStatus(donationStatus),
-              events: donationEvents,
-              pendingMilestones: pendingDonationMilestones(
-                collectionPath: path,
-                currentStatus: donationStatus,
-              ),
-              errorMessage: data['audit_error']?.toString(),
-              emptyMessage:
-                  'No recorded donation progress events are available.',
-            ),
-            const SizedBox(height: 12),
-            Text(
-              'Hub Reservation',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            if (reservations.isEmpty)
-              const Text('No reservation history is available.'),
-            if (inventory == null)
-              const Text(
-                'The hub reservation read does not include pre-receipt donation progress.',
-              ),
-            for (final reservation in reservations)
-              Card(
-                child: ListTile(
-                  title: Text(
-                    widget.hub['hub_name']?.toString() ?? 'Community Hub',
-                  ),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Reservation · ${reservationStatusLabel(recordedStatus: reservation['status'], effectiveStatus: null, isLatest: false)}',
-                      ),
-                      Text(
-                        'Expiry · ${statusTimestampText(context, reservation['expires_at']) ?? '—'}',
-                      ),
-                      Text(
-                        'Reserved weight · ${reservation['reserved_weight_kg']} kg',
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            const Text(
-              'The hub reservation list omits reservation creation and receipt timestamps. Audit timestamps are shown when available. Reservation expiry is a deadline, not proof of receipt.',
-            ),
-            GeoStatusTimeline(
-              title: 'Reservation History',
-              events: reservationEvents,
-              errorMessage: data['audit_error']?.toString(),
-              emptyMessage:
-                  'No separate reservation change events are available from the current read.',
-            ),
-            const SizedBox(height: 12),
-            Text('Inventory', style: Theme.of(context).textTheme.titleMedium),
-            Text(
-              inventory == null
-                  ? 'No received inventory record is available.'
-                  : friendlyWorkflowStatus(inventory['inventory_status']),
-            ),
-            if (inventory?['inventory_status'] == 'BATCHED')
-              const Text(
-                'This donation is recorded as part of a batch. The current inventory read does not return its batch ID.',
-              ),
-          ],
-        );
-      },
-    ),
-  );
-}
-
-class _HubBatchDetailsPageState extends State<HubBatchDetailsPage> {
-  late final Future<Map<String, dynamic>> _details = _load();
-
-  Future<Map<String, dynamic>> _load() async {
-    final responses = await Future.wait([
-      _db.rpc(
-        'get_hub_batch_details',
-        params: {'p_hub': widget.hubId, 'p_batch': widget.batchId},
-      ),
-      _db.rpc('get_my_hub_batches_dashboard', params: {'p_hub': widget.hubId}),
-    ]);
-    if (responses[0] is! Map) {
-      throw const FormatException('Invalid batch detail response.');
-    }
-    final result = Map<String, dynamic>.from(responses[0] as Map);
-    final dashboardRows = responses[1] is List
-        ? (responses[1] as List).map(
-            (row) => Map<String, dynamic>.from(row as Map),
-          )
-        : const <Map<String, dynamic>>[];
-    for (final row in dashboardRows) {
-      if (row['batch_id']?.toString() == widget.batchId) {
-        result['published_at'] = row['published_at'];
-        break;
-      }
-    }
-    return result;
-  }
-
-  @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const Text('Batch Details')),
-    body: FutureBuilder<Map<String, dynamic>>(
-      future: _details,
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          return Center(
-            child: Text('Batch details unavailable: ${snapshot.error}'),
-          );
-        }
-        if (!snapshot.hasData) {
-          return const Center(child: CircularProgressIndicator());
-        }
-        final data = snapshot.data!;
-        final donations = (data['donations'] as List? ?? const [])
-            .map((row) => Map<String, dynamic>.from(row as Map))
-            .toList();
-        final cover = data['batch_cover_path']?.toString();
-        final batchStatus = data['batch_status']?.toString();
-        final publishedAt = data['published_at'];
-        return ListView(
-          padding: const EdgeInsets.all(16),
-          children: [
-            Text(
-              'Batch ${data['batch_id']}',
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            Text(
-              '${friendlyWorkflowStatus(batchStatus)} · ${data['batch_weight_kg'] ?? ''} kg',
-            ),
-            if (statusTimestampText(context, publishedAt) != null)
-              Text(
-                'Batch published · ${statusTimestampText(context, publishedAt)}',
-              ),
-            const Text(
-              'This page shows batch status. The current hub batch reads do not expose separate listing availability, NGO claim, lease, or pickup task history.',
-            ),
-            GeoStatusTimeline(
-              title: 'Batch Progress',
-              currentStatus: friendlyWorkflowStatus(batchStatus),
-              events: statusTimestampText(context, publishedAt) == null
-                  ? const []
-                  : [
-                      StatusTimelineEvent(
-                        title: 'Batch published',
-                        occurredAt: DateTime.tryParse(publishedAt.toString()),
-                      ),
-                    ],
-              emptyMessage:
-                  'No historical batch events are available from the current hub reads.',
-            ),
-            if (batchStatus == 'PUBLISHED')
-              const ListTile(
-                leading: Icon(Icons.check_circle_outline),
-                title: Text('Batch listing availability'),
-                subtitle: Text(
-                  'This batch was published. Current listing availability is not included in the hub detail read.',
-                ),
-              ),
-            const SizedBox(height: 12),
-            DonationPhotoCarousel(paths: cover == null ? const [] : [cover]),
-            const SizedBox(height: 16),
-            Text(
-              'Constituent donations',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            for (final donation in donations)
-              Card(
-                child: ListTile(
-                  leading: _StoredImageThumbnail(
-                    path: donation['primary_image_path']?.toString(),
-                  ),
-                  title: Text(donation['title'].toString()),
-                  subtitle: Text(
-                    '${donation['weight_kg']} kg · ${friendlyWorkflowStatus(donation['donation_status'])}',
-                  ),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => DonationPhotosPage(
-                        donationId: donation['donation_id'].toString(),
-                        title: donation['title'].toString(),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            for (final donation in donations)
-              GeoStatusTimeline(
-                title: 'Donation · ${donation['title'] ?? 'Constituent'}',
-                currentStatus: friendlyWorkflowStatus(
-                  donation['donation_status'],
-                ),
-                pendingMilestones: pendingDonationMilestones(
-                  collectionPath: 'HUB_COLLECTION',
-                  currentStatus: donation['donation_status']?.toString(),
-                ),
-                emptyMessage:
-                    'The hub batch detail read provides current donation state, but no earlier donation timestamps.',
-              ),
-            const Padding(
-              padding: EdgeInsets.only(top: 8),
-              child: Text(
-                'A constituent donation image is a visual fallback only; it does not prove that the batch is physically assembled.',
-              ),
-            ),
-          ],
         );
       },
     ),
@@ -4828,6 +3206,1031 @@ class _DonationPhotoCarouselState extends State<DonationPhotoCarousel> {
     color: const Color(0xffe4f2ed),
     child: const Center(
       child: Icon(Icons.image_not_supported_outlined, size: 42),
+    ),
+  );
+}
+
+// Community hub drop-off for small donations: the card on the donation page,
+// choosing a hub and the drop-off pass.
+
+Future<bool> openHubChooser(
+  BuildContext context,
+  String donationId, {
+  String? donationTitle,
+}) async {
+  final booked = await Navigator.push<bool>(
+    context,
+    MaterialPageRoute(
+      builder: (_) =>
+          HubChoosePage(donationId: donationId, donationTitle: donationTitle),
+    ),
+  );
+  return booked == true;
+}
+
+/// "Needs food-safe storage" for the chosen category, or "" when nothing is needed.
+String _categoryNeedsText(List<DonationCategory> choices, String? id) {
+  for (final c in choices) {
+    if (c.id == id) return c.needsText ?? '';
+  }
+  return '';
+}
+
+class HubDropOffCard extends StatefulWidget {
+  final String donationId;
+
+  /// Called after the donor booked a hub so the donation page can reload.
+  final VoidCallback? onChanged;
+
+  const HubDropOffCard({super.key, required this.donationId, this.onChanged});
+
+  @override
+  State<HubDropOffCard> createState() => _HubDropOffCardState();
+}
+
+class _HubDropOffCardState extends State<HubDropOffCard> {
+  late Future<HubDropOffPass> _pass = HubService.dropOffPass(widget.donationId);
+  Timer? _tick;
+
+  @override
+  void initState() {
+    super.initState();
+    _tick = Timer.periodic(const Duration(seconds: 30), (_) {
+      if (mounted) setState(() {});
+    });
+  }
+
+  @override
+  void didUpdateWidget(HubDropOffCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.donationId != widget.donationId) {
+      _pass = HubService.dropOffPass(widget.donationId);
+    }
+  }
+
+  @override
+  void dispose() {
+    _tick?.cancel();
+    super.dispose();
+  }
+
+  Future<void> _choose(HubDropOffPass pass) async {
+    final booked = await openHubChooser(
+      context,
+      widget.donationId,
+      donationTitle: pass.title,
+    );
+    if (!booked || !mounted) return;
+    setState(() => _pass = HubService.dropOffPass(widget.donationId));
+    widget.onChanged?.call();
+  }
+
+  void _openPass() => Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (_) => HubDropOffPassPage(donationId: widget.donationId),
+    ),
+  );
+
+  @override
+  Widget build(BuildContext context) => FutureBuilder<HubDropOffPass>(
+    future: _pass,
+    builder: (context, snapshot) {
+      if (snapshot.hasError) {
+        return HubCard(
+          child: Row(
+            children: [
+              const Icon(Icons.cloud_off_outlined, color: HubColors.muted),
+              const SizedBox(width: 10),
+              Expanded(child: Text(hubErrorMessage(snapshot.error!))),
+              TextButton(
+                onPressed: () => setState(
+                  () => _pass = HubService.dropOffPass(widget.donationId),
+                ),
+                child: const Text('Retry'),
+              ),
+            ],
+          ),
+        );
+      }
+      if (!snapshot.hasData) {
+        return const HubCard(child: LinearProgressIndicator());
+      }
+      final pass = snapshot.data!;
+      final r = pass.reservation;
+      switch (pass.nextStep) {
+        case HubNextStep.notHub:
+        case HubNextStep.cancelled:
+          return const SizedBox.shrink();
+        case HubNextStep.chooseHub:
+          return _card(
+            icon: Icons.storefront_outlined,
+            color: HubColors.green,
+            title: 'Choose a drop-off hub',
+            body:
+                'This donation is under 10 kg, so it is collected at a community hub. '
+                'We show the best hub for your items first.',
+            action: FilledButton.icon(
+              onPressed: () => _choose(pass),
+              icon: const Icon(Icons.storefront_outlined),
+              label: const Text('Choose a hub'),
+            ),
+          );
+        case HubNextStep.dropOff:
+          final day = r?.dropOffDay;
+          return _card(
+            icon: Icons.directions_walk,
+            color: HubColors.blue,
+            title: 'Drop off at ${r?.hubName ?? 'the hub'}',
+            body:
+                'Reference ${r?.referenceCode ?? ''} · '
+                '${day == null ? 'before ${hubCloseLabel(r?.expiresAt)}' : '${hubDayLabel(day)}, any time ${r!.hours.textOn(day)}'}'
+                '\n${r?.hubAddress ?? ''}',
+            action: FilledButton.icon(
+              onPressed: _openPass,
+              icon: const Icon(Icons.qr_code_2),
+              label: const Text('Show drop-off pass'),
+            ),
+          );
+        case HubNextStep.chooseAgain:
+          return _card(
+            icon: Icons.timer_off_outlined,
+            color: HubColors.amber,
+            title: 'Your booking ended',
+            body:
+                'The booking at ${r?.hubName ?? 'the hub'}'
+                '${r?.dropOffDay == null ? '' : ' for ${hubDayDate(r!.dropOffDay!)}'} ended '
+                'before the drop-off, so the space was given back. Choose a hub and day '
+                'again when you are ready.',
+            action: FilledButton.icon(
+              onPressed: () => _choose(pass),
+              icon: const Icon(Icons.refresh),
+              label: const Text('Choose a hub again'),
+            ),
+          );
+        case HubNextStep.atHub:
+          return _card(
+            icon: Icons.inventory_2_outlined,
+            color: HubColors.green,
+            title: 'At ${r?.hubName ?? 'the hub'}',
+            body:
+                'Received ${hubDateTime(r?.receivedAt)}. The hub will add it to a batch '
+                'for an NGO to collect.',
+          );
+        case HubNextStep.inBatch:
+          return _card(
+            icon: Icons.all_inbox_outlined,
+            color: HubColors.blue,
+            title: 'In a batch for NGOs',
+            body:
+                '${r?.hubName ?? 'The hub'} grouped your donation with others. An NGO '
+                'nearby claims and collects the batch.',
+          );
+        case HubNextStep.done:
+          return _card(
+            icon: Icons.task_alt,
+            color: HubColors.green,
+            title: 'Collected by an NGO',
+            body:
+                'Thank you! Your donation has reached an NGO through ${r?.hubName ?? 'the hub'}.',
+          );
+      }
+    },
+  );
+
+  Widget _card({
+    required IconData icon,
+    required Color color,
+    required String title,
+    required String body,
+    Widget? action,
+  }) => HubCard(
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Container(
+              width: 38,
+              height: 38,
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: .12),
+                borderRadius: BorderRadius.circular(11),
+              ),
+              child: Icon(icon, color: color),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                title,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w800,
+                  fontSize: 15,
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Text(body),
+        if (action != null) ...[
+          const SizedBox(height: 12),
+          SizedBox(width: double.infinity, child: action),
+        ],
+      ],
+    ),
+  );
+}
+
+class HubChoosePage extends StatefulWidget {
+  final String donationId;
+  final String? donationTitle;
+
+  const HubChoosePage({
+    super.key,
+    required this.donationId,
+    this.donationTitle,
+  });
+
+  @override
+  State<HubChoosePage> createState() => _HubChoosePageState();
+}
+
+class _HubChoosePageState extends State<HubChoosePage> {
+  /// The day the donor will bring the donation (Malaysia date).
+  DateTime _day = hubToday();
+  late Future<List<HubOption>> _options = _load();
+  bool _reserving = false;
+
+  Future<List<HubOption>> _load() =>
+      HubService.hubOptions(widget.donationId, day: _day);
+
+  Future<void> _refresh() async {
+    setState(() => _options = _load());
+    await _options;
+  }
+
+  void _setDay(DateTime day) {
+    if (day == _day) return;
+    setState(() {
+      _day = day;
+      _options = _load();
+    });
+  }
+
+  Future<void> _reserve(HubOption hub) async {
+    final ok = await showModalBottomSheet<bool>(
+      context: context,
+      showDragHandle: true,
+      isScrollControlled: true,
+      builder: (context) => _ConfirmSheet(hub: hub, day: _day),
+    );
+    if (ok != true || !mounted) return;
+    setState(() => _reserving = true);
+    try {
+      await HubService.reserveHub(widget.donationId, hub.hubId, day: _day);
+      if (!mounted) return;
+      hubToast(
+        context,
+        'Booked at ${hub.name} for ${hubOnDay(_day).replaceFirst('on ', '')}. '
+        'Come any time it is open that day.',
+      );
+      Navigator.pop(context, true);
+    } catch (error) {
+      if (!mounted) return;
+      hubToast(context, 'Not booked: ${hubErrorMessage(error)}');
+      await _refresh();
+    } finally {
+      if (mounted) setState(() => _reserving = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    appBar: AppBar(
+      title: const Text('Choose a drop-off hub'),
+      bottom: widget.donationTitle == null
+          ? null
+          : PreferredSize(
+              preferredSize: const Size.fromHeight(22),
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Text(
+                  'For: ${widget.donationTitle}',
+                  style: const TextStyle(color: HubColors.muted),
+                ),
+              ),
+            ),
+    ),
+    body: Stack(
+      children: [
+        HubRefreshList<List<HubOption>>(
+          future: _options,
+          onRefresh: _refresh,
+          builder: (context, options) {
+            final feasible = options.where((o) => o.feasible).toList();
+            final others = options.where((o) => !o.feasible).toList();
+            // Keep the server's order; the first feasible hub is the recommendation.
+            final recommended = feasible.isEmpty ? null : feasible.first;
+            return [
+              const _HowItWorks(),
+              _DayPicker(
+                selected: _day,
+                onChanged: _reserving ? null : _setDay,
+              ),
+              if (recommended != null)
+                _RankingBanner(mode: recommended.rankingMode),
+              if (recommended != null) ...[
+                HubSectionTitle(
+                  recommended.rankingMode == 'MODEL'
+                      ? 'AI recommended for you'
+                      : 'Recommended for you',
+                ),
+                _HubOptionCard(
+                  hub: recommended,
+                  day: _day,
+                  recommended: true,
+                  onTap: _reserving ? null : () => _reserve(recommended),
+                ),
+              ],
+              if (feasible.length > 1) ...[
+                HubSectionTitle(
+                  'Other hubs (${feasible.length - 1})',
+                  subtitle: recommended!.aiRanked
+                      ? 'Best match first'
+                      : 'Nearest first',
+                ),
+                for (final hub in feasible.skip(1))
+                  _HubOptionCard(
+                    hub: hub,
+                    day: _day,
+                    onTap: _reserving ? null : () => _reserve(hub),
+                  ),
+              ],
+              if (feasible.isEmpty)
+                HubEmptyState(
+                  icon: Icons.storefront_outlined,
+                  title: 'No hub can take this donation ${hubOnDay(_day)}',
+                  message:
+                      'Hubs may be closed, full, or not accept these items that day. '
+                      'Try another day above, or pull down to check again.',
+                ),
+              if (others.isNotEmpty)
+                Theme(
+                  data: Theme.of(
+                    context,
+                  ).copyWith(dividerColor: Colors.transparent),
+                  child: ExpansionTile(
+                    tilePadding: const EdgeInsets.symmetric(horizontal: 2),
+                    title: Text(
+                      'Not available ${hubOnDay(_day)} (${others.length})',
+                      style: const TextStyle(fontWeight: FontWeight.w800),
+                    ),
+                    children: [
+                      for (final hub in others) _UnavailableTile(hub: hub),
+                    ],
+                  ),
+                ),
+            ];
+          },
+        ),
+        if (_reserving)
+          const ColoredBox(
+            color: Color(0x66ffffff),
+            child: Center(child: CircularProgressIndicator()),
+          ),
+      ],
+    ),
+  );
+}
+
+/// Drop-off day: today and the next 6 days.
+class _DayPicker extends StatelessWidget {
+  final DateTime selected;
+  final ValueChanged<DateTime>? onChanged;
+  const _DayPicker({required this.selected, required this.onChanged});
+
+  @override
+  Widget build(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      const HubSectionTitle(
+        'When will you drop it off?',
+        subtitle: 'Pick a day. You can come any time the hub is open that day.',
+      ),
+      SizedBox(
+        height: 42,
+        child: ListView(
+          scrollDirection: Axis.horizontal,
+          children: [
+            for (final day in hubDropOffDays())
+              Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: ChoiceChip(
+                  label: Text(hubDayLabel(day)),
+                  selected: day == selected,
+                  onSelected: onChanged == null ? null : (_) => onChanged!(day),
+                ),
+              ),
+          ],
+        ),
+      ),
+      const SizedBox(height: 4),
+    ],
+  );
+}
+
+class _HowItWorks extends StatelessWidget {
+  const _HowItWorks();
+
+  @override
+  Widget build(BuildContext context) => const HubCard(
+    color: HubColors.softGreen,
+    borderColor: Colors.transparent,
+    child: Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(Icons.info_outline, color: HubColors.green),
+        SizedBox(width: 10),
+        Expanded(
+          child: Text(
+            'Small donations are collected at a community hub. Pick the day you will '
+            'come, then a hub: it keeps space for you until it closes that day. Come any '
+            'time it is open and show your reference code at the counter.',
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+class _HubOptionCard extends StatelessWidget {
+  final HubOption hub;
+  final DateTime day;
+  final bool recommended;
+  final VoidCallback? onTap;
+
+  const _HubOptionCard({
+    required this.hub,
+    required this.day,
+    this.recommended = false,
+    this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final today = day == hubToday();
+    final open = today && hub.hours.isOpenNow;
+    final close = hub.hours.lastCloseOn(day);
+    final until = close == null ? '' : ' · until ${hubTimeLabel(close)}';
+    return HubCard(
+      onTap: onTap,
+      borderColor: recommended ? HubColors.green : null,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  color: HubColors.softGreen,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(
+                  Icons.storefront_outlined,
+                  color: HubColors.green,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      hub.name,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w800,
+                        fontSize: 15,
+                      ),
+                    ),
+                    Text(
+                      hub.address,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(color: HubColors.muted),
+                    ),
+                  ],
+                ),
+              ),
+              if (recommended)
+                HubStatusChip(
+                  hub.rankingMode == 'MODEL' ? 'AI pick' : 'Recommended',
+                  color: HubColors.green,
+                  icon: hub.rankingMode == 'MODEL'
+                      ? Icons.auto_awesome
+                      : Icons.star_rounded,
+                )
+              else if (hub.inTopK && hub.rank != null)
+                HubStatusChip('Top ${hub.rank}', color: HubColors.blue),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Wrap(
+            spacing: 8,
+            runSpacing: 6,
+            children: [
+              if (hub.roadKm != null)
+                HubStatusChip(
+                  '${hub.roadKm!.toStringAsFixed(1)} km by road',
+                  color: HubColors.blue,
+                  icon: Icons.route_outlined,
+                ),
+              HubStatusChip(
+                today
+                    ? (open ? 'Open now$until' : 'Opens later$until')
+                    : 'Open ${hubDayLabel(day)}$until',
+                color: open || !today ? HubColors.green : HubColors.amber,
+                icon: Icons.schedule,
+              ),
+              HubStatusChip(
+                '${hubKg(hub.availableKg)} free',
+                color: HubColors.muted,
+                icon: Icons.inventory_2_outlined,
+              ),
+              if (hub.storageNote != null)
+                HubStatusChip(
+                  hub.storageNote!,
+                  color: hub.storageNote!.startsWith('Has')
+                      ? HubColors.green
+                      : HubColors.amber,
+                  icon: Icons.warehouse_outlined,
+                ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          Text(
+            '${hubDayLabel(day)}: ${hub.hours.textOn(day)}',
+            style: const TextStyle(fontSize: 13, color: HubColors.muted),
+          ),
+          if (recommended)
+            Padding(
+              padding: const EdgeInsets.only(top: 4),
+              child: Text(
+                _whyRecommended(hub),
+                style: const TextStyle(fontSize: 12, color: HubColors.muted),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+String _whyRecommended(HubOption hub) => switch (hub.rankingMode) {
+  'MODEL' =>
+    hub.explanation ?? 'Best balance of distance, free space and handling.',
+  'REFERENCE_FALLBACK' =>
+    hub.explanation ??
+        'Best balance of road distance, how full the hub is and free space.',
+  _ =>
+    'Nearest hub by road that accepts your items, has space and is open '
+        'on your drop-off day.',
+};
+
+/// Says how the hub list is ordered.
+class _RankingBanner extends StatelessWidget {
+  final String mode;
+  const _RankingBanner({required this.mode});
+
+  @override
+  Widget build(BuildContext context) {
+    final (icon, color, text) = switch (mode) {
+      'MODEL' => (
+        Icons.auto_awesome,
+        HubColors.green,
+        'Ranked by AI: road distance, how full each hub is, free space and whether '
+            'the hub has the storage your items need.',
+      ),
+      'REFERENCE_FALLBACK' => (
+        Icons.rule,
+        HubColors.amber,
+        'AI is unavailable. Ranked by the standard rule (distance, fullness, free space).',
+      ),
+      _ => (Icons.route_outlined, HubColors.muted, 'Sorted by road distance.'),
+    };
+    return Padding(
+      padding: const EdgeInsets.only(top: 4),
+      child: Row(
+        children: [
+          Icon(icon, size: 16, color: color),
+          const SizedBox(width: 6),
+          Expanded(
+            child: Text(
+              text,
+              style: const TextStyle(fontSize: 12, color: HubColors.muted),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _UnavailableTile extends StatelessWidget {
+  final HubOption hub;
+  const _UnavailableTile({required this.hub});
+
+  @override
+  Widget build(BuildContext context) => HubCard(
+    color: const Color(0xfff7f9f8),
+    padding: const EdgeInsets.all(12),
+    child: Row(
+      children: [
+        const Icon(Icons.block, color: HubColors.muted),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                hub.name,
+                style: const TextStyle(fontWeight: FontWeight.w700),
+              ),
+              Text(
+                hub.reasons.map(hubReasonText).join(' · '),
+                style: const TextStyle(color: HubColors.muted, fontSize: 13),
+              ),
+            ],
+          ),
+        ),
+        if (hub.roadKm != null)
+          Text(
+            '${hub.roadKm!.toStringAsFixed(1)} km',
+            style: const TextStyle(color: HubColors.muted),
+          ),
+      ],
+    ),
+  );
+}
+
+class _ConfirmSheet extends StatelessWidget {
+  final HubOption hub;
+  final DateTime day;
+  const _ConfirmSheet({required this.hub, required this.day});
+
+  @override
+  Widget build(BuildContext context) {
+    final label = hubDayLabel(day);
+    final close = hub.hours.lastCloseOn(day);
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Book ${hub.name}?',
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
+            ),
+            const SizedBox(height: 10),
+            HubInfoRow(Icons.place_outlined, 'Address', hub.address),
+            HubInfoRow(
+              Icons.event_outlined,
+              'Drop-off day',
+              label.startsWith('To') ? '$label (${hubDayDate(day)})' : label,
+            ),
+            HubInfoRow(Icons.schedule, 'Open that day', hub.hours.textOn(day)),
+            HubInfoRow(
+              Icons.timer_outlined,
+              'Space held until',
+              hub.closesAt != null
+                  ? hubCloseLabel(hub.closesAt)
+                  : (close == null ? '—' : hubTimeLabel(close)),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'Come any time the hub is open that day; no appointment needed. If you do '
+              'not come by closing time, the booking ends and you can choose a hub and '
+              'day again.',
+              style: TextStyle(color: HubColors.muted),
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: () => Navigator.pop(context, false),
+                    child: const Text('Back'),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: FilledButton(
+                    onPressed: () => Navigator.pop(context, true),
+                    child: const Text('Book this hub'),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class HubDropOffPassPage extends StatefulWidget {
+  final String donationId;
+  const HubDropOffPassPage({super.key, required this.donationId});
+
+  @override
+  State<HubDropOffPassPage> createState() => _HubDropOffPassPageState();
+}
+
+class _HubDropOffPassPageState extends State<HubDropOffPassPage> {
+  late Future<HubDropOffPass> _pass = HubService.dropOffPass(widget.donationId);
+  Timer? _tick;
+
+  @override
+  void initState() {
+    super.initState();
+    // Redraw the countdown every 30 seconds.
+    _tick = Timer.periodic(const Duration(seconds: 30), (_) {
+      if (mounted) setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    _tick?.cancel();
+    super.dispose();
+  }
+
+  Future<void> _refresh() async {
+    setState(() => _pass = HubService.dropOffPass(widget.donationId));
+    await _pass;
+  }
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    appBar: AppBar(title: const Text('Drop-off pass')),
+    body: HubRefreshList<HubDropOffPass>(
+      future: _pass,
+      onRefresh: _refresh,
+      builder: (context, pass) {
+        final r = pass.reservation;
+        if (r == null) {
+          return const [
+            HubEmptyState(
+              icon: Icons.storefront_outlined,
+              title: 'No hub booked',
+              message: 'Choose a hub from the donation page first.',
+            ),
+          ];
+        }
+        final booked = r.dropOffDay;
+        final bookedKey = booked == null ? hubTodayKey() : hubDayKey(booked);
+        return [
+          _PassCard(pass: pass, reservation: r),
+          const HubSectionTitle('Hub'),
+          HubCard(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  r.hubName,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w800,
+                    fontSize: 16,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(child: Text(r.hubAddress)),
+                    IconButton(
+                      tooltip: 'Copy address',
+                      icon: const Icon(Icons.copy, size: 18),
+                      onPressed: () {
+                        Clipboard.setData(ClipboardData(text: r.hubAddress));
+                        hubToast(
+                          context,
+                          'Address copied. Paste it into your maps app.',
+                        );
+                      },
+                    ),
+                  ],
+                ),
+                const Divider(height: 20),
+                const Text(
+                  'Opening hours',
+                  style: TextStyle(fontWeight: FontWeight.w700),
+                ),
+                const SizedBox(height: 4),
+                for (final day in hubWeekdays)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 2),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                          width: 110,
+                          child: Text(
+                            hubWeekdayLabels[day]!,
+                            style: TextStyle(
+                              fontWeight: day == bookedKey
+                                  ? FontWeight.w800
+                                  : FontWeight.w400,
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: Text(
+                            r.hours.dayText(day),
+                            style: TextStyle(
+                              fontWeight: day == bookedKey
+                                  ? FontWeight.w800
+                                  : FontWeight.w400,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          if (r.status == HubDropOffStatus.awaiting) ...[
+            const HubSectionTitle('At the hub'),
+            const HubCard(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _Step(1, 'Bring all the items in this donation.'),
+                  _Step(2, 'Show the reference code to the hub staff.'),
+                  _Step(
+                    3,
+                    'The staff weigh the items and confirm the receipt.',
+                  ),
+                  _Step(
+                    4,
+                    'You will see "At hub" on your donation. Thank you!',
+                  ),
+                ],
+              ),
+            ),
+            const HubSectionTitle('Cannot make it?'),
+            HubCard(
+              child: Text(
+                'If you do not come by ${hubCloseLabel(r.expiresAt)}'
+                '${booked == null ? '' : ' ${hubOnDay(booked)}'}, the booking ends and the '
+                'space is given back. You can then choose a hub and day again from the '
+                'donation page, or cancel the donation there.',
+              ),
+            ),
+          ],
+        ];
+      },
+    ),
+  );
+}
+
+class _PassCard extends StatelessWidget {
+  final HubDropOffPass pass;
+  final HubPassReservation reservation;
+  const _PassCard({required this.pass, required this.reservation});
+
+  @override
+  Widget build(BuildContext context) {
+    final r = reservation;
+    final awaiting = r.status == HubDropOffStatus.awaiting;
+    final left = hubMinutesLeft(r.expiresAt);
+    final day = r.dropOffDay;
+    final today = day != null && day == hubToday();
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [Color(0xff2f806c), Color(0xff1f5f50)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Column(
+        children: [
+          Text(
+            pass.title,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.w700,
+              fontSize: 16,
+            ),
+          ),
+          Text(
+            '${hubKg(r.reservedKg)} · ${r.hubName}',
+            textAlign: TextAlign.center,
+            style: const TextStyle(color: Colors.white70),
+          ),
+          const SizedBox(height: 16),
+          const Text('Reference code', style: TextStyle(color: Colors.white70)),
+          const SizedBox(height: 6),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Text(
+              r.referenceCode,
+              style: const TextStyle(
+                fontSize: 34,
+                fontWeight: FontWeight.w900,
+                letterSpacing: 6,
+                fontFamily: 'monospace',
+                color: HubColors.ink,
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          if (awaiting) ...[
+            Text(
+              left == 0
+                  ? 'Time is up'
+                  : day == null
+                  ? 'Drop off before ${hubCloseLabel(r.expiresAt)}'
+                  : 'Drop off ${hubOnDay(day)}',
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 22,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+            if (day != null)
+              Text(
+                '${hubDayDate(day)} · any time ${r.hours.textOn(day)}',
+                textAlign: TextAlign.center,
+                style: const TextStyle(color: Colors.white70),
+              ),
+            if (today && left > 0 && left <= 120)
+              Text(
+                'Closes in ${hubDuration(left)}',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+          ] else
+            Text(
+              r.status == HubDropOffStatus.received
+                  ? 'Received ${hubDateTime(r.receivedAt)} · ${hubKg(r.receivedKg ?? r.reservedKg)}'
+                  : hubDropOffLabel(r.status),
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _Step extends StatelessWidget {
+  final int number;
+  final String text;
+  const _Step(this.number, this.text);
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.symmetric(vertical: 5),
+    child: Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        CircleAvatar(
+          radius: 11,
+          backgroundColor: HubColors.softGreen,
+          child: Text(
+            '$number',
+            style: const TextStyle(
+              fontSize: 12,
+              color: HubColors.green,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+        ),
+        const SizedBox(width: 10),
+        Expanded(child: Text(text)),
+      ],
     ),
   );
 }
