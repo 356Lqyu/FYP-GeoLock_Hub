@@ -112,7 +112,8 @@ SUPABASE_URL = os.environ.get('SUPABASE_URL', '').rstrip('/')
 SUPABASE_KEY = os.environ.get('SUPABASE_PUBLISHABLE_KEY', '')
 MODEL_DIR = Path(os.environ.get('MODEL_DIR', HERE.parent / 'model'))
 LOG_PATH = Path(os.environ.get('RECOMMENDATION_LOG', HERE / 'logs' / 'recommendations.jsonl'))
-TIMEOUT = float(os.environ.get('SUPABASE_TIMEOUT_SECONDS', '8'))
+# get_hub_options runs pgRouting and can take well over 8 s on a large road network.
+TIMEOUT = float(os.environ.get('SUPABASE_TIMEOUT_SECONDS', '30'))
 
 log = logging.getLogger('hub-ranking')
 logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s %(message)s')
@@ -141,16 +142,22 @@ class RankRequest(BaseModel):
 
 async def supabase_rpc(client, name, params, token):
     """Call a PostgREST RPC as the signed-in user. Database errors become 4xx."""
-    response = await client.post(
-        f'{SUPABASE_URL}/rest/v1/rpc/{name}', json=params,
-        headers={'apikey': SUPABASE_KEY, 'Authorization': f'Bearer {token}',
-                 'Content-Type': 'application/json'})
+    try:
+        response = await client.post(
+            f'{SUPABASE_URL}/rest/v1/rpc/{name}', json=params,
+            headers={'apikey': SUPABASE_KEY, 'Authorization': f'Bearer {token}',
+                     'Content-Type': 'application/json'})
+    except httpx.TimeoutException:
+        raise HTTPException(status_code=504, detail=dict(
+            source=name, message=f'Supabase did not answer {name} within {TIMEOUT:.0f} s'))
     if response.status_code >= 400:
         try:
             body = response.json()
             message = body.get('message') or body.get('msg') or response.text
         except ValueError:
             message = response.text
+        if 'statement timeout' in message:
+            raise HTTPException(status_code=504, detail=dict(source=name, message=message))
         status = 401 if response.status_code in (401, 403) and 'JWT' in message else 400
         raise HTTPException(status_code=status, detail=dict(source=name, message=message))
     return response.json()
