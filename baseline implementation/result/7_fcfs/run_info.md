@@ -4,9 +4,9 @@ This file only records what produced the results in this folder, so the run can 
 
 | Item | Value |
 | --- | --- |
-| Run at | 2026-10-23 18:39 Malay Peninsula Standard Time |
-| Benchmark | GEOLOCK-BM-v3.2 (generation_manifest.json SHA-256 4ef29e205fd09eba...; every input CSV was checked against this manifest) |
-| Script | `fcfs_baseline.py` (SHA-256 f21fc7875d21a221...) |
+| Run at | 2026-11-01 22:05 Malay Peninsula Standard Time |
+| Benchmark | GEOLOCK-BM-v3.3 (generation_manifest.json SHA-256 5fdafca9baa69c4e...; every input CSV was checked against this manifest) |
+| Script | `fcfs_baseline.py` (SHA-256 f61583f5a26fe970...) |
 | Python | 3.12.10 |
 | Command to repeat | `python fcfs_baseline.py` |
 | Scenarios run | 100 (all) |

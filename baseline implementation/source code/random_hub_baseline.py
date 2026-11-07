@@ -20,9 +20,10 @@ import sys
 
 FOLDER = "2_random_hub"
 TITLE = "Random Hub (baseline 2)"
-WHAT = ("Among the hubs that pass all four hard rules, recommend one at random. The random order is fixed by --seed and the scenario ID, so a rerun gives the same answer.")
+WHAT = ("Among the hubs that pass all five hard rules, recommend one at random. The random order is fixed by --seed and the scenario ID, so a rerun gives the same answer.")
+COMPARE = ['## Compared with (experiment E1, RQ1)', '', '| | This baseline | Proposed method (E1) |', '| --- | --- | --- |', '| Ranking | random order (fixed seed) | AI model (Random Forest / XGBoost) that predicts the reference score |', '| Same inputs | | same feasible hubs (five hard rules), same road distances, same tie rule (shorter distance, then hub ID), Top-k = 3 |', '', 'Score only the 349 held-out test donations listed in `ai hub ranking/data split/split/test_scenario_ids.csv`, pairing rows by `scenario_id`. Main metric: **Top-1 agreement** with the weighted reference policy (`../ref_weighted_hub/`). This is the chance level: a model that learned anything must clearly beat it.', '']
 METHOD = "random"
-HARD_RULES = ("item_compatible_flag", "capacity_feasible_flag", "active_feasible_flag", "route_available_flag")
+HARD_RULES = ("item_compatible_flag", "capacity_feasible_flag", "operating_feasible_flag", "active_feasible_flag", "route_available_flag")
 TABLES = ("donations", "donors", "hubs", "donation_hub_candidates",
           "road_distance_matrix", "scenarios", "scenario_members")
 
@@ -152,7 +153,7 @@ SPREAD_NOTE = ("How to read a spread such as \"median 3.8 km (10th-90th percenti
                "the donations are at or below the median; 8 in 10 lie between the two percentiles; max is the "
                "single largest value.")
 GUIDE = dict(
- how=["Take the same feasible hubs as the other hub methods (all four hard rules pass).",
+ how=["Take the same feasible hubs as the other hub methods (all five hard rules pass).",
       "Shuffle them in a random order fixed by the seed and the scenario ID (same seed = same answer).",
       "The first hub after shuffling is the recommendation; the full shuffled order is the ranking."],
  expect=["A random choice is the usual \"chance level\" lower bound: a method that has learned anything must do "
@@ -193,7 +194,7 @@ def write_summary(path, recommendations, rankings, manifest, seed):
     rows = [
         ("Scenarios", f"{len(recommendations):,}",
          "Small donations (< 10 kg), each with every hub within 20 km as a candidate"),
-        ("Hub recommended", f"{len(rec):,}", "At least one hub passed all four hard rules"),
+        ("Hub recommended", f"{len(rec):,}", "At least one hub passed all five hard rules"),
         ("No feasible hub", f"{len(none):,}", "No hub passed the hard rules, so the method correctly recommends nothing"),
         ("Feasible hubs per donation", spread([r["feasible_candidate_count"] for r in rec], "hubs", 0),
          "How many hubs the method could choose from"),
@@ -202,11 +203,10 @@ def write_summary(path, recommendations, rankings, manifest, seed):
     ]
     if METHOD == "random":
         rows.append(("Random seed", str(seed), "Same seed, same recommendations"))
-    lines = [f"# {TITLE}", "", f"Benchmark {manifest['benchmark_version']}. This describes this method on its own; "
-             "comparing methods is done in experiment E1.", "", f"**Method.** {WHAT}", "",
-             "**Hard rules** (a hub must pass all four): accepts the donation's category; weight <= capacity - stored - "
-             "reserved; hub active; a directed road route from the donor exists.", "",
-             "| Result | Value | Meaning |", "| --- | --- | --- |"]
+    lines = [f"# {TITLE}", "", f"Benchmark {manifest['benchmark_version']}.", "", "## What this baseline does", "", WHAT, "", *COMPARE,
+             "**Hard rules** (a hub must pass all five): accepts the donation's category; weight <= capacity - stored - "
+             "reserved; the donation window overlaps the hub opening hours by at least 30 min; hub active; a directed road route from the donor exists.", "",
+             "## Results", "", "| Result | Value | Meaning |", "| --- | --- | --- |"]
     lines += [f"| {a} | {b} | {c} |" for a, b, c in rows]
     lines += guide_lines(recommendations, rankings)
     lines += ["", "## Files", "", "| File | Content |", "| --- | --- |",
@@ -216,7 +216,7 @@ def write_summary(path, recommendations, rankings, manifest, seed):
               "### Columns of results_per_scenario.csv", "", "| Column | Meaning |", "| --- | --- |",
               "| `scenario_id` | Benchmark scenario (one small donation looking for a hub) |",
               "| `donation_id` | The donation |",
-              "| `status` | RECOMMENDED, or NO_FEASIBLE_HUB when no hub passes the four hard rules |",
+              "| `status` | RECOMMENDED, or NO_FEASIBLE_HUB when no hub passes the five hard rules |",
               "| `feasible_hubs` | How many hubs passed the hard rules (the method's choices) |",
               "| `recommended_hub` | The method's first choice (empty when NO_FEASIBLE_HUB) |",
               "| `distance_to_recommended_hub_km` | Road distance from the donor to that hub |",
@@ -288,7 +288,7 @@ def main():
     rows = common_run_rows(args.dataset_dir / "generation_manifest.json", __file__,
                            f"python {Path(__file__).name}" + (f" --seed {args.seed}" if METHOD == "random" and args.seed != 42 else ""))
     rows += [("Scenarios run", f"{len(recommendations):,}" + (" (selected with --scenario-ids)" if selected else " (all hub scenarios)")),
-             ("Settings", "20 km candidate radius; four hard rules" + (f"; random seed {args.seed}" if METHOD == "random" else "")
+             ("Settings", "20 km candidate radius; five hard rules" + (f"; random seed {args.seed}" if METHOD == "random" else "")
               + ("; weights 0.45 / 0.20 / 0.25 / 0.10" if METHOD == "weighted" else ""))]
     write_run_info(out / "run_info.md", TITLE, rows)
     write_summary(out / "summary.md", recommendations, rankings, manifest, args.seed)

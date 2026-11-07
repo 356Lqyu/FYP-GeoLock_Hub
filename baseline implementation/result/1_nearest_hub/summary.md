@@ -1,23 +1,36 @@
 # Nearest-Hub (baseline 1)
 
-Benchmark GEOLOCK-BM-v3.2. This describes this method on its own; comparing methods is done in experiment E1.
+Benchmark GEOLOCK-BM-v3.3.
 
-**Method.** Among the hubs that pass all four hard rules, recommend the one with the shortest road distance from the donor (ties: hub ID). Same order as the backend get_eligible_hubs().
+## What this baseline does
 
-**Hard rules** (a hub must pass all four): accepts the donation's category; weight <= capacity - stored - reserved; hub active; a directed road route from the donor exists.
+Among the hubs that pass all five hard rules, recommend the one with the shortest road distance from the donor (ties: hub ID). Same order as the backend get_eligible_hubs().
+
+## Compared with (experiment E1, RQ1)
+
+| | This baseline | Proposed method (E1) |
+| --- | --- | --- |
+| Ranking | shortest road distance | AI model (Random Forest / XGBoost) that predicts the reference score |
+| Same inputs | | same feasible hubs (five hard rules), same road distances, same tie rule (shorter distance, then hub ID), Top-k = 3 |
+
+Score only the 349 held-out test donations listed in `ai hub ranking/data split/split/test_scenario_ids.csv`, pairing rows by `scenario_id`. Main metric: **Top-1 agreement** with the weighted reference policy (`../ref_weighted_hub/`); NDCG@3 and Top-3 coverage come from `details/hub_ranking.csv`. This baseline tests whether road distance alone can reproduce the reference ranking (report Section 3.5.3).
+
+**Hard rules** (a hub must pass all five): accepts the donation's category; weight <= capacity - stored - reserved; the donation window overlaps the hub opening hours by at least 30 min; hub active; a directed road route from the donor exists.
+
+## Results
 
 | Result | Value | Meaning |
 | --- | --- | --- |
 | Scenarios | 2,019 | Small donations (< 10 kg), each with every hub within 20 km as a candidate |
-| Hub recommended | 2,000 | At least one hub passed all four hard rules |
+| Hub recommended | 2,000 | At least one hub passed all five hard rules |
 | No feasible hub | 19 | No hub passed the hard rules, so the method correctly recommends nothing |
-| Feasible hubs per donation | median 21 hubs (10th-90th percentile 9-45; max 51) | How many hubs the method could choose from |
-| Road distance from donor to the recommended hub | median 3.8 km (10th-90th percentile 1.5-7.7; max 22.9) | Candidates are within 20 km in a straight line; the road distance can be longer |
+| Feasible hubs per donation | median 26 hubs (10th-90th percentile 10-54; max 62) | How many hubs the method could choose from |
+| Road distance from donor to the recommended hub | median 3.4 km (10th-90th percentile 1.1-6.8; max 11.7) | Candidates are within 20 km in a straight line; the road distance can be longer |
 
 ## How the method works
 
 1. Take every hub within 20 km (straight line) of the donor as a candidate.
-2. Remove each candidate that fails a hard rule (category, free capacity, active, road route).
+2. Remove each candidate that fails a hard rule (category, free capacity, opening hours, active, road route).
 3. Sort the rest by road distance from the donor, shortest first (ties: hub ID).
 4. Rank 1 is the recommendation. If no hub is left, the answer is NO_FEASIBLE_HUB.
 
@@ -56,7 +69,7 @@ How to read a spread such as "median 3.8 km (10th-90th percentile 1.5-7.7; max 2
 | --- | --- |
 | `scenario_id` | Benchmark scenario (one small donation looking for a hub) |
 | `donation_id` | The donation |
-| `status` | RECOMMENDED, or NO_FEASIBLE_HUB when no hub passes the four hard rules |
+| `status` | RECOMMENDED, or NO_FEASIBLE_HUB when no hub passes the five hard rules |
 | `feasible_hubs` | How many hubs passed the hard rules (the method's choices) |
 | `recommended_hub` | The method's first choice (empty when NO_FEASIBLE_HUB) |
 | `distance_to_recommended_hub_km` | Road distance from the donor to that hub |
