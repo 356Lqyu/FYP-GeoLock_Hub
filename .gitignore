@@ -1,0 +1,31 @@
+# Local tools and generated files
+.idea/
+.tmp/
+.venv*/
+.codex-tool-home/
+.dart-appdata/
+.dart-local/
+__pycache__/
+*.py[cod]
+/backups/
+/results/
+*.backup
+*.dump
+*.sqlite
+*.sqlite3
+*.sqlite-wal
+*.sqlite-shm
+*.sqlite3-wal
+*.sqlite3-shm
+
+# Local credentials and signing material
+.env
+.env.*
+!.env.example
+!.env.template
+*.clixml
+*.key
+*.pfx
+*.p12
+*.jks
+*.keystore

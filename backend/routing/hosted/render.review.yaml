@@ -1,0 +1,83 @@
+# REVIEW ONLY. Creating these services incurs charges even with writes disabled.
+# Plans are provisional test targets, not validated minimum requirements.
+services:
+  - type: web
+    name: geolock-dev-validator
+    runtime: docker
+    region: singapore
+    plan: 1c-2g
+    numInstances: 1
+    autoDeployTrigger: 'off'
+    dockerContext: .
+    dockerfilePath: backend/routing/hosted/docker/validator.Dockerfile
+    healthCheckPath: /live
+    maxShutdownDelaySeconds: 300
+    envVars:
+      - key: GEOLOCK_ROUTING_ALLOW_DEV_WRITES
+        value: DISABLED
+      - key: GEOLOCK_PROJECT_REF
+        value: rcgyuwiidqvrgbxswhqj
+      - key: GEOLOCK_PUBLIC_URL
+        sync: false
+      - key: GEOLOCK_TRUSTED_PROXY_CIDRS
+        sync: false
+      - key: GEOLOCK_ROUTING_ACTIVATION_REF
+        sync: false
+      - key: GEOLOCK_VALIDATOR_DSN
+        sync: false
+      - key: GEOLOCK_VALIDATOR_PASSWORD
+        sync: false
+      - key: GEOLOCK_VALIDATOR_TOKEN
+        sync: false
+  - type: web
+    name: geolock-dev-planner
+    runtime: docker
+    region: singapore
+    plan: 2c-8g
+    numInstances: 1
+    autoDeployTrigger: 'off'
+    dockerContext: .
+    dockerfilePath: backend/routing/hosted/docker/planner.Dockerfile
+    healthCheckPath: /live
+    maxShutdownDelaySeconds: 300
+    disk:
+      name: routing-recovery
+      mountPath: /var/data
+      sizeGB: 10
+    envVars:
+      - key: GEOLOCK_ROUTING_ALLOW_DEV_WRITES
+        value: DISABLED
+      - key: GEOLOCK_COMBINED_ROUTE_ENABLED
+        value: DISABLED
+      - key: GEOLOCK_PROJECT_REF
+        value: rcgyuwiidqvrgbxswhqj
+      - key: GEOLOCK_PERSISTENCE_MODE
+        value: mounted-disk
+      - key: GEOLOCK_STATE_MOUNT
+        value: /var/data
+      - key: GEOLOCK_WORKER_STATE
+        value: /var/data/routing
+      - key: GEOLOCK_GRAPH_ENGINE
+        value: legacy
+      - key: GEOLOCK_GRAPH_ID
+        value: eab1f7ee-a8e0-4bed-a0e1-2c4bff024936
+      - key: GEOLOCK_PUBLIC_URL
+        sync: false
+      - key: GEOLOCK_TRUSTED_PROXY_CIDRS
+        sync: false
+      - key: GEOLOCK_ROUTING_ACTIVATION_REF
+        sync: false
+      - key: GEOLOCK_GRAPH_DSN
+        sync: false
+      - key: GEOLOCK_GRAPH_PASSWORD
+        sync: false
+      - key: GEOLOCK_PLANNER_DSN
+        sync: false
+      - key: GEOLOCK_PLANNER_PASSWORD
+        sync: false
+      - key: GEOLOCK_VALIDATOR_URL
+        sync: false
+      - key: GEOLOCK_VALIDATOR_TOKEN
+        sync: false
+      - key: GEOLOCK_SUPABASE_PUBLISHABLE_KEY
+        sync: false
