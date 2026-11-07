@@ -13,10 +13,7 @@ void main() {
         const MaterialApp(home: RegistrationPage(role: AccountRole.ngo)),
       );
       expect(find.text('NGO Organisation Name'), findsOneWidget);
-      expect(
-        find.text('Registration / Reference Number (optional)'),
-        findsOneWidget,
-      );
+      expect(find.textContaining('Registration'), findsNothing);
       expect(find.text('Operating Address and Map Pin'), findsNothing);
       expect(find.text('Select location'), findsNothing);
       expect(

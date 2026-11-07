@@ -1,3 +1,4 @@
+import 'routing/claim_coordination.dart';
 import 'dart:async';
 import 'dart:io';
 
@@ -13,6 +14,9 @@ import 'claim_card.dart';
 import 'claim_request.dart';
 import 'claim_cards_controller.dart';
 import 'routing/ngo_routes_page.dart';
+import 'routing/route_resolution_page.dart';
+import 'routing/route_resolution_repository.dart';
+import 'routing/ngo_routing_repository.dart' show routingObject, routingRows;
 import 'location/location_picker_page.dart';
 import 'location/location_result.dart';
 import 'location/road_routing.dart';
@@ -21,8 +25,52 @@ import 'donation_photo_rules.dart';
 import 'donation_photo_errors.dart';
 import 'donation_status.dart';
 import 'status_timeline.dart';
+import 'donor_claim_history.dart';
+import 'claim_pickup_detail_reader.dart';
 
 final _db = Supabase.instance.client;
+
+String claimDetailsErrorMessage(Object error) {
+  if (error is SocketException || error is TimeoutException) {
+    return 'Claim details could not be loaded. Check your connection and retry.';
+  }
+  if (error is PostgrestException && error.code == 'P0001') {
+    return 'We could not verify access to this claim. Refresh My Claims or return to your claim history.';
+  }
+  if (error is PostgrestException && error.code == 'PGRST202') {
+    return 'This claim detail is temporarily unavailable. The secure history reader may not be deployed yet.';
+  }
+  return 'Claim details are temporarily unavailable. Refresh and try again.';
+}
+
+String _historicalClaimOutcome(Object? value) => switch (value?.toString()) {
+  'RECONCILED_NO_HANDOVER' => 'Released after no handover was confirmed',
+  'EXPIRED_SAFE_RELEASE' => 'Released after safe lease expiry',
+  'HANDOVER_UNCERTAIN' => 'Released for unresolved handover review',
+  null || '' => 'Historical outcome unavailable',
+  final status => friendlyWorkflowStatus(status),
+};
+
+Future<Map<String, dynamic>?> _readClaimReconciliationReceipt(
+  String requestId,
+) async {
+  final response = await _db.rpc(
+    'get_my_claim_reconciliation_receipt',
+    params: {'p_request': requestId},
+  );
+  if (response is! Map) {
+    throw const FormatException('Invalid claim reconciliation receipt.');
+  }
+  final receipt = Map<String, dynamic>.from(response);
+  if (receipt['request_id'] != requestId) {
+    throw StateError('Claim reconciliation receipt request identity changed.');
+  }
+  if (receipt['found'] == false) return null;
+  if (receipt['found'] != true || receipt['result'] is! Map) {
+    throw StateError('Claim reconciliation receipt is not confirmed.');
+  }
+  return receipt;
+}
 
 String _safePhotoDiagnostic(Object error) => error
     .toString()
@@ -83,17 +131,20 @@ class EligibleListingsPage extends StatefulWidget {
   final int refreshSignal;
   final Future<Object?> Function()? listingsLoader;
   final Future<bool> Function()? routingLoader;
+  final Widget Function(Map<String, dynamic>)? detailsBuilder;
   const EligibleListingsPage({
     super.key,
     this.refreshSignal = 0,
     this.listingsLoader,
     this.routingLoader,
+    this.detailsBuilder,
   });
   @override
   State<EligibleListingsPage> createState() => _EligibleListingsPageState();
 }
 
 class _EligibleListingsPageState extends State<EligibleListingsPage> {
+  bool _detailOpen = false;
   final _listingsGate = AsyncRequestGate();
   final _routingGate = AsyncRequestGate();
   late Future<List<Map<String, dynamic>>> _listings;
@@ -189,17 +240,27 @@ class _EligibleListingsPageState extends State<EligibleListingsPage> {
                   return EligibleListingCard(
                     listing: listing,
                     capabilityReady: capabilityReady,
-                    onOpen: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => NgoListingDetailsPage(
-                          listing: listing,
-                          onClaimConfirmed: () {
-                            if (mounted) _refresh();
-                          },
+                    onOpen: () async {
+                      if (_detailOpen) return;
+                      _detailOpen = true;
+                      await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) =>
+                              widget.detailsBuilder?.call(listing) ??
+                              NgoListingDetailsPage(
+                                listing: listing,
+                                onClaimConfirmed: () {
+                                  if (mounted) _refresh();
+                                },
+                              ),
                         ),
-                      ),
-                    ),
+                      );
+                      if (mounted) {
+                        _refresh();
+                        _detailOpen = false;
+                      }
+                    },
                   );
                 },
               ),
@@ -250,7 +311,7 @@ class EligibleListingCard extends StatelessWidget {
           '${listing['title'] ?? listing['source_type']} · ${listing['listing_weight_kg']} kg',
         ),
         subtitle: Text(
-          '${friendlyWorkflowStatus(listing['collection_path'] ?? listing['source_type'])}\n${blockReason == null ? 'Tap to review details. The database rechecks eligibility when you claim.' : 'Details may be viewed; claiming unavailable: $blockReason'}',
+          '${friendlyWorkflowStatus(listing['collection_path'] ?? listing['source_type'])}\n${blockReason == null ? 'The database rechecks eligibility when you claim.' : 'Details may be viewed; claiming unavailable: $blockReason'}',
         ),
         isThreeLine: true,
         onTap: onOpen,
@@ -1013,7 +1074,6 @@ class MyReconciliationCasesPage extends StatefulWidget {
 
 class _MyReconciliationCasesPageState extends State<MyReconciliationCasesPage> {
   late Future<List<Map<String, dynamic>>> _cases = _load();
-  bool _busy = false;
 
   Future<List<Map<String, dynamic>>> _load() async {
     final response = await _db.rpc('get_my_reconciliation_cases');
@@ -1025,71 +1085,24 @@ class _MyReconciliationCasesPageState extends State<MyReconciliationCasesPage> {
         .toList();
   }
 
-  Future<void> _submit(Map<String, dynamic> row, bool handoverConfirmed) async {
-    final caseId = row['case_id'].toString();
-    final choice = handoverConfirmed ? 'yes' : 'no';
-    final prefs = await SharedPreferences.getInstance();
-    final key =
-        'geolock_reconcile_${_db.auth.currentUser?.id}_${caseId}_$choice';
-    final requestId = prefs.getString(key) ?? const Uuid().v4();
-    await prefs.setString(key, requestId);
-    setState(() => _busy = true);
-    try {
-      final response = await _db.rpc(
-        'submit_claim_reconciliation',
-        params: {
-          'p_claim': row['claim_id'],
-          'p_handover_confirmed': handoverConfirmed,
-          'p_request': requestId,
-        },
-      );
-      if (response is! Map) {
-        throw const FormatException('Reconciliation outcome missing.');
-      }
-      final result = Map<String, dynamic>.from(response);
-      if (result['outcome'] == null) {
-        throw const FormatException('Reconciliation outcome is missing.');
-      }
-      await prefs.remove(key);
-      List<Map<String, dynamic>>? refreshed;
-      Object? refreshError;
-      try {
-        refreshed = await _load();
-      } catch (error) {
-        refreshError = error;
-      }
-      if (!mounted) return;
-      if (refreshed != null) {
-        setState(() => _cases = Future.value(refreshed));
-      } else {
-        setState(() => _cases = _load());
-      }
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            '${result['outcome']}: ${result['reason_code'] ?? 'Evidence recorded'}'
-            '${refreshError == null ? '' : ' (case refresh failed; retry refresh)'}',
-          ),
-        ),
-      );
-    } catch (error) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'No result was confirmed. Retry will reuse request $requestId. $error',
-            ),
-          ),
-        );
-      }
-    } finally {
-      if (mounted) setState(() => _busy = false);
-    }
-  }
-
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const Text('Handover Reconciliation')),
+    appBar: AppBar(
+      title: const Text('Handover Reconciliation'),
+      actions: [
+        if (const bool.fromEnvironment('GEOLOCK_ROUTE_RESOLUTION_ENABLED'))
+          IconButton(
+            tooltip: 'Route resolution cases',
+            icon: const Icon(Icons.assignment_late_outlined),
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const RouteResolutionInboxPage(),
+              ),
+            ),
+          ),
+      ],
+    ),
     body: FutureBuilder<List<Map<String, dynamic>>>(
       future: _cases,
       builder: (context, snapshot) {
@@ -1121,7 +1134,6 @@ class _MyReconciliationCasesPageState extends State<MyReconciliationCasesPage> {
           itemCount: rows.length,
           itemBuilder: (context, index) {
             final row = rows[index];
-            final open = row['case_status'] == 'OPEN';
             return Card(
               child: Padding(
                 padding: const EdgeInsets.all(14),
@@ -1137,27 +1149,12 @@ class _MyReconciliationCasesPageState extends State<MyReconciliationCasesPage> {
                       'Claim ${row['claim_id']} · opened ${row['opened_at']}',
                     ),
                     const SizedBox(height: 8),
-                    Text(
-                      open
-                          ? 'Confirm whether the physical handover occurred. The NGO and donor or hub administrator must submit matching answers.'
-                          : 'This case needs trusted manual review. Your response will not change the pickup or listing state.',
+                    ClaimCoordinationPanel(
+                      claimId: row['claim_id'] as String,
+                      onChanged: () async {
+                        if (mounted) setState(() => _cases = _load());
+                      },
                     ),
-                    if (open &&
-                        widget.role == 'HUB_ADMIN' &&
-                        row['source_type'] == 'HUB_BATCH')
-                      Wrap(
-                        spacing: 8,
-                        children: [
-                          FilledButton.tonal(
-                            onPressed: _busy ? null : () => _submit(row, true),
-                            child: const Text('Handover occurred'),
-                          ),
-                          OutlinedButton(
-                            onPressed: _busy ? null : () => _submit(row, false),
-                            child: const Text('No handover'),
-                          ),
-                        ],
-                      ),
                   ],
                 ),
               ),
@@ -1437,16 +1434,7 @@ class _MyClaimsPageState extends State<MyClaimsPage>
         .where((c) => _selectedTab == ClaimTab.all || c.tab == _selectedTab)
         .toList();
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('My Claims'),
-        actions: [
-          IconButton(
-            tooltip: 'Pickup routes',
-            icon: const Icon(Icons.route),
-            onPressed: _openRoutes,
-          ),
-        ],
-      ),
+      appBar: AppBar(title: const Text('My Claims')),
       body: Column(
         children: [
           SingleChildScrollView(
@@ -1630,10 +1618,22 @@ class _MyClaimsPageState extends State<MyClaimsPage>
 class NgoListingDetailsPage extends StatefulWidget {
   final Map<String, dynamic> listing;
   final VoidCallback? onClaimConfirmed;
+  final Future<Object?> Function()? listingsLoader;
+  final Future<Map<String, dynamic>> Function()? detailsLoader;
+  final Future<bool> Function()? routingLoader;
+  final Future<Object?> Function(String listing, String request)? claimSender;
+  final String? Function()? identity;
+  final VoidCallback? onSuccess;
   const NgoListingDetailsPage({
     super.key,
     required this.listing,
     this.onClaimConfirmed,
+    this.listingsLoader,
+    this.detailsLoader,
+    this.routingLoader,
+    this.claimSender,
+    this.identity,
+    this.onSuccess,
   });
 
   @override
@@ -1641,12 +1641,88 @@ class NgoListingDetailsPage extends StatefulWidget {
 }
 
 class _NgoListingDetailsPageState extends State<NgoListingDetailsPage> {
-  late final Future<Map<String, dynamic>> _details = _load();
-  late final Future<bool> _trustedRouting = _loadTrustedRouting();
+  bool _availabilityExitScheduled = false;
+
+  bool _leaveUnavailableListing() {
+    if (!mounted || _availabilityExitScheduled) return true;
+    final route = ModalRoute.of(context);
+    final navigator = Navigator.of(context);
+    if (!navigator.canPop()) return false;
+    _availabilityExitScheduled = true;
+    _availabilityVerified = false;
+    final messenger = ScaffoldMessenger.of(context);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || route?.isCurrent != true) return;
+      navigator.pop();
+      messenger.hideCurrentSnackBar();
+      messenger.showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Donation availability changed\nThis donation is no longer available to claim. ',
+          ),
+          duration: Duration(seconds: 8),
+        ),
+      );
+    });
+    return true;
+  }
+
+  late Future<Map<String, dynamic>> _details = _verifyAvailability();
+  late Future<bool> _trustedRouting = _loadTrustedRouting();
+  late Map<String, dynamic> _currentListing = widget.listing;
   bool _claimBusy = false;
+  bool _availabilityVerified = false;
+  bool _refreshing = true;
+  bool _verificationFailed = false;
+  bool _conflict = false;
+
+  String? get _identity =>
+      widget.identity?.call() ??
+      (widget.identity == null ? _db.auth.currentUser?.id : null);
+
+  Future<Map<String, dynamic>> _verifyAvailability() async {
+    try {
+      final data = await _load();
+      if (mounted) {
+        setState(() {
+          _availabilityVerified = data['listing_discovered_available'] == true;
+          if (_availabilityVerified) _conflict = false;
+          _refreshing = false;
+          _verificationFailed = false;
+        });
+        if (!_availabilityVerified) _leaveUnavailableListing();
+      }
+      return data;
+    } catch (_) {
+      if (mounted) {
+        setState(() {
+          _availabilityVerified = false;
+          _refreshing = false;
+          _verificationFailed = true;
+        });
+      }
+      // Never retain previously authorized photos/details after a failed read.
+      return {
+        'images': <Map<String, dynamic>>[],
+        'constituents': <Map<String, dynamic>>[],
+        'listing_discovered_available': false,
+      };
+    }
+  }
+
+  void _refreshAvailability() {
+    if (_refreshing || _claimBusy) return;
+    setState(() {
+      _availabilityVerified = false;
+      _refreshing = true;
+      _details = _verifyAvailability();
+      _trustedRouting = _loadTrustedRouting();
+    });
+  }
 
   Future<bool> _loadTrustedRouting() async {
     try {
+      if (widget.routingLoader != null) return await widget.routingLoader!();
       final response = await _db.rpc('geolock_app_capabilities');
       return response is Map && response['road_node_resolution'] == true;
     } catch (_) {
@@ -1655,8 +1731,13 @@ class _NgoListingDetailsPageState extends State<NgoListingDetailsPage> {
   }
 
   Future<void> _claim() async {
-    if (_claimBusy) return;
-    final userId = _db.auth.currentUser?.id;
+    if (_claimBusy ||
+        !_availabilityVerified ||
+        _refreshing ||
+        _availabilityExitScheduled) {
+      return;
+    }
+    final userId = _identity;
     if (userId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Sign in with an NGO account to claim.')),
@@ -1681,10 +1762,13 @@ class _NgoListingDetailsPageState extends State<NgoListingDetailsPage> {
         newRequest: () => const Uuid().v4(),
         send: (id) async {
           request = id;
-          if (_db.auth.currentUser?.id != userId) {
+          if (_identity != userId) {
             throw StateError('Your sign-in changed. No claim was sent.');
           }
           rpcStarted = true;
+          if (widget.claimSender != null) {
+            return widget.claimSender!(listingId, id);
+          }
           return _db.rpc(
             'claim_listing',
             params: {'p_listing': listingId, 'p_request': id},
@@ -1698,13 +1782,16 @@ class _NgoListingDetailsPageState extends State<NgoListingDetailsPage> {
       }
       result = Map<String, dynamic>.from(response);
     } catch (error) {
+      if (kDebugMode) {
+        debugPrint('Claim transport/preparation error: ${error.runtimeType}');
+      }
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
               rpcStarted
-                  ? 'Claim outcome is unconfirmed. Retry this same attempt; it will reuse request ID ${request ?? 'saved for this listing'}. Error: $error'
-                  : 'The claim could not be prepared safely, so no claim request was sent. Error: $error',
+                  ? 'Claim outcome is unconfirmed. Retry this same attempt; your saved request will be reused.'
+                  : 'The claim could not be prepared safely. No claim request was sent. Please try again.',
             ),
             duration: const Duration(seconds: 8),
           ),
@@ -1738,7 +1825,7 @@ class _NgoListingDetailsPageState extends State<NgoListingDetailsPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              'Claim outcome is unconfirmed. Retry this same attempt; it will reuse request ID $request.',
+              'Claim outcome is unconfirmed. Retry this same attempt; your saved request will be reused.',
             ),
             duration: const Duration(seconds: 8),
           ),
@@ -1749,15 +1836,40 @@ class _NgoListingDetailsPageState extends State<NgoListingDetailsPage> {
 
     // The database returned a complete terminal result. Removing the stored
     // key is best-effort; if it fails, replaying it remains idempotent.
+    if (!confirmedSuccess && mounted) {
+      setState(() {
+        _availabilityVerified = false;
+        _conflict = true;
+      });
+    }
     try {
       await prefs.remove('geolock_claim_request_${userId}_$listingId');
     } catch (_) {}
     if (!mounted) return;
     if (!confirmedSuccess) {
-      setState(() => _claimBusy = false);
+      if (kDebugMode) {
+        debugPrint('Claim rejected: $outcome / $reason / $request');
+      }
+      if (outcome == 'CONFLICT' &&
+          const {
+            'CLAIM_CONFLICT',
+            'LISTING_EXPIRED',
+            'LISTING_NOT_FOUND',
+          }.contains(reason) &&
+          _leaveUnavailableListing()) {
+        return;
+      }
+      setState(() {
+        _claimBusy = false;
+        _availabilityVerified = false;
+        _conflict = true;
+      });
+      _refreshAvailability();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Claim not accepted: ${roadOutcomeMessage(reason)}'),
+          content: Text(
+            'Donation availability changed. This donation is no longer available to claim. Please refresh the donation list.',
+          ),
         ),
       );
       return;
@@ -1777,13 +1889,43 @@ class _NgoListingDetailsPageState extends State<NgoListingDetailsPage> {
         ),
       ),
     );
+    if (widget.onSuccess != null) {
+      setState(() {
+        _claimBusy = false;
+        _availabilityVerified = false;
+      });
+      widget.onSuccess!();
+      return;
+    }
     Navigator.of(
       context,
     ).pushReplacement(MaterialPageRoute(builder: (_) => const MyClaimsPage()));
   }
 
   Future<Map<String, dynamic>> _load() async {
-    final row = widget.listing;
+    final response = widget.listingsLoader != null
+        ? await widget.listingsLoader!()
+        : await _db.rpc('discover_eligible_listing_cards');
+    if (response is! List) {
+      throw const FormatException('Invalid discovery response');
+    }
+    final matches = response.whereType<Map>().where(
+      (row) => row['listing_id'] == widget.listing['listing_id'],
+    );
+    if (matches.length > 1 ||
+        response.any((row) => row is! Map || row['listing_id'] == null)) {
+      throw const FormatException('Ambiguous discovery response');
+    }
+    if (matches.isEmpty) {
+      return {
+        'images': <Map<String, dynamic>>[],
+        'constituents': <Map<String, dynamic>>[],
+        'listing_discovered_available': false,
+      };
+    }
+    _currentListing = Map<String, dynamic>.from(matches.single);
+    if (widget.detailsLoader != null) return widget.detailsLoader!();
+    final row = _currentListing;
     final isBatch = row['source_type'] == 'HUB_BATCH';
     // This protected read revalidates availability and exact road eligibility
     // before details or any image references are shown, for either source type.
@@ -1844,9 +1986,15 @@ class _NgoListingDetailsPageState extends State<NgoListingDetailsPage> {
             final routeReady =
                 routeSnapshot.connectionState == ConnectionState.done &&
                 routeSnapshot.data == true &&
-                widget.listing['routing_status'] == 'READY';
+                _currentListing['routing_status'] == 'READY';
             return FilledButton.icon(
-              onPressed: detailSnapshot.hasData && routeReady && !_claimBusy
+              onPressed:
+                  detailSnapshot.connectionState == ConnectionState.done &&
+                      detailSnapshot.hasData &&
+                      routeReady &&
+                      !_claimBusy &&
+                      _availabilityVerified &&
+                      !_refreshing
                   ? _claim
                   : null,
               icon: _claimBusy
@@ -1879,10 +2027,15 @@ class _NgoListingDetailsPageState extends State<NgoListingDetailsPage> {
           return const Center(child: CircularProgressIndicator());
         }
         final data = snapshot.data!;
-        final images = (data['images'] as List).cast<Map<String, dynamic>>();
-        final constituents = (data['constituents'] as List)
-            .cast<Map<String, dynamic>>();
-        final cover = widget.listing['primary_image_path']?.toString();
+        final images = _availabilityVerified
+            ? (data['images'] as List).cast<Map<String, dynamic>>()
+            : <Map<String, dynamic>>[];
+        final constituents = _availabilityVerified
+            ? (data['constituents'] as List).cast<Map<String, dynamic>>()
+            : <Map<String, dynamic>>[];
+        final cover = _availabilityVerified
+            ? _currentListing['primary_image_path']?.toString()
+            : null;
         final imagePaths = images
             .map((image) => image['storage_path']?.toString() ?? '')
             .where((path) => path.isNotEmpty)
@@ -1896,6 +2049,21 @@ class _NgoListingDetailsPageState extends State<NgoListingDetailsPage> {
         return ListView(
           padding: const EdgeInsets.all(16),
           children: [
+            if (_conflict ||
+                (!_availabilityVerified &&
+                    !_verificationFailed &&
+                    !_refreshing)) ...[
+              const Text(
+                'Donation availability changed',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const Text(
+                'This donation is no longer available to claim. Please refresh the donation list.',
+              ),
+            ],
+            if (_refreshing) const Text('Checking availability…'),
+            if (_verificationFailed)
+              const Text('Unable to verify availability'),
             Text(
               widget.listing['title']?.toString() ?? 'Community Hub Batch',
               style: Theme.of(context).textTheme.headlineSmall,
@@ -1914,8 +2082,14 @@ class _NgoListingDetailsPageState extends State<NgoListingDetailsPage> {
               child: ListTile(
                 leading: const Icon(Icons.check_circle_outline),
                 title: const Text('Listing availability'),
-                subtitle: const Text(
-                  'Eligible in the latest discovery response. Availability and claim eligibility are rechecked by the database when you claim.',
+                subtitle: Text(
+                  _verificationFailed
+                      ? 'Unable to verify availability'
+                      : _refreshing
+                      ? 'Checking availability…'
+                      : !_availabilityVerified
+                      ? 'Unavailable for your account in the latest authorized discovery response.'
+                      : 'Eligible in the latest discovery response. Availability and claim eligibility are rechecked by the database when you claim.',
                 ),
               ),
             ),
@@ -1923,8 +2097,16 @@ class _NgoListingDetailsPageState extends State<NgoListingDetailsPage> {
               title: widget.listing['source_type'] == 'HUB_BATCH'
                   ? 'Batch Progress'
                   : 'Donation Progress',
-              currentStatus: friendlyWorkflowStatus(data['progress_status']),
-              pendingMilestones: data['progress_status'] == 'AVAILABLE'
+              currentStatus: !_availabilityVerified
+                  ? (_verificationFailed
+                        ? 'Unable to verify availability'
+                        : _refreshing
+                        ? 'Checking availability'
+                        : 'Unavailable to claim')
+                  : friendlyWorkflowStatus(data['progress_status']),
+              pendingMilestones:
+                  _availabilityVerified &&
+                      data['progress_status'] == 'AVAILABLE'
                   ? pendingDonationMilestones(
                       collectionPath: 'DIRECT_PICKUP',
                       currentStatus: 'AVAILABLE',
@@ -1971,9 +2153,6 @@ class _NgoListingDetailsPageState extends State<NgoListingDetailsPage> {
                 ),
             ],
             const SizedBox(height: 8),
-            const Text(
-              'Item-level names and quantities are not included in the current authorized listing-detail response.',
-            ),
           ],
         );
       },
@@ -1981,9 +2160,29 @@ class _NgoListingDetailsPageState extends State<NgoListingDetailsPage> {
   );
 }
 
+String _claimPhotoReadError(Object error) {
+  final denied =
+      (error is StorageException &&
+          const {'401', '403'}.contains(error.statusCode)) ||
+      (error is PostgrestException &&
+          const {'42501', 'PGRST301'}.contains(error.code)) ||
+      (error is NetworkImageLoadException &&
+          const {401, 403}.contains(error.statusCode));
+  return denied
+      ? 'Donation photos are inaccessible with your current permissions.'
+      : 'Donation photos could not be loaded. Check your connection and refresh.';
+}
+
 class ClaimPickupDetailPage extends StatefulWidget {
   final String claimId;
-  const ClaimPickupDetailPage({super.key, required this.claimId});
+  final ClaimPickupDetailReader? reader;
+  final Future<String> Function(String path)? photoUrlResolver;
+  const ClaimPickupDetailPage({
+    super.key,
+    required this.claimId,
+    this.reader,
+    this.photoUrlResolver,
+  });
 
   @override
   State<ClaimPickupDetailPage> createState() => _ClaimPickupDetailPageState();
@@ -1996,14 +2195,18 @@ class _ClaimPickupDetailPageState extends State<ClaimPickupDetailPage>
   Timer? _leaseRefresh;
   int _generation = 0;
   StreamSubscription<AuthState>? _authSubscription;
+  ClaimPickupDetailReader get _reader =>
+      widget.reader ?? SupabaseClaimPickupDetailReader(_db);
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    _authSubscription = _db.auth.onAuthStateChange.listen(
-      (_) => _refreshDetail(),
-    );
+    if (widget.reader == null) {
+      _authSubscription = _db.auth.onAuthStateChange.listen(
+        (_) => _refreshDetail(),
+      );
+    }
   }
 
   void _refreshDetail() {
@@ -2028,56 +2231,155 @@ class _ClaimPickupDetailPageState extends State<ClaimPickupDetailPage>
 
   Future<Map<String, dynamic>> _load() async {
     final generation = ++_generation;
-    final userId = _db.auth.currentUser?.id;
+    final userId = _reader.identity;
     final elapsed = Stopwatch()..start();
-    final response = await _db.rpc(
-      'get_claimed_listing_detail',
-      params: {'p_claim': widget.claimId},
-    );
-    if (response is! Map) {
-      throw const FormatException('Invalid claim detail response.');
+    final cards = await _reader.rpc('get_my_claim_cards_v2');
+    if (cards is! List || cards.any((row) => row is! Map)) {
+      throw const FormatException('Invalid claim history response.');
     }
-    final result = Map<String, dynamic>.from(response);
-    final constituents = await _db.rpc(
-      'get_claimed_listing_constituents',
-      params: {'p_claim': widget.claimId},
+    Map<String, dynamic>? claimCard;
+    for (final row in cards) {
+      final card = Map<String, dynamic>.from(row as Map);
+      if (card['claim_id']?.toString() == widget.claimId) {
+        claimCard = card;
+        break;
+      }
+    }
+    if (claimCard == null) {
+      throw StateError('Claim details could not be verified for this account.');
+    }
+    final claimStatus = claimCard['claim_status']?.toString();
+    final leaseStatus = claimCard['lease_status']?.toString();
+    final cardExpiry = DateTime.tryParse(
+      claimCard['lease_expires_at']?.toString() ?? '',
     );
-    result['constituents'] = constituents is List
-        ? constituents
-              .map((row) => Map<String, dynamic>.from(row as Map))
-              .toList()
-        : <Map<String, dynamic>>[];
+    final cardServerNow = DateTime.tryParse(
+      claimCard['server_now']?.toString() ?? '',
+    );
+    final leaseExpired = claimCard['lease_is_expired'] is bool
+        ? claimCard['lease_is_expired'] as bool
+        : cardExpiry != null &&
+              cardServerNow != null &&
+              !cardExpiry.isAfter(cardServerNow);
+    final historicalOnly =
+        const {
+          'RELEASED',
+          'EXPIRED',
+          'COMPLETED',
+          'CANCELLED',
+        }.contains(claimStatus) ||
+        (claimStatus == 'ACTIVE' && (leaseStatus != 'ACTIVE' || leaseExpired));
+
+    late final Map<String, dynamic> result;
+    if (historicalOnly) {
+      try {
+        final response = await _reader.rpc(
+          'get_my_historical_claim_detail',
+          params: {'p_claim': widget.claimId},
+        );
+        if (response is! Map || response['read_only'] != true) {
+          throw const FormatException('Invalid historical claim response.');
+        }
+        result = Map<String, dynamic>.from(response);
+        final historicalConstituents = response['constituents'];
+        final validConstituents =
+            historicalConstituents is List &&
+            historicalConstituents.every((row) => row is Map);
+        result['constituents'] = validConstituents
+            ? historicalConstituents
+                  .map((row) => Map<String, dynamic>.from(row as Map))
+                  .toList()
+            : <Map<String, dynamic>>[];
+        result['constituents_available'] =
+            validConstituents && historicalConstituents.isNotEmpty;
+      } on PostgrestException catch (error) {
+        // During rollout, the legacy detail RPC is deliberately not called:
+        // it returns private donor location for closed claims. The claim card
+        // remains useful, and this state makes missing history explicit.
+        if (error.code != 'PGRST202') rethrow;
+        result = <String, dynamic>{
+          'claim_id': widget.claimId,
+          'claim_status': claimStatus,
+          'claim_created_at': claimCard['claimed_at'],
+          'claim_close_reason': claimCard['close_reason'],
+          'claim_closed_at': claimCard['closed_at'],
+          'listing_id': claimCard['listing_id'],
+          'listing_weight_kg': claimCard['listing_weight_kg'],
+          'lease_status': leaseStatus,
+          'lease_expires_at': claimCard['lease_expires_at'],
+          'source_type': claimCard['source_type'],
+          'task_status': claimCard['task_status'],
+          'constituents': <Map<String, dynamic>>[],
+          'constituents_available': false,
+          'history_reader_unavailable': true,
+        };
+      }
+    } else {
+      final response = await _reader.rpc(
+        'get_claimed_listing_detail',
+        params: {'p_claim': widget.claimId},
+      );
+      if (response is! Map) {
+        throw const FormatException('Invalid claim detail response.');
+      }
+      result = Map<String, dynamic>.from(response);
+      final constituents = await _reader.rpc(
+        'get_claimed_listing_constituents',
+        params: {'p_claim': widget.claimId},
+      );
+      if (constituents is! List || constituents.any((row) => row is! Map)) {
+        throw const FormatException('Invalid claim constituents response.');
+      }
+      result['constituents'] = constituents
+          .map((row) => Map<String, dynamic>.from(row as Map))
+          .toList();
+      result['constituents_available'] = true;
+      // Claim detail returns donation_ids rather than a singular donation_id.
+      // Use the claim-authorized constituents before requesting photo metadata.
+      final donationIds = (result['constituents'] as List)
+          .map((row) => row['donation_id']?.toString())
+          .whereType<String>()
+          .where((id) => id.isNotEmpty)
+          .toSet();
+      final images = <Map<String, dynamic>>[];
+      for (final donationId in donationIds) {
+        try {
+          final photos = await _reader.rpc(
+            'get_donation_images',
+            params: {'p_donation': donationId},
+          );
+          if (photos is! List || photos.any((row) => row is! Map)) {
+            throw const FormatException('Invalid photo metadata');
+          }
+          images.addAll(
+            photos.map((row) => Map<String, dynamic>.from(row as Map)),
+          );
+        } catch (error) {
+          // Optional media must never hide claim details or custody actions.
+          result['photo_error'] = _claimPhotoReadError(error);
+        }
+      }
+      result['donation_images'] = images;
+    }
+    result['claim_card'] = claimCard;
+    result['presentation'] = ClaimCard.fromJson(claimCard);
+    result['constituents'] ??= <Map<String, dynamic>>[];
+    result['constituents_available'] ??= true;
     if (result['source_type'] == 'DIRECT_DONATION' &&
         result['donation_id'] == null &&
         (result['constituents'] as List).isNotEmpty) {
       result['donation_id'] =
           (result['constituents'] as List).first['donation_id'];
     }
-    if (result['source_type'] == 'DIRECT_DONATION' &&
-        result['donation_id'] != null) {
-      final photos = await _db.rpc(
-        'get_donation_images',
-        params: {'p_donation': result['donation_id']},
-      );
-      result['donation_images'] = photos is List
-          ? photos.map((row) => Map<String, dynamic>.from(row as Map)).toList()
-          : <Map<String, dynamic>>[];
-    }
-    final cards = await _db.rpc('get_my_claim_cards_v2');
-    if (cards is List) {
-      for (final row in cards) {
-        final card = Map<String, dynamic>.from(row as Map);
-        if (card['claim_id']?.toString() == widget.claimId) {
-          result['claim_card'] = card;
-          result['presentation'] = ClaimCard.fromJson(card);
-          break;
-        }
-      }
+    if (historicalOnly && result['source_type'] == 'DIRECT_DONATION') {
+      result['pickup_address'] = null;
+      result['latitude'] = null;
+      result['longitude'] = null;
     }
     var auditRows = <Map<String, dynamic>>[];
     String? auditError;
     try {
-      final audit = await _db.rpc(
+      final audit = await _reader.rpc(
         'get_authorized_audit_events',
         params: {'p_entity_type': 'CLAIM', 'p_entity_id': widget.claimId},
       );
@@ -2093,7 +2395,7 @@ class _ClaimPickupDetailPageState extends State<ClaimPickupDetailPage>
     }
     result['audit_events'] = auditRows;
     result['audit_error'] = auditError;
-    if (userId != _db.auth.currentUser?.id) {
+    if (userId != _reader.identity) {
       throw StateError('Account changed. Refresh details.');
     }
     final presentation = result['presentation'] as ClaimCard?;
@@ -2113,30 +2415,49 @@ class _ClaimPickupDetailPageState extends State<ClaimPickupDetailPage>
   }
 
   Future<void> _submitReconciliation(bool handoverConfirmed) async {
-    final choice = handoverConfirmed ? 'yes' : 'no';
-    final prefs = await SharedPreferences.getInstance();
-    final key =
-        'geolock_reconcile_${_db.auth.currentUser?.id}_${widget.claimId}_$choice';
-    final requestId = prefs.getString(key) ?? const Uuid().v4();
-    await prefs.setString(key, requestId);
+    if (_reconciliationBusy) return;
     setState(() => _reconciliationBusy = true);
+    String? requestId;
     try {
-      final response = await _db.rpc(
-        'submit_claim_reconciliation',
-        params: {
-          'p_claim': widget.claimId,
-          'p_handover_confirmed': handoverConfirmed,
-          'p_request': requestId,
-        },
-      );
-      if (response is! Map) {
-        throw const FormatException('Reconciliation outcome missing.');
+      final choice = handoverConfirmed ? 'yes' : 'no';
+      final prefs = await SharedPreferences.getInstance();
+      final key =
+          'geolock_reconcile_${_db.auth.currentUser?.id}_${widget.claimId}_$choice';
+      final savedRequestId = prefs.getString(key) ?? const Uuid().v4();
+      requestId = savedRequestId;
+      if (!await prefs.setString(key, savedRequestId)) {
+        throw StateError('Unable to preserve request. No statement was sent.');
       }
-      final result = Map<String, dynamic>.from(response);
+      final receipt = await _readClaimReconciliationReceipt(savedRequestId);
+      late final Map<String, dynamic> result;
+      if (receipt != null) {
+        if (receipt['claim_id'] != widget.claimId ||
+            receipt['handover_confirmed'] != handoverConfirmed) {
+          throw StateError(
+            'Saved statement receipt does not match this claim and choice.',
+          );
+        }
+        result = Map<String, dynamic>.from(receipt['result'] as Map);
+      } else {
+        final response = await _db.rpc(
+          'submit_claim_reconciliation',
+          params: {
+            'p_claim': widget.claimId,
+            'p_handover_confirmed': handoverConfirmed,
+            'p_request': savedRequestId,
+          },
+        );
+        if (response is! Map) {
+          throw const FormatException('Reconciliation outcome missing.');
+        }
+        result = Map<String, dynamic>.from(response);
+      }
       if (result['outcome'] == null) {
         throw const FormatException('Reconciliation outcome is missing.');
       }
-      await prefs.remove(key);
+      if (!await prefs.remove(key)) {
+        throw StateError('Confirmed outcome could not be archived locally.');
+      }
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -2150,7 +2471,7 @@ class _ClaimPickupDetailPageState extends State<ClaimPickupDetailPage>
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              'Reconciliation was not confirmed; retry will reuse request $requestId. $error',
+              'Reconciliation was not confirmed; retry will reuse request ${requestId ?? '(not saved)'}. ${claimDetailsErrorMessage(error)}',
             ),
           ),
         );
@@ -2171,7 +2492,21 @@ class _ClaimPickupDetailPageState extends State<ClaimPickupDetailPage>
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return Center(
-            child: Text('Pickup details unavailable: ${snapshot.error}'),
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(claimDetailsErrorMessage(snapshot.error!)),
+                  const SizedBox(height: 12),
+                  OutlinedButton.icon(
+                    onPressed: _refreshDetail,
+                    icon: const Icon(Icons.refresh),
+                    label: const Text('Retry'),
+                  ),
+                ],
+              ),
+            ),
           );
         }
         if (snapshot.connectionState != ConnectionState.done ||
@@ -2209,9 +2544,18 @@ class _ClaimPickupDetailPageState extends State<ClaimPickupDetailPage>
         final taskStatus = card?['task_status']?.toString();
         final presentation = data['presentation'] as ClaimCard?;
         final isReconciliationRequired =
-            presentation?.displayStatus == ClaimDisplayStatus.reconciliation &&
-            (claimStatus == 'RECONCILIATION_REQUIRED' ||
-                leaseStatus == 'RECONCILIATION_REQUIRED');
+            claimStatus == 'RECONCILIATION_REQUIRED' &&
+            presentation?.displayStatus == ClaimDisplayStatus.reconciliation;
+        final isHistoricalReadOnly =
+            const {
+              'RELEASED',
+              'EXPIRED',
+              'COMPLETED',
+              'CANCELLED',
+            }.contains(claimStatus) ||
+            (claimStatus == 'ACTIVE' && presentation?.isValidActive != true);
+        final privateDonorLocationAllowed =
+            claimStatus == 'ACTIVE' && presentation?.isValidActive == true;
         return ListView(
           padding: const EdgeInsets.all(16),
           children: [
@@ -2225,7 +2569,88 @@ class _ClaimPickupDetailPageState extends State<ClaimPickupDetailPage>
               style: Theme.of(context).textTheme.titleMedium,
             ),
             Chip(label: Text(presentation?.badge ?? 'Status Needs Review')),
+            if (claimStatus == 'RECONCILIATION_REQUIRED' &&
+                widget.reader == null)
+              ClaimCoordinationPanel(
+                claimId: widget.claimId,
+                onChanged: () async {
+                  _refreshDetail();
+                  await _detail;
+                },
+              ),
             _claimDetailRow('Claim', friendlyWorkflowStatus(claimStatus)),
+            if (isHistoricalReadOnly) ...[
+              const Card(
+                child: ListTile(
+                  leading: Icon(Icons.history),
+                  title: Text('Historical claim — read only'),
+                  subtitle: Text(
+                    'This claim is historical or its lease is no longer active. No pickup or claim actions are available.',
+                  ),
+                ),
+              ),
+              if (data['claim_close_reason'] != null)
+                _claimDetailRow(
+                  'Historical outcome',
+                  _historicalClaimOutcome(data['claim_close_reason']),
+                ),
+              if (claimStatus == 'ACTIVE' &&
+                  (presentation?.isValidActive != true) &&
+                  data['claim_close_reason'] == null)
+                const ListTile(
+                  leading: Icon(Icons.hourglass_bottom),
+                  title: Text('Lease elapsed; recovery is database controlled'),
+                  subtitle: Text(
+                    'The claim remains historical for location access until the protected recovery workflow updates it.',
+                  ),
+                ),
+              if (claimStatus == 'EXPIRED' &&
+                  data['claim_close_reason'] == null)
+                _claimDetailRow('Historical outcome', 'Lease expired'),
+              if (data['claim_closed_at'] != null)
+                _claimDetailRow(
+                  'Claim closed',
+                  statusTimestampText(context, data['claim_closed_at']) ?? '—',
+                ),
+              if (data['lease_issued_at'] != null)
+                _claimDetailRow(
+                  'Lease issued',
+                  statusTimestampText(context, data['lease_issued_at']) ?? '—',
+                ),
+              if (data['lease_release_reason'] != null)
+                _claimDetailRow(
+                  'Lease release reason',
+                  friendlyWorkflowStatus(data['lease_release_reason']),
+                ),
+              if (data['reconciliation'] is Map)
+                _claimDetailRow(
+                  'Reconciliation outcome',
+                  '${friendlyWorkflowStatus((data['reconciliation'] as Map)['case_status'])}${(data['reconciliation'] as Map)['resolution_reason'] == null ? '' : ' · ${friendlyWorkflowStatus((data['reconciliation'] as Map)['resolution_reason'])}'}',
+                ),
+              if (data['history_reader_unavailable'] == true)
+                const Card(
+                  child: ListTile(
+                    leading: Icon(Icons.info_outline),
+                    title: Text('Historical details temporarily unavailable'),
+                    subtitle: Text(
+                      'The claim is in your history, but the secure history reader is not deployed yet. No pickup location is shown.',
+                    ),
+                  ),
+                ),
+              if (data['constituents_available'] == false &&
+                  data['history_reader_unavailable'] != true)
+                const Card(
+                  child: ListTile(
+                    leading: Icon(Icons.info_outline),
+                    title: Text(
+                      'Historical item details unavailable or not recorded',
+                    ),
+                    subtitle: Text(
+                      'The claim status is confirmed, but this response has no complete donation or batch contents. Retry later or contact support if the record should contain item details.',
+                    ),
+                  ),
+                ),
+            ],
             _claimDetailRow(
               'Listing availability',
               friendlyWorkflowStatus(data['listing_status']),
@@ -2251,7 +2676,7 @@ class _ClaimPickupDetailPageState extends State<ClaimPickupDetailPage>
               style: Theme.of(context).textTheme.titleMedium,
             ),
             _claimDetailRow('Pickup task', friendlyWorkflowStatus(taskStatus)),
-            if (isReconciliationRequired)
+            if (isReconciliationRequired && widget.reader != null)
               Card(
                 color: const Color(0xfffff0e8),
                 child: Padding(
@@ -2301,36 +2726,57 @@ class _ClaimPickupDetailPageState extends State<ClaimPickupDetailPage>
               errorMessage: data['audit_error']?.toString(),
               emptyMessage: 'No recorded claim or pickup events are available.',
             ),
-            _claimDetailRow('Pickup address', data['pickup_address']),
-            _claimDetailRow(
-              'Validated pickup coordinate',
-              '${data['latitude']}, ${data['longitude']}',
-            ),
+            if (data['source_type'] == 'DIRECT_DONATION' &&
+                !privateDonorLocationAllowed)
+              const ListTile(
+                leading: Icon(Icons.location_off_outlined),
+                title: Text('Private donor pickup location hidden'),
+                subtitle: Text(
+                  'A valid active claim lease is required to view the donor address, coordinates, or navigation.',
+                ),
+              )
+            else ...[
+              _claimDetailRow('Pickup address', data['pickup_address']),
+              if (data['latitude'] != null && data['longitude'] != null)
+                _claimDetailRow(
+                  'Validated pickup coordinate',
+                  '${data['latitude']}, ${data['longitude']}',
+                ),
+            ],
             _claimDetailRow('Weight', '${data['listing_weight_kg']} kg'),
+            if (data['photo_error'] != null)
+              Text(data['photo_error'].toString()),
+            DonationPhotoCarousel(
+              paths: {
+                for (final donation in constituents) ...[
+                  if (donation['batch_cover_path'] is String)
+                    donation['batch_cover_path'] as String,
+                  if (donation['primary_image_path'] is String)
+                    donation['primary_image_path'] as String,
+                ],
+                for (final image
+                    in (data['donation_images'] as List? ?? const []))
+                  if (image['storage_path'] is String)
+                    image['storage_path'] as String,
+              }.where((path) => path.isNotEmpty).toList(),
+              urlResolver: widget.photoUrlResolver,
+              showLoadErrors: true,
+              emptyMessage: data['photo_error'] == null
+                  ? 'No donation photos available to your account'
+                  : 'Donation photos could not be loaded',
+            ),
             if (data['source_type'] == 'HUB_BATCH') ...[
               const Divider(),
               const Text('Whole donations in this batch'),
-              DonationPhotoCarousel(
-                paths:
-                    constituents.isEmpty ||
-                        constituents.first['batch_cover_path'] == null
-                    ? (constituents.isEmpty ||
-                              constituents.first['primary_image_path'] == null
-                          ? const []
-                          : [
-                              constituents.first['primary_image_path']
-                                  .toString(),
-                            ])
-                    : [constituents.first['batch_cover_path'].toString()],
-              ),
               ...constituents.map(
                 (donation) => ListTile(
                   leading: _StoredImageThumbnail(
                     path: donation['primary_image_path']?.toString(),
+                    urlResolver: widget.photoUrlResolver,
                   ),
                   title: Text(donation['title'].toString()),
                   subtitle: Text(
-                    '${donation['weight_kg']} kg · ${friendlyWorkflowStatus(donation['donation_status'])}',
+                    '${donation['total_weight_kg'] ?? donation['weight_kg'] ?? '—'} kg · ${friendlyWorkflowStatus(donation['donation_status'])}',
                   ),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () => Navigator.push(
@@ -2344,16 +2790,8 @@ class _ClaimPickupDetailPageState extends State<ClaimPickupDetailPage>
                   ),
                 ),
               ),
-            ] else if (constituents.isNotEmpty)
-              DonationPhotoCarousel(
-                paths: [
-                  for (final image
-                      in (data['donation_images'] as List? ?? const []))
-                    if ((image as Map)['storage_path'] != null)
-                      image['storage_path'].toString(),
-                ],
-              ),
-            for (final donation in constituents)
+            ],
+            for (final donation in constituents) ...[
               GeoStatusTimeline(
                 title: 'Donation Progress · ${donation['title'] ?? 'Donation'}',
                 currentStatus: friendlyWorkflowStatus(
@@ -2368,6 +2806,23 @@ class _ClaimPickupDetailPageState extends State<ClaimPickupDetailPage>
                 emptyMessage:
                     'No earlier donation events are available in this claim read.',
               ),
+              if (isHistoricalReadOnly && donation['items'] is List)
+                if ((donation['items'] as List).whereType<Map>().isEmpty)
+                  const ListTile(
+                    dense: true,
+                    title: Text('No item-level details were recorded'),
+                  )
+                else
+                  for (final item
+                      in (donation['items'] as List).whereType<Map>())
+                    ListTile(
+                      dense: true,
+                      title: Text(item['item_name']?.toString() ?? 'Item'),
+                      subtitle: Text(
+                        '${item['category_name'] ?? 'Category unavailable'} · ${item['quantity'] ?? '—'} ${item['unit_label'] ?? ''} · ${item['unit_weight_kg'] ?? '—'} kg each',
+                      ),
+                    ),
+            ],
             const Text(
               'Exact pickup details are shown only after this NGO has a claim for the listing.',
             ),
@@ -3209,6 +3664,8 @@ class DonationResultDialog extends StatelessWidget {
 
 class DonationDetailPage extends StatefulWidget {
   final String donationId;
+  final Future<Map<String, dynamic>> Function()? detailLoader;
+  final RouteResolutionRepository? outcomeRepository;
 
   /// Opens the hub chooser once the page appears (after a new hub donation).
   final bool openHubSelection;
@@ -3216,6 +3673,8 @@ class DonationDetailPage extends StatefulWidget {
     super.key,
     required this.donationId,
     this.openHubSelection = false,
+    this.detailLoader,
+    this.outcomeRepository,
   });
   @override
   State<DonationDetailPage> createState() => _DonationDetailPageState();
@@ -3225,6 +3684,16 @@ class _DonationDetailPageState extends State<DonationDetailPage> {
   late Future<Map<String, dynamic>> _detail = _load();
   bool _busy = false;
   String _cancelRequestId = const Uuid().v4();
+
+  Future<void> _refreshAfterConfirmedDonationAction() async {
+    final next = _load();
+    if (mounted) {
+      setState(() {
+        _detail = next;
+      });
+    }
+    await next;
+  }
 
   @override
   void initState() {
@@ -3237,6 +3706,7 @@ class _DonationDetailPageState extends State<DonationDetailPage> {
   }
 
   Future<Map<String, dynamic>> _load() async {
+    if (widget.detailLoader != null) return widget.detailLoader!();
     final response = await _db.rpc(
       'get_my_donation_detail',
       params: {'p_donation': widget.donationId},
@@ -3631,6 +4101,18 @@ class _DonationDetailPageState extends State<DonationDetailPage> {
                           ),
                         ],
                       ),
+                      if (d['collection_path'] == 'DIRECT_PICKUP')
+                        if (widget.outcomeRepository != null)
+                          DonorPickupOutcomeNotice(
+                            donationId: widget.donationId,
+                            repository: widget.outcomeRepository,
+                            onConfirmed: _refreshAfterConfirmedDonationAction,
+                          )
+                        else
+                          ClaimCoordinationPanel(
+                            donationId: widget.donationId,
+                            onChanged: _refreshAfterConfirmedDonationAction,
+                          ),
                       if (d['pickup_address']?.toString().isNotEmpty == true)
                         Padding(
                           padding: const EdgeInsets.only(top: 14),
@@ -3746,6 +4228,472 @@ Color _donorStatusColor(String? status) => switch (status) {
   'HUB_ASSIGNED' || 'AT_HUB' || 'BATCHED' => const Color(0xff89651b),
   _ => const Color(0xff287764),
 };
+
+/// All evidence targets come from the donor-scoped protected reader.
+class DonorPickupOutcomeNotice extends StatefulWidget {
+  const DonorPickupOutcomeNotice({
+    super.key,
+    this.donationId,
+    this.repository,
+    this.onConfirmed,
+  });
+  final String? donationId;
+  final RouteResolutionRepository? repository;
+
+  /// Runs only after the protected reconciliation RPC returns a receipt.
+  /// The parent reloads the donation through its protected detail reader.
+  final Future<void> Function()? onConfirmed;
+  @override
+  State<DonorPickupOutcomeNotice> createState() =>
+      _DonorPickupOutcomeNoticeState();
+}
+
+class _DonorPickupOutcomeNoticeState extends State<DonorPickupOutcomeNotice> {
+  RouteResolutionRepository? _repo;
+  late Future<Map<String, dynamic>> _value = _load();
+  bool _claimSending = false;
+  bool _claimConfirming = false;
+  String? _claimError;
+  String? _claimNotice;
+
+  @override
+  void didUpdateWidget(covariant DonorPickupOutcomeNotice oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.donationId != widget.donationId ||
+        oldWidget.repository != widget.repository) {
+      _repo = widget.repository;
+      _value = _load();
+    }
+  }
+
+  Future<Map<String, dynamic>> _load() async {
+    if (widget.donationId == null) {
+      return {'enabled': false, 'contexts': <dynamic>[]};
+    }
+    final repo = _repo ??=
+        widget.repository ?? RouteResolutionRepository.live();
+    final viewer = repo.identity;
+    final value = await repo.donorContext(widget.donationId!);
+    final active = actionableDonorContext(value);
+    final pending =
+        active != null &&
+        (await repo.pending(active['route_id'] as String)).isNotEmpty;
+    Map<String, dynamic>? claimContext;
+    Map<String, dynamic>? savedClaim;
+    Object? claimReadError;
+    try {
+      claimContext = await repo.donorClaimContext(widget.donationId!);
+      savedClaim = await repo.reconcileDonorClaimRequest(widget.donationId!);
+    } catch (error) {
+      claimReadError = error;
+    }
+    if (repo.identity != viewer) throw StateError('Account changed.');
+    return {
+      ...value,
+      'pending': pending,
+      'viewer': viewer,
+      'claim_context': claimContext,
+      'saved_claim': savedClaim,
+      'claim_read_error': claimReadError,
+    };
+  }
+
+  Future<void> _submitClaim(Map<String, dynamic> row, String assertion) async {
+    final repo = _repo;
+    final donation = widget.donationId;
+    if (repo == null || donation == null || _claimSending || _claimConfirming) {
+      return;
+    }
+    setState(() {
+      _claimConfirming = true;
+      _claimError = null;
+      _claimNotice = null;
+    });
+    final label = assertion == 'COLLECTED'
+        ? 'Collected — Goods were handed over to the NGO.'
+        : 'Not Collected — Goods remain with you.';
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Confirm your statement'),
+        content: Text('For ${row['title'] ?? 'this donation'}: $label'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: const Text('Go back'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: const Text('Submit statement'),
+          ),
+        ],
+      ),
+    );
+    if (!mounted) return;
+    setState(() => _claimConfirming = false);
+    if (confirmed != true) return;
+    setState(() {
+      _claimSending = true;
+      _claimError = null;
+    });
+    try {
+      final result = await repo.submitDonorClaimReconciliation(
+        donation,
+        row,
+        assertion,
+      );
+      await widget.onConfirmed?.call();
+      if (mounted) {
+        final message =
+            'Statement recorded: ${result['outcome'] ?? 'awaiting counterpart'}'
+            '${result['reason_code'] is String ? ' — ${result['reason_code']}' : ''}.';
+        setState(() => _claimNotice = message);
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(message)));
+      }
+    } catch (error) {
+      if (mounted) setState(() => _claimError = resolutionError(error));
+    } finally {
+      if (mounted) {
+        _refresh();
+        setState(() => _claimSending = false);
+      }
+    }
+  }
+
+  Future<void> _retryClaim(Map<String, dynamic> saved) async {
+    final repo = _repo;
+    final donation = widget.donationId;
+    final request = saved['request'];
+    if (repo == null ||
+        donation == null ||
+        request is! Map ||
+        _claimSending ||
+        _claimConfirming) {
+      return;
+    }
+    setState(() {
+      _claimSending = true;
+      _claimError = null;
+      _claimNotice = null;
+    });
+    try {
+      final row = actionableDonorClaimContext(
+        await repo.donorClaimContext(donation),
+      );
+      if (row == null) {
+        final receipt = await repo.reconcileDonorClaimRequest(donation);
+        if (receipt?['found'] != true) {
+          throw StateError(
+            'The saved statement is not currently actionable. Request authorized review.',
+          );
+        }
+      } else {
+        final result = await repo.submitDonorClaimReconciliation(
+          donation,
+          row,
+          request['handover_confirmed'] == true ? 'COLLECTED' : 'NOT_COLLECTED',
+        );
+        await widget.onConfirmed?.call();
+        if (mounted) {
+          final message =
+              'Saved statement confirmed: ${result['outcome'] ?? 'recorded'}.';
+          setState(() => _claimNotice = message);
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(message)));
+        }
+      }
+    } catch (error) {
+      if (mounted) setState(() => _claimError = resolutionError(error));
+    } finally {
+      if (mounted) {
+        _refresh();
+        setState(() => _claimSending = false);
+      }
+    }
+  }
+
+  Future<void> _open(Map<String, dynamic> binding, String viewer) async {
+    if (_repo?.identity != viewer) {
+      _refresh();
+      return;
+    }
+    await Navigator.push<void>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => RouteResolutionPage(
+          routeId: binding['route_id'] as String,
+          donorDonationId: widget.donationId!,
+          repository: _repo,
+        ),
+      ),
+    );
+    if (mounted) _refresh();
+  }
+
+  void _refresh() {
+    final next = _load();
+    setState(() {
+      _value = next;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) => FutureBuilder<Map<String, dynamic>>(
+    future: _value,
+    builder: (context, snapshot) {
+      final value = snapshot.data;
+      final active =
+          value == null ||
+              snapshot.connectionState != ConnectionState.done ||
+              snapshot.hasError
+          ? null
+          : actionableDonorContext(value);
+      final claimContext = value?['claim_context'] is Map
+          ? routingObject(value!['claim_context'])
+          : null;
+      final claimRows = routingRows(claimContext?['contexts'] ?? []);
+      final claimHistory = donorClaimHistory(claimContext?['contexts']);
+      final claimAction = claimContext == null
+          ? null
+          : actionableDonorClaimContext(claimContext);
+      final savedClaim = value?['saved_claim'] is Map
+          ? routingObject(value!['saved_claim'])
+          : null;
+      return Card(
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('Pickup outcome confirmation'),
+              if (_claimNotice != null)
+                Semantics(liveRegion: true, child: Text(_claimNotice!)),
+              if (claimAction != null) ...[
+                const Divider(),
+                const Text('Donation-level reconciliation'),
+                Text(
+                  'Donation: ${claimAction['title'] ?? value?['title'] ?? 'Donation'}',
+                ),
+                const Text('Confirm what happened to these goods:'),
+                FilledButton.tonal(
+                  onPressed: _claimSending || _claimConfirming
+                      ? null
+                      : () => _submitClaim(claimAction, 'COLLECTED'),
+                  child: const Text('Collected — Goods handed over to the NGO'),
+                ),
+                OutlinedButton(
+                  onPressed: _claimSending || _claimConfirming
+                      ? null
+                      : () => _submitClaim(claimAction, 'NOT_COLLECTED'),
+                  child: const Text('Not Collected — Goods remain with you'),
+                ),
+                if (_claimSending) const LinearProgressIndicator(),
+              ],
+              if (claimContext?['status'] == 'WAITING_FOR_EXPIRY_RECOVERY' ||
+                  claimRows.any(
+                    (row) =>
+                        row['blocker'] == 'WAITING_FOR_EXPIRY_RECOVERY' ||
+                        row['blocking_reason'] == 'WAITING_FOR_EXPIRY_RECOVERY',
+                  ))
+                const Text(
+                  'This expired claim is waiting for the protected backend expiry recovery process. No custody statement can be submitted until recovery opens an individual reconciliation case.',
+                ),
+              if (claimRows.any(
+                (row) =>
+                    row['case_status'] == 'MANUAL_REVIEW' ||
+                    row['blocking_reason'] == 'MANUAL_REVIEW',
+              ))
+                const Text(
+                  'This donation is under manual review. Submit no replacement statement; an authorized reviewer must resolve it.',
+                ),
+              if (claimHistory.isNotEmpty) ...[
+                const Divider(),
+                if (claimContext?['history_truncated'] == true)
+                  const Text(
+                    'The backend returned a truncated claim history. Not all previous claims may be shown.',
+                  ),
+                if (claimContext?['association_conflict'] == true)
+                  const Text(
+                    'The backend reported conflicting donation-to-claim associations. Review is required before relying on this history.',
+                  ),
+                Text(
+                  'Latest claim outcome',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                _DonorClaimHistoryCard(entry: claimHistory.first),
+                if (claimHistory.length > 1)
+                  ExpansionTile(
+                    key: const Key('donor-claim-history'),
+                    tilePadding: EdgeInsets.zero,
+                    title: Text(
+                      'Claim History (${claimHistory.length - 1} previous)',
+                    ),
+                    children: [
+                      for (final entry in claimHistory.skip(1))
+                        _DonorClaimHistoryCard(entry: entry),
+                    ],
+                  ),
+              ],
+              if (value?['claim_read_error'] != null)
+                const Text(
+                  'Donation-specific reconciliation could not be read. Refresh before submitting.',
+                ),
+              if (savedClaim?['found'] == false)
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'A saved donor statement has no committed receipt yet. Retry submits only that same statement with its original request ID.',
+                    ),
+                    OutlinedButton(
+                      onPressed: _claimSending
+                          ? null
+                          : () => _retryClaim(savedClaim!),
+                      child: const Text('Retry saved statement'),
+                    ),
+                  ],
+                ),
+              if (savedClaim?['found'] == true)
+                Text(
+                  'Saved statement confirmed: ${savedClaim!['result']?['outcome'] ?? 'recorded'}.',
+                ),
+              if (_claimError != null) Text(_claimError!),
+              if (claimAction == null &&
+                  claimContext != null &&
+                  claimRows.isEmpty &&
+                  claimContext['status'] != 'WAITING_FOR_EXPIRY_RECOVERY')
+                const Text(
+                  'No uniquely actionable donor-owned claim reconciliation is available for this donation.',
+                ),
+              if (snapshot.connectionState == ConnectionState.waiting)
+                const LinearProgressIndicator(),
+              if (snapshot.hasError) Text(resolutionError(snapshot.error!)),
+              const Text(
+                'Lease expiry alone does not establish whether goods were handed over. Custody statements are recorded against the individual claim.',
+              ),
+              if (active != null) ...[
+                const Text('Legacy route case'),
+                OutlinedButton(
+                  onPressed: value?['pending'] != true
+                      ? () => _open(active, value!['viewer'] as String)
+                      : null,
+                  child: const Text('Open legacy route case'),
+                ),
+              ],
+              if (value?['enabled'] == false)
+                const Text(
+                  'Reconciliation reporting is disabled or unavailable. Existing holds remain protected.',
+                ),
+              if (value?['history_truncated'] == true ||
+                  value?['association_conflict'] == true)
+                const Text(
+                  'History requires authorized review. No submission is permitted.',
+                ),
+              if (value?['pending'] == true)
+                const Text(
+                  'An earlier submission needs receipt reconciliation. No replacement statement will be sent.',
+                ),
+              if (active != null && value?['pending'] == true)
+                TextButton(
+                  onPressed: () => _open(active, value!['viewer'] as String),
+                  child: const Text('Review saved submission (read only)'),
+                ),
+              for (final row
+                  in (value?['contexts'] as List? ?? const [])
+                      .cast<Map<String, dynamic>>()
+                      .where((row) => row['case_id'] is String)) ...[
+                Text(
+                  'Resolution: ${row['resolution_status'] ?? 'Awaiting NGO interruption report'}',
+                ),
+                Text(
+                  'My statement: ${custodyLabel((row['donor_evidence'] as Map?)?['assertion'])}',
+                ),
+                Text(
+                  'NGO statement: ${custodyLabel((row['ngo_evidence'] as Map?)?['assertion'])}',
+                ),
+                Text(
+                  'Claim reconciliation outcome: ${row['claim_reconciliation_status'] ?? 'Not recorded'}',
+                ),
+                if (row['disposition'] != null)
+                  Text('Recorded disposition: ${row['disposition']}'),
+                if (row['blocking_reason'] != null)
+                  Text('Submission status: ${row['blocking_reason']}'),
+              ],
+              const Text(
+                'Collected: the NGO received the goods from you. Not Collected: the goods remain with you. No answer is preselected. If neither is accurate, do not submit; request authorized review.',
+              ),
+              TextButton(
+                onPressed: _refresh,
+                child: const Text('Refresh pickup outcome'),
+              ),
+            ],
+          ),
+        ),
+      );
+    },
+  );
+}
+
+class _DonorClaimHistoryCard extends StatelessWidget {
+  const _DonorClaimHistoryCard({required this.entry});
+
+  final DonorClaimHistoryEntry entry;
+
+  bool _contradicts(Map<String, dynamic> row) {
+    final donor = (row['donor_evidence'] as Map?)?['handover_confirmed'];
+    final ngo = (row['ngo_evidence'] as Map?)?['handover_confirmed'];
+    return donor is bool && ngo is bool && donor != ngo;
+  }
+
+  @override
+  Widget build(BuildContext context) => Card(
+    key: ValueKey('claim-history-${entry.claimId}'),
+    margin: const EdgeInsets.symmetric(vertical: 4),
+    child: Padding(
+      padding: const EdgeInsets.all(12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Claim outcome: ${donorClaimOutcomeLabel(entry.outcome)}'),
+          if (entry.occurredAt != null)
+            Text('Updated: ${entry.occurredAt!.toUtc().toIso8601String()}'),
+          if (entry.hasConflictingRows)
+            const Text(
+              'Conflicting records were returned for this claim. Review is required; all distinct statements are shown below.',
+            ),
+          for (final row in entry.contexts) ...[
+            if (row['case_status'] == 'OPEN')
+              const Text(
+                'Reconciliation is unresolved. Do not infer a final handover outcome.',
+              ),
+            if (row['case_status'] == 'MANUAL_REVIEW' ||
+                row['blocking_reason'] == 'MANUAL_REVIEW')
+              const Text(
+                'This claim is under manual review. An authorized reviewer must resolve it.',
+              ),
+            if (row['blocking_reason'] == 'DONOR_EVIDENCE_ALREADY_RECORDED')
+              const Text(
+                'Your statement is already recorded for this claim. The NGO still needs to submit its own statement; do not submit another donor statement.',
+              ),
+            if (_contradicts(row))
+              const Text(
+                'The donor and NGO statements conflict. This claim remains visible for authorized review.',
+              ),
+            Text(
+              'Your statement: ${donorCustodyEvidenceLabel((row['donor_evidence'] as Map?)?['handover_confirmed'])}',
+            ),
+            Text(
+              'NGO statement: ${donorCustodyEvidenceLabel((row['ngo_evidence'] as Map?)?['handover_confirmed'])}',
+            ),
+          ],
+        ],
+      ),
+    ),
+  );
+}
 
 class _DonorDetailMessage extends StatelessWidget {
   final IconData icon;
@@ -4298,7 +5246,8 @@ class _DonorDetailActions extends StatelessWidget {
 
 class _StoredImageThumbnail extends StatelessWidget {
   final String? path;
-  const _StoredImageThumbnail({this.path});
+  final Future<String> Function(String path)? urlResolver;
+  const _StoredImageThumbnail({this.path, this.urlResolver});
 
   @override
   Widget build(BuildContext context) {
@@ -4314,9 +5263,11 @@ class _StoredImageThumbnail extends StatelessWidget {
     );
     if (path == null || path!.isEmpty) return placeholder();
     return FutureBuilder<String>(
-      future: _db.storage
-          .from('geolock-donation-images')
-          .createSignedUrl(path!, 900),
+      future:
+          urlResolver?.call(path!) ??
+          _db.storage
+              .from('geolock-donation-images')
+              .createSignedUrl(path!, 900),
       builder: (context, snapshot) {
         if (!snapshot.hasData || snapshot.hasError) return placeholder();
         return ClipRRect(
@@ -4337,10 +5288,14 @@ class _StoredImageThumbnail extends StatelessWidget {
 class DonationPhotoCarousel extends StatefulWidget {
   final List<String> paths;
   final Future<String> Function(String path)? urlResolver;
+  final bool showLoadErrors;
+  final String emptyMessage;
   const DonationPhotoCarousel({
     super.key,
     required this.paths,
     this.urlResolver,
+    this.showLoadErrors = false,
+    this.emptyMessage = 'No donation photos',
   });
 
   @override
@@ -4772,13 +5727,13 @@ class _DonationPhotoCarouselState extends State<DonationPhotoCarousel> {
           color: const Color(0xffe4f2ed),
           borderRadius: BorderRadius.circular(16),
         ),
-        child: const Center(
+        child: Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.volunteer_activism_outlined, size: 42),
-              SizedBox(height: 8),
-              Text('No donation photos'),
+              const Icon(Icons.volunteer_activism_outlined, size: 42),
+              const SizedBox(height: 8),
+              Text(widget.emptyMessage),
             ],
           ),
         ),
@@ -4806,8 +5761,17 @@ class _DonationPhotoCarouselState extends State<DonationPhotoCarousel> {
                         ),
                   ),
                   builder: (context, snapshot) {
-                    if (!snapshot.hasData || snapshot.hasError) {
-                      return _photoPlaceholder();
+                    if (snapshot.hasError) {
+                      return _photoPlaceholder(
+                        widget.showLoadErrors
+                            ? _claimPhotoReadError(snapshot.error!)
+                            : null,
+                      );
+                    }
+                    if (!snapshot.hasData) {
+                      return widget.showLoadErrors
+                          ? const Center(child: CircularProgressIndicator())
+                          : _photoPlaceholder();
                     }
                     return ClipRRect(
                       borderRadius: BorderRadius.circular(16),
@@ -4822,7 +5786,11 @@ class _DonationPhotoCarouselState extends State<DonationPhotoCarousel> {
                             error: error,
                             stackTrace: stackTrace,
                           );
-                          return _photoPlaceholder();
+                          return _photoPlaceholder(
+                            widget.showLoadErrors
+                                ? _claimPhotoReadError(error)
+                                : null,
+                          );
                         },
                       ),
                     );
@@ -4866,10 +5834,16 @@ class _DonationPhotoCarouselState extends State<DonationPhotoCarousel> {
     );
   }
 
-  Widget _photoPlaceholder() => Container(
+  Widget _photoPlaceholder([String? message]) => Container(
     color: const Color(0xffe4f2ed),
-    child: const Center(
-      child: Icon(Icons.image_not_supported_outlined, size: 42),
+    child: Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.image_not_supported_outlined, size: 42),
+          if (message != null) Text(message, textAlign: TextAlign.center),
+        ],
+      ),
     ),
   );
 }

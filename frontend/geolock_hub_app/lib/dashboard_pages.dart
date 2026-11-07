@@ -37,6 +37,8 @@ class RoleNavigationShell extends StatefulWidget {
 class _RoleNavigationShellState extends State<RoleNavigationShell> {
   int _index = 0;
   final List<int> _ngoTabRefreshSignals = List<int>.filled(5, 0);
+  final List<int> _donorTabRefreshSignals = List<int>.filled(4, 0);
+  final List<bool> _donorTabVisited = [true, false, false, false];
   late final List<_RoleTab> _tabs = _tabsFor(widget.role);
 
   List<_RoleTab> _tabsFor(String role) {
@@ -45,16 +47,7 @@ class _RoleNavigationShellState extends State<RoleNavigationShell> {
         _RoleTab(
           'Home',
           Icons.home_outlined,
-          DonorHomePage(onDonations: () => _select(2)),
-        ),
-        _RoleTab(
-          'Map',
-          Icons.map_outlined,
-          const _UnavailableTab(
-            title: 'Donation Map',
-            message:
-                'A privacy-safe map feed is not available in the deployed V3 RPCs. Your pickup address remains private to your account.',
-          ),
+          DonorHomePage(onDonations: () => _select(1)),
         ),
         _RoleTab(
           'Donations',
@@ -117,6 +110,12 @@ class _RoleNavigationShellState extends State<RoleNavigationShell> {
       _index = index;
       if (widget.role == 'NGO') {
         _ngoTabRefreshSignals[index]++;
+      } else if (widget.role == 'DONOR') {
+        if (_donorTabVisited[index]) {
+          _donorTabRefreshSignals[index]++;
+        } else {
+          _donorTabVisited[index] = true;
+        }
       }
     });
   }
@@ -129,6 +128,16 @@ class _RoleNavigationShellState extends State<RoleNavigationShell> {
       2 => MyClaimsPage(refreshSignal: signal),
       3 => NgoPickupsPage(refreshSignal: signal),
       _ => RoleProfilePage(role: 'NGO', refreshSignal: signal),
+    };
+  }
+
+  Widget _donorTab(int index) {
+    final signal = _donorTabRefreshSignals[index];
+    return switch (index) {
+      0 => DonorHomePage(refreshSignal: signal, onDonations: () => _select(1)),
+      1 => DonorMyDonationsPage(refreshSignal: signal),
+      2 => const DonorImpactPage(),
+      _ => const RoleProfilePage(role: 'DONOR'),
     };
   }
 
@@ -152,7 +161,12 @@ class _RoleNavigationShellState extends State<RoleNavigationShell> {
             index: _index,
             children: [
               for (var index = 0; index < _tabs.length; index++)
-                if (widget.role == 'NGO') _ngoTab(index) else _tabs[index].page,
+                if (widget.role == 'NGO')
+                  _ngoTab(index)
+                else if (widget.role == 'DONOR')
+                  _donorTab(index)
+                else
+                  _tabs[index].page,
             ],
           ),
         ),
@@ -178,7 +192,7 @@ class RoleNavigationBar extends StatelessWidget {
   });
 
   static List<String> labelsForRole(String role) => switch (role) {
-    'DONOR' => const ['Home', 'Map', 'Donations', 'Impact', 'Profile'],
+    'DONOR' => const ['Home', 'Donations', 'Impact', 'Profile'],
     'NGO' => const ['Home', 'Discover', 'My Claims', 'Pickups', 'Profile'],
     _ => const ['Home', 'Inventory', 'Receive', 'Collections', 'Profile'],
   };
@@ -186,7 +200,6 @@ class RoleNavigationBar extends StatelessWidget {
   static List<IconData> iconsForRole(String role) => switch (role) {
     'DONOR' => const [
       Icons.home_outlined,
-      Icons.map_outlined,
       Icons.volunteer_activism_outlined,
       Icons.insights_outlined,
       Icons.person_outline,
@@ -231,7 +244,16 @@ class _RoleTab {
 
 class DonorHomePage extends StatefulWidget {
   final VoidCallback onDonations;
-  const DonorHomePage({super.key, required this.onDonations});
+  final int refreshSignal;
+  final Future<List<Map<String, dynamic>>> Function()? donationsLoader;
+  final Future<Map<String, dynamic>?> Function()? profileLoader;
+  const DonorHomePage({
+    super.key,
+    required this.onDonations,
+    this.refreshSignal = 0,
+    this.donationsLoader,
+    this.profileLoader,
+  });
 
   @override
   State<DonorHomePage> createState() => _DonorHomePageState();
@@ -241,7 +263,14 @@ class _DonorHomePageState extends State<DonorHomePage> {
   late Future<List<Map<String, dynamic>>> _donations = _loadDonations();
   late Future<Map<String, dynamic>?> _profile = _loadProfile();
 
+  @override
+  void didUpdateWidget(covariant DonorHomePage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.refreshSignal != widget.refreshSignal) _refresh();
+  }
+
   Future<List<Map<String, dynamic>>> _loadDonations() async {
+    if (widget.donationsLoader != null) return widget.donationsLoader!();
     final response = await _dashboardDb.rpc('get_my_donation_dashboard_v2');
     if (response is! List) {
       throw const FormatException(
@@ -267,6 +296,7 @@ class _DonorHomePageState extends State<DonorHomePage> {
   }
 
   Future<Map<String, dynamic>?> _loadProfile() async {
+    if (widget.profileLoader != null) return widget.profileLoader!();
     final response = await _dashboardDb.rpc('get_my_profile');
     if (response == null) return null;
     if (response is! Map) {
@@ -276,11 +306,13 @@ class _DonorHomePageState extends State<DonorHomePage> {
   }
 
   Future<void> _refresh() async {
+    final donations = _loadDonations();
+    final profile = _loadProfile();
     setState(() {
-      _donations = _loadDonations();
-      _profile = _loadProfile();
+      _donations = donations;
+      _profile = profile;
     });
-    await Future.wait([_donations, _profile]);
+    await Future.wait([donations, profile]);
   }
 
   @override
@@ -442,7 +474,13 @@ bool _active(String? s) => const {
 }.contains(s);
 
 class DonorMyDonationsPage extends StatefulWidget {
-  const DonorMyDonationsPage({super.key});
+  final int refreshSignal;
+  final Future<List<Map<String, dynamic>>> Function()? donationsLoader;
+  const DonorMyDonationsPage({
+    super.key,
+    this.refreshSignal = 0,
+    this.donationsLoader,
+  });
   @override
   State<DonorMyDonationsPage> createState() => _DonorMyDonationsPageState();
 }
@@ -461,7 +499,18 @@ class _DonorMyDonationsPageState extends State<DonorMyDonationsPage> {
     'Cancelled',
   ];
 
+  @override
+  void didUpdateWidget(covariant DonorMyDonationsPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.refreshSignal != widget.refreshSignal) {
+      setState(() {
+        _data = _load();
+      });
+    }
+  }
+
   Future<List<Map<String, dynamic>>> _load() async {
+    if (widget.donationsLoader != null) return widget.donationsLoader!();
     final response = await _dashboardDb.rpc('get_my_donation_dashboard_v2');
     if (response is! List) {
       throw const FormatException(
@@ -653,6 +702,7 @@ class NgoHomePage extends StatefulWidget {
 }
 
 class _NgoHomePageState extends State<NgoHomePage> with WidgetsBindingObserver {
+  bool _listingDetailOpen = false;
   final _listingsGate = AsyncRequestGate();
   late final ClaimCardsController _claimReader;
   late Future<void> _claimsRefresh;
@@ -777,7 +827,6 @@ class _NgoHomePageState extends State<NgoHomePage> with WidgetsBindingObserver {
                 ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
               ),
               const SizedBox(height: 3),
-              const Text('Donation coordination overview'),
             ],
           ),
         ),
@@ -837,23 +886,19 @@ class _NgoHomePageState extends State<NgoHomePage> with WidgetsBindingObserver {
         FutureBuilder<bool>(
           future: _trustedRouting,
           builder: (context, route) {
-            final ready = route.data == true;
-            return Card(
-              color: ready ? Colors.white : const Color(0xfffff5df),
+            // The positive capability notice is informational. Keep the real
+            // unavailable condition without treating pending reads as failure.
+            if (route.connectionState != ConnectionState.done ||
+                route.data == true) {
+              return const SizedBox.shrink();
+            }
+            return const Card(
+              color: Color(0xfffff5df),
               child: ListTile(
-                leading: Icon(
-                  ready ? Icons.verified_outlined : Icons.route_outlined,
-                  color: _green,
-                ),
-                title: Text(
-                  ready
-                      ? 'Trusted route validation configured'
-                      : 'Claiming is unavailable',
-                ),
+                leading: Icon(Icons.route_outlined, color: _green),
+                title: Text('Claiming is unavailable'),
                 subtitle: Text(
-                  ready
-                      ? 'The server remains authoritative for every claim.'
-                      : 'An approved operational road graph is not confirmed. Discovery results are not presented as claimable.',
+                  'An approved operational road graph is not confirmed. Discovery results are not presented as claimable.',
                 ),
               ),
             );
@@ -893,17 +938,25 @@ class _NgoHomePageState extends State<NgoHomePage> with WidgetsBindingObserver {
                 for (final row in snapshot.data!.take(3))
                   ListingPreviewCard(
                     row: row,
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => NgoListingDetailsPage(
-                          listing: row,
-                          onClaimConfirmed: () {
-                            if (mounted) _refresh();
-                          },
+                    onTap: () async {
+                      if (_listingDetailOpen) return;
+                      _listingDetailOpen = true;
+                      await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => NgoListingDetailsPage(
+                            listing: row,
+                            onClaimConfirmed: () {
+                              if (mounted) _refresh();
+                            },
+                          ),
                         ),
-                      ),
-                    ),
+                      );
+                      if (mounted) {
+                        _refresh();
+                        _listingDetailOpen = false;
+                      }
+                    },
                   ),
               ],
             );
@@ -1402,9 +1455,6 @@ class _RoleProfilePageState extends State<RoleProfilePage> {
       text: '${profile['phone_number'] ?? ''}',
     );
     final ngoName = TextEditingController(text: '${profile['ngo_name'] ?? ''}');
-    final registration = TextEditingController(
-      text: '${profile['registration_number'] ?? ''}',
-    );
     try {
       final values = await showDialog<List<String>>(
         context: context,
@@ -1427,12 +1477,6 @@ class _RoleProfilePageState extends State<RoleProfilePage> {
                     controller: ngoName,
                     decoration: const InputDecoration(labelText: 'NGO name'),
                   ),
-                  TextField(
-                    controller: registration,
-                    decoration: const InputDecoration(
-                      labelText: 'Registration number',
-                    ),
-                  ),
                 ],
                 const SizedBox(height: 8),
                 const Text(
@@ -1451,7 +1495,6 @@ class _RoleProfilePageState extends State<RoleProfilePage> {
                 name.text,
                 phone.text,
                 ngoName.text,
-                registration.text,
               ]),
               child: const Text('Save'),
             ),
@@ -1465,10 +1508,6 @@ class _RoleProfilePageState extends State<RoleProfilePage> {
           'p_full_name': values[0].trim(),
           'p_phone': values[1].trim().isEmpty ? null : values[1].trim(),
           'p_ngo_name': widget.role == 'NGO' ? values[2].trim() : null,
-          'p_registration_number':
-              widget.role == 'NGO' && values[3].trim().isNotEmpty
-              ? values[3].trim()
-              : null,
         },
       );
       if (mounted) _refresh();
@@ -1478,7 +1517,6 @@ class _RoleProfilePageState extends State<RoleProfilePage> {
       name.dispose();
       phone.dispose();
       ngoName.dispose();
-      registration.dispose();
     }
   }
 
@@ -1698,11 +1736,6 @@ class _RoleProfilePageState extends State<RoleProfilePage> {
                   value: _profileValue(profile['ngo_name']),
                 ),
                 _ProfileField(
-                  icon: Icons.confirmation_number_outlined,
-                  label: 'Registration number',
-                  value: _profileValue(profile['registration_number']),
-                ),
-                _ProfileField(
                   icon: Icons.location_on_outlined,
                   label: 'Operating address',
                   value: _profileValue(profile['operating_address']),
@@ -1770,20 +1803,7 @@ class _RoleProfilePageState extends State<RoleProfilePage> {
                 ),
               ],
             ),
-          if (widget.role == 'DONOR') const SizedBox(height: 16),
-          _ProfileSection(
-            title: 'Settings',
-            icon: Icons.settings_outlined,
-            children: const [
-              Padding(
-                padding: EdgeInsets.only(top: 10),
-                child: Text(
-                  'Email and account role are fixed for this account. Personal details and permitted role information can be updated securely.',
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
+          if (widget.role != 'HUB_ADMIN') const SizedBox(height: 16),
           OutlinedButton.icon(
             onPressed: () => signOutAndReset(context),
             icon: const Icon(Icons.logout),
@@ -1991,7 +2011,7 @@ class _ProfileLocationStatus extends StatelessWidget {
                   style: TextStyle(color: color, fontWeight: FontWeight.w700),
                 ),
                 const Text(
-                  'Confirms road-network access only; it does not verify NGO identity.',
+                  'Confirms road-network access only.',
                   style: TextStyle(fontSize: 12),
                 ),
                 if (verified && verifiedAt != null)
@@ -2073,13 +2093,6 @@ class GeoLockHeader extends StatelessWidget {
             fontSize: compact ? 15 : 17,
           ),
         ),
-      ),
-      IconButton(
-        tooltip: 'Notifications',
-        onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Notifications are not available yet.')),
-        ),
-        icon: const Icon(Icons.notifications_none),
       ),
     ],
   );
@@ -2496,26 +2509,6 @@ class _CreateDonationBanner extends StatelessWidget {
             label: const Text('Create donation'),
           ),
         ],
-      ),
-    ),
-  );
-}
-
-class _UnavailableTab extends StatelessWidget {
-  final String title;
-  final String message;
-  const _UnavailableTab({required this.title, required this.message});
-  @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: Text(title)),
-    body: Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: EmptyStateCard(
-          icon: Icons.info_outline,
-          title: 'Not available yet',
-          message: message,
-        ),
       ),
     ),
   );

@@ -476,11 +476,11 @@ class _RegistrationPageState extends State<RegistrationPage> {
       phone = TextEditingController(),
       password = TextEditingController(),
       confirm = TextEditingController();
-  final ngoName = TextEditingController(), regNo = TextEditingController();
+  final ngoName = TextEditingController();
   bool busy = false, showPass = false, showConfirm = false;
   @override
   void dispose() {
-    for (final c in [name, email, phone, password, confirm, ngoName, regNo]) {
+    for (final c in [name, email, phone, password, confirm, ngoName]) {
       c.dispose();
     }
     super.dispose();
@@ -504,9 +504,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
     if (role == 'NGO') {
       pending.addAll({
         'ngo_name': ngoName.text.trim(),
-        'registration_number': regNo.text.trim().isEmpty
-            ? null
-            : regNo.text.trim(),
       });
     }
     try {
@@ -602,14 +599,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 validator: requiredValue,
                 decoration: const InputDecoration(
                   hintText: 'Organisation name',
-                ),
-              ),
-              const SizedBox(height: 10),
-              const _FieldLabel('Registration / Reference Number (optional)'),
-              TextFormField(
-                controller: regNo,
-                decoration: const InputDecoration(
-                  hintText: 'Registration number',
                 ),
               ),
               const SizedBox(height: 8),
