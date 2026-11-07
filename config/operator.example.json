@@ -1,0 +1,17 @@
+{
+  "usage": "Planning checklist only. The launcher does not read this file. Keep completed values outside the repository.",
+  "environment": "DEV",
+  "approvedProject": "<administrator-approved project>",
+  "approvedDatabaseHost": "<administrator-approved hostname>",
+  "approvedDatabasePort": "<administrator-approved port>",
+  "tlsMode": "verify-full",
+  "caCertificatePath": "<operator-local CA file>",
+  "approvedCaSha256": "<administrator-provided certificate SHA256>",
+  "approvedFrozenGraphId": "<administrator-approved graph UUID>",
+  "roles": [
+    "graph",
+    "planner",
+    "validator"
+  ],
+  "activation": "Requires explicit session approval"
+}

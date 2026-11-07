@@ -1,0 +1,39 @@
+# Local tools and generated files
+.idea/
+.tmp/
+.venv*/
+.codex-tool-home/
+.dart-appdata/
+.dart-local/
+__pycache__/
+*.py[cod]
+/backups/
+/results/
+*.backup
+*.dump
+*.sqlite
+*.sqlite3
+*.sqlite-wal
+*.sqlite-shm
+*.sqlite3-wal
+*.sqlite3-shm
+
+# Local credentials and signing material
+.env
+.env.*
+!.env.example
+!.env.template
+*.clixml
+*.key
+*.pfx
+*.p12
+*.jks
+*.keystore
+
+# Operator provisioning and private local files
+/docs/stage8/stage-a/deployment-preparation/routing-initialization/pg_service.proposed.conf
+/config/operator.local.json
+*.pem
+*.crt
+*.cer
+*.pgpass
