@@ -1,0 +1,199 @@
+{
+  "project_ref": "rcgyuwiidqvrgbxswhqj",
+  "mode": "SELECT-only DEV inspection and local file reads; no benchmark execution or database writes",
+  "local_audit": {
+    "route_scenarios": 100,
+    "distinct_listings": 500,
+    "memberships": 500,
+    "profiles": {
+      "NORMAL": 25,
+      "CAPACITY_PRESSURE": 25,
+      "GEOGRAPHIC_SPREAD": 25,
+      "CONNECTIVITY_STRESS": 25
+    },
+    "ngo_scenario_counts": {
+      "AGENT-NGO001": 10,
+      "AGENT-NGO002": 10,
+      "AGENT-NGO003": 10,
+      "AGENT-NGO004": 10,
+      "AGENT-NGO005": 10,
+      "AGENT-NGO006": 10,
+      "AGENT-NGO007": 4,
+      "AGENT-NGO008": 9,
+      "AGENT-NGO09": 9,
+      "AGENT-NGO010": 9,
+      "AGENT-NGO011": 9
+    },
+    "task_source_types": {
+      "DIRECT_DONATION": 500
+    },
+    "matrix_audit": {
+      "required_non_diagonal_cells": 3000,
+      "vehicles_2": 50,
+      "vehicles_1": 50,
+      "unavailable_cells": 15
+    },
+    "fully_dev_node_compatible_scenarios": 0,
+    "structure_errors": [],
+    "ngo_agent_hashes": {
+      "expected": "aeffe33453c19f8f725e4b5a31e4f76de7c7e267e9de45dd7e7ad5ab99f37827",
+      "actual": "7c6842365e1bfabcf8a81060baec36e2aa96645d65c9b04d35547c5d0e00f6af",
+      "lf": "7c6842365e1bfabcf8a81060baec36e2aa96645d65c9b04d35547c5d0e00f6af"
+    },
+    "missing_fields": [
+      "synthetic post-claim authority and lease interval",
+      "fixed cost RM and distance cost RM/km",
+      "max route duration and planning horizon",
+      "pickup service duration",
+      "timezone-aware cutoff / departures",
+      "mandatory-task policy"
+    ]
+  },
+  "node_compatibility": {
+    "benchmark_nodes": 3990,
+    "matching_active_dev_node_ids": 639,
+    "missing_ids": 3351,
+    "complete_dev_compatible_scenarios": 0
+  },
+  "sample_distance_comparisons": [
+    {
+      "status": "fulfilled",
+      "value": {
+        "source": "775883393",
+        "target": "475484825",
+        "benchmark_km": "13.98849",
+        "benchmark_minutes": "15.85656",
+        "lat": "3.1139294",
+        "lon": "101.7558411",
+        "dev": [
+          {
+            "source_node": 775883393,
+            "target_node": 475484825,
+            "road_km": 13.997939969413
+          }
+        ],
+        "scope": "Existing eligibility directed road-cost function, 30 km source-node search radius"
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "source": "2760201978",
+        "target": "1652563889",
+        "benchmark_km": "9.60943",
+        "benchmark_minutes": "9.26254",
+        "lat": "1.5346872",
+        "lon": "103.8074795",
+        "dev": [
+          {
+            "source_node": 2760201978,
+            "target_node": 1652563889,
+            "road_km": 9.61650999472477
+          }
+        ],
+        "scope": "Existing eligibility directed road-cost function, 30 km source-node search radius"
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "source": "4621579341",
+        "target": "475484825",
+        "benchmark_km": "12.01027",
+        "benchmark_minutes": "13.36582",
+        "lat": "3.1328552",
+        "lon": "101.6835787",
+        "dev": [
+          {
+            "source_node": 4621579341,
+            "target_node": 475484825,
+            "road_km": 12.0744200281333
+          }
+        ],
+        "scope": "Existing eligibility directed road-cost function, 30 km source-node search radius"
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "source": "3207349194",
+        "target": "5252635368",
+        "benchmark_km": "21.01886",
+        "benchmark_minutes": "21.71515",
+        "lat": "4.5422355",
+        "lon": "101.0771859",
+        "dev": [
+          {
+            "source_node": 3207349194,
+            "target_node": 5252635368,
+            "road_km": 21.1191200446337
+          }
+        ],
+        "scope": "Existing eligibility directed road-cost function, 30 km source-node search radius"
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "source": "3883275870",
+        "target": "2685053211",
+        "benchmark_km": "12.05388",
+        "benchmark_minutes": "11.74569",
+        "lat": "3.8124468",
+        "lon": "103.325493",
+        "dev": [
+          {
+            "source_node": 3883275870,
+            "target_node": 2685053211,
+            "road_km": 12.1183699825779
+          }
+        ],
+        "scope": "Existing eligibility directed road-cost function, 30 km source-node search radius"
+      }
+    }
+  ],
+  "page_performance": [
+    {
+      "status": "fulfilled",
+      "value": {
+        "after_edge": 0,
+        "rpc_elapsed_seconds": 6.613,
+        "result": [
+          {
+            "page_rows": 10000,
+            "page_payload_bytes": 1147392
+          }
+        ],
+        "note": "Read-only representative page query, not full export or freeze timing"
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "after_edge": 1000000,
+        "rpc_elapsed_seconds": 12.544,
+        "result": [
+          {
+            "page_rows": 10000,
+            "page_payload_bytes": 1197353
+          }
+        ],
+        "note": "Read-only representative page query, not full export or freeze timing"
+      }
+    }
+  ],
+  "limitations": [
+    "Distance comparisons use deployed eligibility road-cost function with a 30 km source-node search radius, not an exported full graph.",
+    "One-direction samples, not exhaustive matrix equivalence or DEV travel-time verification.",
+    "Single page measurements include RPC overhead, not full export or freeze runtime.",
+    "Stored component labels are not a new independent connectivity proof.",
+    "No solver evaluation executed: benchmark vehicle cost, service and horizon policies remain unspecified."
+  ],
+  "graph_freeze_blockers": [
+    "Original builder SHA 188bde7568b4d9eb910ddc8876f9626275669b86a4f51ed8f7afdf08371ebf23 absent from current file / available file Git history. Current LF SHA 4991c25e58c51f4acc187373f0fdae4428594f90c5265943e30998bb1139f362.",
+    "No edge_id index supports existing graph digest / export paging.",
+    "phase_c2/matrices.py freeze_graph checks each endpoint against a list; build_matrix repeats graph validation. Full-network memory/runtime unverified.",
+    "Freeze blocks all writes to three shared operational road tables."
+  ],
+  "recommendation": "Reuse the existing benchmark matrix offline under its own snapshot ID. Reuse existing DEV graph operationally with trusted location snapping and recomputed DEV matrices. Do not mix their matrix costs or identities."
+}

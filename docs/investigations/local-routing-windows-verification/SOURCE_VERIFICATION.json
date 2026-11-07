@@ -1,0 +1,27 @@
+{
+  "verified_at_utc": "2026-11-06T18:33:56.004368+00:00",
+  "pre_hosting_source_files_checked": 13,
+  "unchanged_pre_hosting_files": 12,
+  "retained_prior_validated_journal_fix": [
+    "backend/routing/worker_service/journal.py"
+  ],
+  "unchanged_hosted_source_files": 18,
+  "current_baseline_hashes": {
+    "backend/routing/worker_service/server.py": "7593492a1c13d8f9e68e449af026caa98955a160f5c9c80880cfef05a9024db7",
+    "backend/routing/worker_service/transport.py": "7f55a571d7339c1c2e26ca5f1db3bd57773e353951c5dda26192d673e6f85dee",
+    "backend/routing/worker_service/graph_cache.py": "f1186d21ce1fd7c29601fc906dec3a51cd2398b73631a413f5f5211f35cdbd3f",
+    "backend/routing/worker_service/orchestrator.py": "b35c5747f8534ccb96af38524a1748c12587c2f720bc1c46e1eb08b5e35611c1",
+    "backend/routing/worker_service/validator.py": "1bbc49d021ff50f454abe9d906131a77ca5ce12e9ff9c8568060ca4422081535",
+    "backend/routing/worker_service/journal.py": "d5fe8acd8fb372bb74a77d9386d475a74f3e1be10dd2cc208f44d895b4c3c34a",
+    "backend/routing/worker_service/native_worker.py": "f5c388ba559a84b022c01bd63f0d379a8d6beeb8afcbdd5f5310363760505571",
+    "backend/routing/worker_service/windows/Start-Worker.ps1": "f57aaeea110331236202e932e1ffebfe995fddb5b5f8de13a2b7af96a7e75873",
+    "backend/routing/phase_c2/matrices.py": "cf5c850fb1c6bdb2aac048c71a11f7c292ad2a85c16971efd7d33e53466d2763",
+    "backend/routing/phase_b/optimizers.py": "0de1c90a50b3964802c6fe6a6ef3f54d3bbc0439382733bc83971e79a0627eb9",
+    "frontend/geolock_hub_app/lib/routing/ngo_routes_page.dart": "4a05db144c55025a75b2284939a4b56bf86a0c14477b6fc6a7dcbf80ebc00521",
+    "frontend/geolock_hub_app/lib/routing/ngo_routing_repository.dart": "5390731cacc06c0878ea330d0995675bf6540be910ec83ba1b6a41ee527b7bdf",
+    "frontend/geolock_hub_app/lib/routing/routing_worker_client.dart": "f09326afe82ecf421801d431210e3bc39a1ff1c5c9fb6485e4e7e6957c730669"
+  },
+  "runtime_edits_in_this_review": false,
+  "database_access": false,
+  "outcome": "LOCAL OFFLINE PASS / LIVE DB AND DEVICE OPERATION NOT TESTED"
+}

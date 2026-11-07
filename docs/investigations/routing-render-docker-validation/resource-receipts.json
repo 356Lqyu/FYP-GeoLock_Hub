@@ -1,0 +1,2277 @@
+[
+  {
+    "label": "planner-inventory",
+    "profile": "8gb-2cpu",
+    "image_id": "sha256:9dad7a112d031c65cd92c83880c9ce876b0ce79de36c1220b787c0b19e186173",
+    "exit_code": 0,
+    "timed_out": false,
+    "wall_seconds": 3.7970000000000255,
+    "state": {
+      "ExitCode": 0,
+      "OOMKilled": false,
+      "Error": ""
+    },
+    "limits": {
+      "Memory": 8589934592,
+      "MemorySwap": 8589934592,
+      "NanoCpus": 2000000000,
+      "NetworkMode": "none",
+      "ReadonlyRootfs": true
+    },
+    "result": {
+      "mode": "inventory",
+      "uid": 10001,
+      "python": "3.12.16",
+      "architecture": "x86_64",
+      "sqlite": "3.40.1",
+      "ortools": "9.15.6755",
+      "numpy": "2.5.4",
+      "pandas": "3.1.0",
+      "psycopg": "3.3.6",
+      "forbidden_files": [],
+      "app_files": [
+        "backend/__init__.py",
+        "backend/routing/__init__.py",
+        "backend/routing/__main__.py",
+        "backend/routing/contract.py",
+        "backend/routing/generate_examples.py",
+        "backend/routing/hosted/__init__.py",
+        "backend/routing/hosted/__main__.py",
+        "backend/routing/hosted/artifact.py",
+        "backend/routing/hosted/benchmark.py",
+        "backend/routing/hosted/compact_graph.py",
+        "backend/routing/hosted/config.py",
+        "backend/routing/hosted/docker/planner.Dockerfile",
+        "backend/routing/hosted/docker/planner.Dockerfile.dockerignore",
+        "backend/routing/hosted/docker/validator.Dockerfile",
+        "backend/routing/hosted/docker/validator.Dockerfile.dockerignore",
+        "backend/routing/hosted/frozen_benchmark.py",
+        "backend/routing/hosted/run_resource_profiles.py",
+        "backend/routing/hosted/runtime.py",
+        "backend/routing/hosted/tests/__init__.py",
+        "backend/routing/hosted/tests/test_artifact_packaging.py",
+        "backend/routing/hosted/tests/test_compact.py",
+        "backend/routing/hosted/tests/test_hosting.py",
+        "backend/routing/hosted/tests/test_journal_initialization.py",
+        "backend/routing/hosted/tests/test_recovery_rehearsal.py",
+        "backend/routing/integration/__init__.py",
+        "backend/routing/integration/graph_worker.py",
+        "backend/routing/integration/presentation.py",
+        "backend/routing/integration/route_resolution.py",
+        "backend/routing/integration/tests/__init__.py",
+        "backend/routing/integration/tests/__pycache__/__init__.cpython-312.pyc",
+        "backend/routing/integration/tests/__pycache__/__init__.cpython-314.pyc",
+        "backend/routing/integration/tests/__pycache__/test_presentation.cpython-312.pyc",
+        "backend/routing/integration/tests/__pycache__/test_presentation.cpython-314.pyc",
+        "backend/routing/integration/tests/__pycache__/test_route_resolution.cpython-312.pyc",
+        "backend/routing/integration/tests/__pycache__/test_route_resolution.cpython-314.pyc",
+        "backend/routing/integration/tests/__pycache__/test_sql_package.cpython-312.pyc",
+        "backend/routing/integration/tests/__pycache__/test_sql_package.cpython-314.pyc",
+        "backend/routing/integration/tests/__pycache__/test_worker.cpython-312.pyc",
+        "backend/routing/integration/tests/__pycache__/test_worker.cpython-314.pyc",
+        "backend/routing/integration/tests/test_presentation.py",
+        "backend/routing/integration/tests/test_route_resolution.py",
+        "backend/routing/integration/tests/test_sql_package.py",
+        "backend/routing/integration/tests/test_worker.py",
+        "backend/routing/integration/worker.py",
+        "backend/routing/phase_b/__init__.py",
+        "backend/routing/phase_b/baselines.py",
+        "backend/routing/phase_b/benchmark.py",
+        "backend/routing/phase_b/models.py",
+        "backend/routing/phase_b/optimizers.py",
+        "backend/routing/phase_b/problem.py",
+        "backend/routing/phase_b/requirements-lock.txt",
+        "backend/routing/phase_b/routing_model.py",
+        "backend/routing/phase_b/scenarios.py",
+        "backend/routing/phase_b/validation.py",
+        "backend/routing/phase_c2/__init__.py",
+        "backend/routing/phase_c2/__main__.py",
+        "backend/routing/phase_c2/matrices.py",
+        "backend/routing/phase_c2/orchestration.py",
+        "backend/routing/phase_c2/tests/__init__.py",
+        "backend/routing/phase_c2/tests/__pycache__/__init__.cpython-312.pyc",
+        "backend/routing/phase_c2/tests/__pycache__/__init__.cpython-314.pyc",
+        "backend/routing/phase_c2/tests/__pycache__/test_local.cpython-312.pyc",
+        "backend/routing/phase_c2/tests/__pycache__/test_local.cpython-314.pyc",
+        "backend/routing/phase_c2/tests/test_local.py",
+        "backend/routing/worker_service/__init__.py",
+        "backend/routing/worker_service/__main__.py",
+        "backend/routing/worker_service/connection_diagnostic.py",
+        "backend/routing/worker_service/connection_diagnostic_native17.py",
+        "backend/routing/worker_service/errors.py",
+        "backend/routing/worker_service/graph_cache.py",
+        "backend/routing/worker_service/journal.py",
+        "backend/routing/worker_service/native_readonly_session.py",
+        "backend/routing/worker_service/native_service_connection.py",
+        "backend/routing/worker_service/native_service_diagnostic.py",
+        "backend/routing/worker_service/native_service_probe.py",
+        "backend/routing/worker_service/native_worker.py",
+        "backend/routing/worker_service/orchestrator.py",
+        "backend/routing/worker_service/password_transport_check.py",
+        "backend/routing/worker_service/probe_diagnostics.py",
+        "backend/routing/worker_service/probe_resources.py",
+        "backend/routing/worker_service/readonly_pilot_probe.py",
+        "backend/routing/worker_service/requirements.txt",
+        "backend/routing/worker_service/server.py",
+        "backend/routing/worker_service/staged.py",
+        "backend/routing/worker_service/staged_client.py",
+        "backend/routing/worker_service/tests/__init__.py",
+        "backend/routing/worker_service/tests/__pycache__/__init__.cpython-312.pyc",
+        "backend/routing/worker_service/tests/__pycache__/__init__.cpython-314.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_combined_workflow.cpython-312.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_combined_workflow.cpython-314.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_connection_diagnostic.cpython-312.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_connection_diagnostic.cpython-314.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_graph_http.cpython-312.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_graph_http.cpython-314.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_graph_performance.cpython-312.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_graph_performance.cpython-314.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_group1_reads.cpython-312.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_group1_reads.cpython-314.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_native17_diagnostic.cpython-312.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_native17_diagnostic.cpython-314.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_native_console_encoding.cpython-312.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_native_console_encoding.cpython-314.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_native_full_probe.cpython-312.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_native_full_probe.cpython-314.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_native_service_connection.cpython-312.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_native_service_connection.cpython-314.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_native_worker.cpython-312.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_native_worker.cpython-314.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_password_transport_check.cpython-312.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_password_transport_check.cpython-314.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_probe_launcher.cpython-312.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_probe_launcher.cpython-314.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_publishable_key_console.cpython-312.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_publishable_key_console.cpython-314.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_readonly_pilot_probe.cpython-312.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_readonly_pilot_probe.cpython-314.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_request_events.cpython-312.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_request_events.cpython-314.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_solver_invocation.cpython-312.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_solver_invocation.cpython-314.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_staged_client.cpython-312.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_staged_client.cpython-314.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_staged_operator.cpython-312.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_staged_operator.cpython-314.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_staged_session_transport.cpython-312.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_staged_session_transport.cpython-314.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_staged_workflow.cpython-312.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_staged_workflow.cpython-314.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_worker_flow.cpython-312.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_worker_flow.cpython-314.pyc",
+        "backend/routing/worker_service/tests/test_combined_workflow.py",
+        "backend/routing/worker_service/tests/test_connection_diagnostic.py",
+        "backend/routing/worker_service/tests/test_graph_http.py",
+        "backend/routing/worker_service/tests/test_graph_performance.py",
+        "backend/routing/worker_service/tests/test_group1_reads.py",
+        "backend/routing/worker_service/tests/test_native17_diagnostic.py",
+        "backend/routing/worker_service/tests/test_native_console_encoding.py",
+        "backend/routing/worker_service/tests/test_native_full_probe.py",
+        "backend/routing/worker_service/tests/test_native_service_connection.py",
+        "backend/routing/worker_service/tests/test_native_worker.py",
+        "backend/routing/worker_service/tests/test_password_transport_check.py",
+        "backend/routing/worker_service/tests/test_probe_launcher.py",
+        "backend/routing/worker_service/tests/test_publishable_key_console.py",
+        "backend/routing/worker_service/tests/test_readonly_pilot_probe.py",
+        "backend/routing/worker_service/tests/test_request_events.py",
+        "backend/routing/worker_service/tests/test_solver_invocation.py",
+        "backend/routing/worker_service/tests/test_staged_client.py",
+        "backend/routing/worker_service/tests/test_staged_operator.py",
+        "backend/routing/worker_service/tests/test_staged_session_transport.py",
+        "backend/routing/worker_service/tests/test_staged_workflow.py",
+        "backend/routing/worker_service/tests/test_worker_flow.py",
+        "backend/routing/worker_service/transport.py",
+        "backend/routing/worker_service/validator.py"
+      ],
+      "total_seconds": 2.5777540080000563,
+      "metrics": {
+        "process_peak_rss_bytes": 85831680,
+        "process_cpu_seconds": 2.350158,
+        "cgroup": {
+          "memory.max": "8589934592",
+          "memory.peak": "175075328",
+          "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+          "cpu.max": "200000 100000",
+          "cpu.stat": "usage_usec 2355713\nuser_usec 1909709\nsystem_usec 446004\nnice_usec 0\nnr_periods 29\nnr_throttled 3\nthrottled_usec 1414224\nnr_bursts 0\nburst_usec 0"
+        }
+      }
+    }
+  },
+  {
+    "label": "validator-inventory",
+    "profile": "8gb-2cpu",
+    "image_id": "sha256:73141a58d0e949a11a794e344ee19ed4ca0d46f88bb9699e8ebb3ddff0179371",
+    "exit_code": 0,
+    "timed_out": false,
+    "wall_seconds": 2.6870000000001255,
+    "state": {
+      "ExitCode": 0,
+      "OOMKilled": false,
+      "Error": ""
+    },
+    "limits": {
+      "Memory": 8589934592,
+      "MemorySwap": 8589934592,
+      "NanoCpus": 2000000000,
+      "NetworkMode": "none",
+      "ReadonlyRootfs": true
+    },
+    "result": {
+      "mode": "inventory",
+      "uid": 10001,
+      "python": "3.12.16",
+      "architecture": "x86_64",
+      "sqlite": "3.40.1",
+      "ortools": "9.15.6755",
+      "numpy": "2.5.4",
+      "pandas": "3.1.0",
+      "psycopg": "3.3.6",
+      "forbidden_files": [],
+      "app_files": [
+        "backend/__init__.py",
+        "backend/routing/__init__.py",
+        "backend/routing/__main__.py",
+        "backend/routing/contract.py",
+        "backend/routing/generate_examples.py",
+        "backend/routing/hosted/__init__.py",
+        "backend/routing/hosted/__main__.py",
+        "backend/routing/hosted/artifact.py",
+        "backend/routing/hosted/benchmark.py",
+        "backend/routing/hosted/compact_graph.py",
+        "backend/routing/hosted/config.py",
+        "backend/routing/hosted/docker/planner.Dockerfile",
+        "backend/routing/hosted/docker/planner.Dockerfile.dockerignore",
+        "backend/routing/hosted/docker/validator.Dockerfile",
+        "backend/routing/hosted/docker/validator.Dockerfile.dockerignore",
+        "backend/routing/hosted/frozen_benchmark.py",
+        "backend/routing/hosted/run_resource_profiles.py",
+        "backend/routing/hosted/runtime.py",
+        "backend/routing/hosted/tests/__init__.py",
+        "backend/routing/hosted/tests/test_artifact_packaging.py",
+        "backend/routing/hosted/tests/test_compact.py",
+        "backend/routing/hosted/tests/test_hosting.py",
+        "backend/routing/hosted/tests/test_journal_initialization.py",
+        "backend/routing/hosted/tests/test_recovery_rehearsal.py",
+        "backend/routing/integration/__init__.py",
+        "backend/routing/integration/graph_worker.py",
+        "backend/routing/integration/presentation.py",
+        "backend/routing/integration/route_resolution.py",
+        "backend/routing/integration/tests/__init__.py",
+        "backend/routing/integration/tests/__pycache__/__init__.cpython-312.pyc",
+        "backend/routing/integration/tests/__pycache__/__init__.cpython-314.pyc",
+        "backend/routing/integration/tests/__pycache__/test_presentation.cpython-312.pyc",
+        "backend/routing/integration/tests/__pycache__/test_presentation.cpython-314.pyc",
+        "backend/routing/integration/tests/__pycache__/test_route_resolution.cpython-312.pyc",
+        "backend/routing/integration/tests/__pycache__/test_route_resolution.cpython-314.pyc",
+        "backend/routing/integration/tests/__pycache__/test_sql_package.cpython-312.pyc",
+        "backend/routing/integration/tests/__pycache__/test_sql_package.cpython-314.pyc",
+        "backend/routing/integration/tests/__pycache__/test_worker.cpython-312.pyc",
+        "backend/routing/integration/tests/__pycache__/test_worker.cpython-314.pyc",
+        "backend/routing/integration/tests/test_presentation.py",
+        "backend/routing/integration/tests/test_route_resolution.py",
+        "backend/routing/integration/tests/test_sql_package.py",
+        "backend/routing/integration/tests/test_worker.py",
+        "backend/routing/integration/worker.py",
+        "backend/routing/phase_b/__init__.py",
+        "backend/routing/phase_b/baselines.py",
+        "backend/routing/phase_b/benchmark.py",
+        "backend/routing/phase_b/models.py",
+        "backend/routing/phase_b/optimizers.py",
+        "backend/routing/phase_b/problem.py",
+        "backend/routing/phase_b/requirements-lock.txt",
+        "backend/routing/phase_b/routing_model.py",
+        "backend/routing/phase_b/scenarios.py",
+        "backend/routing/phase_b/validation.py",
+        "backend/routing/phase_c2/__init__.py",
+        "backend/routing/phase_c2/__main__.py",
+        "backend/routing/phase_c2/matrices.py",
+        "backend/routing/phase_c2/orchestration.py",
+        "backend/routing/phase_c2/tests/__init__.py",
+        "backend/routing/phase_c2/tests/__pycache__/__init__.cpython-312.pyc",
+        "backend/routing/phase_c2/tests/__pycache__/__init__.cpython-314.pyc",
+        "backend/routing/phase_c2/tests/__pycache__/test_local.cpython-312.pyc",
+        "backend/routing/phase_c2/tests/__pycache__/test_local.cpython-314.pyc",
+        "backend/routing/phase_c2/tests/test_local.py",
+        "backend/routing/worker_service/__init__.py",
+        "backend/routing/worker_service/__main__.py",
+        "backend/routing/worker_service/connection_diagnostic.py",
+        "backend/routing/worker_service/connection_diagnostic_native17.py",
+        "backend/routing/worker_service/errors.py",
+        "backend/routing/worker_service/graph_cache.py",
+        "backend/routing/worker_service/journal.py",
+        "backend/routing/worker_service/native_readonly_session.py",
+        "backend/routing/worker_service/native_service_connection.py",
+        "backend/routing/worker_service/native_service_diagnostic.py",
+        "backend/routing/worker_service/native_service_probe.py",
+        "backend/routing/worker_service/native_worker.py",
+        "backend/routing/worker_service/orchestrator.py",
+        "backend/routing/worker_service/password_transport_check.py",
+        "backend/routing/worker_service/probe_diagnostics.py",
+        "backend/routing/worker_service/probe_resources.py",
+        "backend/routing/worker_service/readonly_pilot_probe.py",
+        "backend/routing/worker_service/requirements.txt",
+        "backend/routing/worker_service/server.py",
+        "backend/routing/worker_service/staged.py",
+        "backend/routing/worker_service/staged_client.py",
+        "backend/routing/worker_service/tests/__init__.py",
+        "backend/routing/worker_service/tests/__pycache__/__init__.cpython-312.pyc",
+        "backend/routing/worker_service/tests/__pycache__/__init__.cpython-314.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_combined_workflow.cpython-312.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_combined_workflow.cpython-314.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_connection_diagnostic.cpython-312.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_connection_diagnostic.cpython-314.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_graph_http.cpython-312.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_graph_http.cpython-314.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_graph_performance.cpython-312.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_graph_performance.cpython-314.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_group1_reads.cpython-312.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_group1_reads.cpython-314.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_native17_diagnostic.cpython-312.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_native17_diagnostic.cpython-314.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_native_console_encoding.cpython-312.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_native_console_encoding.cpython-314.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_native_full_probe.cpython-312.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_native_full_probe.cpython-314.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_native_service_connection.cpython-312.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_native_service_connection.cpython-314.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_native_worker.cpython-312.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_native_worker.cpython-314.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_password_transport_check.cpython-312.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_password_transport_check.cpython-314.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_probe_launcher.cpython-312.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_probe_launcher.cpython-314.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_publishable_key_console.cpython-312.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_publishable_key_console.cpython-314.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_readonly_pilot_probe.cpython-312.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_readonly_pilot_probe.cpython-314.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_request_events.cpython-312.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_request_events.cpython-314.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_solver_invocation.cpython-312.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_solver_invocation.cpython-314.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_staged_client.cpython-312.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_staged_client.cpython-314.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_staged_operator.cpython-312.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_staged_operator.cpython-314.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_staged_session_transport.cpython-312.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_staged_session_transport.cpython-314.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_staged_workflow.cpython-312.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_staged_workflow.cpython-314.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_worker_flow.cpython-312.pyc",
+        "backend/routing/worker_service/tests/__pycache__/test_worker_flow.cpython-314.pyc",
+        "backend/routing/worker_service/tests/test_combined_workflow.py",
+        "backend/routing/worker_service/tests/test_connection_diagnostic.py",
+        "backend/routing/worker_service/tests/test_graph_http.py",
+        "backend/routing/worker_service/tests/test_graph_performance.py",
+        "backend/routing/worker_service/tests/test_group1_reads.py",
+        "backend/routing/worker_service/tests/test_native17_diagnostic.py",
+        "backend/routing/worker_service/tests/test_native_console_encoding.py",
+        "backend/routing/worker_service/tests/test_native_full_probe.py",
+        "backend/routing/worker_service/tests/test_native_service_connection.py",
+        "backend/routing/worker_service/tests/test_native_worker.py",
+        "backend/routing/worker_service/tests/test_password_transport_check.py",
+        "backend/routing/worker_service/tests/test_probe_launcher.py",
+        "backend/routing/worker_service/tests/test_publishable_key_console.py",
+        "backend/routing/worker_service/tests/test_readonly_pilot_probe.py",
+        "backend/routing/worker_service/tests/test_request_events.py",
+        "backend/routing/worker_service/tests/test_solver_invocation.py",
+        "backend/routing/worker_service/tests/test_staged_client.py",
+        "backend/routing/worker_service/tests/test_staged_operator.py",
+        "backend/routing/worker_service/tests/test_staged_session_transport.py",
+        "backend/routing/worker_service/tests/test_staged_workflow.py",
+        "backend/routing/worker_service/tests/test_worker_flow.py",
+        "backend/routing/worker_service/transport.py",
+        "backend/routing/worker_service/validator.py"
+      ],
+      "total_seconds": 1.5877938280000308,
+      "metrics": {
+        "process_peak_rss_bytes": 86396928,
+        "process_cpu_seconds": 1.8656050000000002,
+        "cgroup": {
+          "memory.max": "8589934592",
+          "memory.peak": "58912768",
+          "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+          "cpu.max": "200000 100000",
+          "cpu.stat": "usage_usec 1868764\nuser_usec 1701055\nsystem_usec 167709\nnice_usec 0\nnr_periods 18\nnr_throttled 3\nthrottled_usec 1465402\nnr_bursts 0\nburst_usec 0"
+        }
+      }
+    }
+  },
+  {
+    "label": "linux-hosted-after",
+    "profile": "8gb-2cpu",
+    "image_id": "sha256:9dad7a112d031c65cd92c83880c9ce876b0ce79de36c1220b787c0b19e186173",
+    "exit_code": 0,
+    "timed_out": false,
+    "wall_seconds": 8.327999999999975,
+    "state": {
+      "ExitCode": 0,
+      "OOMKilled": false,
+      "Error": ""
+    },
+    "limits": {
+      "Memory": 8589934592,
+      "MemorySwap": 8589934592,
+      "NanoCpus": 2000000000,
+      "NetworkMode": "none",
+      "ReadonlyRootfs": true
+    },
+    "result": {
+      "at": "2026-11-06T16:59:25.715572+00:00",
+      "event": "routing_request",
+      "http_status": 200,
+      "request_id": "00000000-0000-0000-0000-000000000003",
+      "snapshot_id": "00000000-0000-0000-0000-000000000001",
+      "stage": "http_response"
+    }
+  },
+  {
+    "label": "linux-core-regression",
+    "profile": "8gb-2cpu",
+    "image_id": "sha256:9dad7a112d031c65cd92c83880c9ce876b0ce79de36c1220b787c0b19e186173",
+    "exit_code": 0,
+    "timed_out": false,
+    "wall_seconds": 5.094000000000051,
+    "state": {
+      "ExitCode": 0,
+      "OOMKilled": false,
+      "Error": ""
+    },
+    "limits": {
+      "Memory": 8589934592,
+      "MemorySwap": 8589934592,
+      "NanoCpus": 2000000000,
+      "NetworkMode": "none",
+      "ReadonlyRootfs": true
+    },
+    "result": {
+      "at": "2026-11-06T16:59:31.501384+00:00",
+      "error_code": "WORKER_NOT_ACTIVATED",
+      "event": "routing_request",
+      "http_status": 503,
+      "stage": "http_rejected"
+    }
+  },
+  {
+    "label": "prepare-synthetic-validator",
+    "profile": "8gb-2cpu",
+    "image_id": "sha256:9dad7a112d031c65cd92c83880c9ce876b0ce79de36c1220b787c0b19e186173",
+    "exit_code": 0,
+    "timed_out": false,
+    "wall_seconds": 2.9689999999998236,
+    "state": {
+      "ExitCode": 0,
+      "OOMKilled": false,
+      "Error": ""
+    },
+    "limits": {
+      "Memory": 8589934592,
+      "MemorySwap": 8589934592,
+      "NanoCpus": 2000000000,
+      "NetworkMode": "none",
+      "ReadonlyRootfs": true
+    },
+    "result": {
+      "mode": "prepare-validator",
+      "scope": "EXISTING_SYNTHETIC_UNIT_FIXTURE",
+      "work_sha256": "22dd22e119c86fe1037aed8d742936c32730de0795a39f543b90069aad4c0834",
+      "total_seconds": 1.941690663000145,
+      "metrics": {
+        "process_peak_rss_bytes": 111411200,
+        "process_cpu_seconds": 2.356941,
+        "cgroup": {
+          "memory.max": "8589934592",
+          "memory.peak": "61341696",
+          "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+          "cpu.max": "200000 100000",
+          "cpu.stat": "usage_usec 2360746\nuser_usec 2162330\nsystem_usec 198416\nnice_usec 0\nnr_periods 21\nnr_throttled 3\nthrottled_usec 1211813\nnr_bursts 0\nburst_usec 0"
+        }
+      }
+    }
+  },
+  {
+    "label": "512mb-0.1cpu-planner-startup",
+    "profile": "512mb-0.1cpu",
+    "image_id": "sha256:9dad7a112d031c65cd92c83880c9ce876b0ce79de36c1220b787c0b19e186173",
+    "exit_code": 0,
+    "timed_out": false,
+    "wall_seconds": 9.672000000000025,
+    "state": {
+      "ExitCode": 0,
+      "OOMKilled": false,
+      "Error": ""
+    },
+    "limits": {
+      "Memory": 536870912,
+      "MemorySwap": 536870912,
+      "NanoCpus": 100000000,
+      "NetworkMode": "none",
+      "ReadonlyRootfs": true
+    },
+    "result": {
+      "mode": "startup",
+      "role": "planner",
+      "scope": "DISABLED_NO_DB_NO_GRAPH",
+      "startup_to_health_seconds": 7.388908262999848,
+      "total_seconds": 7.388910850000002,
+      "metrics": {
+        "process_peak_rss_bytes": 33931264,
+        "process_cpu_seconds": 0.832387,
+        "cgroup": {
+          "memory.max": "536870912",
+          "memory.peak": "23384064",
+          "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+          "cpu.max": "10000 100000",
+          "cpu.stat": "usage_usec 837688\nuser_usec 731002\nsystem_usec 106686\nnice_usec 0\nnr_periods 80\nnr_throttled 80\nthrottled_usec 7133774\nnr_bursts 0\nburst_usec 0"
+        }
+      }
+    }
+  },
+  {
+    "label": "512mb-0.1cpu-validator-startup",
+    "profile": "512mb-0.1cpu",
+    "image_id": "sha256:73141a58d0e949a11a794e344ee19ed4ca0d46f88bb9699e8ebb3ddff0179371",
+    "exit_code": 0,
+    "timed_out": false,
+    "wall_seconds": 8.687000000000126,
+    "state": {
+      "ExitCode": 0,
+      "OOMKilled": false,
+      "Error": ""
+    },
+    "limits": {
+      "Memory": 536870912,
+      "MemorySwap": 536870912,
+      "NanoCpus": 100000000,
+      "NetworkMode": "none",
+      "ReadonlyRootfs": true
+    },
+    "result": {
+      "mode": "startup",
+      "role": "validator",
+      "scope": "DISABLED_NO_DB_NO_GRAPH",
+      "startup_to_health_seconds": 6.300971785999991,
+      "total_seconds": 6.300974672999928,
+      "metrics": {
+        "process_peak_rss_bytes": 34025472,
+        "process_cpu_seconds": 0.738034,
+        "cgroup": {
+          "memory.max": "536870912",
+          "memory.peak": "23121920",
+          "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+          "cpu.max": "10000 100000",
+          "cpu.stat": "usage_usec 741803\nuser_usec 679408\nsystem_usec 62394\nnice_usec 0\nnr_periods 72\nnr_throttled 71\nthrottled_usec 6394401\nnr_bursts 0\nburst_usec 0"
+        }
+      }
+    }
+  },
+  {
+    "label": "512mb-0.1cpu-synthetic-planner-legacy",
+    "profile": "512mb-0.1cpu",
+    "image_id": "sha256:9dad7a112d031c65cd92c83880c9ce876b0ce79de36c1220b787c0b19e186173",
+    "exit_code": 0,
+    "timed_out": false,
+    "wall_seconds": 26.078000000000202,
+    "state": {
+      "ExitCode": 0,
+      "OOMKilled": false,
+      "Error": ""
+    },
+    "limits": {
+      "Memory": 536870912,
+      "MemorySwap": 536870912,
+      "NanoCpus": 100000000,
+      "NetworkMode": "none",
+      "ReadonlyRootfs": true
+    },
+    "result": {
+      "mode": "planner",
+      "engine": "legacy",
+      "scope": "EXISTING_SYNTHETIC_1000_NODE_3000_EDGE_FIXTURE",
+      "warm_seconds": 2.8989998099859804e-06,
+      "matrix_seconds": [
+        1.4976697130000503,
+        1.2009948979998626,
+        1.2992149209999297
+      ],
+      "four_method_seconds": 9.897544416999835,
+      "methods": [
+        {
+          "method": "fcfs",
+          "valid": true,
+          "feasible": true,
+          "status": "COMPLETE",
+          "runtime_seconds": 0.0933633170000121,
+          "solver_runtime_seconds": 0.0,
+          "timeout": false,
+          "solver_statuses": [],
+          "coverage_optimal": false
+        },
+        {
+          "method": "nearest_neighbour",
+          "valid": true,
+          "feasible": true,
+          "status": "COMPLETE",
+          "runtime_seconds": 0.0010930720000033034,
+          "solver_runtime_seconds": 0.0,
+          "timeout": false,
+          "solver_statuses": [],
+          "coverage_optimal": false
+        },
+        {
+          "method": "distance_only",
+          "valid": true,
+          "feasible": true,
+          "status": "COMPLETE",
+          "runtime_seconds": 9.502672214999848,
+          "solver_runtime_seconds": 0.105173469,
+          "timeout": false,
+          "solver_statuses": [
+            "OPTIMAL",
+            "OPTIMAL"
+          ],
+          "coverage_optimal": true
+        },
+        {
+          "method": "proposed",
+          "valid": true,
+          "feasible": true,
+          "status": "COMPLETE",
+          "runtime_seconds": 0.19973875000005137,
+          "solver_runtime_seconds": 0.195477646,
+          "timeout": false,
+          "solver_statuses": [
+            "OPTIMAL",
+            "OPTIMAL"
+          ],
+          "coverage_optimal": true
+        }
+      ],
+      "matrix_sha256": "32dbb385501226b876d9a30486c89d0f80c90c4bc8acf3d55abbc814d1571e09",
+      "total_seconds": 23.499835632999975,
+      "metrics": {
+        "process_peak_rss_bytes": 111489024,
+        "process_cpu_seconds": 2.465674,
+        "cgroup": {
+          "memory.max": "536870912",
+          "memory.peak": "61218816",
+          "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+          "cpu.max": "10000 100000",
+          "cpu.stat": "usage_usec 2468341\nuser_usec 2176830\nsystem_usec 291511\nnice_usec 0\nnr_periods 243\nnr_throttled 243\nthrottled_usec 23784105\nnr_bursts 0\nburst_usec 0"
+        }
+      }
+    }
+  },
+  {
+    "label": "512mb-0.1cpu-synthetic-planner-compact",
+    "profile": "512mb-0.1cpu",
+    "image_id": "sha256:9dad7a112d031c65cd92c83880c9ce876b0ce79de36c1220b787c0b19e186173",
+    "exit_code": 0,
+    "timed_out": false,
+    "wall_seconds": 25.406999999999925,
+    "state": {
+      "ExitCode": 0,
+      "OOMKilled": false,
+      "Error": ""
+    },
+    "limits": {
+      "Memory": 536870912,
+      "MemorySwap": 536870912,
+      "NanoCpus": 100000000,
+      "NetworkMode": "none",
+      "ReadonlyRootfs": true
+    },
+    "result": {
+      "mode": "planner",
+      "engine": "compact",
+      "scope": "EXISTING_SYNTHETIC_1000_NODE_3000_EDGE_FIXTURE",
+      "warm_seconds": 0.7947411830000419,
+      "matrix_seconds": [
+        0.4965767359999518,
+        0.505229460999999,
+        0.5023601670000062
+      ],
+      "four_method_seconds": 7.6987224220001735,
+      "methods": [
+        {
+          "method": "fcfs",
+          "valid": true,
+          "feasible": true,
+          "status": "COMPLETE",
+          "runtime_seconds": 0.0016749930000514723,
+          "solver_runtime_seconds": 0.0,
+          "timeout": false,
+          "solver_statuses": [],
+          "coverage_optimal": false
+        },
+        {
+          "method": "nearest_neighbour",
+          "valid": true,
+          "feasible": true,
+          "status": "COMPLETE",
+          "runtime_seconds": 0.002363653999964299,
+          "solver_runtime_seconds": 0.0,
+          "timeout": false,
+          "solver_statuses": [],
+          "coverage_optimal": false
+        },
+        {
+          "method": "distance_only",
+          "valid": true,
+          "feasible": true,
+          "status": "COMPLETE",
+          "runtime_seconds": 7.304428273999974,
+          "solver_runtime_seconds": 0.194664093,
+          "timeout": false,
+          "solver_statuses": [
+            "OPTIMAL",
+            "OPTIMAL"
+          ],
+          "coverage_optimal": true
+        },
+        {
+          "method": "proposed",
+          "valid": true,
+          "feasible": true,
+          "status": "COMPLETE",
+          "runtime_seconds": 0.1994570429999385,
+          "solver_runtime_seconds": 0.19492203000000002,
+          "timeout": false,
+          "solver_statuses": [
+            "OPTIMAL",
+            "OPTIMAL"
+          ],
+          "coverage_optimal": true
+        }
+      ],
+      "matrix_sha256": "32dbb385501226b876d9a30486c89d0f80c90c4bc8acf3d55abbc814d1571e09",
+      "total_seconds": 22.504457225000124,
+      "metrics": {
+        "process_peak_rss_bytes": 110313472,
+        "process_cpu_seconds": 2.3934819999999997,
+        "cgroup": {
+          "memory.max": "536870912",
+          "memory.peak": "60035072",
+          "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+          "cpu.max": "10000 100000",
+          "cpu.stat": "usage_usec 2396127\nuser_usec 2203294\nsystem_usec 192832\nnice_usec 0\nnr_periods 234\nnr_throttled 234\nthrottled_usec 23269735\nnr_bursts 0\nburst_usec 0"
+        }
+      }
+    }
+  },
+  {
+    "label": "512mb-0.1cpu-synthetic-validator",
+    "profile": "512mb-0.1cpu",
+    "image_id": "sha256:73141a58d0e949a11a794e344ee19ed4ca0d46f88bb9699e8ebb3ddff0179371",
+    "exit_code": 0,
+    "timed_out": false,
+    "wall_seconds": 8.5150000000001,
+    "state": {
+      "ExitCode": 0,
+      "OOMKilled": false,
+      "Error": ""
+    },
+    "limits": {
+      "Memory": 536870912,
+      "MemorySwap": 536870912,
+      "NanoCpus": 100000000,
+      "NetworkMode": "none",
+      "ReadonlyRootfs": true
+    },
+    "result": {
+      "mode": "validator",
+      "scope": "SYNTHETIC_NO_DB_OR_HTTP_ATTESTATION",
+      "validation_seconds": [
+        0.00384347399995022,
+        0.08902707900006135,
+        0.0029402170000594197
+      ],
+      "mock_attestations": 3,
+      "fixture_sha256": "22dd22e119c86fe1037aed8d742936c32730de0795a39f543b90069aad4c0834",
+      "total_seconds": 6.792081733000032,
+      "metrics": {
+        "process_peak_rss_bytes": 30601216,
+        "process_cpu_seconds": 0.795764,
+        "cgroup": {
+          "memory.max": "536870912",
+          "memory.peak": "20606976",
+          "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+          "cpu.max": "10000 100000",
+          "cpu.stat": "usage_usec 802172\nuser_usec 715553\nsystem_usec 86619\nnice_usec 0\nnr_periods 76\nnr_throttled 76\nthrottled_usec 6847002\nnr_bursts 0\nburst_usec 0"
+        }
+      }
+    }
+  },
+  {
+    "label": "2gb-1cpu-planner-startup",
+    "profile": "2gb-1cpu",
+    "image_id": "sha256:9dad7a112d031c65cd92c83880c9ce876b0ce79de36c1220b787c0b19e186173",
+    "exit_code": 0,
+    "timed_out": false,
+    "wall_seconds": 2.0319999999999254,
+    "state": {
+      "ExitCode": 0,
+      "OOMKilled": false,
+      "Error": ""
+    },
+    "limits": {
+      "Memory": 2147483648,
+      "MemorySwap": 2147483648,
+      "NanoCpus": 1000000000,
+      "NetworkMode": "none",
+      "ReadonlyRootfs": true
+    },
+    "result": {
+      "mode": "startup",
+      "role": "planner",
+      "scope": "DISABLED_NO_DB_NO_GRAPH",
+      "startup_to_health_seconds": 0.7505920559999595,
+      "total_seconds": 0.7505949970000074,
+      "metrics": {
+        "process_peak_rss_bytes": 33853440,
+        "process_cpu_seconds": 0.833282,
+        "cgroup": {
+          "memory.max": "2147483648",
+          "memory.peak": "23130112",
+          "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+          "cpu.max": "100000 100000",
+          "cpu.stat": "usage_usec 836001\nuser_usec 776569\nsystem_usec 59431\nnice_usec 0\nnr_periods 9\nnr_throttled 4\nthrottled_usec 3439\nnr_bursts 0\nburst_usec 0"
+        }
+      }
+    }
+  },
+  {
+    "label": "2gb-1cpu-validator-startup",
+    "profile": "2gb-1cpu",
+    "image_id": "sha256:73141a58d0e949a11a794e344ee19ed4ca0d46f88bb9699e8ebb3ddff0179371",
+    "exit_code": 0,
+    "timed_out": false,
+    "wall_seconds": 2.375,
+    "state": {
+      "ExitCode": 0,
+      "OOMKilled": false,
+      "Error": ""
+    },
+    "limits": {
+      "Memory": 2147483648,
+      "MemorySwap": 2147483648,
+      "NanoCpus": 1000000000,
+      "NetworkMode": "none",
+      "ReadonlyRootfs": true
+    },
+    "result": {
+      "mode": "startup",
+      "role": "validator",
+      "scope": "DISABLED_NO_DB_NO_GRAPH",
+      "startup_to_health_seconds": 0.7308972920000087,
+      "total_seconds": 0.7308998490000249,
+      "metrics": {
+        "process_peak_rss_bytes": 33943552,
+        "process_cpu_seconds": 0.8807849999999999,
+        "cgroup": {
+          "memory.max": "2147483648",
+          "memory.peak": "23920640",
+          "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+          "cpu.max": "100000 100000",
+          "cpu.stat": "usage_usec 884690\nuser_usec 786391\nsystem_usec 98298\nnice_usec 0\nnr_periods 9\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0"
+        }
+      }
+    }
+  },
+  {
+    "label": "2gb-1cpu-synthetic-planner-legacy",
+    "profile": "2gb-1cpu",
+    "image_id": "sha256:9dad7a112d031c65cd92c83880c9ce876b0ce79de36c1220b787c0b19e186173",
+    "exit_code": 0,
+    "timed_out": false,
+    "wall_seconds": 5.4220000000000255,
+    "state": {
+      "ExitCode": 0,
+      "OOMKilled": false,
+      "Error": ""
+    },
+    "limits": {
+      "Memory": 2147483648,
+      "MemorySwap": 2147483648,
+      "NanoCpus": 1000000000,
+      "NetworkMode": "none",
+      "ReadonlyRootfs": true
+    },
+    "result": {
+      "mode": "planner",
+      "engine": "legacy",
+      "scope": "EXISTING_SYNTHETIC_1000_NODE_3000_EDGE_FIXTURE",
+      "warm_seconds": 5.748999910792918e-06,
+      "matrix_seconds": [
+        0.27403590800008715,
+        0.19000487200014504,
+        0.3047763780000423
+      ],
+      "four_method_seconds": 1.3121510419998685,
+      "methods": [
+        {
+          "method": "fcfs",
+          "valid": true,
+          "feasible": true,
+          "status": "COMPLETE",
+          "runtime_seconds": 0.0061687240001901955,
+          "solver_runtime_seconds": 0.0,
+          "timeout": false,
+          "solver_statuses": [],
+          "coverage_optimal": false
+        },
+        {
+          "method": "nearest_neighbour",
+          "valid": true,
+          "feasible": true,
+          "status": "COMPLETE",
+          "runtime_seconds": 0.002297368999961691,
+          "solver_runtime_seconds": 0.0,
+          "timeout": false,
+          "solver_statuses": [],
+          "coverage_optimal": false
+        },
+        {
+          "method": "distance_only",
+          "valid": true,
+          "feasible": true,
+          "status": "COMPLETE",
+          "runtime_seconds": 1.2731889310000497,
+          "solver_runtime_seconds": 0.014955096000000001,
+          "timeout": false,
+          "solver_statuses": [
+            "OPTIMAL",
+            "OPTIMAL"
+          ],
+          "coverage_optimal": true
+        },
+        {
+          "method": "proposed",
+          "valid": true,
+          "feasible": true,
+          "status": "COMPLETE",
+          "runtime_seconds": 0.015113485000028959,
+          "solver_runtime_seconds": 0.011181662,
+          "timeout": false,
+          "solver_statuses": [
+            "OPTIMAL",
+            "OPTIMAL"
+          ],
+          "coverage_optimal": true
+        }
+      ],
+      "matrix_sha256": "32dbb385501226b876d9a30486c89d0f80c90c4bc8acf3d55abbc814d1571e09",
+      "total_seconds": 4.017633844999864,
+      "metrics": {
+        "process_peak_rss_bytes": 111226880,
+        "process_cpu_seconds": 4.13526,
+        "cgroup": {
+          "memory.max": "2147483648",
+          "memory.peak": "61812736",
+          "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+          "cpu.max": "100000 100000",
+          "cpu.stat": "usage_usec 4140529\nuser_usec 3880476\nsystem_usec 260052\nnice_usec 0\nnr_periods 42\nnr_throttled 4\nthrottled_usec 2019009\nnr_bursts 0\nburst_usec 0"
+        }
+      }
+    }
+  },
+  {
+    "label": "2gb-1cpu-synthetic-planner-compact",
+    "profile": "2gb-1cpu",
+    "image_id": "sha256:9dad7a112d031c65cd92c83880c9ce876b0ce79de36c1220b787c0b19e186173",
+    "exit_code": 0,
+    "timed_out": false,
+    "wall_seconds": 4.625,
+    "state": {
+      "ExitCode": 0,
+      "OOMKilled": false,
+      "Error": ""
+    },
+    "limits": {
+      "Memory": 2147483648,
+      "MemorySwap": 2147483648,
+      "NanoCpus": 1000000000,
+      "NetworkMode": "none",
+      "ReadonlyRootfs": true
+    },
+    "result": {
+      "mode": "planner",
+      "engine": "compact",
+      "scope": "EXISTING_SYNTHETIC_1000_NODE_3000_EDGE_FIXTURE",
+      "warm_seconds": 0.11662659600006009,
+      "matrix_seconds": [
+        0.08071655399999145,
+        0.07644068899980994,
+        0.07488988199997948
+      ],
+      "four_method_seconds": 1.3187699479999537,
+      "methods": [
+        {
+          "method": "fcfs",
+          "valid": true,
+          "feasible": true,
+          "status": "COMPLETE",
+          "runtime_seconds": 0.0029040520000762626,
+          "solver_runtime_seconds": 0.0,
+          "timeout": false,
+          "solver_statuses": [],
+          "coverage_optimal": false
+        },
+        {
+          "method": "nearest_neighbour",
+          "valid": true,
+          "feasible": true,
+          "status": "COMPLETE",
+          "runtime_seconds": 0.002702618000057555,
+          "solver_runtime_seconds": 0.0,
+          "timeout": false,
+          "solver_statuses": [],
+          "coverage_optimal": false
+        },
+        {
+          "method": "distance_only",
+          "valid": true,
+          "feasible": true,
+          "status": "COMPLETE",
+          "runtime_seconds": 1.2804537269998946,
+          "solver_runtime_seconds": 0.015849346,
+          "timeout": false,
+          "solver_statuses": [
+            "OPTIMAL",
+            "OPTIMAL"
+          ],
+          "coverage_optimal": true
+        },
+        {
+          "method": "proposed",
+          "valid": true,
+          "feasible": true,
+          "status": "COMPLETE",
+          "runtime_seconds": 0.017688966999912736,
+          "solver_runtime_seconds": 0.010359647,
+          "timeout": false,
+          "solver_statuses": [
+            "OPTIMAL",
+            "OPTIMAL"
+          ],
+          "coverage_optimal": true
+        }
+      ],
+      "matrix_sha256": "32dbb385501226b876d9a30486c89d0f80c90c4bc8acf3d55abbc814d1571e09",
+      "total_seconds": 3.253031268000086,
+      "metrics": {
+        "process_peak_rss_bytes": 111300608,
+        "process_cpu_seconds": 3.401439,
+        "cgroup": {
+          "memory.max": "2147483648",
+          "memory.peak": "61386752",
+          "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+          "cpu.max": "100000 100000",
+          "cpu.stat": "usage_usec 3408452\nuser_usec 3122428\nsystem_usec 286024\nnice_usec 0\nnr_periods 35\nnr_throttled 6\nthrottled_usec 1840829\nnr_bursts 0\nburst_usec 0"
+        }
+      }
+    }
+  },
+  {
+    "label": "2gb-1cpu-synthetic-validator",
+    "profile": "2gb-1cpu",
+    "image_id": "sha256:73141a58d0e949a11a794e344ee19ed4ca0d46f88bb9699e8ebb3ddff0179371",
+    "exit_code": 0,
+    "timed_out": false,
+    "wall_seconds": 2.25,
+    "state": {
+      "ExitCode": 0,
+      "OOMKilled": false,
+      "Error": ""
+    },
+    "limits": {
+      "Memory": 2147483648,
+      "MemorySwap": 2147483648,
+      "NanoCpus": 1000000000,
+      "NetworkMode": "none",
+      "ReadonlyRootfs": true
+    },
+    "result": {
+      "mode": "validator",
+      "scope": "SYNTHETIC_NO_DB_OR_HTTP_ATTESTATION",
+      "validation_seconds": [
+        0.006014163999907396,
+        0.004578556000069511,
+        0.005000264000045718
+      ],
+      "mock_attestations": 3,
+      "fixture_sha256": "22dd22e119c86fe1037aed8d742936c32730de0795a39f543b90069aad4c0834",
+      "total_seconds": 1.0585198420001234,
+      "metrics": {
+        "process_peak_rss_bytes": 30433280,
+        "process_cpu_seconds": 1.2335440000000002,
+        "cgroup": {
+          "memory.max": "2147483648",
+          "memory.peak": "20615168",
+          "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+          "cpu.max": "100000 100000",
+          "cpu.stat": "usage_usec 1238584\nuser_usec 1099640\nsystem_usec 138943\nnice_usec 0\nnr_periods 13\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0"
+        }
+      }
+    }
+  },
+  {
+    "label": "4gb-2cpu-planner-startup",
+    "profile": "4gb-2cpu",
+    "image_id": "sha256:9dad7a112d031c65cd92c83880c9ce876b0ce79de36c1220b787c0b19e186173",
+    "exit_code": 0,
+    "timed_out": false,
+    "wall_seconds": 3.25,
+    "state": {
+      "ExitCode": 0,
+      "OOMKilled": false,
+      "Error": ""
+    },
+    "limits": {
+      "Memory": 4294967296,
+      "MemorySwap": 4294967296,
+      "NanoCpus": 2000000000,
+      "NetworkMode": "none",
+      "ReadonlyRootfs": true
+    },
+    "result": {
+      "mode": "startup",
+      "role": "planner",
+      "scope": "DISABLED_NO_DB_NO_GRAPH",
+      "startup_to_health_seconds": 1.364679199999955,
+      "total_seconds": 1.3646828119999554,
+      "metrics": {
+        "process_peak_rss_bytes": 33787904,
+        "process_cpu_seconds": 1.567278,
+        "cgroup": {
+          "memory.max": "4294967296",
+          "memory.peak": "23457792",
+          "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+          "cpu.max": "200000 100000",
+          "cpu.stat": "usage_usec 1572902\nuser_usec 1440151\nsystem_usec 132751\nnice_usec 0\nnr_periods 17\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0"
+        }
+      }
+    }
+  },
+  {
+    "label": "4gb-2cpu-validator-startup",
+    "profile": "4gb-2cpu",
+    "image_id": "sha256:73141a58d0e949a11a794e344ee19ed4ca0d46f88bb9699e8ebb3ddff0179371",
+    "exit_code": 0,
+    "timed_out": false,
+    "wall_seconds": 3.2650000000001,
+    "state": {
+      "ExitCode": 0,
+      "OOMKilled": false,
+      "Error": ""
+    },
+    "limits": {
+      "Memory": 4294967296,
+      "MemorySwap": 4294967296,
+      "NanoCpus": 2000000000,
+      "NetworkMode": "none",
+      "ReadonlyRootfs": true
+    },
+    "result": {
+      "mode": "startup",
+      "role": "validator",
+      "scope": "DISABLED_NO_DB_NO_GRAPH",
+      "startup_to_health_seconds": 1.401674666999952,
+      "total_seconds": 1.401678033999815,
+      "metrics": {
+        "process_peak_rss_bytes": 33767424,
+        "process_cpu_seconds": 1.589067,
+        "cgroup": {
+          "memory.max": "4294967296",
+          "memory.peak": "23126016",
+          "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+          "cpu.max": "200000 100000",
+          "cpu.stat": "usage_usec 1601927\nuser_usec 1443762\nsystem_usec 158165\nnice_usec 0\nnr_periods 16\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0"
+        }
+      }
+    }
+  },
+  {
+    "label": "4gb-2cpu-synthetic-planner-legacy",
+    "profile": "4gb-2cpu",
+    "image_id": "sha256:9dad7a112d031c65cd92c83880c9ce876b0ce79de36c1220b787c0b19e186173",
+    "exit_code": 0,
+    "timed_out": false,
+    "wall_seconds": 5.5470000000000255,
+    "state": {
+      "ExitCode": 0,
+      "OOMKilled": false,
+      "Error": ""
+    },
+    "limits": {
+      "Memory": 4294967296,
+      "MemorySwap": 4294967296,
+      "NanoCpus": 2000000000,
+      "NetworkMode": "none",
+      "ReadonlyRootfs": true
+    },
+    "result": {
+      "mode": "planner",
+      "engine": "legacy",
+      "scope": "EXISTING_SYNTHETIC_1000_NODE_3000_EDGE_FIXTURE",
+      "warm_seconds": 4.3149998418812174e-06,
+      "matrix_seconds": [
+        0.17367178699987562,
+        0.2971477139999479,
+        0.20089105499982907
+      ],
+      "four_method_seconds": 1.267120838999972,
+      "methods": [
+        {
+          "method": "fcfs",
+          "valid": true,
+          "feasible": true,
+          "status": "COMPLETE",
+          "runtime_seconds": 0.002164121000078012,
+          "solver_runtime_seconds": 0.0,
+          "timeout": false,
+          "solver_statuses": [],
+          "coverage_optimal": false
+        },
+        {
+          "method": "nearest_neighbour",
+          "valid": true,
+          "feasible": true,
+          "status": "COMPLETE",
+          "runtime_seconds": 0.002628534999985277,
+          "solver_runtime_seconds": 0.0,
+          "timeout": false,
+          "solver_statuses": [],
+          "coverage_optimal": false
+        },
+        {
+          "method": "distance_only",
+          "valid": true,
+          "feasible": true,
+          "status": "COMPLETE",
+          "runtime_seconds": 1.229884691000052,
+          "solver_runtime_seconds": 0.021845555000000003,
+          "timeout": false,
+          "solver_statuses": [
+            "OPTIMAL",
+            "OPTIMAL"
+          ],
+          "coverage_optimal": true
+        },
+        {
+          "method": "proposed",
+          "valid": true,
+          "feasible": true,
+          "status": "COMPLETE",
+          "runtime_seconds": 0.017933073999984117,
+          "solver_runtime_seconds": 0.013656003,
+          "timeout": false,
+          "solver_statuses": [
+            "OPTIMAL",
+            "OPTIMAL"
+          ],
+          "coverage_optimal": true
+        }
+      ],
+      "matrix_sha256": "32dbb385501226b876d9a30486c89d0f80c90c4bc8acf3d55abbc814d1571e09",
+      "total_seconds": 3.8227987909999683,
+      "metrics": {
+        "process_peak_rss_bytes": 111017984,
+        "process_cpu_seconds": 4.281053999999999,
+        "cgroup": {
+          "memory.max": "4294967296",
+          "memory.peak": "61222912",
+          "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+          "cpu.max": "200000 100000",
+          "cpu.stat": "usage_usec 4285931\nuser_usec 3945971\nsystem_usec 339960\nnice_usec 0\nnr_periods 40\nnr_throttled 3\nthrottled_usec 1681020\nnr_bursts 0\nburst_usec 0"
+        }
+      }
+    }
+  },
+  {
+    "label": "4gb-2cpu-synthetic-planner-compact",
+    "profile": "4gb-2cpu",
+    "image_id": "sha256:9dad7a112d031c65cd92c83880c9ce876b0ce79de36c1220b787c0b19e186173",
+    "exit_code": 0,
+    "timed_out": false,
+    "wall_seconds": 4.4529999999999745,
+    "state": {
+      "ExitCode": 0,
+      "OOMKilled": false,
+      "Error": ""
+    },
+    "limits": {
+      "Memory": 4294967296,
+      "MemorySwap": 4294967296,
+      "NanoCpus": 2000000000,
+      "NetworkMode": "none",
+      "ReadonlyRootfs": true
+    },
+    "result": {
+      "mode": "planner",
+      "engine": "compact",
+      "scope": "EXISTING_SYNTHETIC_1000_NODE_3000_EDGE_FIXTURE",
+      "warm_seconds": 0.10311850500011133,
+      "matrix_seconds": [
+        0.07119089300022097,
+        0.0680595540000013,
+        0.07273709799983408
+      ],
+      "four_method_seconds": 1.2124675069999284,
+      "methods": [
+        {
+          "method": "fcfs",
+          "valid": true,
+          "feasible": true,
+          "status": "COMPLETE",
+          "runtime_seconds": 0.001576362999912817,
+          "solver_runtime_seconds": 0.0,
+          "timeout": false,
+          "solver_statuses": [],
+          "coverage_optimal": false
+        },
+        {
+          "method": "nearest_neighbour",
+          "valid": true,
+          "feasible": true,
+          "status": "COMPLETE",
+          "runtime_seconds": 0.0018181479999839212,
+          "solver_runtime_seconds": 0.0,
+          "timeout": false,
+          "solver_statuses": [],
+          "coverage_optimal": false
+        },
+        {
+          "method": "distance_only",
+          "valid": true,
+          "feasible": true,
+          "status": "COMPLETE",
+          "runtime_seconds": 1.1690702409998721,
+          "solver_runtime_seconds": 0.021212069,
+          "timeout": false,
+          "solver_statuses": [
+            "OPTIMAL",
+            "OPTIMAL"
+          ],
+          "coverage_optimal": true
+        },
+        {
+          "method": "proposed",
+          "valid": true,
+          "feasible": true,
+          "status": "COMPLETE",
+          "runtime_seconds": 0.025335412999993423,
+          "solver_runtime_seconds": 0.017442284000000002,
+          "timeout": false,
+          "solver_statuses": [
+            "OPTIMAL",
+            "OPTIMAL"
+          ],
+          "coverage_optimal": true
+        }
+      ],
+      "matrix_sha256": "32dbb385501226b876d9a30486c89d0f80c90c4bc8acf3d55abbc814d1571e09",
+      "total_seconds": 2.993060753000009,
+      "metrics": {
+        "process_peak_rss_bytes": 111640576,
+        "process_cpu_seconds": 3.494937,
+        "cgroup": {
+          "memory.max": "4294967296",
+          "memory.peak": "61493248",
+          "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+          "cpu.max": "200000 100000",
+          "cpu.stat": "usage_usec 3498689\nuser_usec 3174361\nsystem_usec 324328\nnice_usec 0\nnr_periods 31\nnr_throttled 3\nthrottled_usec 1189645\nnr_bursts 0\nburst_usec 0"
+        }
+      }
+    }
+  },
+  {
+    "label": "4gb-2cpu-synthetic-validator",
+    "profile": "4gb-2cpu",
+    "image_id": "sha256:73141a58d0e949a11a794e344ee19ed4ca0d46f88bb9699e8ebb3ddff0179371",
+    "exit_code": 0,
+    "timed_out": false,
+    "wall_seconds": 2.328999999999951,
+    "state": {
+      "ExitCode": 0,
+      "OOMKilled": false,
+      "Error": ""
+    },
+    "limits": {
+      "Memory": 4294967296,
+      "MemorySwap": 4294967296,
+      "NanoCpus": 2000000000,
+      "NetworkMode": "none",
+      "ReadonlyRootfs": true
+    },
+    "result": {
+      "mode": "validator",
+      "scope": "SYNTHETIC_NO_DB_OR_HTTP_ATTESTATION",
+      "validation_seconds": [
+        0.009266435999961686,
+        0.0076324620001742005,
+        0.005794707999939419
+      ],
+      "mock_attestations": 3,
+      "fixture_sha256": "22dd22e119c86fe1037aed8d742936c32730de0795a39f543b90069aad4c0834",
+      "total_seconds": 1.1086817380000866,
+      "metrics": {
+        "process_peak_rss_bytes": 30486528,
+        "process_cpu_seconds": 1.288905,
+        "cgroup": {
+          "memory.max": "4294967296",
+          "memory.peak": "20578304",
+          "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+          "cpu.max": "200000 100000",
+          "cpu.stat": "usage_usec 1294715\nuser_usec 1176271\nsystem_usec 118444\nnice_usec 0\nnr_periods 13\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0"
+        }
+      }
+    }
+  },
+  {
+    "label": "8gb-2cpu-planner-startup",
+    "profile": "8gb-2cpu",
+    "image_id": "sha256:9dad7a112d031c65cd92c83880c9ce876b0ce79de36c1220b787c0b19e186173",
+    "exit_code": 0,
+    "timed_out": false,
+    "wall_seconds": 3.203000000000202,
+    "state": {
+      "ExitCode": 0,
+      "OOMKilled": false,
+      "Error": ""
+    },
+    "limits": {
+      "Memory": 8589934592,
+      "MemorySwap": 8589934592,
+      "NanoCpus": 2000000000,
+      "NetworkMode": "none",
+      "ReadonlyRootfs": true
+    },
+    "result": {
+      "mode": "startup",
+      "role": "planner",
+      "scope": "DISABLED_NO_DB_NO_GRAPH",
+      "startup_to_health_seconds": 1.3554714209999474,
+      "total_seconds": 1.3554781789998742,
+      "metrics": {
+        "process_peak_rss_bytes": 33685504,
+        "process_cpu_seconds": 1.573089,
+        "cgroup": {
+          "memory.max": "8589934592",
+          "memory.peak": "23379968",
+          "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+          "cpu.max": "200000 100000",
+          "cpu.stat": "usage_usec 1577992\nuser_usec 1409780\nsystem_usec 168212\nnice_usec 0\nnr_periods 16\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0"
+        }
+      }
+    }
+  },
+  {
+    "label": "8gb-2cpu-validator-startup",
+    "profile": "8gb-2cpu",
+    "image_id": "sha256:73141a58d0e949a11a794e344ee19ed4ca0d46f88bb9699e8ebb3ddff0179371",
+    "exit_code": 0,
+    "timed_out": false,
+    "wall_seconds": 3.905999999999949,
+    "state": {
+      "ExitCode": 0,
+      "OOMKilled": false,
+      "Error": ""
+    },
+    "limits": {
+      "Memory": 8589934592,
+      "MemorySwap": 8589934592,
+      "NanoCpus": 2000000000,
+      "NetworkMode": "none",
+      "ReadonlyRootfs": true
+    },
+    "result": {
+      "mode": "startup",
+      "role": "validator",
+      "scope": "DISABLED_NO_DB_NO_GRAPH",
+      "startup_to_health_seconds": 1.7251613850000922,
+      "total_seconds": 1.7251685850001195,
+      "metrics": {
+        "process_peak_rss_bytes": 33968128,
+        "process_cpu_seconds": 1.94465,
+        "cgroup": {
+          "memory.max": "8589934592",
+          "memory.peak": "23396352",
+          "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+          "cpu.max": "200000 100000",
+          "cpu.stat": "usage_usec 1953354\nuser_usec 1780379\nsystem_usec 172975\nnice_usec 0\nnr_periods 19\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0"
+        }
+      }
+    }
+  },
+  {
+    "label": "8gb-2cpu-synthetic-planner-legacy",
+    "profile": "8gb-2cpu",
+    "image_id": "sha256:9dad7a112d031c65cd92c83880c9ce876b0ce79de36c1220b787c0b19e186173",
+    "exit_code": 0,
+    "timed_out": false,
+    "wall_seconds": 5.9529999999999745,
+    "state": {
+      "ExitCode": 0,
+      "OOMKilled": false,
+      "Error": ""
+    },
+    "limits": {
+      "Memory": 8589934592,
+      "MemorySwap": 8589934592,
+      "NanoCpus": 2000000000,
+      "NetworkMode": "none",
+      "ReadonlyRootfs": true
+    },
+    "result": {
+      "mode": "planner",
+      "engine": "legacy",
+      "scope": "EXISTING_SYNTHETIC_1000_NODE_3000_EDGE_FIXTURE",
+      "warm_seconds": 4.064999984620954e-06,
+      "matrix_seconds": [
+        0.21530747599990718,
+        0.2333704619998116,
+        0.2579068370000641
+      ],
+      "four_method_seconds": 1.2504223290000027,
+      "methods": [
+        {
+          "method": "fcfs",
+          "valid": true,
+          "feasible": true,
+          "status": "COMPLETE",
+          "runtime_seconds": 0.003020011999979033,
+          "solver_runtime_seconds": 0.0,
+          "timeout": false,
+          "solver_statuses": [],
+          "coverage_optimal": false
+        },
+        {
+          "method": "nearest_neighbour",
+          "valid": true,
+          "feasible": true,
+          "status": "COMPLETE",
+          "runtime_seconds": 0.0030002639998656377,
+          "solver_runtime_seconds": 0.0,
+          "timeout": false,
+          "solver_statuses": [],
+          "coverage_optimal": false
+        },
+        {
+          "method": "distance_only",
+          "valid": true,
+          "feasible": true,
+          "status": "COMPLETE",
+          "runtime_seconds": 1.1888491189999968,
+          "solver_runtime_seconds": 0.021278815,
+          "timeout": false,
+          "solver_statuses": [
+            "OPTIMAL",
+            "OPTIMAL"
+          ],
+          "coverage_optimal": true
+        },
+        {
+          "method": "proposed",
+          "valid": true,
+          "feasible": true,
+          "status": "COMPLETE",
+          "runtime_seconds": 0.030229214999963006,
+          "solver_runtime_seconds": 0.023626718,
+          "timeout": false,
+          "solver_statuses": [
+            "OPTIMAL",
+            "OPTIMAL"
+          ],
+          "coverage_optimal": true
+        }
+      ],
+      "matrix_sha256": "32dbb385501226b876d9a30486c89d0f80c90c4bc8acf3d55abbc814d1571e09",
+      "total_seconds": 4.110606817999951,
+      "metrics": {
+        "process_peak_rss_bytes": 111403008,
+        "process_cpu_seconds": 4.658974,
+        "cgroup": {
+          "memory.max": "8589934592",
+          "memory.peak": "60960768",
+          "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+          "cpu.max": "200000 100000",
+          "cpu.stat": "usage_usec 4668602\nuser_usec 4357914\nsystem_usec 310687\nnice_usec 0\nnr_periods 45\nnr_throttled 3\nthrottled_usec 1709202\nnr_bursts 0\nburst_usec 0"
+        }
+      }
+    }
+  },
+  {
+    "label": "8gb-2cpu-synthetic-planner-compact",
+    "profile": "8gb-2cpu",
+    "image_id": "sha256:9dad7a112d031c65cd92c83880c9ce876b0ce79de36c1220b787c0b19e186173",
+    "exit_code": 0,
+    "timed_out": false,
+    "wall_seconds": 5.344000000000051,
+    "state": {
+      "ExitCode": 0,
+      "OOMKilled": false,
+      "Error": ""
+    },
+    "limits": {
+      "Memory": 8589934592,
+      "MemorySwap": 8589934592,
+      "NanoCpus": 2000000000,
+      "NetworkMode": "none",
+      "ReadonlyRootfs": true
+    },
+    "result": {
+      "mode": "planner",
+      "engine": "compact",
+      "scope": "EXISTING_SYNTHETIC_1000_NODE_3000_EDGE_FIXTURE",
+      "warm_seconds": 0.21760505500014915,
+      "matrix_seconds": [
+        0.12137062700003298,
+        0.06020077800008039,
+        0.06019113299998935
+      ],
+      "four_method_seconds": 1.08832067000003,
+      "methods": [
+        {
+          "method": "fcfs",
+          "valid": true,
+          "feasible": true,
+          "status": "COMPLETE",
+          "runtime_seconds": 0.0025242019999041077,
+          "solver_runtime_seconds": 0.0,
+          "timeout": false,
+          "solver_statuses": [],
+          "coverage_optimal": false
+        },
+        {
+          "method": "nearest_neighbour",
+          "valid": true,
+          "feasible": true,
+          "status": "COMPLETE",
+          "runtime_seconds": 0.0027982490000795224,
+          "solver_runtime_seconds": 0.0,
+          "timeout": false,
+          "solver_statuses": [],
+          "coverage_optimal": false
+        },
+        {
+          "method": "distance_only",
+          "valid": true,
+          "feasible": true,
+          "status": "COMPLETE",
+          "runtime_seconds": 1.0516927260000557,
+          "solver_runtime_seconds": 0.012317768,
+          "timeout": false,
+          "solver_statuses": [
+            "OPTIMAL",
+            "OPTIMAL"
+          ],
+          "coverage_optimal": true
+        },
+        {
+          "method": "proposed",
+          "valid": true,
+          "feasible": true,
+          "status": "COMPLETE",
+          "runtime_seconds": 0.017944154999895545,
+          "solver_runtime_seconds": 0.012827660000000001,
+          "timeout": false,
+          "solver_statuses": [
+            "OPTIMAL",
+            "OPTIMAL"
+          ],
+          "coverage_optimal": true
+        }
+      ],
+      "matrix_sha256": "32dbb385501226b876d9a30486c89d0f80c90c4bc8acf3d55abbc814d1571e09",
+      "total_seconds": 3.5939690349998727,
+      "metrics": {
+        "process_peak_rss_bytes": 111493120,
+        "process_cpu_seconds": 4.059575,
+        "cgroup": {
+          "memory.max": "8589934592",
+          "memory.peak": "61329408",
+          "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+          "cpu.max": "200000 100000",
+          "cpu.stat": "usage_usec 4064810\nuser_usec 3723060\nsystem_usec 341749\nnice_usec 0\nnr_periods 37\nnr_throttled 3\nthrottled_usec 1517244\nnr_bursts 0\nburst_usec 0"
+        }
+      }
+    }
+  },
+  {
+    "label": "8gb-2cpu-synthetic-validator",
+    "profile": "8gb-2cpu",
+    "image_id": "sha256:73141a58d0e949a11a794e344ee19ed4ca0d46f88bb9699e8ebb3ddff0179371",
+    "exit_code": 0,
+    "timed_out": false,
+    "wall_seconds": 2.3279999999999745,
+    "state": {
+      "ExitCode": 0,
+      "OOMKilled": false,
+      "Error": ""
+    },
+    "limits": {
+      "Memory": 8589934592,
+      "MemorySwap": 8589934592,
+      "NanoCpus": 2000000000,
+      "NetworkMode": "none",
+      "ReadonlyRootfs": true
+    },
+    "result": {
+      "mode": "validator",
+      "scope": "SYNTHETIC_NO_DB_OR_HTTP_ATTESTATION",
+      "validation_seconds": [
+        0.008613660000037271,
+        0.007066589000032764,
+        0.005846832999850449
+      ],
+      "mock_attestations": 3,
+      "fixture_sha256": "22dd22e119c86fe1037aed8d742936c32730de0795a39f543b90069aad4c0834",
+      "total_seconds": 1.0830067510000845,
+      "metrics": {
+        "process_peak_rss_bytes": 30535680,
+        "process_cpu_seconds": 1.261542,
+        "cgroup": {
+          "memory.max": "8589934592",
+          "memory.peak": "20135936",
+          "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+          "cpu.max": "200000 100000",
+          "cpu.stat": "usage_usec 1265424\nuser_usec 1146662\nsystem_usec 118761\nnice_usec 0\nnr_periods 13\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0"
+        }
+      }
+    }
+  },
+  {
+    "label": "full-graph-8gb-compact-bootstrap",
+    "profile": "8gb-2cpu",
+    "image_id": "sha256:9dad7a112d031c65cd92c83880c9ce876b0ce79de36c1220b787c0b19e186173",
+    "exit_code": 0,
+    "timed_out": false,
+    "wall_seconds": 83.18700000000013,
+    "state": {
+      "ExitCode": 0,
+      "OOMKilled": false,
+      "Error": ""
+    },
+    "limits": {
+      "Memory": 8589934592,
+      "MemorySwap": 8589934592,
+      "NanoCpus": 2000000000,
+      "NetworkMode": "none",
+      "ReadonlyRootfs": true
+    },
+    "result": {
+      "mode": "graph",
+      "engine": "compact",
+      "scope": "APPROVED_HISTORICAL_FULL_GRAPH_THREE_NODE_MATRIX_ONLY_NO_ROUTING_BUNDLE",
+      "nodes": 926414,
+      "edges": 2145828,
+      "load_seconds": 21.716927647000148,
+      "compile_and_optional_artifact_seconds": 58.63486219399988,
+      "matrix_seconds": [
+        0.004822952000040459,
+        0.0044781019998936245
+      ],
+      "full_matrix_parity": true,
+      "artifact_sha256": "7958972d08ea412c7515a47521640588528daa206440a198db2ad47507b8bd01",
+      "graph_sha256": "cbccfa866bebbffe8382f6f54f9fdacb3a470d84d581e954e59014fd9454d005",
+      "total_seconds": 81.4644151739999,
+      "metrics": {
+        "process_peak_rss_bytes": 1581539328,
+        "process_cpu_seconds": 68.845597,
+        "cgroup": {
+          "memory.max": "8589934592",
+          "memory.peak": "1574137856",
+          "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+          "cpu.max": "200000 100000",
+          "cpu.stat": "usage_usec 68850340\nuser_usec 64182452\nsystem_usec 4667887\nnice_usec 0\nnr_periods 817\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0"
+        }
+      }
+    }
+  },
+  {
+    "label": "512mb-0.1cpu-full-graph-legacy",
+    "profile": "512mb-0.1cpu",
+    "image_id": "sha256:9dad7a112d031c65cd92c83880c9ce876b0ce79de36c1220b787c0b19e186173",
+    "exit_code": 137,
+    "timed_out": false,
+    "wall_seconds": 60.7349999999999,
+    "state": {
+      "ExitCode": 137,
+      "OOMKilled": true,
+      "Error": ""
+    },
+    "limits": {
+      "Memory": 536870912,
+      "MemorySwap": 536870912,
+      "NanoCpus": 100000000,
+      "NetworkMode": "none",
+      "ReadonlyRootfs": true
+    }
+  },
+  {
+    "label": "512mb-0.1cpu-full-graph-compact",
+    "profile": "512mb-0.1cpu",
+    "image_id": "sha256:9dad7a112d031c65cd92c83880c9ce876b0ce79de36c1220b787c0b19e186173",
+    "exit_code": 137,
+    "timed_out": false,
+    "wall_seconds": 54.093999999999824,
+    "state": {
+      "ExitCode": 137,
+      "OOMKilled": true,
+      "Error": ""
+    },
+    "limits": {
+      "Memory": 536870912,
+      "MemorySwap": 536870912,
+      "NanoCpus": 100000000,
+      "NetworkMode": "none",
+      "ReadonlyRootfs": true
+    }
+  },
+  {
+    "label": "512mb-0.1cpu-full-graph-artifact-restart",
+    "profile": "512mb-0.1cpu",
+    "image_id": "sha256:9dad7a112d031c65cd92c83880c9ce876b0ce79de36c1220b787c0b19e186173",
+    "exit_code": 0,
+    "timed_out": false,
+    "wall_seconds": 17.89099999999985,
+    "state": {
+      "ExitCode": 0,
+      "OOMKilled": false,
+      "Error": ""
+    },
+    "limits": {
+      "Memory": 536870912,
+      "MemorySwap": 536870912,
+      "NanoCpus": 100000000,
+      "NetworkMode": "none",
+      "ReadonlyRootfs": true
+    },
+    "result": {
+      "mode": "graph",
+      "engine": "artifact",
+      "scope": "APPROVED_HISTORICAL_FULL_GRAPH_THREE_NODE_MATRIX_ONLY_NO_ROUTING_BUNDLE",
+      "nodes": 926414,
+      "edges": 2145828,
+      "load_seconds": 9.597250304,
+      "compile_and_optional_artifact_seconds": 4.9479999688628595e-06,
+      "matrix_seconds": [
+        0.0018178709999574494,
+        0.0016840179998780513
+      ],
+      "full_matrix_parity": true,
+      "artifact_sha256": null,
+      "graph_sha256": "cbccfa866bebbffe8382f6f54f9fdacb3a470d84d581e954e59014fd9454d005",
+      "total_seconds": 15.990007007000031,
+      "metrics": {
+        "process_peak_rss_bytes": 181559296,
+        "process_cpu_seconds": 1.691915,
+        "cgroup": {
+          "memory.max": "536870912",
+          "memory.peak": "171950080",
+          "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+          "cpu.max": "10000 100000",
+          "cpu.stat": "usage_usec 1695430\nuser_usec 1528220\nsystem_usec 167209\nnice_usec 0\nnr_periods 166\nnr_throttled 166\nthrottled_usec 14799395\nnr_bursts 0\nburst_usec 0"
+        }
+      }
+    }
+  },
+  {
+    "label": "2gb-1cpu-full-graph-legacy",
+    "profile": "2gb-1cpu",
+    "image_id": "sha256:9dad7a112d031c65cd92c83880c9ce876b0ce79de36c1220b787c0b19e186173",
+    "exit_code": 137,
+    "timed_out": false,
+    "wall_seconds": 29.218000000000075,
+    "state": {
+      "ExitCode": 137,
+      "OOMKilled": true,
+      "Error": ""
+    },
+    "limits": {
+      "Memory": 2147483648,
+      "MemorySwap": 2147483648,
+      "NanoCpus": 1000000000,
+      "NetworkMode": "none",
+      "ReadonlyRootfs": true
+    }
+  },
+  {
+    "label": "2gb-1cpu-full-graph-compact",
+    "profile": "2gb-1cpu",
+    "image_id": "sha256:9dad7a112d031c65cd92c83880c9ce876b0ce79de36c1220b787c0b19e186173",
+    "exit_code": 0,
+    "timed_out": false,
+    "wall_seconds": 82.1400000000001,
+    "state": {
+      "ExitCode": 0,
+      "OOMKilled": false,
+      "Error": ""
+    },
+    "limits": {
+      "Memory": 2147483648,
+      "MemorySwap": 2147483648,
+      "NanoCpus": 1000000000,
+      "NetworkMode": "none",
+      "ReadonlyRootfs": true
+    },
+    "result": {
+      "mode": "graph",
+      "engine": "compact",
+      "scope": "APPROVED_HISTORICAL_FULL_GRAPH_THREE_NODE_MATRIX_ONLY_NO_ROUTING_BUNDLE",
+      "nodes": 926414,
+      "edges": 2145828,
+      "load_seconds": 21.326534233000075,
+      "compile_and_optional_artifact_seconds": 58.99464311099996,
+      "matrix_seconds": [
+        0.003953493000153685,
+        0.003099858000041422
+      ],
+      "full_matrix_parity": true,
+      "artifact_sha256": null,
+      "graph_sha256": "cbccfa866bebbffe8382f6f54f9fdacb3a470d84d581e954e59014fd9454d005",
+      "total_seconds": 81.04255997300015,
+      "metrics": {
+        "process_peak_rss_bytes": 1581281280,
+        "process_cpu_seconds": 69.434175,
+        "cgroup": {
+          "memory.max": "2147483648",
+          "memory.peak": "1574879232",
+          "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+          "cpu.max": "100000 100000",
+          "cpu.stat": "usage_usec 69440123\nuser_usec 65013853\nsystem_usec 4426269\nnice_usec 0\nnr_periods 812\nnr_throttled 2\nthrottled_usec 7289\nnr_bursts 0\nburst_usec 0"
+        }
+      }
+    }
+  },
+  {
+    "label": "2gb-1cpu-full-graph-artifact-restart",
+    "profile": "2gb-1cpu",
+    "image_id": "sha256:9dad7a112d031c65cd92c83880c9ce876b0ce79de36c1220b787c0b19e186173",
+    "exit_code": 0,
+    "timed_out": false,
+    "wall_seconds": 5.6870000000001255,
+    "state": {
+      "ExitCode": 0,
+      "OOMKilled": false,
+      "Error": ""
+    },
+    "limits": {
+      "Memory": 2147483648,
+      "MemorySwap": 2147483648,
+      "NanoCpus": 1000000000,
+      "NetworkMode": "none",
+      "ReadonlyRootfs": true
+    },
+    "result": {
+      "mode": "graph",
+      "engine": "artifact",
+      "scope": "APPROVED_HISTORICAL_FULL_GRAPH_THREE_NODE_MATRIX_ONLY_NO_ROUTING_BUNDLE",
+      "nodes": 926414,
+      "edges": 2145828,
+      "load_seconds": 2.451263435000101,
+      "compile_and_optional_artifact_seconds": 5.977000000711996e-06,
+      "matrix_seconds": [
+        0.008103501000050528,
+        0.005852945000015097
+      ],
+      "full_matrix_parity": true,
+      "artifact_sha256": null,
+      "graph_sha256": "cbccfa866bebbffe8382f6f54f9fdacb3a470d84d581e954e59014fd9454d005",
+      "total_seconds": 4.110677045999864,
+      "metrics": {
+        "process_peak_rss_bytes": 181202944,
+        "process_cpu_seconds": 4.262462,
+        "cgroup": {
+          "memory.max": "2147483648",
+          "memory.peak": "171864064",
+          "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+          "cpu.max": "100000 100000",
+          "cpu.stat": "usage_usec 4268915\nuser_usec 3917934\nsystem_usec 350981\nnice_usec 0\nnr_periods 44\nnr_throttled 6\nthrottled_usec 2399\nnr_bursts 0\nburst_usec 0"
+        }
+      }
+    }
+  },
+  {
+    "label": "4gb-2cpu-full-graph-legacy",
+    "profile": "4gb-2cpu",
+    "image_id": "sha256:9dad7a112d031c65cd92c83880c9ce876b0ce79de36c1220b787c0b19e186173",
+    "exit_code": 0,
+    "timed_out": false,
+    "wall_seconds": 154.14099999999985,
+    "state": {
+      "ExitCode": 0,
+      "OOMKilled": false,
+      "Error": ""
+    },
+    "limits": {
+      "Memory": 4294967296,
+      "MemorySwap": 4294967296,
+      "NanoCpus": 2000000000,
+      "NetworkMode": "none",
+      "ReadonlyRootfs": true
+    },
+    "result": {
+      "mode": "graph",
+      "engine": "legacy",
+      "scope": "APPROVED_HISTORICAL_FULL_GRAPH_THREE_NODE_MATRIX_ONLY_NO_ROUTING_BUNDLE",
+      "nodes": 926414,
+      "edges": 2145828,
+      "load_seconds": 21.744757642999957,
+      "compile_and_optional_artifact_seconds": 3.1480001325689955e-06,
+      "matrix_seconds": [
+        61.68306954900004,
+        66.57470338099984
+      ],
+      "full_matrix_parity": true,
+      "artifact_sha256": null,
+      "graph_sha256": "cbccfa866bebbffe8382f6f54f9fdacb3a470d84d581e954e59014fd9454d005",
+      "total_seconds": 151.75895597,
+      "metrics": {
+        "process_peak_rss_bytes": 3782025216,
+        "process_cpu_seconds": 139.60986200000002,
+        "cgroup": {
+          "memory.max": "4294967296",
+          "memory.peak": "3780366336",
+          "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+          "cpu.max": "200000 100000",
+          "cpu.stat": "usage_usec 139615077\nuser_usec 123520505\nsystem_usec 16094571\nnice_usec 0\nnr_periods 1520\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0"
+        }
+      }
+    }
+  },
+  {
+    "label": "4gb-2cpu-full-graph-compact",
+    "profile": "4gb-2cpu",
+    "image_id": "sha256:9dad7a112d031c65cd92c83880c9ce876b0ce79de36c1220b787c0b19e186173",
+    "exit_code": 0,
+    "timed_out": false,
+    "wall_seconds": 77.25,
+    "state": {
+      "ExitCode": 0,
+      "OOMKilled": false,
+      "Error": ""
+    },
+    "limits": {
+      "Memory": 4294967296,
+      "MemorySwap": 4294967296,
+      "NanoCpus": 2000000000,
+      "NetworkMode": "none",
+      "ReadonlyRootfs": true
+    },
+    "result": {
+      "mode": "graph",
+      "engine": "compact",
+      "scope": "APPROVED_HISTORICAL_FULL_GRAPH_THREE_NODE_MATRIX_ONLY_NO_ROUTING_BUNDLE",
+      "nodes": 926414,
+      "edges": 2145828,
+      "load_seconds": 24.67455958200003,
+      "compile_and_optional_artifact_seconds": 50.18627124799991,
+      "matrix_seconds": [
+        0.0019073930002377892,
+        0.001509266000084608
+      ],
+      "full_matrix_parity": true,
+      "artifact_sha256": null,
+      "graph_sha256": "cbccfa866bebbffe8382f6f54f9fdacb3a470d84d581e954e59014fd9454d005",
+      "total_seconds": 75.95274653000001,
+      "metrics": {
+        "process_peak_rss_bytes": 1581039616,
+        "process_cpu_seconds": 62.246444000000004,
+        "cgroup": {
+          "memory.max": "4294967296",
+          "memory.peak": "1575215104",
+          "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+          "cpu.max": "200000 100000",
+          "cpu.stat": "usage_usec 62251342\nuser_usec 57735471\nsystem_usec 4515871\nnice_usec 0\nnr_periods 762\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0"
+        }
+      }
+    }
+  },
+  {
+    "label": "4gb-2cpu-full-graph-artifact-restart",
+    "profile": "4gb-2cpu",
+    "image_id": "sha256:9dad7a112d031c65cd92c83880c9ce876b0ce79de36c1220b787c0b19e186173",
+    "exit_code": 0,
+    "timed_out": false,
+    "wall_seconds": 3.375,
+    "state": {
+      "ExitCode": 0,
+      "OOMKilled": false,
+      "Error": ""
+    },
+    "limits": {
+      "Memory": 4294967296,
+      "MemorySwap": 4294967296,
+      "NanoCpus": 2000000000,
+      "NetworkMode": "none",
+      "ReadonlyRootfs": true
+    },
+    "result": {
+      "mode": "graph",
+      "engine": "artifact",
+      "scope": "APPROVED_HISTORICAL_FULL_GRAPH_THREE_NODE_MATRIX_ONLY_NO_ROUTING_BUNDLE",
+      "nodes": 926414,
+      "edges": 2145828,
+      "load_seconds": 1.3263429220000944,
+      "compile_and_optional_artifact_seconds": 5.914999746892136e-06,
+      "matrix_seconds": [
+        0.004500093999922683,
+        0.00857989699989048
+      ],
+      "full_matrix_parity": true,
+      "artifact_sha256": null,
+      "graph_sha256": "cbccfa866bebbffe8382f6f54f9fdacb3a470d84d581e954e59014fd9454d005",
+      "total_seconds": 2.1450136169996767,
+      "metrics": {
+        "process_peak_rss_bytes": 181448704,
+        "process_cpu_seconds": 2.209764,
+        "cgroup": {
+          "memory.max": "4294967296",
+          "memory.peak": "172019712",
+          "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+          "cpu.max": "200000 100000",
+          "cpu.stat": "usage_usec 2218327\nuser_usec 1940043\nsystem_usec 278284\nnice_usec 0\nnr_periods 23\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0"
+        }
+      }
+    }
+  },
+  {
+    "label": "8gb-2cpu-full-graph-legacy",
+    "profile": "8gb-2cpu",
+    "image_id": "sha256:9dad7a112d031c65cd92c83880c9ce876b0ce79de36c1220b787c0b19e186173",
+    "exit_code": 0,
+    "timed_out": false,
+    "wall_seconds": 145.07900000000018,
+    "state": {
+      "ExitCode": 0,
+      "OOMKilled": false,
+      "Error": ""
+    },
+    "limits": {
+      "Memory": 8589934592,
+      "MemorySwap": 8589934592,
+      "NanoCpus": 2000000000,
+      "NetworkMode": "none",
+      "ReadonlyRootfs": true
+    },
+    "result": {
+      "mode": "graph",
+      "engine": "legacy",
+      "scope": "APPROVED_HISTORICAL_FULL_GRAPH_THREE_NODE_MATRIX_ONLY_NO_ROUTING_BUNDLE",
+      "nodes": 926414,
+      "edges": 2145828,
+      "load_seconds": 23.477200292999896,
+      "compile_and_optional_artifact_seconds": 1.7269999261770863e-06,
+      "matrix_seconds": [
+        57.19538544399984,
+        60.78314426399993
+      ],
+      "full_matrix_parity": true,
+      "artifact_sha256": null,
+      "graph_sha256": "cbccfa866bebbffe8382f6f54f9fdacb3a470d84d581e954e59014fd9454d005",
+      "total_seconds": 142.76251148400024,
+      "metrics": {
+        "process_peak_rss_bytes": 3781902336,
+        "process_cpu_seconds": 129.496561,
+        "cgroup": {
+          "memory.max": "8589934592",
+          "memory.peak": "3780001792",
+          "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+          "cpu.max": "200000 100000",
+          "cpu.stat": "usage_usec 129501254\nuser_usec 114668423\nsystem_usec 14832831\nnice_usec 0\nnr_periods 1430\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0"
+        }
+      }
+    }
+  },
+  {
+    "label": "8gb-2cpu-full-graph-artifact-restart",
+    "profile": "8gb-2cpu",
+    "image_id": "sha256:9dad7a112d031c65cd92c83880c9ce876b0ce79de36c1220b787c0b19e186173",
+    "exit_code": 0,
+    "timed_out": false,
+    "wall_seconds": 6.125,
+    "state": {
+      "ExitCode": 0,
+      "OOMKilled": false,
+      "Error": ""
+    },
+    "limits": {
+      "Memory": 8589934592,
+      "MemorySwap": 8589934592,
+      "NanoCpus": 2000000000,
+      "NetworkMode": "none",
+      "ReadonlyRootfs": true
+    },
+    "result": {
+      "mode": "graph",
+      "engine": "artifact",
+      "scope": "APPROVED_HISTORICAL_FULL_GRAPH_THREE_NODE_MATRIX_ONLY_NO_ROUTING_BUNDLE",
+      "nodes": 926414,
+      "edges": 2145828,
+      "load_seconds": 2.2995967299998483,
+      "compile_and_optional_artifact_seconds": 1.2362999768811278e-05,
+      "matrix_seconds": [
+        0.004708427999958076,
+        0.004808758999843121
+      ],
+      "full_matrix_parity": true,
+      "artifact_sha256": null,
+      "graph_sha256": "cbccfa866bebbffe8382f6f54f9fdacb3a470d84d581e954e59014fd9454d005",
+      "total_seconds": 3.9933053360000486,
+      "metrics": {
+        "process_peak_rss_bytes": 181747712,
+        "process_cpu_seconds": 4.128704,
+        "cgroup": {
+          "memory.max": "8589934592",
+          "memory.peak": "172298240",
+          "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+          "cpu.max": "200000 100000",
+          "cpu.stat": "usage_usec 4136967\nuser_usec 3766927\nsystem_usec 370040\nnice_usec 0\nnr_periods 43\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0"
+        }
+      }
+    }
+  },
+  {
+    "label": "linux-volume-crash-reopen",
+    "profile": "2gb-1cpu",
+    "image_id": "sha256:9dad7a112d031c65cd92c83880c9ce876b0ce79de36c1220b787c0b19e186173",
+    "exit_code": 0,
+    "timed_out": false,
+    "wall_seconds": 2.561999999999898,
+    "state": {
+      "ExitCode": 0,
+      "OOMKilled": false,
+      "Error": ""
+    },
+    "limits": {
+      "Memory": 2147483648,
+      "MemorySwap": 2147483648,
+      "NanoCpus": 1000000000,
+      "NetworkMode": "none",
+      "ReadonlyRootfs": true
+    },
+    "result": {
+      "mode": "restore",
+      "scope": "SYNTHETIC_VOLUME_REOPEN",
+      "committed_step_preserved": true,
+      "actual_mount": true,
+      "uid": 10001,
+      "journal_mode": "0600",
+      "directory_mode": "0700",
+      "total_seconds": 1.0205514750000475,
+      "metrics": {
+        "process_peak_rss_bytes": 29184000,
+        "process_cpu_seconds": 1.257729,
+        "cgroup": {
+          "memory.max": "2147483648",
+          "memory.peak": "18436096",
+          "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+          "cpu.max": "100000 100000",
+          "cpu.stat": "usage_usec 1262394\nuser_usec 1109132\nsystem_usec 153261\nnice_usec 0\nnr_periods 13\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0"
+        }
+      }
+    }
+  }
+]

@@ -1,0 +1,33 @@
+{
+  "decision": "NO-GO",
+  "project_ref": "rcgyuwiidqvrgbxswhqj",
+  "sql_read_only_confirmed": true,
+  "function_bodies_match": 29,
+  "guarded_metadata_match": 26,
+  "acl_mismatches": 3,
+  "new_caller_names_found": 0,
+  "backup_restore_readiness": "NOT VERIFIED",
+  "migration_version_unused": "NOT VERIFIED",
+  "dev_writes": 0,
+  "migrations_executed": 0,
+  "backup_restore_operations": 0,
+  "prior_local_validation_artifacts_unchanged": 52,
+  "validated_sql_sha256": {
+    "docs/investigations/e2-shared-lock-review/proposed_migration.sql": "d3b466db926b389155edc499d9cc53106f81ac6cd6addc1033e01b1531e4ce70",
+    "docs/investigations/e2-shared-lock-review/rollback_patch.sql": "521f128b12ab7ce99ad9bdc8f8113d3ee67c8409cb214bdca759110c9d744ffd"
+  },
+  "evidence_sha256": {
+    "docs/investigations/e2-lock-dev-preflight-20261105/BACKUP_METADATA_REVIEW.json": "159ab4023f91cdc1cb9427fd8bc2d8d3823d259ba05cf91dfe71f6941c2ed049",
+    "docs/investigations/e2-lock-dev-preflight-20261105/DEV_ADDITIONAL_DEPENDENCIES.json": "875321d48d47973cb27b1e949cdc09154022f1030084dcc9c7decfc81a670172",
+    "docs/investigations/e2-lock-dev-preflight-20261105/DEV_FUNCTION_CATALOG.json": "8bbf44d578d8d78b690b8011eae3008ee4cea42680f6a8b1d508d84ca4040354",
+    "docs/investigations/e2-lock-dev-preflight-20261105/DEV_PRIVILEGES.json": "39b8d7c2ad067946ab3805cc295a8bf0828ad416778a4dae498e99a8d731e6b8",
+    "docs/investigations/e2-lock-dev-preflight-20261105/DEV_SCHEMA_CATALOG.json": "8dddfd3837a916058bae7e9ecab51978e41f0dfe9e555bacc27aa46e116a14f6",
+    "docs/investigations/e2-lock-dev-preflight-20261105/FINAL_CATALOG_RECHECK.json": "e79bd9011ddd6c0641b0c49fc88a2f56e2c8ec1b286f56e368e808de04fa6b5b",
+    "docs/investigations/e2-lock-dev-preflight-20261105/FUNCTION_COMPARISON.csv": "3448169e05a915596293d2c26538201bc84373513fd40b09e75a4a70f2aa9ee8",
+    "docs/investigations/e2-lock-dev-preflight-20261105/FUNCTION_COMPARISON.json": "5b793af7c005360e8b5b7b510875747387490789ab7b5f9fa24ebd9dcb6d0dcf",
+    "docs/investigations/e2-lock-dev-preflight-20261105/IDENTITY_AND_FINAL_RECHECK.sql": "4455d35159218ee3c4d831efd082eb9e7ef23c4677ba8b7610217d87dc2d8ce7",
+    "docs/investigations/e2-lock-dev-preflight-20261105/IDENTITY_AND_HISTORY.json": "e592bf2b5e9f3e61f412966b97aaa43f977f0087d200b6ce36138167fcdb9972",
+    "docs/investigations/e2-lock-dev-preflight-20261105/READ_ONLY_QUERIES.sql": "2f3eb51d615621d2a998be218eba26a88e189f6765f45705036d593f19efe89e",
+    "docs/investigations/E2_LOCK_CORRECTION_DEV_PREFLIGHT.md": "52f65687a728e15970cbcd1e6bb8a5c07e74582e5eab7d38ae2dfa949bf6b6e3"
+  }
+}

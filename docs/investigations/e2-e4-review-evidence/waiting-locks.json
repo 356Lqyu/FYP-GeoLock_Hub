@@ -1,0 +1,362 @@
+[
+  {
+    "pid": 16148,
+    "locktype": "advisory",
+    "mode": "ExclusiveLock",
+    "granted": true,
+    "relation": null,
+    "transaction_id": null,
+    "page": null,
+    "tuple": null
+  },
+  {
+    "pid": 16148,
+    "locktype": "relation",
+    "mode": "AccessShareLock",
+    "granted": true,
+    "relation": "coordination_config",
+    "transaction_id": null,
+    "page": null,
+    "tuple": null
+  },
+  {
+    "pid": 16148,
+    "locktype": "relation",
+    "mode": "AccessShareLock",
+    "granted": true,
+    "relation": "coordination_config_pkey",
+    "transaction_id": null,
+    "page": null,
+    "tuple": null
+  },
+  {
+    "pid": 16148,
+    "locktype": "relation",
+    "mode": "RowExclusiveLock",
+    "granted": true,
+    "relation": "claim_requests",
+    "transaction_id": null,
+    "page": null,
+    "tuple": null
+  },
+  {
+    "pid": 16148,
+    "locktype": "relation",
+    "mode": "RowExclusiveLock",
+    "granted": true,
+    "relation": "claim_requests_pkey",
+    "transaction_id": null,
+    "page": null,
+    "tuple": null
+  },
+  {
+    "pid": 16148,
+    "locktype": "relation",
+    "mode": "RowShareLock",
+    "granted": true,
+    "relation": "ux_batch_listing",
+    "transaction_id": null,
+    "page": null,
+    "tuple": null
+  },
+  {
+    "pid": 16148,
+    "locktype": "relation",
+    "mode": "RowShareLock",
+    "granted": true,
+    "relation": "ux_direct_listing",
+    "transaction_id": null,
+    "page": null,
+    "tuple": null
+  },
+  {
+    "pid": 16148,
+    "locktype": "relation",
+    "mode": "RowShareLock",
+    "granted": true,
+    "relation": "ngo_profiles",
+    "transaction_id": null,
+    "page": null,
+    "tuple": null
+  },
+  {
+    "pid": 16148,
+    "locktype": "relation",
+    "mode": "RowShareLock",
+    "granted": true,
+    "relation": "ngo_profiles_pkey",
+    "transaction_id": null,
+    "page": null,
+    "tuple": null
+  },
+  {
+    "pid": 16148,
+    "locktype": "relation",
+    "mode": "RowShareLock",
+    "granted": true,
+    "relation": "listings",
+    "transaction_id": null,
+    "page": null,
+    "tuple": null
+  },
+  {
+    "pid": 16148,
+    "locktype": "relation",
+    "mode": "RowShareLock",
+    "granted": true,
+    "relation": "claim_requests",
+    "transaction_id": null,
+    "page": null,
+    "tuple": null
+  },
+  {
+    "pid": 16148,
+    "locktype": "relation",
+    "mode": "RowShareLock",
+    "granted": true,
+    "relation": "claim_requests_pkey",
+    "transaction_id": null,
+    "page": null,
+    "tuple": null
+  },
+  {
+    "pid": 16148,
+    "locktype": "relation",
+    "mode": "RowShareLock",
+    "granted": true,
+    "relation": "ngo_profiles_registration_number_key",
+    "transaction_id": null,
+    "page": null,
+    "tuple": null
+  },
+  {
+    "pid": 16148,
+    "locktype": "relation",
+    "mode": "RowShareLock",
+    "granted": true,
+    "relation": "listings_pkey",
+    "transaction_id": null,
+    "page": null,
+    "tuple": null
+  },
+  {
+    "pid": 16148,
+    "locktype": "transactionid",
+    "mode": "ExclusiveLock",
+    "granted": true,
+    "relation": null,
+    "transaction_id": "766",
+    "page": null,
+    "tuple": null
+  },
+  {
+    "pid": 16148,
+    "locktype": "transactionid",
+    "mode": "ExclusiveLock",
+    "granted": true,
+    "relation": null,
+    "transaction_id": "764",
+    "page": null,
+    "tuple": null
+  },
+  {
+    "pid": 16148,
+    "locktype": "transactionid",
+    "mode": "ShareLock",
+    "granted": false,
+    "relation": null,
+    "transaction_id": "763",
+    "page": null,
+    "tuple": null
+  },
+  {
+    "pid": 16148,
+    "locktype": "virtualxid",
+    "mode": "ExclusiveLock",
+    "granted": true,
+    "relation": null,
+    "transaction_id": null,
+    "page": null,
+    "tuple": null
+  },
+  {
+    "pid": 23500,
+    "locktype": "advisory",
+    "mode": "ExclusiveLock",
+    "granted": true,
+    "relation": null,
+    "transaction_id": null,
+    "page": null,
+    "tuple": null
+  },
+  {
+    "pid": 23500,
+    "locktype": "relation",
+    "mode": "AccessShareLock",
+    "granted": true,
+    "relation": "coordination_config_pkey",
+    "transaction_id": null,
+    "page": null,
+    "tuple": null
+  },
+  {
+    "pid": 23500,
+    "locktype": "relation",
+    "mode": "AccessShareLock",
+    "granted": true,
+    "relation": "coordination_config",
+    "transaction_id": null,
+    "page": null,
+    "tuple": null
+  },
+  {
+    "pid": 23500,
+    "locktype": "relation",
+    "mode": "RowExclusiveLock",
+    "granted": true,
+    "relation": "claim_requests_pkey",
+    "transaction_id": null,
+    "page": null,
+    "tuple": null
+  },
+  {
+    "pid": 23500,
+    "locktype": "relation",
+    "mode": "RowExclusiveLock",
+    "granted": true,
+    "relation": "claim_requests",
+    "transaction_id": null,
+    "page": null,
+    "tuple": null
+  },
+  {
+    "pid": 23500,
+    "locktype": "relation",
+    "mode": "RowShareLock",
+    "granted": true,
+    "relation": "ux_direct_listing",
+    "transaction_id": null,
+    "page": null,
+    "tuple": null
+  },
+  {
+    "pid": 23500,
+    "locktype": "relation",
+    "mode": "RowShareLock",
+    "granted": true,
+    "relation": "ngo_profiles_pkey",
+    "transaction_id": null,
+    "page": null,
+    "tuple": null
+  },
+  {
+    "pid": 23500,
+    "locktype": "relation",
+    "mode": "RowShareLock",
+    "granted": true,
+    "relation": "ngo_profiles_registration_number_key",
+    "transaction_id": null,
+    "page": null,
+    "tuple": null
+  },
+  {
+    "pid": 23500,
+    "locktype": "relation",
+    "mode": "RowShareLock",
+    "granted": true,
+    "relation": "ngo_profiles",
+    "transaction_id": null,
+    "page": null,
+    "tuple": null
+  },
+  {
+    "pid": 23500,
+    "locktype": "relation",
+    "mode": "RowShareLock",
+    "granted": true,
+    "relation": "claim_requests",
+    "transaction_id": null,
+    "page": null,
+    "tuple": null
+  },
+  {
+    "pid": 23500,
+    "locktype": "relation",
+    "mode": "RowShareLock",
+    "granted": true,
+    "relation": "claim_requests_pkey",
+    "transaction_id": null,
+    "page": null,
+    "tuple": null
+  },
+  {
+    "pid": 23500,
+    "locktype": "relation",
+    "mode": "RowShareLock",
+    "granted": true,
+    "relation": "listings",
+    "transaction_id": null,
+    "page": null,
+    "tuple": null
+  },
+  {
+    "pid": 23500,
+    "locktype": "relation",
+    "mode": "RowShareLock",
+    "granted": true,
+    "relation": "listings_pkey",
+    "transaction_id": null,
+    "page": null,
+    "tuple": null
+  },
+  {
+    "pid": 23500,
+    "locktype": "relation",
+    "mode": "RowShareLock",
+    "granted": true,
+    "relation": "ux_batch_listing",
+    "transaction_id": null,
+    "page": null,
+    "tuple": null
+  },
+  {
+    "pid": 23500,
+    "locktype": "transactionid",
+    "mode": "ExclusiveLock",
+    "granted": true,
+    "relation": null,
+    "transaction_id": "765",
+    "page": null,
+    "tuple": null
+  },
+  {
+    "pid": 23500,
+    "locktype": "transactionid",
+    "mode": "ExclusiveLock",
+    "granted": true,
+    "relation": null,
+    "transaction_id": "763",
+    "page": null,
+    "tuple": null
+  },
+  {
+    "pid": 23500,
+    "locktype": "transactionid",
+    "mode": "ShareLock",
+    "granted": false,
+    "relation": null,
+    "transaction_id": "764",
+    "page": null,
+    "tuple": null
+  },
+  {
+    "pid": 23500,
+    "locktype": "virtualxid",
+    "mode": "ExclusiveLock",
+    "granted": true,
+    "relation": null,
+    "transaction_id": null,
+    "page": null,
+    "tuple": null
+  }
+]

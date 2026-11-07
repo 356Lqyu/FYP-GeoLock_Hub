@@ -1,0 +1,152 @@
+{
+  "phase": "Stage 3I Phase 1 donation created by user through Flutter",
+  "project": "rcgyuwiidqvrgbxswhqj",
+  "scope": "SELECT-only verification; NGO claim awaiting user action; no Phase 2 authorization",
+  "evidence": [
+    {
+      "observed_at": "2026-10-22 20:32:24.044652+00",
+      "donation": {
+        "title": "STAGE3I-E2E-30bc928b-2843-4b9c-a5d4-298b76a8c514",
+        "latitude": 3.22284613426561,
+        "longitude": 101.620313487947,
+        "created_at": "2026-10-22T20:31:37.833764+00:00",
+        "updated_at": "2026-10-22T20:31:37.959036+00:00",
+        "description": "Disposable DEV fixture for supervised automatic claim recovery testing.",
+        "donation_id": "3a012ba4-25cc-4054-897e-008e11da3e9e",
+        "donor_user_id": "21d373a7-6551-4469-81d1-280198d4317e",
+        "pickup_address": "1294, 1294, Jalan E 4/9, Taman Ehsan, 52100 Kuala Lumpur, Selangor, Malaysia, Taman Ehsan, Kuala Lumpur, Selangor, 52100, Malaysia",
+        "collection_path": "DIRECT_PICKUP",
+        "donation_status": "AVAILABLE",
+        "total_weight_kg": 20,
+        "availability_end": null,
+        "availability_start": null,
+        "pickup_road_node_id": "2308277456"
+      },
+      "listing": {
+        "batch_id": null,
+        "created_at": "2026-10-22T20:31:37.833764+00:00",
+        "listing_id": "95d6cd51-866b-4eec-8a36-36dc24296aec",
+        "donation_id": "3a012ba4-25cc-4054-897e-008e11da3e9e",
+        "source_type": "DIRECT_DONATION",
+        "listing_status": "AVAILABLE",
+        "listing_version": 1,
+        "pickup_latitude": 3.22284613426561,
+        "pickup_longitude": 101.620313487947,
+        "listing_weight_kg": 20,
+        "listing_expires_at": null,
+        "pickup_road_node_id": "2308277456",
+        "eligibility_generation": 1
+      },
+      "items": [
+        {
+          "item_id": "d61171ba-998f-4805-863a-f091f5505647",
+          "quantity": 1,
+          "item_name": "Rice",
+          "created_at": "2026-10-22T20:31:37.833764+00:00",
+          "unit_label": "piece",
+          "category_id": "977fbf03-c3ae-4864-8307-ef2c98f7e7be",
+          "description": null,
+          "donation_id": "3a012ba4-25cc-4054-897e-008e11da3e9e",
+          "item_condition": "GOOD",
+          "unit_weight_kg": 20
+        }
+      ],
+      "photos": [
+        {
+          "image_id": "802e898f-65e2-4a95-ae80-2b73cd5794f0",
+          "created_at": "2026-10-22T20:31:37.972953+00:00",
+          "is_primary": true,
+          "size_bytes": 122987,
+          "content_type": "image/webp",
+          "display_order": 1,
+          "owner_user_id": "21d373a7-6551-4469-81d1-280198d4317e"
+        }
+      ],
+      "refresh": [
+        {
+          "job_id": 10,
+          "job_status": "COMPLETED",
+          "listing_id": "95d6cd51-866b-4eec-8a36-36dc24296aec",
+          "started_at": "2026-10-22T20:32:00.322821+00:00",
+          "completed_at": "2026-10-22T20:32:13.416868+00:00",
+          "requested_at": "2026-10-22T20:31:37.964845+00:00",
+          "attempt_count": 1,
+          "last_error_code": null,
+          "expected_snapshot_id": "OSM-OPS-20261018",
+          "expected_road_node_id": "2308277456",
+          "eligibility_generation": 1
+        }
+      ],
+      "audits": [
+        {
+          "details": {
+            "weight_kg": 20,
+            "threshold_kg": 10,
+            "collection_path": "DIRECT_PICKUP",
+            "validation_passed": true
+          },
+          "outcome": "SUCCESS",
+          "claim_id": null,
+          "event_id": "721f6d06-1250-455c-b873-91f79078316e",
+          "lease_id": null,
+          "entity_id": "3a012ba4-25cc-4054-897e-008e11da3e9e",
+          "actor_role": "DONOR",
+          "event_type": "CREATE_DONATION",
+          "request_id": null,
+          "entity_type": "DONATION",
+          "occurred_at": "2026-10-22T20:31:37.967097+00:00",
+          "reason_code": null,
+          "actor_user_id": "21d373a7-6551-4469-81d1-280198d4317e",
+          "correlation_id": null,
+          "previous_state": null,
+          "requested_state": "AVAILABLE",
+          "resulting_state": "AVAILABLE",
+          "software_version": null,
+          "configuration_version": "v2.0"
+        },
+        {
+          "details": {
+            "request_id": "83c7a7ff-eb24-48a1-803e-94e1cd0c706f",
+            "photo_count": 1
+          },
+          "outcome": "SUCCESS",
+          "claim_id": null,
+          "event_id": "089ccb7f-2fce-4921-b7e8-9380a13f7d9a",
+          "lease_id": null,
+          "entity_id": "3a012ba4-25cc-4054-897e-008e11da3e9e",
+          "actor_role": "DONOR",
+          "event_type": "DONATION_PHOTOS_ATTACHED",
+          "request_id": null,
+          "entity_type": "DONATION",
+          "occurred_at": "2026-10-22T20:31:37.976882+00:00",
+          "reason_code": null,
+          "actor_user_id": "21d373a7-6551-4469-81d1-280198d4317e",
+          "correlation_id": null,
+          "previous_state": null,
+          "requested_state": "ONE_TO_THREE_PHOTOS",
+          "resulting_state": "ONE_TO_THREE_PHOTOS",
+          "software_version": null,
+          "configuration_version": "v2.0"
+        }
+      ],
+      "claims": null,
+      "cron": [
+        {
+          "jobid": 1,
+          "active": true,
+          "command": "set statement_timeout = '10min'; select public.process_ngo_eligibility_refresh_jobs();"
+        },
+        {
+          "jobid": 2,
+          "active": true,
+          "command": "set statement_timeout = '10min'; select public.process_listing_eligibility_refresh_jobs();"
+        },
+        {
+          "jobid": 3,
+          "active": false,
+          "command": "set lock_timeout = '5s'; set statement_timeout = '50s'; select public.recover_expired_claims(1);"
+        }
+      ]
+    }
+  ]
+}

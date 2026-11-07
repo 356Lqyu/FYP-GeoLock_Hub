@@ -1,0 +1,343 @@
+{
+  "project_ref": "rcgyuwiidqvrgbxswhqj",
+  "mode": "SELECT_ONLY",
+  "relations": [
+    "public.active_task_route_assignments",
+    "public.audit_events",
+    "public.claim_cancellation_requests",
+    "public.claim_leases",
+    "public.claim_reconciliation_cases",
+    "public.claim_reconciliation_evidence",
+    "public.claim_requests",
+    "public.community_hubs",
+    "public.coordination_config",
+    "public.donation_cancellation_requests",
+    "public.donation_categories",
+    "public.donation_claims",
+    "public.donation_create_requests",
+    "public.donation_images",
+    "public.donation_items",
+    "public.donations",
+    "public.donor_profiles",
+    "public.hub_accepted_categories",
+    "public.hub_admin_profiles",
+    "public.hub_batch_images",
+    "public.hub_batch_members",
+    "public.hub_batches",
+    "public.hub_inventory",
+    "public.hub_receipts",
+    "public.hub_reservations",
+    "public.listing_eligibility_refresh_jobs",
+    "public.listings",
+    "public.ngo_eligibility_refresh_jobs",
+    "public.ngo_listing_road_eligibility",
+    "public.ngo_profiles",
+    "public.pickup_route_stops",
+    "public.pickup_routes",
+    "public.pickup_tasks",
+    "public.road_network_coverage",
+    "public.road_network_edges",
+    "public.road_network_nodes",
+    "public.user_profiles",
+    "public.vehicles"
+  ],
+  "constraints": [
+    {
+      "name": "active_task_route_assignments_pkey",
+      "table": "active_task_route_assignments",
+      "definition": "PRIMARY KEY (task_id)"
+    },
+    {
+      "name": "active_task_route_assignments_route_id_fkey",
+      "table": "active_task_route_assignments",
+      "definition": "FOREIGN KEY (route_id) REFERENCES pickup_routes(route_id)"
+    },
+    {
+      "name": "active_task_route_assignments_task_id_fkey",
+      "table": "active_task_route_assignments",
+      "definition": "FOREIGN KEY (task_id) REFERENCES pickup_tasks(task_id)"
+    },
+    {
+      "name": "active_task_route_assignments_task_id_route_id_key",
+      "table": "active_task_route_assignments",
+      "definition": "UNIQUE (task_id, route_id)"
+    },
+    {
+      "name": "claim_leases_check",
+      "table": "claim_leases",
+      "definition": "CHECK ((expires_at > issued_at))"
+    },
+    {
+      "name": "claim_leases_claim_id_fkey",
+      "table": "claim_leases",
+      "definition": "FOREIGN KEY (claim_id) REFERENCES donation_claims(claim_id)"
+    },
+    {
+      "name": "claim_leases_claim_id_key",
+      "table": "claim_leases",
+      "definition": "UNIQUE (claim_id)"
+    },
+    {
+      "name": "claim_leases_lease_status_check",
+      "table": "claim_leases",
+      "definition": "CHECK ((lease_status = ANY (ARRAY['ACTIVE'::text, 'EXPIRED'::text, 'RELEASED'::text, 'COMPLETED'::text, 'RECONCILIATION_REQUIRED'::text])))"
+    },
+    {
+      "name": "claim_leases_pkey",
+      "table": "claim_leases",
+      "definition": "PRIMARY KEY (lease_id)"
+    },
+    {
+      "name": "donation_claims_claim_id_listing_id_ngo_user_id_key",
+      "table": "donation_claims",
+      "definition": "UNIQUE (claim_id, listing_id, ngo_user_id)"
+    },
+    {
+      "name": "donation_claims_claim_status_check",
+      "table": "donation_claims",
+      "definition": "CHECK ((claim_status = ANY (ARRAY['ACTIVE'::text, 'RELEASED'::text, 'EXPIRED'::text, 'COMPLETED'::text, 'CANCELLED'::text, 'RECONCILIATION_REQUIRED'::text])))"
+    },
+    {
+      "name": "donation_claims_listing_id_fkey",
+      "table": "donation_claims",
+      "definition": "FOREIGN KEY (listing_id) REFERENCES listings(listing_id)"
+    },
+    {
+      "name": "donation_claims_ngo_user_id_fkey",
+      "table": "donation_claims",
+      "definition": "FOREIGN KEY (ngo_user_id) REFERENCES ngo_profiles(user_id)"
+    },
+    {
+      "name": "donation_claims_pkey",
+      "table": "donation_claims",
+      "definition": "PRIMARY KEY (claim_id)"
+    },
+    {
+      "name": "donation_claims_request_id_fkey",
+      "table": "donation_claims",
+      "definition": "FOREIGN KEY (request_id) REFERENCES claim_requests(request_id)"
+    },
+    {
+      "name": "donation_claims_request_id_key",
+      "table": "donation_claims",
+      "definition": "UNIQUE (request_id)"
+    },
+    {
+      "name": "donations_check",
+      "table": "donations",
+      "definition": "CHECK (((availability_start IS NULL) OR (availability_end IS NULL) OR (availability_end > availability_start)))"
+    },
+    {
+      "name": "donations_check1",
+      "table": "donations",
+      "definition": "CHECK (((latitude IS NULL) = (longitude IS NULL)))"
+    },
+    {
+      "name": "donations_collection_path_check",
+      "table": "donations",
+      "definition": "CHECK ((collection_path = ANY (ARRAY['DIRECT_PICKUP'::text, 'HUB_COLLECTION'::text])))"
+    },
+    {
+      "name": "donations_description_length",
+      "table": "donations",
+      "definition": "CHECK (((description IS NULL) OR (char_length(description) <= 1000))) NOT VALID"
+    },
+    {
+      "name": "donations_donation_status_check",
+      "table": "donations",
+      "definition": "CHECK ((donation_status = ANY (ARRAY['SUBMITTED'::text, 'AVAILABLE'::text, 'HUB_ASSIGNED'::text, 'AT_HUB'::text, 'BATCHED'::text, 'CLAIMED'::text, 'PICKUP_IN_PROGRESS'::text, 'COLLECTED'::text, 'CANCELLED'::text])))"
+    },
+    {
+      "name": "donations_donor_user_id_fkey",
+      "table": "donations",
+      "definition": "FOREIGN KEY (donor_user_id) REFERENCES donor_profiles(user_id)"
+    },
+    {
+      "name": "donations_latitude_check",
+      "table": "donations",
+      "definition": "CHECK (((latitude >= ('-90'::integer)::double precision) AND (latitude <= (90)::double precision)))"
+    },
+    {
+      "name": "donations_lifecycle_at_commit",
+      "table": "donations",
+      "definition": "TRIGGER DEFERRABLE INITIALLY DEFERRED"
+    },
+    {
+      "name": "donations_longitude_check",
+      "table": "donations",
+      "definition": "CHECK (((longitude >= ('-180'::integer)::double precision) AND (longitude <= (180)::double precision)))"
+    },
+    {
+      "name": "donations_pkey",
+      "table": "donations",
+      "definition": "PRIMARY KEY (donation_id)"
+    },
+    {
+      "name": "donations_require_photo_at_commit",
+      "table": "donations",
+      "definition": "TRIGGER DEFERRABLE INITIALLY DEFERRED"
+    },
+    {
+      "name": "donations_title_length",
+      "table": "donations",
+      "definition": "CHECK (((char_length(btrim(title)) >= 1) AND (char_length(btrim(title)) <= 80))) NOT VALID"
+    },
+    {
+      "name": "donations_total_weight_kg_check",
+      "table": "donations",
+      "definition": "CHECK ((total_weight_kg > (0)::numeric))"
+    },
+    {
+      "name": "listings_batch_id_fkey",
+      "table": "listings",
+      "definition": "FOREIGN KEY (batch_id) REFERENCES hub_batches(batch_id)"
+    },
+    {
+      "name": "listings_check",
+      "table": "listings",
+      "definition": "CHECK ((((source_type = 'DIRECT_DONATION'::text) AND (donation_id IS NOT NULL) AND (batch_id IS NULL)) OR ((source_type = 'HUB_BATCH'::text) AND (batch_id IS NOT NULL) AND (donation_id IS NULL))))"
+    },
+    {
+      "name": "listings_donation_id_fkey",
+      "table": "listings",
+      "definition": "FOREIGN KEY (donation_id) REFERENCES donations(donation_id)"
+    },
+    {
+      "name": "listings_listing_status_check",
+      "table": "listings",
+      "definition": "CHECK ((listing_status = ANY (ARRAY['AVAILABLE'::text, 'CLAIMED'::text, 'CLOSED'::text, 'CANCELLED'::text])))"
+    },
+    {
+      "name": "listings_listing_version_check",
+      "table": "listings",
+      "definition": "CHECK ((listing_version > 0))"
+    },
+    {
+      "name": "listings_listing_weight_kg_check",
+      "table": "listings",
+      "definition": "CHECK ((listing_weight_kg > (0)::numeric))"
+    },
+    {
+      "name": "listings_pickup_latitude_check",
+      "table": "listings",
+      "definition": "CHECK (((pickup_latitude >= ('-90'::integer)::double precision) AND (pickup_latitude <= (90)::double precision)))"
+    },
+    {
+      "name": "listings_pickup_longitude_check",
+      "table": "listings",
+      "definition": "CHECK (((pickup_longitude >= ('-180'::integer)::double precision) AND (pickup_longitude <= (180)::double precision)))"
+    },
+    {
+      "name": "listings_pkey",
+      "table": "listings",
+      "definition": "PRIMARY KEY (listing_id)"
+    },
+    {
+      "name": "listings_source_type_check",
+      "table": "listings",
+      "definition": "CHECK ((source_type = ANY (ARRAY['DIRECT_DONATION'::text, 'HUB_BATCH'::text])))"
+    },
+    {
+      "name": "pickup_route_stops_pkey",
+      "table": "pickup_route_stops",
+      "definition": "PRIMARY KEY (route_id, stop_order)"
+    },
+    {
+      "name": "pickup_route_stops_route_id_ngo_user_id_fkey",
+      "table": "pickup_route_stops",
+      "definition": "FOREIGN KEY (route_id, ngo_user_id) REFERENCES pickup_routes(route_id, ngo_user_id)"
+    },
+    {
+      "name": "pickup_route_stops_route_id_task_id_key",
+      "table": "pickup_route_stops",
+      "definition": "UNIQUE (route_id, task_id)"
+    },
+    {
+      "name": "pickup_route_stops_stop_order_check",
+      "table": "pickup_route_stops",
+      "definition": "CHECK ((stop_order > 0))"
+    },
+    {
+      "name": "pickup_route_stops_task_id_fkey",
+      "table": "pickup_route_stops",
+      "definition": "FOREIGN KEY (task_id) REFERENCES pickup_tasks(task_id)"
+    },
+    {
+      "name": "pickup_routes_ngo_user_id_fkey",
+      "table": "pickup_routes",
+      "definition": "FOREIGN KEY (ngo_user_id) REFERENCES ngo_profiles(user_id)"
+    },
+    {
+      "name": "pickup_routes_pkey",
+      "table": "pickup_routes",
+      "definition": "PRIMARY KEY (route_id)"
+    },
+    {
+      "name": "pickup_routes_route_id_ngo_user_id_key",
+      "table": "pickup_routes",
+      "definition": "UNIQUE (route_id, ngo_user_id)"
+    },
+    {
+      "name": "pickup_routes_route_status_check",
+      "table": "pickup_routes",
+      "definition": "CHECK ((route_status = ANY (ARRAY['DRAFT'::text, 'VALIDATED'::text, 'AUTHORISED'::text, 'IN_PROGRESS'::text, 'COMPLETED'::text, 'CANCELLED'::text, 'STALE'::text])))"
+    },
+    {
+      "name": "pickup_routes_total_distance_km_check",
+      "table": "pickup_routes",
+      "definition": "CHECK ((total_distance_km >= (0)::numeric))"
+    },
+    {
+      "name": "pickup_routes_total_duration_min_check",
+      "table": "pickup_routes",
+      "definition": "CHECK ((total_duration_min >= (0)::numeric))"
+    },
+    {
+      "name": "pickup_routes_vehicle_id_ngo_user_id_fkey",
+      "table": "pickup_routes",
+      "definition": "FOREIGN KEY (vehicle_id, ngo_user_id) REFERENCES vehicles(vehicle_id, ngo_user_id)"
+    },
+    {
+      "name": "pickup_tasks_claim_id_key",
+      "table": "pickup_tasks",
+      "definition": "UNIQUE (claim_id)"
+    },
+    {
+      "name": "pickup_tasks_claim_id_listing_id_ngo_user_id_fkey",
+      "table": "pickup_tasks",
+      "definition": "FOREIGN KEY (claim_id, listing_id, ngo_user_id) REFERENCES donation_claims(claim_id, listing_id, ngo_user_id)"
+    },
+    {
+      "name": "pickup_tasks_load_kg_check",
+      "table": "pickup_tasks",
+      "definition": "CHECK ((load_kg > (0)::numeric))"
+    },
+    {
+      "name": "pickup_tasks_pkey",
+      "table": "pickup_tasks",
+      "definition": "PRIMARY KEY (task_id)"
+    },
+    {
+      "name": "pickup_tasks_task_status_check",
+      "table": "pickup_tasks",
+      "definition": "CHECK ((task_status = ANY (ARRAY['CONFIRMED'::text, 'PLANNED'::text, 'DISPATCHED'::text, 'COLLECTED'::text, 'CANCELLED'::text, 'STALE'::text])))"
+    }
+  ],
+  "routing_functions": [
+    "assign_task_to_route(uuid,uuid,integer)",
+    "complete_pickup(uuid,boolean)",
+    "deactivate_my_vehicle(uuid,bigint)",
+    "fleet_private.audit_vehicle()",
+    "fleet_private.route_vehicle_guard()",
+    "fleet_private.vehicle_guard()",
+    "fleet_private.vehicle_has_hold(uuid)",
+    "geolock_assign_vehicle_depot()",
+    "geolock_donation_hub_routes(uuid)",
+    "geolock_require_hub_route()",
+    "list_my_vehicles()",
+    "register_my_vehicle(uuid,text,text,numeric,numeric,numeric,numeric,boolean)",
+    "set_my_vehicle_availability(uuid,bigint,boolean)",
+    "start_pickup(uuid)",
+    "update_my_vehicle(uuid,bigint,text,text,numeric,numeric,numeric,numeric)"
+  ]
+}

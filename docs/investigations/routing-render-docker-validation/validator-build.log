@@ -1,0 +1,47 @@
+#0 building with "desktop-linux" instance using docker driver
+
+#1 [internal] load build definition from validator.Dockerfile
+#1 transferring dockerfile: 1.66kB done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/python:3.12-slim-bookworm
+#2 DONE 1.1s
+
+#3 [1/8] FROM docker.io/library/python:3.12-slim-bookworm@sha256:935c3c5b12357a7e10caa9c1e6ca5692344d97cf229832ef584be2cec9fc03df
+#3 resolve docker.io/library/python:3.12-slim-bookworm@sha256:935c3c5b12357a7e10caa9c1e6ca5692344d97cf229832ef584be2cec9fc03df 0.0s done
+#3 DONE 0.1s
+
+#4 [internal] load build context
+#4 transferring context: 4.07kB 0.0s done
+#4 DONE 0.1s
+
+#5 [2/8] WORKDIR /app
+#5 CACHED
+
+#6 [3/8] COPY backend/routing/phase_b/requirements-lock.txt backend/routing/phase_b/requirements-lock.txt
+#6 CACHED
+
+#7 [4/8] COPY backend/routing/worker_service/requirements.txt backend/routing/worker_service/requirements.txt
+#7 CACHED
+
+#8 [5/8] RUN pip install --no-cache-dir -r backend/routing/worker_service/requirements.txt && pip check
+#8 CACHED
+
+#9 [6/8] COPY backend/__init__.py backend/__init__.py
+#9 CACHED
+
+#10 [7/8] COPY backend/routing/ backend/routing/
+#10 CACHED
+
+#11 [8/8] RUN groupadd --gid 10001 routing && useradd --uid 10001 --gid routing --no-create-home routing
+#11 DONE 0.6s
+
+#12 exporting to image
+#12 exporting layers 0.1s done
+#12 exporting manifest sha256:47d3d4b4287057977095d437dcedd550021bfcaafdb0005d43125391cbd952ce 0.0s done
+#12 exporting config sha256:038e3a03f4f1cc4ec7ada4b78801daf95f482932ed2f359722d29e1eb737c578 0.0s done
+#12 exporting attestation manifest sha256:34b3dc2b116b1fbae2a76e9d849ded43234292fa7abe05c631a1f3900d66cc93 0.0s done
+#12 exporting manifest list sha256:58f9c0ce3f12648c78b97992161e79a85b7ec7fef512d325e4d519a6cb6fc167 0.0s done
+#12 naming to docker.io/library/geolock-validator:validation-20261107 done
+#12 unpacking to docker.io/library/geolock-validator:validation-20261107 0.0s done
+#12 DONE 0.2s

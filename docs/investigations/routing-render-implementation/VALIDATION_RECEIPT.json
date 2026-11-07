@@ -1,0 +1,89 @@
+{
+  "at_utc": "2026-11-06T16:04:44.423555+00:00",
+  "platform": "Windows-11-10.0.22621-SP0",
+  "docker": null,
+  "podman": null,
+  "baseline_checks": {
+    "backend/routing/worker_service/server.py": {
+      "expected": "7593492a1c13d8f9e68e449af026caa98955a160f5c9c80880cfef05a9024db7",
+      "observed": "7593492a1c13d8f9e68e449af026caa98955a160f5c9c80880cfef05a9024db7"
+    },
+    "backend/routing/worker_service/transport.py": {
+      "expected": "7f55a571d7339c1c2e26ca5f1db3bd57773e353951c5dda26192d673e6f85dee",
+      "observed": "7f55a571d7339c1c2e26ca5f1db3bd57773e353951c5dda26192d673e6f85dee"
+    },
+    "backend/routing/worker_service/graph_cache.py": {
+      "expected": "f1186d21ce1fd7c29601fc906dec3a51cd2398b73631a413f5f5211f35cdbd3f",
+      "observed": "f1186d21ce1fd7c29601fc906dec3a51cd2398b73631a413f5f5211f35cdbd3f"
+    },
+    "backend/routing/worker_service/orchestrator.py": {
+      "expected": "b35c5747f8534ccb96af38524a1748c12587c2f720bc1c46e1eb08b5e35611c1",
+      "observed": "b35c5747f8534ccb96af38524a1748c12587c2f720bc1c46e1eb08b5e35611c1"
+    },
+    "backend/routing/worker_service/validator.py": {
+      "expected": "1bbc49d021ff50f454abe9d906131a77ca5ce12e9ff9c8568060ca4422081535",
+      "observed": "1bbc49d021ff50f454abe9d906131a77ca5ce12e9ff9c8568060ca4422081535"
+    },
+    "backend/routing/worker_service/journal.py": {
+      "expected": "af8300af1b66d44d2a5b04085cfec13474d419fc2aea6ae901ea466b493b2eb8",
+      "observed": "af8300af1b66d44d2a5b04085cfec13474d419fc2aea6ae901ea466b493b2eb8"
+    },
+    "backend/routing/worker_service/native_worker.py": {
+      "expected": "f5c388ba559a84b022c01bd63f0d379a8d6beeb8afcbdd5f5310363760505571",
+      "observed": "f5c388ba559a84b022c01bd63f0d379a8d6beeb8afcbdd5f5310363760505571"
+    },
+    "backend/routing/worker_service/windows/Start-Worker.ps1": {
+      "expected": "f57aaeea110331236202e932e1ffebfe995fddb5b5f8de13a2b7af96a7e75873",
+      "observed": "f57aaeea110331236202e932e1ffebfe995fddb5b5f8de13a2b7af96a7e75873"
+    },
+    "backend/routing/phase_c2/matrices.py": {
+      "expected": "cf5c850fb1c6bdb2aac048c71a11f7c292ad2a85c16971efd7d33e53466d2763",
+      "observed": "cf5c850fb1c6bdb2aac048c71a11f7c292ad2a85c16971efd7d33e53466d2763"
+    },
+    "backend/routing/phase_b/optimizers.py": {
+      "expected": "0de1c90a50b3964802c6fe6a6ef3f54d3bbc0439382733bc83971e79a0627eb9",
+      "observed": "0de1c90a50b3964802c6fe6a6ef3f54d3bbc0439382733bc83971e79a0627eb9"
+    },
+    "frontend/geolock_hub_app/lib/routing/ngo_routes_page.dart": {
+      "expected": "4a05db144c55025a75b2284939a4b56bf86a0c14477b6fc6a7dcbf80ebc00521",
+      "observed": "4a05db144c55025a75b2284939a4b56bf86a0c14477b6fc6a7dcbf80ebc00521"
+    },
+    "frontend/geolock_hub_app/lib/routing/ngo_routing_repository.dart": {
+      "expected": "5390731cacc06c0878ea330d0995675bf6540be910ec83ba1b6a41ee527b7bdf",
+      "observed": "5390731cacc06c0878ea330d0995675bf6540be910ec83ba1b6a41ee527b7bdf"
+    },
+    "frontend/geolock_hub_app/lib/routing/routing_worker_client.dart": {
+      "expected": "f09326afe82ecf421801d431210e3bc39a1ff1c5c9fb6485e4e7e6957c730669",
+      "observed": "f09326afe82ecf421801d431210e3bc39a1ff1c5c9fb6485e4e7e6957c730669"
+    }
+  },
+  "frozen_input_hashes_unchanged": true,
+  "network_database_access": false,
+  "render_deployed": false,
+  "resource_profiles": [
+    {
+      "memory_mb": 512,
+      "cpus": 0.1,
+      "status": "NOT_RUN",
+      "reason": "No Docker/Podman/Linux cgroup runtime or approved full-network offline export available for this run"
+    },
+    {
+      "memory_mb": 2048,
+      "cpus": 1,
+      "status": "NOT_RUN",
+      "reason": "No Docker/Podman/Linux cgroup runtime or approved full-network offline export available for this run"
+    },
+    {
+      "memory_mb": 4096,
+      "cpus": 2,
+      "status": "NOT_RUN",
+      "reason": "No Docker/Podman/Linux cgroup runtime or approved full-network offline export available for this run"
+    },
+    {
+      "memory_mb": 8192,
+      "cpus": 2,
+      "status": "NOT_RUN",
+      "reason": "No Docker/Podman/Linux cgroup runtime or approved full-network offline export available for this run"
+    }
+  ]
+}

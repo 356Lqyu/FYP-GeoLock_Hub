@@ -1,0 +1,19 @@
+{
+  "backend/routing/.gitignore": "32dae3052f331ee34d628ef535709b301259a45df7c7522c4d35dcf49873f00b",
+  "backend/routing/__init__.py": "780ce4f235f676463b904aff9d862af8a1a5b750ec8a8ae5737f10c05ce7e2fe",
+  "backend/routing/__main__.py": "83d766df38929d698453c0387a75724edc946e68855c29db790c30518b21f103",
+  "backend/routing/contract.py": "a949eab61be944e873309fc999669096b2598eb80b4c881277667311f2d81251",
+  "backend/routing/examples/direct_only.json": "7e5a4ce3b20c63f671483917cee6729d02e4ad5efb4b88cac93936f819c01311",
+  "backend/routing/examples/expired_claim.json": "757a082141c03411dd7bedb4c1d5c71b15cae55b330e2cc49489a9abcdd6b4f8",
+  "backend/routing/examples/hub_only.json": "42637a83e7d5326982547260344e588e4e9b1fbbf9459b431e40480b61542fc3",
+  "backend/routing/examples/missing_edge.json": "8147f99999896a7ff06fa10f04b7ac7fa6056487b525e6e293e06c434afff194",
+  "backend/routing/examples/mixed.json": "f8942a57d624fadfad60bbf876d048e280b3ec0906e7f26ff7c22580b41dde9e",
+  "backend/routing/examples/no_tasks.json": "99165eb49b71d093b24fbe91a72270ed60f39cd00dbeeb4478cf307166d6ab6f",
+  "backend/routing/examples/no_vehicles.json": "e83ba73154ceaada392cc9aef8a5ee93841f85f5811e49c13a9b3aa6e6761d41",
+  "backend/routing/examples/reconciliation.json": "b1f5992af76e0a5fbe711315f4a7e415b0160b564fb34ff808b4aea55e82f791",
+  "backend/routing/examples/unreachable.json": "6bd70bc00bd799d52ddabbe4752d9ba6aca5756f9687642d431c3ca9168d6b40",
+  "backend/routing/generate_examples.py": "3d4cf0c8ea1a826f4a2552a89dfa554d1958393fcde092250ac679b957c82aae",
+  "backend/routing/README.md": "85f30e6130a156219408bdb3cf33ea175bebdbb560639ddecd231c9c933d0768",
+  "backend/routing/tests/__init__.py": "df8a32cc15c44feb8fb8971a0cc2def6cc7b368c9bbf03f389af12d62d886a05",
+  "backend/routing/tests/test_contract.py": "e3d3c7bf7ac8642448b2b91df37c5d37f0a4302edbbe26f7d95d26dc93cd6daa"
+}

@@ -1,0 +1,23 @@
+[
+  {
+    "request_id": "0ac10437-7538-432c-8359-bc6d37eb0fc2",
+    "reason_code": "IDEMPOTENCY_KEY_REUSED_WITH_DIFFERENT_PAYLOAD",
+    "sqlstate": "P0001",
+    "rollback_confirmed": "true",
+    "benchmark_request": false
+  },
+  {
+    "request_id": "0ac10437-7538-432c-8359-bc6d37eb0fc2",
+    "reason_code": "IDEMPOTENCY_KEY_REUSED_WITH_DIFFERENT_PAYLOAD",
+    "sqlstate": "P0001",
+    "rollback_confirmed": "true",
+    "benchmark_request": false
+  },
+  {
+    "request_id": "7ece813b-5862-4d2a-86e8-9d6e58f742f7",
+    "reason_code": "CLAIM_TRANSACTION_ROLLED_BACK",
+    "sqlstate": "P0001",
+    "rollback_confirmed": "true",
+    "benchmark_request": false
+  }
+]

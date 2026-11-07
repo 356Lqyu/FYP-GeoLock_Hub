@@ -1,0 +1,1 @@
+SELECT e.evtname AS name,e.evtevent AS event,e.evtowner::regrole::text AS owner,e.evtenabled AS enabled,e.evttags AS tags,e.evtfoid::regprocedure::text AS function,p.proowner::regrole::text AS function_owner,p.prosecdef AS security_definer,p.proconfig AS config,pg_get_functiondef(p.oid) AS definition FROM pg_event_trigger e JOIN pg_proc p ON p.oid=e.evtfoid ORDER BY e.evtname;

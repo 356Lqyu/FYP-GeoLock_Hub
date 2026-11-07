@@ -1,0 +1,773 @@
+{
+  "catalog": {
+    "indexes": [
+      {
+        "name": "claim_leases_claim_id_key",
+        "ready": true,
+        "table": "claim_leases",
+        "valid": true,
+        "unique": true,
+        "columns": [
+          "claim_id"
+        ],
+        "primary": false,
+        "definition": "CREATE UNIQUE INDEX claim_leases_claim_id_key ON public.claim_leases USING btree (claim_id)"
+      },
+      {
+        "name": "claim_leases_pkey",
+        "ready": true,
+        "table": "claim_leases",
+        "valid": true,
+        "unique": true,
+        "columns": [
+          "lease_id"
+        ],
+        "primary": true,
+        "definition": "CREATE UNIQUE INDEX claim_leases_pkey ON public.claim_leases USING btree (lease_id)"
+      },
+      {
+        "name": "idx_active_lease_expiry",
+        "ready": true,
+        "table": "claim_leases",
+        "valid": true,
+        "unique": false,
+        "columns": [
+          "expires_at"
+        ],
+        "primary": false,
+        "definition": "CREATE INDEX idx_active_lease_expiry ON public.claim_leases USING btree (expires_at) WHERE (lease_status = 'ACTIVE'::text)"
+      },
+      {
+        "name": "claim_requests_pkey",
+        "ready": true,
+        "table": "claim_requests",
+        "valid": true,
+        "unique": true,
+        "columns": [
+          "request_id"
+        ],
+        "primary": true,
+        "definition": "CREATE UNIQUE INDEX claim_requests_pkey ON public.claim_requests USING btree (request_id)"
+      },
+      {
+        "name": "donation_claims_claim_id_listing_id_ngo_user_id_key",
+        "ready": true,
+        "table": "donation_claims",
+        "valid": true,
+        "unique": true,
+        "columns": [
+          "claim_id",
+          "listing_id",
+          "ngo_user_id"
+        ],
+        "primary": false,
+        "definition": "CREATE UNIQUE INDEX donation_claims_claim_id_listing_id_ngo_user_id_key ON public.donation_claims USING btree (claim_id, listing_id, ngo_user_id)"
+      },
+      {
+        "name": "donation_claims_pkey",
+        "ready": true,
+        "table": "donation_claims",
+        "valid": true,
+        "unique": true,
+        "columns": [
+          "claim_id"
+        ],
+        "primary": true,
+        "definition": "CREATE UNIQUE INDEX donation_claims_pkey ON public.donation_claims USING btree (claim_id)"
+      },
+      {
+        "name": "donation_claims_request_id_key",
+        "ready": true,
+        "table": "donation_claims",
+        "valid": true,
+        "unique": true,
+        "columns": [
+          "request_id"
+        ],
+        "primary": false,
+        "definition": "CREATE UNIQUE INDEX donation_claims_request_id_key ON public.donation_claims USING btree (request_id)"
+      },
+      {
+        "name": "ux_active_claim",
+        "ready": true,
+        "table": "donation_claims",
+        "valid": true,
+        "unique": true,
+        "columns": [
+          "listing_id"
+        ],
+        "primary": false,
+        "definition": "CREATE UNIQUE INDEX ux_active_claim ON public.donation_claims USING btree (listing_id) WHERE (claim_status = ANY (ARRAY['ACTIVE'::text, 'RECONCILIATION_REQUIRED'::text]))"
+      },
+      {
+        "name": "listings_pkey",
+        "ready": true,
+        "table": "listings",
+        "valid": true,
+        "unique": true,
+        "columns": [
+          "listing_id"
+        ],
+        "primary": true,
+        "definition": "CREATE UNIQUE INDEX listings_pkey ON public.listings USING btree (listing_id)"
+      },
+      {
+        "name": "ux_batch_listing",
+        "ready": true,
+        "table": "listings",
+        "valid": true,
+        "unique": true,
+        "columns": [
+          "batch_id"
+        ],
+        "primary": false,
+        "definition": "CREATE UNIQUE INDEX ux_batch_listing ON public.listings USING btree (batch_id) WHERE (source_type = 'HUB_BATCH'::text)"
+      },
+      {
+        "name": "ux_direct_listing",
+        "ready": true,
+        "table": "listings",
+        "valid": true,
+        "unique": true,
+        "columns": [
+          "donation_id"
+        ],
+        "primary": false,
+        "definition": "CREATE UNIQUE INDEX ux_direct_listing ON public.listings USING btree (donation_id) WHERE (source_type = 'DIRECT_DONATION'::text)"
+      },
+      {
+        "name": "pickup_tasks_claim_id_key",
+        "ready": true,
+        "table": "pickup_tasks",
+        "valid": true,
+        "unique": true,
+        "columns": [
+          "claim_id"
+        ],
+        "primary": false,
+        "definition": "CREATE UNIQUE INDEX pickup_tasks_claim_id_key ON public.pickup_tasks USING btree (claim_id)"
+      },
+      {
+        "name": "pickup_tasks_pkey",
+        "ready": true,
+        "table": "pickup_tasks",
+        "valid": true,
+        "unique": true,
+        "columns": [
+          "task_id"
+        ],
+        "primary": true,
+        "definition": "CREATE UNIQUE INDEX pickup_tasks_pkey ON public.pickup_tasks USING btree (task_id)"
+      }
+    ],
+    "constraints": [
+      {
+        "name": "claim_leases_check",
+        "type": "c",
+        "table": "claim_leases",
+        "validated": true,
+        "definition": "CHECK ((expires_at > issued_at))",
+        "referenced_table": null
+      },
+      {
+        "name": "claim_leases_claim_id_fkey",
+        "type": "f",
+        "table": "claim_leases",
+        "validated": true,
+        "definition": "FOREIGN KEY (claim_id) REFERENCES donation_claims(claim_id)",
+        "referenced_table": "donation_claims"
+      },
+      {
+        "name": "claim_leases_claim_id_key",
+        "type": "u",
+        "table": "claim_leases",
+        "validated": true,
+        "definition": "UNIQUE (claim_id)",
+        "referenced_table": null
+      },
+      {
+        "name": "claim_leases_lease_status_check",
+        "type": "c",
+        "table": "claim_leases",
+        "validated": true,
+        "definition": "CHECK ((lease_status = ANY (ARRAY['ACTIVE'::text, 'EXPIRED'::text, 'RELEASED'::text, 'COMPLETED'::text, 'RECONCILIATION_REQUIRED'::text])))",
+        "referenced_table": null
+      },
+      {
+        "name": "claim_leases_pkey",
+        "type": "p",
+        "table": "claim_leases",
+        "validated": true,
+        "definition": "PRIMARY KEY (lease_id)",
+        "referenced_table": null
+      },
+      {
+        "name": "claim_reconciliation_cases_listing_id_fkey",
+        "type": "f",
+        "table": "claim_reconciliation_cases",
+        "validated": true,
+        "definition": "FOREIGN KEY (listing_id) REFERENCES listings(listing_id)",
+        "referenced_table": "listings"
+      },
+      {
+        "name": "claim_requests_listing_id_fkey",
+        "type": "f",
+        "table": "claim_requests",
+        "validated": true,
+        "definition": "FOREIGN KEY (listing_id) REFERENCES listings(listing_id)",
+        "referenced_table": "listings"
+      },
+      {
+        "name": "claim_requests_ngo_user_id_fkey",
+        "type": "f",
+        "table": "claim_requests",
+        "validated": true,
+        "definition": "FOREIGN KEY (ngo_user_id) REFERENCES ngo_profiles(user_id)",
+        "referenced_table": "ngo_profiles"
+      },
+      {
+        "name": "claim_requests_outcome_check",
+        "type": "c",
+        "table": "claim_requests",
+        "validated": true,
+        "definition": "CHECK ((outcome = ANY (ARRAY['SUCCESS'::text, 'CONFLICT'::text, 'INELIGIBLE'::text, 'ERROR'::text])))",
+        "referenced_table": null
+      },
+      {
+        "name": "claim_requests_pkey",
+        "type": "p",
+        "table": "claim_requests",
+        "validated": true,
+        "definition": "PRIMARY KEY (request_id)",
+        "referenced_table": null
+      },
+      {
+        "name": "fk_request_result",
+        "type": "f",
+        "table": "claim_requests",
+        "validated": true,
+        "definition": "FOREIGN KEY (result_claim_id) REFERENCES donation_claims(claim_id)",
+        "referenced_table": "donation_claims"
+      },
+      {
+        "name": "donation_claims_claim_id_listing_id_ngo_user_id_key",
+        "type": "u",
+        "table": "donation_claims",
+        "validated": true,
+        "definition": "UNIQUE (claim_id, listing_id, ngo_user_id)",
+        "referenced_table": null
+      },
+      {
+        "name": "donation_claims_claim_status_check",
+        "type": "c",
+        "table": "donation_claims",
+        "validated": true,
+        "definition": "CHECK ((claim_status = ANY (ARRAY['ACTIVE'::text, 'RELEASED'::text, 'EXPIRED'::text, 'COMPLETED'::text, 'CANCELLED'::text, 'RECONCILIATION_REQUIRED'::text])))",
+        "referenced_table": null
+      },
+      {
+        "name": "donation_claims_listing_id_fkey",
+        "type": "f",
+        "table": "donation_claims",
+        "validated": true,
+        "definition": "FOREIGN KEY (listing_id) REFERENCES listings(listing_id)",
+        "referenced_table": "listings"
+      },
+      {
+        "name": "donation_claims_ngo_user_id_fkey",
+        "type": "f",
+        "table": "donation_claims",
+        "validated": true,
+        "definition": "FOREIGN KEY (ngo_user_id) REFERENCES ngo_profiles(user_id)",
+        "referenced_table": "ngo_profiles"
+      },
+      {
+        "name": "donation_claims_pkey",
+        "type": "p",
+        "table": "donation_claims",
+        "validated": true,
+        "definition": "PRIMARY KEY (claim_id)",
+        "referenced_table": null
+      },
+      {
+        "name": "donation_claims_request_id_fkey",
+        "type": "f",
+        "table": "donation_claims",
+        "validated": true,
+        "definition": "FOREIGN KEY (request_id) REFERENCES claim_requests(request_id)",
+        "referenced_table": "claim_requests"
+      },
+      {
+        "name": "donation_claims_request_id_key",
+        "type": "u",
+        "table": "donation_claims",
+        "validated": true,
+        "definition": "UNIQUE (request_id)",
+        "referenced_table": null
+      },
+      {
+        "name": "listing_eligibility_refresh_jobs_listing_id_fkey",
+        "type": "f",
+        "table": "listing_eligibility_refresh_jobs",
+        "validated": true,
+        "definition": "FOREIGN KEY (listing_id) REFERENCES listings(listing_id) ON DELETE CASCADE",
+        "referenced_table": "listings"
+      },
+      {
+        "name": "listings_batch_id_fkey",
+        "type": "f",
+        "table": "listings",
+        "validated": true,
+        "definition": "FOREIGN KEY (batch_id) REFERENCES hub_batches(batch_id)",
+        "referenced_table": "hub_batches"
+      },
+      {
+        "name": "listings_check",
+        "type": "c",
+        "table": "listings",
+        "validated": true,
+        "definition": "CHECK ((((source_type = 'DIRECT_DONATION'::text) AND (donation_id IS NOT NULL) AND (batch_id IS NULL)) OR ((source_type = 'HUB_BATCH'::text) AND (batch_id IS NOT NULL) AND (donation_id IS NULL))))",
+        "referenced_table": null
+      },
+      {
+        "name": "listings_donation_id_fkey",
+        "type": "f",
+        "table": "listings",
+        "validated": true,
+        "definition": "FOREIGN KEY (donation_id) REFERENCES donations(donation_id)",
+        "referenced_table": "donations"
+      },
+      {
+        "name": "listings_listing_status_check",
+        "type": "c",
+        "table": "listings",
+        "validated": true,
+        "definition": "CHECK ((listing_status = ANY (ARRAY['AVAILABLE'::text, 'CLAIMED'::text, 'CLOSED'::text, 'CANCELLED'::text])))",
+        "referenced_table": null
+      },
+      {
+        "name": "listings_listing_version_check",
+        "type": "c",
+        "table": "listings",
+        "validated": true,
+        "definition": "CHECK ((listing_version > 0))",
+        "referenced_table": null
+      },
+      {
+        "name": "listings_listing_weight_kg_check",
+        "type": "c",
+        "table": "listings",
+        "validated": true,
+        "definition": "CHECK ((listing_weight_kg > (0)::numeric))",
+        "referenced_table": null
+      },
+      {
+        "name": "listings_pickup_latitude_check",
+        "type": "c",
+        "table": "listings",
+        "validated": true,
+        "definition": "CHECK (((pickup_latitude >= ('-90'::integer)::double precision) AND (pickup_latitude <= (90)::double precision)))",
+        "referenced_table": null
+      },
+      {
+        "name": "listings_pickup_longitude_check",
+        "type": "c",
+        "table": "listings",
+        "validated": true,
+        "definition": "CHECK (((pickup_longitude >= ('-180'::integer)::double precision) AND (pickup_longitude <= (180)::double precision)))",
+        "referenced_table": null
+      },
+      {
+        "name": "listings_pkey",
+        "type": "p",
+        "table": "listings",
+        "validated": true,
+        "definition": "PRIMARY KEY (listing_id)",
+        "referenced_table": null
+      },
+      {
+        "name": "listings_source_type_check",
+        "type": "c",
+        "table": "listings",
+        "validated": true,
+        "definition": "CHECK ((source_type = ANY (ARRAY['DIRECT_DONATION'::text, 'HUB_BATCH'::text])))",
+        "referenced_table": null
+      },
+      {
+        "name": "ngo_listing_road_eligibility_listing_id_fkey",
+        "type": "f",
+        "table": "ngo_listing_road_eligibility",
+        "validated": true,
+        "definition": "FOREIGN KEY (listing_id) REFERENCES listings(listing_id)",
+        "referenced_table": "listings"
+      },
+      {
+        "name": "pickup_tasks_claim_id_key",
+        "type": "u",
+        "table": "pickup_tasks",
+        "validated": true,
+        "definition": "UNIQUE (claim_id)",
+        "referenced_table": null
+      },
+      {
+        "name": "pickup_tasks_claim_id_listing_id_ngo_user_id_fkey",
+        "type": "f",
+        "table": "pickup_tasks",
+        "validated": true,
+        "definition": "FOREIGN KEY (claim_id, listing_id, ngo_user_id) REFERENCES donation_claims(claim_id, listing_id, ngo_user_id)",
+        "referenced_table": "donation_claims"
+      },
+      {
+        "name": "pickup_tasks_load_kg_check",
+        "type": "c",
+        "table": "pickup_tasks",
+        "validated": true,
+        "definition": "CHECK ((load_kg > (0)::numeric))",
+        "referenced_table": null
+      },
+      {
+        "name": "pickup_tasks_pkey",
+        "type": "p",
+        "table": "pickup_tasks",
+        "validated": true,
+        "definition": "PRIMARY KEY (task_id)",
+        "referenced_table": null
+      },
+      {
+        "name": "pickup_tasks_task_status_check",
+        "type": "c",
+        "table": "pickup_tasks",
+        "validated": true,
+        "definition": "CHECK ((task_status = ANY (ARRAY['CONFIRMED'::text, 'PLANNED'::text, 'DISPATCHED'::text, 'COLLECTED'::text, 'CANCELLED'::text, 'STALE'::text])))",
+        "referenced_table": null
+      }
+    ],
+    "inspected_at": "2026-11-05T04:39:07.736002+00:00",
+    "listing_triggers": [
+      {
+        "acl": null,
+        "name": "RI_ConstraintTrigger_a_19141",
+        "type": 9,
+        "owner": "supabase_admin",
+        "config": null,
+        "columns": "",
+        "definer": false,
+        "enabled": "O",
+        "function": "\"RI_FKey_noaction_del\"()",
+        "internal": true,
+        "arguments": 0,
+        "qualifier": null,
+        "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_19141\" AFTER DELETE ON public.listings FROM claim_requests NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_del\"()",
+        "function_hash": "7a7359262dcaba833af52c087e0b8e6c",
+        "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_noaction_del\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_noaction_del$function$\n"
+      },
+      {
+        "acl": null,
+        "name": "RI_ConstraintTrigger_a_19142",
+        "type": 17,
+        "owner": "supabase_admin",
+        "config": null,
+        "columns": "",
+        "definer": false,
+        "enabled": "O",
+        "function": "\"RI_FKey_noaction_upd\"()",
+        "internal": true,
+        "arguments": 0,
+        "qualifier": null,
+        "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_19142\" AFTER UPDATE ON public.listings FROM claim_requests NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_upd\"()",
+        "function_hash": "5909814be8c209a36e3f00dad2047ec7",
+        "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_noaction_upd\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_noaction_upd$function$\n"
+      },
+      {
+        "acl": null,
+        "name": "RI_ConstraintTrigger_a_19156",
+        "type": 9,
+        "owner": "supabase_admin",
+        "config": null,
+        "columns": "",
+        "definer": false,
+        "enabled": "O",
+        "function": "\"RI_FKey_noaction_del\"()",
+        "internal": true,
+        "arguments": 0,
+        "qualifier": null,
+        "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_19156\" AFTER DELETE ON public.listings FROM donation_claims NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_del\"()",
+        "function_hash": "7a7359262dcaba833af52c087e0b8e6c",
+        "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_noaction_del\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_noaction_del$function$\n"
+      },
+      {
+        "acl": null,
+        "name": "RI_ConstraintTrigger_a_19157",
+        "type": 17,
+        "owner": "supabase_admin",
+        "config": null,
+        "columns": "",
+        "definer": false,
+        "enabled": "O",
+        "function": "\"RI_FKey_noaction_upd\"()",
+        "internal": true,
+        "arguments": 0,
+        "qualifier": null,
+        "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_19157\" AFTER UPDATE ON public.listings FROM donation_claims NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_upd\"()",
+        "function_hash": "5909814be8c209a36e3f00dad2047ec7",
+        "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_noaction_upd\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_noaction_upd$function$\n"
+      },
+      {
+        "acl": null,
+        "name": "RI_ConstraintTrigger_a_19391",
+        "type": 9,
+        "owner": "supabase_admin",
+        "config": null,
+        "columns": "",
+        "definer": false,
+        "enabled": "O",
+        "function": "\"RI_FKey_noaction_del\"()",
+        "internal": true,
+        "arguments": 0,
+        "qualifier": null,
+        "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_19391\" AFTER DELETE ON public.listings FROM claim_reconciliation_cases NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_del\"()",
+        "function_hash": "7a7359262dcaba833af52c087e0b8e6c",
+        "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_noaction_del\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_noaction_del$function$\n"
+      },
+      {
+        "acl": null,
+        "name": "RI_ConstraintTrigger_a_19392",
+        "type": 17,
+        "owner": "supabase_admin",
+        "config": null,
+        "columns": "",
+        "definer": false,
+        "enabled": "O",
+        "function": "\"RI_FKey_noaction_upd\"()",
+        "internal": true,
+        "arguments": 0,
+        "qualifier": null,
+        "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_19392\" AFTER UPDATE ON public.listings FROM claim_reconciliation_cases NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_upd\"()",
+        "function_hash": "5909814be8c209a36e3f00dad2047ec7",
+        "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_noaction_upd\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_noaction_upd$function$\n"
+      },
+      {
+        "acl": null,
+        "name": "RI_ConstraintTrigger_a_19941",
+        "type": 9,
+        "owner": "supabase_admin",
+        "config": null,
+        "columns": "",
+        "definer": false,
+        "enabled": "O",
+        "function": "\"RI_FKey_noaction_del\"()",
+        "internal": true,
+        "arguments": 0,
+        "qualifier": null,
+        "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_19941\" AFTER DELETE ON public.listings FROM ngo_listing_road_eligibility NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_del\"()",
+        "function_hash": "7a7359262dcaba833af52c087e0b8e6c",
+        "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_noaction_del\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_noaction_del$function$\n"
+      },
+      {
+        "acl": null,
+        "name": "RI_ConstraintTrigger_a_19942",
+        "type": 17,
+        "owner": "supabase_admin",
+        "config": null,
+        "columns": "",
+        "definer": false,
+        "enabled": "O",
+        "function": "\"RI_FKey_noaction_upd\"()",
+        "internal": true,
+        "arguments": 0,
+        "qualifier": null,
+        "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_19942\" AFTER UPDATE ON public.listings FROM ngo_listing_road_eligibility NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_upd\"()",
+        "function_hash": "5909814be8c209a36e3f00dad2047ec7",
+        "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_noaction_upd\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_noaction_upd$function$\n"
+      },
+      {
+        "acl": null,
+        "name": "RI_ConstraintTrigger_a_20221",
+        "type": 9,
+        "owner": "supabase_admin",
+        "config": null,
+        "columns": "",
+        "definer": false,
+        "enabled": "O",
+        "function": "\"RI_FKey_cascade_del\"()",
+        "internal": true,
+        "arguments": 0,
+        "qualifier": null,
+        "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_20221\" AFTER DELETE ON public.listings FROM listing_eligibility_refresh_jobs NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_cascade_del\"()",
+        "function_hash": "2f31bc6a0634a61665919631336df3a0",
+        "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_cascade_del\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_cascade_del$function$\n"
+      },
+      {
+        "acl": null,
+        "name": "RI_ConstraintTrigger_a_20222",
+        "type": 17,
+        "owner": "supabase_admin",
+        "config": null,
+        "columns": "",
+        "definer": false,
+        "enabled": "O",
+        "function": "\"RI_FKey_noaction_upd\"()",
+        "internal": true,
+        "arguments": 0,
+        "qualifier": null,
+        "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_20222\" AFTER UPDATE ON public.listings FROM listing_eligibility_refresh_jobs NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_upd\"()",
+        "function_hash": "5909814be8c209a36e3f00dad2047ec7",
+        "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_noaction_upd\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_noaction_upd$function$\n"
+      },
+      {
+        "acl": null,
+        "name": "RI_ConstraintTrigger_c_19293",
+        "type": 5,
+        "owner": "supabase_admin",
+        "config": null,
+        "columns": "",
+        "definer": false,
+        "enabled": "O",
+        "function": "\"RI_FKey_check_ins\"()",
+        "internal": true,
+        "arguments": 0,
+        "qualifier": null,
+        "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_c_19293\" AFTER INSERT ON public.listings FROM hub_batches NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_check_ins\"()",
+        "function_hash": "0202d6016df4e8a81b0062a40c6023ec",
+        "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_check_ins\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_check_ins$function$\n"
+      },
+      {
+        "acl": null,
+        "name": "RI_ConstraintTrigger_c_19294",
+        "type": 17,
+        "owner": "supabase_admin",
+        "config": null,
+        "columns": "",
+        "definer": false,
+        "enabled": "O",
+        "function": "\"RI_FKey_check_upd\"()",
+        "internal": true,
+        "arguments": 0,
+        "qualifier": null,
+        "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_c_19294\" AFTER UPDATE ON public.listings FROM hub_batches NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_check_upd\"()",
+        "function_hash": "b95e5133ec61e5d6ef06f767aa556993",
+        "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_check_upd\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_check_upd$function$\n"
+      },
+      {
+        "acl": null,
+        "name": "RI_ConstraintTrigger_c_19298",
+        "type": 5,
+        "owner": "supabase_admin",
+        "config": null,
+        "columns": "",
+        "definer": false,
+        "enabled": "O",
+        "function": "\"RI_FKey_check_ins\"()",
+        "internal": true,
+        "arguments": 0,
+        "qualifier": null,
+        "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_c_19298\" AFTER INSERT ON public.listings FROM donations NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_check_ins\"()",
+        "function_hash": "0202d6016df4e8a81b0062a40c6023ec",
+        "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_check_ins\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_check_ins$function$\n"
+      },
+      {
+        "acl": null,
+        "name": "RI_ConstraintTrigger_c_19299",
+        "type": 17,
+        "owner": "supabase_admin",
+        "config": null,
+        "columns": "",
+        "definer": false,
+        "enabled": "O",
+        "function": "\"RI_FKey_check_upd\"()",
+        "internal": true,
+        "arguments": 0,
+        "qualifier": null,
+        "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_c_19299\" AFTER UPDATE ON public.listings FROM donations NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_check_upd\"()",
+        "function_hash": "b95e5133ec61e5d6ef06f767aa556993",
+        "function_definition": "CREATE OR REPLACE FUNCTION pg_catalog.\"RI_FKey_check_upd\"()\n RETURNS trigger\n LANGUAGE internal\n PARALLEL SAFE STRICT\nAS $function$RI_FKey_check_upd$function$\n"
+      },
+      {
+        "acl": "{postgres=X/postgres}",
+        "name": "trg_listing_road_eligibility",
+        "type": 21,
+        "owner": "postgres",
+        "config": [
+          "search_path=pg_catalog, public, pg_temp"
+        ],
+        "columns": "",
+        "definer": true,
+        "enabled": "O",
+        "function": "geolock_listing_eligibility_trigger()",
+        "internal": false,
+        "arguments": 0,
+        "qualifier": null,
+        "definition": "CREATE TRIGGER trg_listing_road_eligibility AFTER INSERT OR UPDATE ON public.listings FOR EACH ROW EXECUTE FUNCTION geolock_listing_eligibility_trigger()",
+        "function_hash": "623342a706a4ca4e0a607fba4ffbf7e1",
+        "function_definition": "CREATE OR REPLACE FUNCTION public.geolock_listing_eligibility_trigger()\n RETURNS trigger\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'pg_catalog', 'public', 'pg_temp'\nAS $function$\r\ndeclare v_snapshot text;\r\nbegin\r\n  if tg_op='UPDATE' then\r\n    if new.eligibility_generation=old.eligibility_generation then return null; end if;\r\n  end if;\r\n  delete from public.ngo_listing_road_eligibility where listing_id=new.listing_id;\r\n  -- Do not lock old queue rows here: workers lock queue before listing, while\r\n  -- this trigger already holds listing. Workers supersede old generations.\r\n  if new.listing_status='AVAILABLE' then\r\n    select c.network_snapshot_id into v_snapshot from public.road_network_coverage c\r\n     where c.active_flag and c.dataset_kind='OPERATIONAL' and c.approved_at is not null\r\n       and c.max_snap_distance_m=500 for share;\r\n    if v_snapshot is null then raise exception 'OPERATIONAL_ROAD_COVERAGE_UNAVAILABLE'; end if;\r\n    insert into public.listing_eligibility_refresh_jobs(\r\n      listing_id,eligibility_generation,expected_road_node_id,expected_snapshot_id)\r\n    values(new.listing_id,new.eligibility_generation,new.pickup_road_node_id,v_snapshot);\r\n  end if;\r\n  return null;\r\nend;\r\n$function$\n"
+      },
+      {
+        "acl": "{postgres=X/postgres,anon=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+        "name": "trg_listing_transition",
+        "type": 19,
+        "owner": "postgres",
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "columns": "",
+        "definer": false,
+        "enabled": "O",
+        "function": "enforce_listing_transition()",
+        "internal": false,
+        "arguments": 0,
+        "qualifier": null,
+        "definition": "CREATE TRIGGER trg_listing_transition BEFORE UPDATE ON public.listings FOR EACH ROW EXECUTE FUNCTION enforce_listing_transition()",
+        "function_hash": "c65f4b675734d8c28816066ea9f05603",
+        "function_definition": "CREATE OR REPLACE FUNCTION public.enforce_listing_transition()\n RETURNS trigger\n LANGUAGE plpgsql\n SET search_path TO 'public', 'pg_temp'\nAS $function$\r\nbegin\r\n if tg_op='UPDATE' and new.listing_status is distinct from old.listing_status then\r\n   if not ((old.listing_status='AVAILABLE' and new.listing_status in ('CLAIMED','CANCELLED'))\r\n       or (old.listing_status='CLAIMED' and new.listing_status in ('AVAILABLE','CLOSED')))\r\n   then raise exception 'INVALID_LISTING_TRANSITION'; end if;\r\n end if;\r\n return new;\r\nend $function$\n"
+      },
+      {
+        "acl": "{postgres=X/postgres}",
+        "name": "zz_listing_eligibility_generation",
+        "type": 23,
+        "owner": "postgres",
+        "config": [
+          "search_path=pg_catalog, public, extensions, pg_temp"
+        ],
+        "columns": "",
+        "definer": true,
+        "enabled": "O",
+        "function": "geolock_prepare_listing_eligibility()",
+        "internal": false,
+        "arguments": 0,
+        "qualifier": null,
+        "definition": "CREATE TRIGGER zz_listing_eligibility_generation BEFORE INSERT OR UPDATE ON public.listings FOR EACH ROW EXECUTE FUNCTION geolock_prepare_listing_eligibility()",
+        "function_hash": "3c497b7081433cefc548ac8761347096",
+        "function_definition": "CREATE OR REPLACE FUNCTION public.geolock_prepare_listing_eligibility()\n RETURNS trigger\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'pg_catalog', 'public', 'extensions', 'pg_temp'\nAS $function$\r\ndeclare v_snapshot text; v_node text; v_distance double precision; v_resolved text;\r\n  v_refresh boolean;\r\nbegin\r\n  if tg_op='INSERT' then\r\n    new.eligibility_generation:=1;\r\n    v_refresh:=true;\r\n  else\r\n    v_refresh:=new.pickup_latitude is distinct from old.pickup_latitude\r\n      or new.pickup_longitude is distinct from old.pickup_longitude\r\n      or new.pickup_road_node_id is distinct from old.pickup_road_node_id\r\n      or (new.listing_status='AVAILABLE' and old.listing_status<>'AVAILABLE');\r\n    new.eligibility_generation:=old.eligibility_generation;\r\n    if v_refresh then new.eligibility_generation:=old.eligibility_generation+1; end if;\r\n  end if;\r\n  if v_refresh then\r\n    select c.network_snapshot_id into v_snapshot from public.road_network_coverage c\r\n     where c.active_flag and c.dataset_kind='OPERATIONAL' and c.approved_at is not null\r\n       and c.max_snap_distance_m=500 for share;\r\n    select r.node_id,r.snap_distance_m,r.snapshot_id into v_node,v_distance,v_resolved\r\n      from public.geolock_resolve_road_node(new.pickup_latitude,new.pickup_longitude) r;\r\n    if v_snapshot is null or v_node is null or v_distance is null or v_distance<0\r\n       or v_distance>500 or v_resolved is distinct from v_snapshot then\r\n      raise exception 'LISTING_LOCATION_NOT_ROUTABLE';\r\n    end if;\r\n    -- Always replace client-supplied road nodes, including UPDATE/republication.\r\n    new.pickup_road_node_id:=v_node;\r\n  end if;\r\n  return new;\r\nend;\r\n$function$\n"
+      }
+    ],
+    "migration_ledger": null,
+    "transaction_read_only": "on",
+    "history_related_tables": [
+      {
+        "table": "schema_migrations",
+        "schema": "auth",
+        "columns": [
+          "version"
+        ]
+      },
+      {
+        "table": "schema_migrations",
+        "schema": "realtime",
+        "columns": [
+          "version",
+          "inserted_at"
+        ]
+      },
+      {
+        "table": "migrations",
+        "schema": "storage",
+        "columns": [
+          "id",
+          "name",
+          "hash",
+          "executed_at"
+        ]
+      }
+    ]
+  }
+}

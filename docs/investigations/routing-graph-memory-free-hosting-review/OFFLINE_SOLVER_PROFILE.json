@@ -1,0 +1,72 @@
+{
+  "kind": "OFFLINE_SYNTHETIC_SOLVER_PROFILE",
+  "at_utc": "2026-11-06T15:22:22.391846+00:00",
+  "host": {
+    "total_physical_mb": 20257,
+    "available_physical_mb": 10133
+  },
+  "no_dev_writes": true,
+  "no_network_calls": true,
+  "ortools_version": "9.15.6755",
+  "elapsed_seconds": 0.13303829999995287,
+  "observations": 2,
+  "vehicles": 2,
+  "before": {
+    "private_bytes": 292147200,
+    "working_set_bytes": 81088512,
+    "peak_private_bytes": 297107456
+  },
+  "after": {
+    "private_bytes": 292368384,
+    "working_set_bytes": 86216704,
+    "peak_private_bytes": 297107456
+  },
+  "sample_count": 7,
+  "sampled_peak_private_bytes": 292384768,
+  "method_results": [
+    {
+      "method": "fcfs",
+      "status": "COMPLETE",
+      "feasible": true,
+      "valid": true,
+      "solver_statuses": [],
+      "optimization_objective": null
+    },
+    {
+      "method": "nearest_neighbour",
+      "status": "COMPLETE",
+      "feasible": true,
+      "valid": true,
+      "solver_statuses": [],
+      "optimization_objective": null
+    },
+    {
+      "method": "distance_only",
+      "status": "COMPLETE",
+      "feasible": true,
+      "valid": true,
+      "solver_statuses": [
+        "OPTIMAL",
+        "OPTIMAL"
+      ],
+      "optimization_objective": "MAX_PICKUP_TASKS_THEN_MIN_DIRECTED_ROAD_KM"
+    },
+    {
+      "method": "proposed",
+      "status": "COMPLETE",
+      "feasible": true,
+      "valid": true,
+      "solver_statuses": [
+        "OPTIMAL",
+        "OPTIMAL"
+      ],
+      "optimization_objective": "MAX_PICKUP_TASKS_THEN_MIN_DIRECTED_ROAD_KM"
+    }
+  ],
+  "source_sha256": "0de1c90a50b3964802c6fe6a6ef3f54d3bbc0439382733bc83971e79a0627eb9",
+  "limitations": [
+    "Two-task synthetic fixture only, no graph loader or server",
+    "Before/after deltas do not isolate all native allocator or import effects",
+    "No full-workload CP-SAT memory bound or hosted performance claim"
+  ]
+}

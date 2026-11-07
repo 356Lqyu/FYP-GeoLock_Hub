@@ -1,0 +1,20 @@
+{
+  "project": {
+    "url": "https://rcgyuwiidqvrgbxswhqj.supabase.co"
+  },
+  "history": {
+    "migrations": []
+  },
+  "identity": [
+    {
+      "transaction_read_only": "on",
+      "database": "postgres",
+      "current_user": "postgres",
+      "session_user": "postgres",
+      "postgresql_version": "PostgreSQL 17.11 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 15.2.0, 64-bit",
+      "inspected_at": "2026-11-05 04:38:56.42821+00",
+      "cluster_name": "main"
+    }
+  ],
+  "operator_statement": "User reports manual execution; SQL Editor execution output/independent receipt not supplied"
+}

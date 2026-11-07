@@ -1,0 +1,13 @@
+{
+  "status": "PROPOSED / NOT APPROVED / NOT EXECUTED",
+  "project_ref": "rcgyuwiidqvrgbxswhqj",
+  "policy_request_id": "0b8db479-20c8-4595-9d41-d831650cba93",
+  "graph_request_id": "eb29d74d-d556-4135-b200-a691902cfbba",
+  "network_snapshot_id": "OSM-OPS-20261018",
+  "speed_profile": "OSM_MAXSPEED_OR_CLASS_DEFAULT_BUILD_188bde7568b4d9eb_DIST5DP_TIME4DP_NO_LIVE_TRAFFIC_PG_REAL_OUTPUT_0",
+  "precision_policy": "EXACT_MAX_6_DECIMALS",
+  "float_output_profile": "PG_REAL_OUTPUT_0",
+  "lock_timeout": "5s",
+  "policy_statement_timeout": "30s",
+  "graph_statement_timeout": "120s"
+}

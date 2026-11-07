@@ -1,0 +1,43 @@
+test_docker_context_rejects_data_secrets_tests_and_windows_scripts (backend.routing.hosted.tests.test_artifact_packaging.ArtifactPackagingTests.test_docker_context_rejects_data_secrets_tests_and_windows_scripts) ... ok
+test_image_allowlisted_sources_import_both_disabled_modes_without_io (backend.routing.hosted.tests.test_artifact_packaging.ArtifactPackagingTests.test_image_allowlisted_sources_import_both_disabled_modes_without_io) ... ok
+test_sealed_export_and_exclusive_compiler_output (backend.routing.hosted.tests.test_artifact_packaging.ArtifactPackagingTests.test_sealed_export_and_exclusive_compiler_output) ... ok
+test_artifact_roundtrip_tamper_and_manifest_binding (backend.routing.hosted.tests.test_compact.CompactTests.test_artifact_roundtrip_tamper_and_manifest_binding) ... ok
+test_duplicate_invalid_precision_scope_and_missing_arcs_fail_closed (backend.routing.hosted.tests.test_compact.CompactTests.test_duplicate_invalid_precision_scope_and_missing_arcs_fail_closed) ... ok
+test_equal_distance_uses_time_and_lexical_edge_ids (backend.routing.hosted.tests.test_compact.CompactTests.test_equal_distance_uses_time_and_lexical_edge_ids) ... ok
+test_inactive_nodes_and_incident_edges_match_original_filtering (backend.routing.hosted.tests.test_compact.CompactTests.test_inactive_nodes_and_incident_edges_match_original_filtering) ... ok
+test_pinned_artifact_needs_manifest_page_not_full_export (backend.routing.hosted.tests.test_compact.CompactTests.test_pinned_artifact_needs_manifest_page_not_full_export) ... ok
+test_random_directed_asymmetric_zero_tie_and_unreachable_parity (backend.routing.hosted.tests.test_compact.CompactTests.test_random_directed_asymmetric_zero_tie_and_unreachable_parity) ... ok
+test_repeated_cache_matrix_releases_export_and_never_reconverts (backend.routing.hosted.tests.test_compact.CompactTests.test_repeated_cache_matrix_releases_export_and_never_reconverts) ... ok
+test_bad_target_cross_role_wildcard_and_ephemeral_mode_are_rejected (backend.routing.hosted.tests.test_hosting.ConfigurationTests.test_bad_target_cross_role_wildcard_and_ephemeral_mode_are_rejected) ... ok
+test_default_disabled_never_reads_credentials_or_connects (backend.routing.hosted.tests.test_hosting.ConfigurationTests.test_default_disabled_never_reads_credentials_or_connects) ... ok
+test_forwarded_headers_require_actual_peer_and_exact_https_host (backend.routing.hosted.tests.test_hosting.ConfigurationTests.test_forwarded_headers_require_actual_peer_and_exact_https_host) ... ok
+test_planner_prewarms_before_ready_and_singleton_lock_is_preserved (backend.routing.hosted.tests.test_hosting.ConfigurationTests.test_planner_prewarms_before_ready_and_singleton_lock_is_preserved) ... ok
+test_roles_port_and_secrets_are_scoped_and_not_in_repr (backend.routing.hosted.tests.test_hosting.ConfigurationTests.test_roles_port_and_secrets_are_scoped_and_not_in_repr) ... ok
+test_unmounted_disk_prevents_any_database_call (backend.routing.hosted.tests.test_hosting.ConfigurationTests.test_unmounted_disk_prevents_any_database_call) ... ok
+test_validator_readiness_uses_only_validator_identity (backend.routing.hosted.tests.test_hosting.ConfigurationTests.test_validator_readiness_uses_only_validator_identity) ... ok
+{"at":"2026-11-06T16:11:05.556453+00:00","event":"routing_request","stage":"http_received"}
+{"at":"2026-11-06T16:11:05.556453+00:00","event":"routing_request","stage":"verify_ngo_jwt"}
+{"at":"2026-11-06T16:11:05.556453+00:00","error_code":"AUTHENTICATION_REQUIRED","event":"routing_request","http_status":401,"stage":"http_rejected"}
+test_https_and_auth_failures_never_create_snapshot_or_route (backend.routing.hosted.tests.test_hosting.HttpTests.test_https_and_auth_failures_never_create_snapshot_or_route) ... ok
+{"at":"2026-11-06T16:11:06.073488+00:00","event":"routing_request","snapshot_id":"00000000-0000-0000-0000-000000000001","stage":"http_received"}
+{"at":"2026-11-06T16:11:06.073488+00:00","error_code":"VALIDATOR_AUTHENTICATION_REQUIRED","event":"routing_request","http_status":401,"snapshot_id":"00000000-0000-0000-0000-000000000001","stage":"http_rejected"}
+test_independent_validator_rejects_client_bearer_before_rpc (backend.routing.hosted.tests.test_hosting.HttpTests.test_independent_validator_rejects_client_bearer_before_rpc) ... ok
+test_live_and_readiness_are_distinct_and_generation_blocked (backend.routing.hosted.tests.test_hosting.HttpTests.test_live_and_readiness_are_distinct_and_generation_blocked) ... ok
+{"at":"2026-11-06T16:11:07.135649+00:00","event":"routing_request","request_id":"00000000-0000-0000-0000-000000000003","snapshot_id":"00000000-0000-0000-0000-000000000001","stage":"http_received"}
+{"at":"2026-11-06T16:11:07.135649+00:00","event":"routing_request","request_id":"00000000-0000-0000-0000-000000000003","snapshot_id":"00000000-0000-0000-0000-000000000001","stage":"verify_ngo_jwt"}
+{"at":"2026-11-06T16:11:07.135649+00:00","event":"routing_request","request_id":"00000000-0000-0000-0000-000000000003","snapshot_id":"00000000-0000-0000-0000-000000000001","stage":"ngo_authenticated"}
+{"at":"2026-11-06T16:11:08.331886+00:00","event":"routing_request","http_status":200,"request_id":"00000000-0000-0000-0000-000000000003","snapshot_id":"00000000-0000-0000-0000-000000000001","stage":"http_response"}
+{"at":"2026-11-06T16:11:08.336399+00:00","event":"routing_request","request_id":"00000000-0000-0000-0000-000000000003","snapshot_id":"00000000-0000-0000-0000-000000000001","stage":"http_received"}
+{"at":"2026-11-06T16:11:08.336399+00:00","event":"routing_request","request_id":"00000000-0000-0000-0000-000000000003","snapshot_id":"00000000-0000-0000-0000-000000000001","stage":"verify_ngo_jwt"}
+{"at":"2026-11-06T16:11:08.337385+00:00","event":"routing_request","request_id":"00000000-0000-0000-0000-000000000003","snapshot_id":"00000000-0000-0000-0000-000000000001","stage":"ngo_authenticated"}
+{"at":"2026-11-06T16:11:08.338011+00:00","event":"routing_request","http_status":200,"request_id":"00000000-0000-0000-0000-000000000003","snapshot_id":"00000000-0000-0000-0000-000000000001","stage":"http_response"}
+{"at":"2026-11-06T16:11:08.338011+00:00","event":"routing_request","request_id":"00000000-0000-0000-0000-000000000003","snapshot_id":"00000000-0000-0000-0000-000000000001","stage":"http_received"}
+{"at":"2026-11-06T16:11:08.338011+00:00","event":"routing_request","request_id":"00000000-0000-0000-0000-000000000003","snapshot_id":"00000000-0000-0000-0000-000000000001","stage":"verify_ngo_jwt"}
+{"at":"2026-11-06T16:11:08.338011+00:00","event":"routing_request","request_id":"00000000-0000-0000-0000-000000000003","snapshot_id":"00000000-0000-0000-0000-000000000001","stage":"ngo_authenticated"}
+{"at":"2026-11-06T16:11:08.338011+00:00","event":"routing_request","http_status":200,"request_id":"00000000-0000-0000-0000-000000000003","snapshot_id":"00000000-0000-0000-0000-000000000001","stage":"http_response"}
+test_receipt_and_original_uuid_replay_are_wire_compatible_after_restart (backend.routing.hosted.tests.test_hosting.HttpTests.test_receipt_and_original_uuid_replay_are_wire_compatible_after_restart) ... ok
+
+----------------------------------------------------------------------
+Ran 21 tests in 6.430s
+
+OK

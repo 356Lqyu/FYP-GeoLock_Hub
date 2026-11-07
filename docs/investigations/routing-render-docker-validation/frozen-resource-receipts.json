@@ -1,0 +1,746 @@
+[
+  {
+    "profile": "512mb-0.1cpu",
+    "exit_code": 0,
+    "oom": false,
+    "wall_seconds": 20.266000000000076,
+    "image_id": "sha256:9dad7a112d031c65cd92c83880c9ce876b0ce79de36c1220b787c0b19e186173",
+    "limits": {
+      "Memory": 536870912,
+      "MemorySwap": 536870912,
+      "NanoCpus": 100000000,
+      "NetworkMode": "none",
+      "ReadonlyRootfs": true
+    },
+    "result": {
+      "scope": "EXISTING_FROZEN_V33_SYNTHETIC_BENCHMARK_SAMPLE_NOT_LIVE_BUNDLE",
+      "fixture_sha256": "e9b8e722f15c3b72df33b11829d09f7515379ea05f5db791816d41105208d17f",
+      "cases": [
+        {
+          "scenario_id": "SCN-ROUTE_PLANNING-0016",
+          "admitted_tasks": 3,
+          "methods": [
+            {
+              "method": "fcfs",
+              "seconds": 0.0032087200002024474,
+              "validation_seconds": 0.08756456399987655,
+              "valid": true,
+              "feasible": true,
+              "timeout": false,
+              "solver_statuses": [],
+              "coverage_optimal": false
+            },
+            {
+              "method": "nearest_neighbour",
+              "seconds": 0.002260912000110693,
+              "validation_seconds": 0.002564238000104524,
+              "valid": true,
+              "feasible": true,
+              "timeout": false,
+              "solver_statuses": [],
+              "coverage_optimal": false
+            },
+            {
+              "method": "distance_only",
+              "seconds": 8.997515067000222,
+              "validation_seconds": 0.002196635000018432,
+              "valid": true,
+              "feasible": true,
+              "timeout": false,
+              "solver_statuses": [
+                "OPTIMAL",
+                "OPTIMAL"
+              ],
+              "coverage_optimal": true
+            },
+            {
+              "method": "proposed",
+              "seconds": 0.2964769279997199,
+              "validation_seconds": 0.0029462500001500302,
+              "valid": true,
+              "feasible": true,
+              "timeout": false,
+              "solver_statuses": [
+                "OPTIMAL",
+                "OPTIMAL"
+              ],
+              "coverage_optimal": true
+            }
+          ]
+        },
+        {
+          "scenario_id": "SCN-ROUTE_PLANNING-0045",
+          "admitted_tasks": 5,
+          "methods": [
+            {
+              "method": "fcfs",
+              "seconds": 0.00432234400022935,
+              "validation_seconds": 0.09056154000018068,
+              "valid": true,
+              "feasible": true,
+              "timeout": false,
+              "solver_statuses": [],
+              "coverage_optimal": false
+            },
+            {
+              "method": "nearest_neighbour",
+              "seconds": 0.0029543050000029325,
+              "validation_seconds": 0.09574068100027944,
+              "valid": true,
+              "feasible": true,
+              "timeout": false,
+              "solver_statuses": [],
+              "coverage_optimal": false
+            },
+            {
+              "method": "distance_only",
+              "seconds": 0.600722463999773,
+              "validation_seconds": 0.0020544229996630747,
+              "valid": true,
+              "feasible": true,
+              "timeout": false,
+              "solver_statuses": [
+                "OPTIMAL",
+                "OPTIMAL"
+              ],
+              "coverage_optimal": true
+            },
+            {
+              "method": "proposed",
+              "seconds": 0.6016034389999732,
+              "validation_seconds": 0.002024062000145932,
+              "valid": true,
+              "feasible": true,
+              "timeout": false,
+              "solver_statuses": [
+                "OPTIMAL",
+                "OPTIMAL"
+              ],
+              "coverage_optimal": true
+            }
+          ]
+        },
+        {
+          "scenario_id": "SCN-ROUTE_PLANNING-0100",
+          "admitted_tasks": 5,
+          "methods": [
+            {
+              "method": "fcfs",
+              "seconds": 0.001980513000034989,
+              "validation_seconds": 0.0016883640000742162,
+              "valid": true,
+              "feasible": true,
+              "timeout": false,
+              "solver_statuses": [],
+              "coverage_optimal": false
+            },
+            {
+              "method": "nearest_neighbour",
+              "seconds": 0.002485387999968225,
+              "validation_seconds": 0.002321819999906438,
+              "valid": true,
+              "feasible": true,
+              "timeout": false,
+              "solver_statuses": [],
+              "coverage_optimal": false
+            },
+            {
+              "method": "distance_only",
+              "seconds": 0.7946303339999758,
+              "validation_seconds": 0.002048326000021916,
+              "valid": true,
+              "feasible": true,
+              "timeout": false,
+              "solver_statuses": [
+                "OPTIMAL",
+                "OPTIMAL"
+              ],
+              "coverage_optimal": true
+            },
+            {
+              "method": "proposed",
+              "seconds": 0.5008249259999502,
+              "validation_seconds": 0.09411888900012855,
+              "valid": true,
+              "feasible": true,
+              "timeout": false,
+              "solver_statuses": [
+                "OPTIMAL",
+                "OPTIMAL"
+              ],
+              "coverage_optimal": true
+            }
+          ]
+        }
+      ],
+      "total_seconds": 16.892711448000227,
+      "process_peak_rss_bytes": 101875712,
+      "process_cpu_seconds": 1.8609200000000001,
+      "cgroup": {
+        "memory.max": "536870912",
+        "memory.peak": "53092352",
+        "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+        "cpu.max": "10000 100000",
+        "cpu.stat": "usage_usec 1866867\nuser_usec 1634389\nsystem_usec 232477\nnice_usec 0\nnr_periods 181\nnr_throttled 181\nthrottled_usec 18545987\nnr_bursts 0\nburst_usec 0"
+      }
+    }
+  },
+  {
+    "profile": "2gb-1cpu",
+    "exit_code": 0,
+    "oom": false,
+    "wall_seconds": 2.3600000000001273,
+    "image_id": "sha256:9dad7a112d031c65cd92c83880c9ce876b0ce79de36c1220b787c0b19e186173",
+    "limits": {
+      "Memory": 2147483648,
+      "MemorySwap": 2147483648,
+      "NanoCpus": 1000000000,
+      "NetworkMode": "none",
+      "ReadonlyRootfs": true
+    },
+    "result": {
+      "scope": "EXISTING_FROZEN_V33_SYNTHETIC_BENCHMARK_SAMPLE_NOT_LIVE_BUNDLE",
+      "fixture_sha256": "e9b8e722f15c3b72df33b11829d09f7515379ea05f5db791816d41105208d17f",
+      "cases": [
+        {
+          "scenario_id": "SCN-ROUTE_PLANNING-0016",
+          "admitted_tasks": 3,
+          "methods": [
+            {
+              "method": "fcfs",
+              "seconds": 0.0026389079998807574,
+              "validation_seconds": 0.00215894200027833,
+              "valid": true,
+              "feasible": true,
+              "timeout": false,
+              "solver_statuses": [],
+              "coverage_optimal": false
+            },
+            {
+              "method": "nearest_neighbour",
+              "seconds": 0.001997973000015918,
+              "validation_seconds": 0.0016843539997353218,
+              "valid": true,
+              "feasible": true,
+              "timeout": false,
+              "solver_statuses": [],
+              "coverage_optimal": false
+            },
+            {
+              "method": "distance_only",
+              "seconds": 0.9329698050000843,
+              "validation_seconds": 0.0017475049999120529,
+              "valid": true,
+              "feasible": true,
+              "timeout": false,
+              "solver_statuses": [
+                "OPTIMAL",
+                "OPTIMAL"
+              ],
+              "coverage_optimal": true
+            },
+            {
+              "method": "proposed",
+              "seconds": 0.016131264999785344,
+              "validation_seconds": 0.0018079679998663778,
+              "valid": true,
+              "feasible": true,
+              "timeout": false,
+              "solver_statuses": [
+                "OPTIMAL",
+                "OPTIMAL"
+              ],
+              "coverage_optimal": true
+            }
+          ]
+        },
+        {
+          "scenario_id": "SCN-ROUTE_PLANNING-0045",
+          "admitted_tasks": 5,
+          "methods": [
+            {
+              "method": "fcfs",
+              "seconds": 0.0017687819999991916,
+              "validation_seconds": 0.0015429310001309204,
+              "valid": true,
+              "feasible": true,
+              "timeout": false,
+              "solver_statuses": [],
+              "coverage_optimal": false
+            },
+            {
+              "method": "nearest_neighbour",
+              "seconds": 0.0035591399996519613,
+              "validation_seconds": 0.0024506459999429353,
+              "valid": true,
+              "feasible": true,
+              "timeout": false,
+              "solver_statuses": [],
+              "coverage_optimal": false
+            },
+            {
+              "method": "distance_only",
+              "seconds": 0.05175083799986169,
+              "validation_seconds": 0.0017805709999265673,
+              "valid": true,
+              "feasible": true,
+              "timeout": false,
+              "solver_statuses": [
+                "OPTIMAL",
+                "OPTIMAL"
+              ],
+              "coverage_optimal": true
+            },
+            {
+              "method": "proposed",
+              "seconds": 0.04197238400001879,
+              "validation_seconds": 0.0018245900000692927,
+              "valid": true,
+              "feasible": true,
+              "timeout": false,
+              "solver_statuses": [
+                "OPTIMAL",
+                "OPTIMAL"
+              ],
+              "coverage_optimal": true
+            }
+          ]
+        },
+        {
+          "scenario_id": "SCN-ROUTE_PLANNING-0100",
+          "admitted_tasks": 5,
+          "methods": [
+            {
+              "method": "fcfs",
+              "seconds": 0.0016494520000378543,
+              "validation_seconds": 0.001393281000218849,
+              "valid": true,
+              "feasible": true,
+              "timeout": false,
+              "solver_statuses": [],
+              "coverage_optimal": false
+            },
+            {
+              "method": "nearest_neighbour",
+              "seconds": 0.0018690370002332202,
+              "validation_seconds": 0.001725472000089212,
+              "valid": true,
+              "feasible": true,
+              "timeout": false,
+              "solver_statuses": [],
+              "coverage_optimal": false
+            },
+            {
+              "method": "distance_only",
+              "seconds": 0.04267359499999657,
+              "validation_seconds": 0.0017813119998209004,
+              "valid": true,
+              "feasible": true,
+              "timeout": false,
+              "solver_statuses": [
+                "OPTIMAL",
+                "OPTIMAL"
+              ],
+              "coverage_optimal": true
+            },
+            {
+              "method": "proposed",
+              "seconds": 0.06139432400004807,
+              "validation_seconds": 0.0025967510000555194,
+              "valid": true,
+              "feasible": true,
+              "timeout": false,
+              "solver_statuses": [
+                "OPTIMAL",
+                "OPTIMAL"
+              ],
+              "coverage_optimal": true
+            }
+          ]
+        }
+      ],
+      "total_seconds": 1.4698010319998502,
+      "process_peak_rss_bytes": 101830656,
+      "process_cpu_seconds": 1.5382920000000002,
+      "cgroup": {
+        "memory.max": "2147483648",
+        "memory.peak": "53321728",
+        "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+        "cpu.max": "100000 100000",
+        "cpu.stat": "usage_usec 1541776\nuser_usec 1400883\nsystem_usec 140893\nnice_usec 0\nnr_periods 16\nnr_throttled 6\nthrottled_usec 1673384\nnr_bursts 0\nburst_usec 0"
+      }
+    }
+  },
+  {
+    "profile": "4gb-2cpu",
+    "exit_code": 0,
+    "oom": false,
+    "wall_seconds": 3.0779999999999745,
+    "image_id": "sha256:9dad7a112d031c65cd92c83880c9ce876b0ce79de36c1220b787c0b19e186173",
+    "limits": {
+      "Memory": 4294967296,
+      "MemorySwap": 4294967296,
+      "NanoCpus": 2000000000,
+      "NetworkMode": "none",
+      "ReadonlyRootfs": true
+    },
+    "result": {
+      "scope": "EXISTING_FROZEN_V33_SYNTHETIC_BENCHMARK_SAMPLE_NOT_LIVE_BUNDLE",
+      "fixture_sha256": "e9b8e722f15c3b72df33b11829d09f7515379ea05f5db791816d41105208d17f",
+      "cases": [
+        {
+          "scenario_id": "SCN-ROUTE_PLANNING-0016",
+          "admitted_tasks": 3,
+          "methods": [
+            {
+              "method": "fcfs",
+              "seconds": 0.0033076640002036584,
+              "validation_seconds": 0.0054439150003418035,
+              "valid": true,
+              "feasible": true,
+              "timeout": false,
+              "solver_statuses": [],
+              "coverage_optimal": false
+            },
+            {
+              "method": "nearest_neighbour",
+              "seconds": 0.011550328999874182,
+              "validation_seconds": 0.0026470169996173354,
+              "valid": true,
+              "feasible": true,
+              "timeout": false,
+              "solver_statuses": [],
+              "coverage_optimal": false
+            },
+            {
+              "method": "distance_only",
+              "seconds": 1.2145815510002649,
+              "validation_seconds": 0.0031409260000145878,
+              "valid": true,
+              "feasible": true,
+              "timeout": false,
+              "solver_statuses": [
+                "OPTIMAL",
+                "OPTIMAL"
+              ],
+              "coverage_optimal": true
+            },
+            {
+              "method": "proposed",
+              "seconds": 0.019017996999991738,
+              "validation_seconds": 0.0017163409997920098,
+              "valid": true,
+              "feasible": true,
+              "timeout": false,
+              "solver_statuses": [
+                "OPTIMAL",
+                "OPTIMAL"
+              ],
+              "coverage_optimal": true
+            }
+          ]
+        },
+        {
+          "scenario_id": "SCN-ROUTE_PLANNING-0045",
+          "admitted_tasks": 5,
+          "methods": [
+            {
+              "method": "fcfs",
+              "seconds": 0.001862582999820006,
+              "validation_seconds": 0.0018187380001108977,
+              "valid": true,
+              "feasible": true,
+              "timeout": false,
+              "solver_statuses": [],
+              "coverage_optimal": false
+            },
+            {
+              "method": "nearest_neighbour",
+              "seconds": 0.0019591109999055334,
+              "validation_seconds": 0.0016242650003732706,
+              "valid": true,
+              "feasible": true,
+              "timeout": false,
+              "solver_statuses": [],
+              "coverage_optimal": false
+            },
+            {
+              "method": "distance_only",
+              "seconds": 0.06014778199960347,
+              "validation_seconds": 0.0030934710002838983,
+              "valid": true,
+              "feasible": true,
+              "timeout": false,
+              "solver_statuses": [
+                "OPTIMAL",
+                "OPTIMAL"
+              ],
+              "coverage_optimal": true
+            },
+            {
+              "method": "proposed",
+              "seconds": 0.09086014000013165,
+              "validation_seconds": 0.004181466999853001,
+              "valid": true,
+              "feasible": true,
+              "timeout": false,
+              "solver_statuses": [
+                "OPTIMAL",
+                "OPTIMAL"
+              ],
+              "coverage_optimal": true
+            }
+          ]
+        },
+        {
+          "scenario_id": "SCN-ROUTE_PLANNING-0100",
+          "admitted_tasks": 5,
+          "methods": [
+            {
+              "method": "fcfs",
+              "seconds": 0.003974883999944723,
+              "validation_seconds": 0.0030375359997378837,
+              "valid": true,
+              "feasible": true,
+              "timeout": false,
+              "solver_statuses": [],
+              "coverage_optimal": false
+            },
+            {
+              "method": "nearest_neighbour",
+              "seconds": 0.0068352080002114235,
+              "validation_seconds": 0.005869371999779105,
+              "valid": true,
+              "feasible": true,
+              "timeout": false,
+              "solver_statuses": [],
+              "coverage_optimal": false
+            },
+            {
+              "method": "distance_only",
+              "seconds": 0.08881839900004707,
+              "validation_seconds": 0.007704159000240907,
+              "valid": true,
+              "feasible": true,
+              "timeout": false,
+              "solver_statuses": [
+                "OPTIMAL",
+                "OPTIMAL"
+              ],
+              "coverage_optimal": true
+            },
+            {
+              "method": "proposed",
+              "seconds": 0.07215860800033624,
+              "validation_seconds": 0.004267204999905516,
+              "valid": true,
+              "feasible": true,
+              "timeout": false,
+              "solver_statuses": [
+                "OPTIMAL",
+                "OPTIMAL"
+              ],
+              "coverage_optimal": true
+            }
+          ]
+        }
+      ],
+      "total_seconds": 2.0279188180002166,
+      "process_peak_rss_bytes": 102473728,
+      "process_cpu_seconds": 2.469154,
+      "cgroup": {
+        "memory.max": "4294967296",
+        "memory.peak": "53067776",
+        "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+        "cpu.max": "200000 100000",
+        "cpu.stat": "usage_usec 2473310\nuser_usec 2240574\nsystem_usec 232735\nnice_usec 0\nnr_periods 21\nnr_throttled 3\nthrottled_usec 1245737\nnr_bursts 0\nburst_usec 0"
+      }
+    }
+  },
+  {
+    "profile": "8gb-2cpu",
+    "exit_code": 0,
+    "oom": false,
+    "wall_seconds": 3.4529999999999745,
+    "image_id": "sha256:9dad7a112d031c65cd92c83880c9ce876b0ce79de36c1220b787c0b19e186173",
+    "limits": {
+      "Memory": 8589934592,
+      "MemorySwap": 8589934592,
+      "NanoCpus": 2000000000,
+      "NetworkMode": "none",
+      "ReadonlyRootfs": true
+    },
+    "result": {
+      "scope": "EXISTING_FROZEN_V33_SYNTHETIC_BENCHMARK_SAMPLE_NOT_LIVE_BUNDLE",
+      "fixture_sha256": "e9b8e722f15c3b72df33b11829d09f7515379ea05f5db791816d41105208d17f",
+      "cases": [
+        {
+          "scenario_id": "SCN-ROUTE_PLANNING-0016",
+          "admitted_tasks": 3,
+          "methods": [
+            {
+              "method": "fcfs",
+              "seconds": 0.003966443000081199,
+              "validation_seconds": 0.0026613690001795476,
+              "valid": true,
+              "feasible": true,
+              "timeout": false,
+              "solver_statuses": [],
+              "coverage_optimal": false
+            },
+            {
+              "method": "nearest_neighbour",
+              "seconds": 0.0017937809998329612,
+              "validation_seconds": 0.0015970449999258562,
+              "valid": true,
+              "feasible": true,
+              "timeout": false,
+              "solver_statuses": [],
+              "coverage_optimal": false
+            },
+            {
+              "method": "distance_only",
+              "seconds": 1.34719112699986,
+              "validation_seconds": 0.003812189999734983,
+              "valid": true,
+              "feasible": true,
+              "timeout": false,
+              "solver_statuses": [
+                "OPTIMAL",
+                "OPTIMAL"
+              ],
+              "coverage_optimal": true
+            },
+            {
+              "method": "proposed",
+              "seconds": 0.04249232700021821,
+              "validation_seconds": 0.00655295800015665,
+              "valid": true,
+              "feasible": true,
+              "timeout": false,
+              "solver_statuses": [
+                "OPTIMAL",
+                "OPTIMAL"
+              ],
+              "coverage_optimal": true
+            }
+          ]
+        },
+        {
+          "scenario_id": "SCN-ROUTE_PLANNING-0045",
+          "admitted_tasks": 5,
+          "methods": [
+            {
+              "method": "fcfs",
+              "seconds": 0.006208107000020391,
+              "validation_seconds": 0.00346374700029628,
+              "valid": true,
+              "feasible": true,
+              "timeout": false,
+              "solver_statuses": [],
+              "coverage_optimal": false
+            },
+            {
+              "method": "nearest_neighbour",
+              "seconds": 0.002220978999957879,
+              "validation_seconds": 0.0021545979998336406,
+              "valid": true,
+              "feasible": true,
+              "timeout": false,
+              "solver_statuses": [],
+              "coverage_optimal": false
+            },
+            {
+              "method": "distance_only",
+              "seconds": 0.11296932000004745,
+              "validation_seconds": 0.002832242000295082,
+              "valid": true,
+              "feasible": true,
+              "timeout": false,
+              "solver_statuses": [
+                "OPTIMAL",
+                "OPTIMAL"
+              ],
+              "coverage_optimal": true
+            },
+            {
+              "method": "proposed",
+              "seconds": 0.09489906999988307,
+              "validation_seconds": 0.003152403000058257,
+              "valid": true,
+              "feasible": true,
+              "timeout": false,
+              "solver_statuses": [
+                "OPTIMAL",
+                "OPTIMAL"
+              ],
+              "coverage_optimal": true
+            }
+          ]
+        },
+        {
+          "scenario_id": "SCN-ROUTE_PLANNING-0100",
+          "admitted_tasks": 5,
+          "methods": [
+            {
+              "method": "fcfs",
+              "seconds": 0.003681344000142417,
+              "validation_seconds": 0.003036885999790684,
+              "valid": true,
+              "feasible": true,
+              "timeout": false,
+              "solver_statuses": [],
+              "coverage_optimal": false
+            },
+            {
+              "method": "nearest_neighbour",
+              "seconds": 0.004143605000081152,
+              "validation_seconds": 0.00331154500008779,
+              "valid": true,
+              "feasible": true,
+              "timeout": false,
+              "solver_statuses": [],
+              "coverage_optimal": false
+            },
+            {
+              "method": "distance_only",
+              "seconds": 0.06989594499964369,
+              "validation_seconds": 0.0030849790000502253,
+              "valid": true,
+              "feasible": true,
+              "timeout": false,
+              "solver_statuses": [
+                "OPTIMAL",
+                "OPTIMAL"
+              ],
+              "coverage_optimal": true
+            },
+            {
+              "method": "proposed",
+              "seconds": 0.06012778900003468,
+              "validation_seconds": 0.0038302139996631013,
+              "valid": true,
+              "feasible": true,
+              "timeout": false,
+              "solver_statuses": [
+                "OPTIMAL",
+                "OPTIMAL"
+              ],
+              "coverage_optimal": true
+            }
+          ]
+        }
+      ],
+      "total_seconds": 2.229942205000043,
+      "process_peak_rss_bytes": 102334464,
+      "process_cpu_seconds": 2.668282,
+      "cgroup": {
+        "memory.max": "8589934592",
+        "memory.peak": "53243904",
+        "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+        "cpu.max": "200000 100000",
+        "cpu.stat": "usage_usec 2671302\nuser_usec 2459552\nsystem_usec 211749\nnice_usec 0\nnr_periods 24\nnr_throttled 3\nthrottled_usec 1415155\nnr_bursts 0\nburst_usec 0"
+      }
+    }
+  }
+]

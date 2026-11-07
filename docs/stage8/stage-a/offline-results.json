@@ -1,0 +1,137 @@
+{
+  "recorded_at": "2026-10-25T16:22:53.983855+00:00",
+  "scope": "STAGE_A_OFFLINE_SOURCE_AND_IN_MEMORY_TESTS_ONLY",
+  "python": "3.12.14 (main, Aug 25 2026, 14:01:42) [MSC v.1944 64 bit (AMD64)]",
+  "platform": "Windows-11-10.0.22621-SP0",
+  "sql_executed": false,
+  "network_permitted": false,
+  "subprocesses_permitted": false,
+  "runtime_postgresql_validation": "UNVERIFIED_NOT_EXECUTED",
+  "supabase_connections": 0,
+  "new_forward_migrations": {
+    "20261101_routing_authority.sql": "54475f8524d6116253c04f47f5de854e55ab735a6728ddfcf66d5384c0c260cb",
+    "20261102_routing_publication.sql": "96bc7763a30b7a641d6dc768dda4e255e12d4b9de2a5e52e8979cb0e26d1682f",
+    "20261103_routing_pickup_and_reconciliation.sql": "397283cfca88f2c02cfa5b02e425a76e2e261dfd588d4ee14073a8898ccd18f5"
+  },
+  "runner_sha256": "2882f93593919364dd58f11d529a289f2499edd351eba268e60aed65a9f4c2e5",
+  "totals": {
+    "tests": 192,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "results": [
+    {
+      "module": "stage8_stage_a_offline_test",
+      "tests": 27,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "output": "...........................\n----------------------------------------------------------------------\nRan 27 tests in 0.108s\n\nOK\n"
+    },
+    {
+      "module": "claim_e2e_offline_test",
+      "tests": 20,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "output": "....................\n----------------------------------------------------------------------\nRan 20 tests in 0.078s\n\nOK\n"
+    },
+    {
+      "module": "claim_two_actor_offline_test",
+      "tests": 25,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "output": ".........................\n----------------------------------------------------------------------\nRan 25 tests in 0.330s\n\nOK\n"
+    },
+    {
+      "module": "donation_creation_interface_contract_test",
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "output": ".......\n----------------------------------------------------------------------\nRan 7 tests in 0.028s\n\nOK\n"
+    },
+    {
+      "module": "persisted_donation_lifecycle_contract_test",
+      "tests": 17,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "output": ".................\n----------------------------------------------------------------------\nRan 17 tests in 0.065s\n\nOK\n"
+    },
+    {
+      "module": "role_onboarding_contract_test",
+      "tests": 11,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "output": "...........\n----------------------------------------------------------------------\nRan 11 tests in 0.005s\n\nOK\n"
+    },
+    {
+      "module": "listing_eligibility_async_refresh_contract_test",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "output": "......\n----------------------------------------------------------------------\nRan 6 tests in 0.005s\n\nOK\n"
+    },
+    {
+      "module": "cancel_claim_audit_contract_test",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "output": "....\n----------------------------------------------------------------------\nRan 4 tests in 0.005s\n\nOK\n"
+    },
+    {
+      "module": "claim_recovery_reconciliation_audit_contract_test",
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "output": ".......\n----------------------------------------------------------------------\nRan 7 tests in 0.005s\n\nOK\n"
+    },
+    {
+      "module": "claim_card_expiry_contract_test",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "output": "......\n----------------------------------------------------------------------\nRan 6 tests in 0.001s\n\nOK\n"
+    },
+    {
+      "module": "stage8_reconciliation_proposal_static_test",
+      "tests": 12,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "output": "............\n----------------------------------------------------------------------\nRan 12 tests in 0.008s\n\nOK\n"
+    },
+    {
+      "module": "backend.routing.integration.tests.test_sql_package",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "output": "....\n----------------------------------------------------------------------\nRan 4 tests in 0.011s\n\nOK\n"
+    },
+    {
+      "module": "backend.routing.integration.tests.test_worker",
+      "tests": 20,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "output": "....................\n----------------------------------------------------------------------\nRan 20 tests in 2.790s\n\nOK\n"
+    },
+    {
+      "module": "backend.routing.worker_service.tests.test_worker_flow",
+      "tests": 26,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "output": "..........................\n----------------------------------------------------------------------\nRan 26 tests in 0.701s\n\nOK\n"
+    }
+  ]
+}

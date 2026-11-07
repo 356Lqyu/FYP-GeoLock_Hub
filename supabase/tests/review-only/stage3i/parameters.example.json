@@ -1,0 +1,20 @@
+{
+  "approval_ref": null,
+  "operator": null,
+  "maintenance_confirmed": false,
+  "claim_id": null,
+  "lease_id": null,
+  "listing_id": null,
+  "donation_id": null,
+  "task_id": null,
+  "donor_user_id": null,
+  "ngo_user_id": null,
+  "fixture_title": "STAGE3I-E2E-REPLACE-WITH-UNIQUE-UUID",
+  "expected_version": null,
+  "expected_generation": null,
+  "expires_at": null,
+  "other_business_md5": null,
+  "timezone": "UTC",
+  "baseline_at": null,
+  "stop_at": null
+}

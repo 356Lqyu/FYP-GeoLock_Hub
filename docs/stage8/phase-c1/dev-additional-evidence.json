@@ -1,0 +1,36 @@
+{
+  "project": "rcgyuwiidqvrgbxswhqj",
+  "mode": "SELECT-only",
+  "queries": [
+    {
+      "name": "version",
+      "query": "SELECT version() AS postgres_version",
+      "rows": [
+        {
+          "postgres_version": "PostgreSQL 17.11 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 15.2.0, 64-bit"
+        }
+      ]
+    },
+    {
+      "name": "vehicle_relations",
+      "query": "SELECT n.nspname AS schema_name,c.relname,a.attname FROM pg_attribute a JOIN pg_class c ON c.oid=a.attrelid JOIN pg_namespace n ON n.oid=c.relnamespace WHERE a.attname IN ('vehicle_id','reserved_vehicle_id') AND NOT a.attisdropped AND c.relkind IN ('r','p','v') AND n.nspname NOT IN ('pg_catalog','information_schema') ORDER BY 1,2",
+      "rows": [
+        {
+          "schema_name": "public",
+          "relname": "pickup_routes",
+          "attname": "vehicle_id"
+        },
+        {
+          "schema_name": "public",
+          "relname": "vehicles",
+          "attname": "vehicle_id"
+        }
+      ]
+    },
+    {
+      "name": "name_collision",
+      "query": "SELECT n.nspname,p.oid::regprocedure::text AS signature,p.proowner::regrole::text AS owner FROM pg_namespace n LEFT JOIN pg_proc p ON p.pronamespace=n.oid WHERE n.nspname='fleet_private' OR (n.nspname='public' AND p.proname IN ('register_my_vehicle','list_my_vehicles','update_my_vehicle','set_my_vehicle_availability','deactivate_my_vehicle')) ORDER BY 1,2",
+      "rows": []
+    }
+  ]
+}

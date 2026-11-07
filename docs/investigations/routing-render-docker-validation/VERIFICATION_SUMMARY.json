@@ -1,0 +1,48 @@
+{
+  "at_utc": "2026-11-06T17:25:16.881500+00:00",
+  "local_docker_validation": "PASS",
+  "deployment": "NO-GO",
+  "windows_tests": {
+    "passed": 183
+  },
+  "linux_tests": {
+    "passed": 117,
+    "skipped": 1
+  },
+  "frozen_plans_valid": 48,
+  "main_cases": 38,
+  "measured_oom_failures": 3,
+  "timeouts": 0,
+  "requested_cgroups_verified": true,
+  "original_sources_unchanged": 12,
+  "intentional_production_changes": {
+    "backend/routing/worker_service/journal.py": {
+      "before": "af8300af1b66d44d2a5b04085cfec13474d419fc2aea6ae901ea466b493b2eb8",
+      "after": "d5fe8acd8fb372bb74a77d9386d475a74f3e1be10dd2cc208f44d895b4c3c34a"
+    }
+  },
+  "graph_file_sha256": "a525f79eada8fc65ce0568fd0cdba66237f1e5e6e3009bb4fa0e7482fc70accb",
+  "frozen_csvs_unchanged": true,
+  "previous_hosted_files_unchanged": 18,
+  "minimum_end_to_end_capacity_qualified_plan": null,
+  "blockers": [
+    "Complete approved sanitized operational benchmark bundle and maximum workload/headroom",
+    "Actual Render proxy ingress/header contract",
+    "Current approved DEV backup/operator/read-only role/graph/network deployment preflight"
+  ],
+  "actions": {
+    "dev_connections": 0,
+    "live_routing": 0,
+    "live_journal_or_credential_copies": 0,
+    "cloud_deployments": 0,
+    "cloud_charge_actions": 0,
+    "dev_worker_activations": 0,
+    "pushes": 0
+  },
+  "primary_sources": [
+    "https://sqlite.org/forum/info/ba7afbd0e81501118563617430fe06d0aca052e55ece2b0d457f8e16fcf85bba",
+    "https://render.com/articles/fastapi-production-best-practices",
+    "https://render.com/docs/web-services",
+    "https://render.com/docs/outbound-ip-addresses"
+  ]
+}

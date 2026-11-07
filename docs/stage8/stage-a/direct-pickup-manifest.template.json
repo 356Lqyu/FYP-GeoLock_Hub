@@ -1,0 +1,23 @@
+{
+  "approved": false,
+  "scope": "Prepared only; no runner or execution approval is supplied",
+  "project_ref": "rcgyuwiidqvrgbxswhqj",
+  "approval_ref": null,
+  "ngo_id": null,
+  "donor_id": null,
+  "vehicle_id": null,
+  "donation_id": null,
+  "listing_id": null,
+  "claim_id": null,
+  "lease_id": null,
+  "task_id": null,
+  "policy_id": null,
+  "graph_id": null,
+  "required_counts": {"ngos": 1, "vehicles": 1, "eligible_owned_tasks": 1, "direct_listings": 1},
+  "fixture_creation": "Protected Auth, donation/photo and claim workflows only",
+  "required_evidence": ["reviewed function/ACL delta", "preserved historical snapshots", "exact request IDs", "attestation and route binding", "committed state and audit linkage", "depot closure"],
+  "recovery_execution": false,
+  "lease_renewal": false,
+  "global_cleanup": false,
+  "existing_e2e_guards": "Unchanged; no overdue exception approved"
+}

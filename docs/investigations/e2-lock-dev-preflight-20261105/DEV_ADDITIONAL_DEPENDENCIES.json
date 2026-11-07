@@ -1,0 +1,75 @@
+{
+  "inspected_at": "2026-11-05T03:25:56.170234+00:00",
+  "relevant_columns": [
+    {
+      "name": "listing_id",
+      "type": "uuid",
+      "not_null": true
+    },
+    {
+      "name": "source_type",
+      "type": "text",
+      "not_null": true
+    },
+    {
+      "name": "donation_id",
+      "type": "uuid",
+      "not_null": false
+    },
+    {
+      "name": "batch_id",
+      "type": "uuid",
+      "not_null": false
+    },
+    {
+      "name": "listing_status",
+      "type": "text",
+      "not_null": true
+    },
+    {
+      "name": "listing_weight_kg",
+      "type": "numeric(12,3)",
+      "not_null": true
+    },
+    {
+      "name": "pickup_latitude",
+      "type": "double precision",
+      "not_null": true
+    },
+    {
+      "name": "pickup_longitude",
+      "type": "double precision",
+      "not_null": true
+    },
+    {
+      "name": "pickup_road_node_id",
+      "type": "text",
+      "not_null": false
+    },
+    {
+      "name": "listing_version",
+      "type": "bigint",
+      "not_null": true
+    },
+    {
+      "name": "created_at",
+      "type": "timestamp with time zone",
+      "not_null": true
+    },
+    {
+      "name": "listing_expires_at",
+      "type": "timestamp with time zone",
+      "not_null": false
+    },
+    {
+      "name": "eligibility_generation",
+      "type": "bigint",
+      "not_null": true
+    }
+  ],
+  "referencing_views": [],
+  "static_dependencies": [],
+  "transaction_read_only": "on",
+  "unvalidated_constraints": [],
+  "dynamic_reference_candidates": []
+}

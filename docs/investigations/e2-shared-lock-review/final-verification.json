@@ -1,0 +1,20 @@
+{
+  "prior_sealed_files_unchanged": 471,
+  "prior_differences": [],
+  "executed_full_run_sources_match_manifest": true,
+  "benchmark_requests": 975,
+  "contention_requests": 850,
+  "contention_median_ms": 111.5,
+  "contention_p95_ms": 190.4649999999999,
+  "candidate_sha256": "d3b466db926b389155edc499d9cc53106f81ac6cd6addc1033e01b1531e4ce70",
+  "rollback_sha256": "521f128b12ab7ce99ad9bdc8f8113d3ee67c8409cb214bdca759110c9d744ffd",
+  "local_decision": "LOCAL PASS",
+  "focused_sql_checks": 30,
+  "custody_tests": 11,
+  "total_focused_checks_tests": 41,
+  "failed_claim_only_sealed_files_unchanged": 19,
+  "custody_exact_candidate_applications": 12,
+  "optimized_python_rejected_before_output": true,
+  "all_owned_clusters_stopped": true,
+  "committed_active_claim_count_verified": 275
+}

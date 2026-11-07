@@ -1,0 +1,30 @@
+{
+  "scope": "Five freshly retrieved public RPC bodies; newline-normalized comparison only. Full header/ACL evidence remains in accepted postflight.",
+  "results": [
+    {
+      "function": "deactivate_my_vehicle",
+      "body_matches_pinned_source": true,
+      "body_sha256": "743552f43aea5d8ec0e6690870e702406550e4cf6a7837d298521e85552545d1"
+    },
+    {
+      "function": "list_my_vehicles",
+      "body_matches_pinned_source": true,
+      "body_sha256": "555a214e7e6feae000b6351e11a8fbbb9398a18ee0bbde4c51e483a089e1612c"
+    },
+    {
+      "function": "register_my_vehicle",
+      "body_matches_pinned_source": true,
+      "body_sha256": "0fc07e0be470040f939cf321ade268456409097d69add19cd875946730c0af8c"
+    },
+    {
+      "function": "set_my_vehicle_availability",
+      "body_matches_pinned_source": true,
+      "body_sha256": "64da007060cb9066b4dd98e0eaf5f3c759155add06d4bb227aab75f9c0297a07"
+    },
+    {
+      "function": "update_my_vehicle",
+      "body_matches_pinned_source": true,
+      "body_sha256": "4aacbb416a5b20422ccba32605e9ef79d70e7c272869d792603d1d974bcaace5"
+    }
+  ]
+}

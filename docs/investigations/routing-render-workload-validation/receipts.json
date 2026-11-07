@@ -1,0 +1,62 @@
+[
+  {
+    "label": "compile-sealed-full-graph",
+    "profile": "8gb-2cpu",
+    "image_id": "sha256:9dad7a112d031c65cd92c83880c9ce876b0ce79de36c1220b787c0b19e186173",
+    "exit_code": 0,
+    "oom": false,
+    "external_timeout": false,
+    "wall_seconds": 99.29699999999957,
+    "limits": {
+      "Memory": 8589934592,
+      "MemorySwap": 8589934592,
+      "NanoCpus": 2000000000,
+      "NetworkMode": "none",
+      "ReadonlyRootfs": true
+    },
+    "result": {
+      "mode": "graph",
+      "engine": "compact",
+      "scope": "APPROVED_HISTORICAL_FULL_GRAPH_THREE_NODE_MATRIX_ONLY_NO_ROUTING_BUNDLE",
+      "nodes": 926414,
+      "edges": 2145828,
+      "load_seconds": 22.980833820000043,
+      "compile_and_optional_artifact_seconds": 70.51939804599988,
+      "matrix_seconds": [
+        0.0027701700000761775,
+        0.0019390369998291135
+      ],
+      "full_matrix_parity": true,
+      "artifact_sha256": "7958972d08ea412c7515a47521640588528daa206440a198db2ad47507b8bd01",
+      "graph_sha256": "cbccfa866bebbffe8382f6f54f9fdacb3a470d84d581e954e59014fd9454d005",
+      "total_seconds": 94.21709718700004,
+      "metrics": {
+        "process_peak_rss_bytes": 1582891008,
+        "process_cpu_seconds": 82.27917599999999,
+        "cgroup": {
+          "memory.max": "8589934592",
+          "memory.peak": "1598414848",
+          "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+          "cpu.max": "200000 100000",
+          "cpu.stat": "usage_usec 82283055\nuser_usec 76810183\nsystem_usec 5472872\nnice_usec 0\nnr_periods 944\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0"
+        }
+      }
+    }
+  },
+  {
+    "label": "prepare-and-parity-100-nodes",
+    "profile": "8gb-2cpu",
+    "image_id": "sha256:9dad7a112d031c65cd92c83880c9ce876b0ce79de36c1220b787c0b19e186173",
+    "exit_code": 1,
+    "oom": false,
+    "external_timeout": false,
+    "wall_seconds": 6.625,
+    "limits": {
+      "Memory": 8589934592,
+      "MemorySwap": 8589934592,
+      "NanoCpus": 2000000000,
+      "NetworkMode": "none",
+      "ReadonlyRootfs": true
+    }
+  }
+]

@@ -1,0 +1,22 @@
+[
+  {
+    "file": "docs\\stage8\\stage-a\\forward-migrations\\20261104_routing_automatic_departure.sql",
+    "sha256": "74b098e891c49ee71a9cf1dde7c4e6d2fb9fdf31875ebc94488321fd48557dc4"
+  },
+  {
+    "file": "docs\\stage8\\stage-a\\forward-migrations\\20261105_routing_receipt_readonly.sql",
+    "sha256": "a189c875e16c959bfa415c1fea7b53579c87f2abfc69f76064ae75b2e90f7e1a"
+  },
+  {
+    "file": "docs\\stage8\\stage-a\\forward-migrations\\20261106_route_interruption_resolution.sql",
+    "sha256": "a9fe7713fe2ffd65816743b52abd43695d63d1ecbb45fd216983c4a952eca557"
+  },
+  {
+    "file": "docs\\stage8\\stage-a\\forward-migrations\\20261107_donor_route_resolution_read.sql",
+    "sha256": "aacfdffb658ef66017995d6ab85e9cd747fcf6125f1d74f940f3121eb367b652"
+  },
+  {
+    "file": "docs\\stage8\\stage-a\\forward-migrations\\20261108_per_stop_reconciliation.sql",
+    "sha256": "3d396843556173f762800a601c3ba5c05c8a8605d85313b21c7060250fc87c57"
+  }
+]

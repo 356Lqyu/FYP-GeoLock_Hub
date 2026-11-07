@@ -1,0 +1,103 @@
+{
+  "dev_project": "rcgyuwiidqvrgbxswhqj",
+  "select_only": true,
+  "fixture_observed_at": "2026-10-23 12:40:24.739386+00",
+  "health_observed_at": "2026-10-23 12:41:00.984587+00",
+  "claim_id": "8161392c-e1e1-4723-a954-c80b6b61a8c7",
+  "lease_id": "11b7d48e-a459-4b47-b1db-b43f98d0d474",
+  "listing_id": "95d6cd51-866b-4eec-8a36-36dc24296aec",
+  "donation_id": "3a012ba4-25cc-4054-897e-008e11da3e9e",
+  "task_id": "270caa8b-5a6d-481c-b199-c9a47156dda2",
+  "states": {
+    "claim": "ACTIVE",
+    "lease": "ACTIVE",
+    "task": "CONFIRMED",
+    "listing": "CLAIMED",
+    "donation": "CLAIMED"
+  },
+  "expires_at": "2026-10-23T02:33:13.441725+00:00",
+  "version": 2,
+  "generation": 1,
+  "overdue": [
+    {
+      "claim": "8161392c-e1e1-4723-a954-c80b6b61a8c7",
+      "lease": "11b7d48e-a459-4b47-b1db-b43f98d0d474",
+      "expires_at": "2026-10-23T02:33:13.441725+00:00"
+    }
+  ],
+  "nonterminal_leases": 1,
+  "assignments": null,
+  "stops": null,
+  "unresolved": null,
+  "custody": {
+    "receipts": 0,
+    "inventory": 0,
+    "memberships": 0,
+    "reservations": 0
+  },
+  "recovery": {
+    "acl": "{postgres=X/postgres,service_role=X/postgres}",
+    "owner": "postgres",
+    "config": [
+      "search_path=pg_catalog, public, extensions, pg_temp"
+    ],
+    "result": "integer",
+    "body_md5": "5ff6d8719db9681aae6f444b89dfbaee",
+    "arguments": "p_limit integer DEFAULT 100",
+    "security_definer": true
+  },
+  "other_business_md5": "070bb28ff5737477d6d91ec9e36feb02",
+  "target_audit_md5": "62681c4f345b496c07666036ce9263b6",
+  "cron": [
+    {
+      "jobid": 1,
+      "active": true,
+      "command": "set statement_timeout = '10min'; select public.process_ngo_eligibility_refresh_jobs();",
+      "jobname": "geolock-ngo-eligibility-refresh",
+      "database": "postgres",
+      "nodename": "localhost",
+      "nodeport": 5432,
+      "schedule": "* * * * *",
+      "username": "postgres"
+    },
+    {
+      "jobid": 2,
+      "active": true,
+      "command": "set statement_timeout = '10min'; select public.process_listing_eligibility_refresh_jobs();",
+      "jobname": "geolock-listing-eligibility-refresh",
+      "database": "postgres",
+      "nodename": "localhost",
+      "nodeport": 5432,
+      "schedule": "* * * * *",
+      "username": "postgres"
+    },
+    {
+      "jobid": 3,
+      "active": false,
+      "command": "set lock_timeout = '5s'; set statement_timeout = '50s'; select public.recover_expired_claims(1);",
+      "jobname": "geolock-expired-claim-recovery",
+      "database": "postgres",
+      "nodename": "localhost",
+      "nodeport": 5432,
+      "schedule": "* * * * *",
+      "username": "postgres"
+    }
+  ],
+  "job3_runs": 12,
+  "unfinished": null,
+  "active_clients": null,
+  "worker_health": [
+    {
+      "runs": 60,
+      "jobid": 1,
+      "status": "succeeded",
+      "latest_end": "2026-10-23T12:41:00.090122+00:00"
+    },
+    {
+      "runs": 60,
+      "jobid": 2,
+      "status": "succeeded",
+      "latest_end": "2026-10-23T12:41:00.086953+00:00"
+    }
+  ]
+}

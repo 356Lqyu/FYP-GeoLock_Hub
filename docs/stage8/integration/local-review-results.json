@@ -1,0 +1,99 @@
+{
+  "recorded_at": "2026-10-24T13:20:54.487666+00:00",
+  "scope": "OFFLINE_AND_DISPOSABLE_LOCAL_POSTGRESQL_ONLY",
+  "dev_writes": 0,
+  "live_authenticated_tests": 0,
+  "tested_migrations": [
+    {
+      "path": "docs\\stage8\\integration\\001_authority_proposal.sql",
+      "sha256": "2cba7479d17b2d084335dbb40b88c09b747812ca80bf25f79617d10d8239209c",
+      "functions": [
+        "routing_private.hash",
+        "routing_private.worker",
+        "routing_private.append_only",
+        "routing_private.snapshot_guard",
+        "routing_private.freeze_network",
+        "public.install_routing_policy",
+        "routing_private.network_digest",
+        "public.freeze_routing_graph",
+        "public.store_routing_matrix",
+        "routing_private.observe_task",
+        "routing_private.task_digest",
+        "routing_private.ngo_observation",
+        "public.begin_my_routing_snapshot",
+        "public.seal_routing_snapshot",
+        "public.submit_routing_candidate",
+        "public.read_routing_work_item",
+        "public.attest_routing_candidate",
+        "public.read_frozen_routing_graph",
+        "public.read_routing_snapshot_bundle",
+        "public.read_pending_routing_snapshot"
+      ],
+      "tables": [
+        "routing_private.policies",
+        "routing_private.graphs",
+        "routing_private.matrices",
+        "routing_private.snapshots",
+        "routing_private.candidates",
+        "routing_private.validations",
+        "routing_private.requests",
+        "routing_private.bindings",
+        "routing_private.items",
+        "routing_private.cancelled_stop_history",
+        "routing_private.legacy_inflight"
+      ],
+      "indexes": [
+        "routing_one_vehicle_booking",
+        "routing_one_task_booking",
+        "routing_candidate_snapshot",
+        "routing_binding_candidate"
+      ]
+    },
+    {
+      "path": "docs\\stage8\\integration\\002_publication_proposal.sql",
+      "sha256": "f8e048d3ad7f53dd636250fa5620f41997d7b8126af74789a785c7c3d968f254",
+      "functions": [
+        "routing_private.actor_lock",
+        "routing_private.lock_sources",
+        "routing_private.task_window",
+        "routing_private.admissible",
+        "routing_private.arc",
+        "routing_private.snapshot_task",
+        "public.authorize_my_routing_candidate",
+        "public.assign_task_to_route"
+      ],
+      "tables": [],
+      "indexes": []
+    },
+    {
+      "path": "docs\\stage8\\integration\\003_pickup_enforcement_proposal.sql",
+      "sha256": "e64540669f4b0962c8967cfc9f29330b56a29d722134801104a3f671b542b1c9",
+      "functions": [
+        "routing_private.lock_route",
+        "routing_private.close_collected",
+        "public.close_my_collected_route",
+        "public.cancel_my_unstarted_route",
+        "routing_private.task_guard",
+        "routing_private.check_remaining",
+        "public.start_pickup",
+        "public.complete_pickup",
+        "routing_private.legacy_start_pickup",
+        "routing_private.legacy_complete_pickup"
+      ],
+      "tables": [],
+      "indexes": []
+    }
+  ],
+  "results": [
+    {
+      "name": "offline_regressions",
+      "exit_code": 0,
+      "output": "{\n  \"routing_regressions_and_local_c2\": \"PASS\",\n  \"package_12\": \"PASS\",\n  \"harness_23\": \"PASS\",\n  \"fixture_recovery_32\": \"PASS\",\n  \"saved_synthetic_reports\": \"PASS\"\n}\n"
+    },
+    {
+      "name": "integration_20",
+      "exit_code": 0,
+      "output": "test_bad_validation_binding_denied (__main__.IntegrationTests.test_bad_validation_binding_denied) ... ok\ntest_c1_seal_and_artifact_immutability (__main__.IntegrationTests.test_c1_seal_and_artifact_immutability) ... ok\ntest_cancel_archives_and_releases_without_losing_task (__main__.IntegrationTests.test_cancel_archives_and_releases_without_losing_task) ... ok\ntest_cross_ngo_and_ordinary_worker_access_denied (__main__.IntegrationTests.test_cross_ngo_and_ordinary_worker_access_denied) ... ok\ntest_direct_column_writes_removed (__main__.IntegrationTests.test_direct_column_writes_removed) ... ok\ntest_hub_collection_preserves_source_lifecycle (__main__.IntegrationTests.test_hub_collection_preserves_source_lifecycle) ... ok\ntest_invalid_handover_rolls_back_completion (__main__.IntegrationTests.test_invalid_handover_rolls_back_completion) ... ok\ntest_migration_replay_fails_cleanly (__main__.IntegrationTests.test_migration_replay_fails_cleanly) ... ok\ntest_no_cancellation_or_closure_of_started_unresolved_route (__main__.IntegrationTests.test_no_cancellation_or_closure_of_started_unresolved_route) ... ok\ntest_partial_route_does_not_release_uncollected_task (__main__.IntegrationTests.test_partial_route_does_not_release_uncollected_task) ... ok\ntest_publish_start_collect_releases_holds (__main__.IntegrationTests.test_publish_start_collect_releases_holds) ... ok\ntest_race_cancel_first_denies_start (__main__.IntegrationTests.test_race_cancel_first_denies_start) ... ok\ntest_race_closure_then_vehicle_update (__main__.IntegrationTests.test_race_closure_then_vehicle_update) ... ok\ntest_race_publication_is_idempotent (__main__.IntegrationTests.test_race_publication_is_idempotent) ... ok\ntest_race_start_first_blocks_cancel (__main__.IntegrationTests.test_race_start_first_blocks_cancel) ... ok\ntest_reconciliation_keeps_reservation_and_denies_start (__main__.IntegrationTests.test_reconciliation_keeps_reservation_and_denies_start) ... ok\ntest_sql_rechecks_schedule_even_with_forged_trusted_attestation (__main__.IntegrationTests.test_sql_rechecks_schedule_even_with_forged_trusted_attestation) ... ok\ntest_unauthenticated_and_old_assignment_entrypoint_denied (__main__.IntegrationTests.test_unauthenticated_and_old_assignment_entrypoint_denied) ... ok\ntest_unrouted_start_and_direct_task_bypass_denied (__main__.IntegrationTests.test_unrouted_start_and_direct_task_bypass_denied) ... ok\ntest_vehicle_hold_and_stale_version (__main__.IntegrationTests.test_vehicle_hold_and_stale_version) ... ok\n\n----------------------------------------------------------------------\nRan 20 tests in 69.981s\n\nOK\n"
+    }
+  ]
+}

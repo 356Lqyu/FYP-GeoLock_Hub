@@ -1,0 +1,1223 @@
+{
+  "purpose": "PRE_ROUTE_RESOLUTION_CURRENT_DEV",
+  "project_ref": "rcgyuwiidqvrgbxswhqj",
+  "migration_sha256": "a9fe7713fe2ffd65816743b52abd43695d63d1ecbb45fd216983c4a952eca557",
+  "source_capture_sha256": "d482cecc7a68bdbea2486637cbe9bd932365a63727a2793413e19bf3c042d793",
+  "function_baseline_refresh": {
+    "scope": "Only definitions changed by approved Stage 8 migrations through 20261108; source capture provenance above remains historical.",
+    "local_reference": "results/automatic-routing-local/20261101T090857Z-d9d6c4/phase2d-stage8-through-20261108-functions.json",
+    "local_reference_sha256": "9dc26c64c8d425034a15b1d4aa369d5a57f0d33f95f634c79addf8fcc7fa9852",
+    "live_comparison": "DEV prosrc hashes compared after CRLF-to-LF normalization using SELECT-only pg_catalog inspection; all six refreshed definitions matched the local reference.",
+    "refreshed_signatures": [
+      "fleet_private.route_vehicle_guard()",
+      "public.enforce_donation_transition()",
+      "public.get_my_authorized_route(uuid)",
+      "public.submit_claim_reconciliation(uuid,boolean,uuid)",
+      "routing_private.check_remaining(uuid,uuid,timestamp with time zone)",
+      "routing_private.task_guard()"
+    ],
+    "unresolved_signature": "public.get_eligible_hubs(uuid)"
+  },
+  "source_observed_at": "2026-10-29T11:53:15.841132+00:00",
+  "functions": [
+    {
+      "signature": "fleet_private.audit_vehicle()",
+      "body_md5": "d619dbeb835f25895892e6f273cece52"
+    },
+    {
+      "signature": "fleet_private.check_values(text,text,numeric,numeric,numeric,numeric)",
+      "body_md5": "c0ca17bb4a63b7d945cbeaf486d49a3d"
+    },
+    {
+      "signature": "fleet_private.installation_fingerprint()",
+      "body_md5": "d5164138c28a4dab30e1bfd49c2210e1"
+    },
+    {
+      "signature": "fleet_private.require_depot(uuid)",
+      "body_md5": "4ff6b95d8bd074358be734979185860d"
+    },
+    {
+      "signature": "fleet_private.require_ngo()",
+      "body_md5": "15d5c2547cabd5df199e104451f5c2d6"
+    },
+    {
+      "signature": "fleet_private.road_node_key(text)",
+      "body_md5": "9ce80356f48ab77f881476eef1a75e6a"
+    },
+    {
+      "signature": "fleet_private.route_vehicle_guard()",
+      "body_md5": "97795c554c8b846b08dcbcc1ea188bcd"
+    },
+    {
+      "signature": "fleet_private.vehicle_guard()",
+      "body_md5": "d24a27fdec561037151e02371c72d2cf"
+    },
+    {
+      "signature": "fleet_private.vehicle_has_hold(uuid)",
+      "body_md5": "b0a70c53b48a09cd3cb9899ed5280690"
+    },
+    {
+      "signature": "public.add_donation_image(uuid,text,text,integer)",
+      "body_md5": "c83383de33f3ef72d174030f374b2df4"
+    },
+    {
+      "signature": "public.add_hub_batch_image(uuid,text,text,integer)",
+      "body_md5": "f47ffa8754a2ca9d89ac0b57b44f486d"
+    },
+    {
+      "signature": "public.assign_task_to_route(uuid,uuid,integer)",
+      "body_md5": "047f2b5d6a4483b8cef8e3b91c9dc299"
+    },
+    {
+      "signature": "public.attest_routing_candidate(uuid,text,jsonb)",
+      "body_md5": "99789f22097aabb066595f44a7cfdb48"
+    },
+    {
+      "signature": "public.authorize_my_routing_candidate(uuid,uuid,timestamp with time zone)",
+      "body_md5": "e383a34bfadba383cf71ac07b0854a47"
+    },
+    {
+      "signature": "public.begin_my_routing_snapshot(uuid,uuid,uuid[])",
+      "body_md5": "dca3ee04e8fbf991c4ef0993930ec185"
+    },
+    {
+      "signature": "public.can_read_geolock_batch_image(text)",
+      "body_md5": "980ac001f9332ce216738a5eecd06c1c"
+    },
+    {
+      "signature": "public.can_read_geolock_donation_image(text)",
+      "body_md5": "aaee6f68bf4084aa2a0bd3754950b863"
+    },
+    {
+      "signature": "public.cancel_claim(uuid,uuid)",
+      "body_md5": "f24c46b0c39e945df6d2e2bfb3862573"
+    },
+    {
+      "signature": "public.cancel_donation(uuid,uuid)",
+      "body_md5": "56a534a1d8825192ba7aedaee17ede67"
+    },
+    {
+      "signature": "public.cancel_my_unstarted_route(uuid)",
+      "body_md5": "25d5d50b727abd9cf94fd0b9c479e612"
+    },
+    {
+      "signature": "public.claim_listing(uuid,uuid)",
+      "body_md5": "2c1f60c876797c61b44b3cb43591bab8"
+    },
+    {
+      "signature": "public.close_my_collected_route(uuid,boolean)",
+      "body_md5": "5f83aea95b8c8971ea3bfcbcb8b3c18a"
+    },
+    {
+      "signature": "public.complete_pickup(uuid,boolean)",
+      "body_md5": "26f0cd8cebe783c65b45e05649693860"
+    },
+    {
+      "signature": "public.confirm_hub_receipt(uuid,numeric)",
+      "body_md5": "87466dfa244beb21f5260b96c781bf76"
+    },
+    {
+      "signature": "public.create_and_validate_donation(text,text,text,double precision,double precision,jsonb,text)",
+      "body_md5": "bacb88a5393d4ab8ba2cda9c093103fb"
+    },
+    {
+      "signature": "public.create_donation_with_images(uuid,text,text,text,double precision,double precision,jsonb,text,jsonb)",
+      "body_md5": "102cadd77c875339cbe12e5677c7872c"
+    },
+    {
+      "signature": "public.deactivate_my_vehicle(uuid,bigint)",
+      "body_md5": "bd9f7ae20650723ab15a9f883eb1ee4b"
+    },
+    {
+      "signature": "public.discover_eligible_listing_cards()",
+      "body_md5": "cc2a101133f658076b34cb428d390e6f"
+    },
+    {
+      "signature": "public.discover_eligible_listings()",
+      "body_md5": "461eb9da7be19b56d9234eef3d4b84d1"
+    },
+    {
+      "signature": "public.enforce_donation_transition()",
+      "body_md5": "50f7c982be9c6cce75174e09f73649ae"
+    },
+    {
+      "signature": "public.enforce_listing_transition()",
+      "body_md5": "c65f4b675734d8c28816066ea9f05603"
+    },
+    {
+      "signature": "public.finalize_route_resolution(uuid,bigint,uuid)",
+      "body_md5": "3650767a5a9bc4928b58193321367ed8"
+    },
+    {
+      "signature": "public.freeze_routing_graph(uuid,text,text,text)",
+      "body_md5": "8e1434ea2727e30f898ddff289ac2df3"
+    },
+    {
+      "signature": "public.geolock_active_road_snapshot()",
+      "body_md5": "05ce5f7fce2666e732bff0fda29127a8"
+    },
+    {
+      "signature": "public.geolock_app_capabilities()",
+      "body_md5": "1f1e21b4da85990913a5f73166e99bb8"
+    },
+    {
+      "signature": "public.geolock_assert_donation_lifecycle(uuid)",
+      "body_md5": "3e7df59a90533e0708c51767889d930e"
+    },
+    {
+      "signature": "public.geolock_assign_road_node()",
+      "body_md5": "17710a30220b7e7bf8e00634840dfe1f"
+    },
+    {
+      "signature": "public.geolock_assign_vehicle_depot()",
+      "body_md5": "d3807a6d7126355db617a044b51bc772"
+    },
+    {
+      "signature": "public.geolock_backfill_road_nodes()",
+      "body_md5": "520a1e054ac15a07791a93f9fe811177"
+    },
+    {
+      "signature": "public.geolock_donation_hub_routes(uuid)",
+      "body_md5": "4abdb75f791674b46d5d67f4ad721687"
+    },
+    {
+      "signature": "public.geolock_listing_eligibility_ready(uuid)",
+      "body_md5": "8e1d352842db0b9477682eba70d14364"
+    },
+    {
+      "signature": "public.geolock_listing_eligibility_trigger()",
+      "body_md5": "623342a706a4ca4e0a607fba4ffbf7e1"
+    },
+    {
+      "signature": "public.geolock_lock_listing_donations(uuid,text[])",
+      "body_md5": "90816e7c6db3606dc8b6451a899d8036"
+    },
+    {
+      "signature": "public.geolock_ngo_eligibility_ready(uuid)",
+      "body_md5": "5eda52a6e184585256737391260badf8"
+    },
+    {
+      "signature": "public.geolock_ngo_listing_road_check(uuid,uuid)",
+      "body_md5": "93a7a7e6ae29713d182cee184fa52842"
+    },
+    {
+      "signature": "public.geolock_prepare_listing_eligibility()",
+      "body_md5": "3c497b7081433cefc548ac8761347096"
+    },
+    {
+      "signature": "public.geolock_refresh_listing_road_eligibility(uuid,uuid)",
+      "body_md5": "87630057b08e63ebae1308079be4e219"
+    },
+    {
+      "signature": "public.geolock_refresh_ngo_road_eligibility(uuid)",
+      "body_md5": "6542d9f3523a847628ea9967af6f5597"
+    },
+    {
+      "signature": "public.geolock_require_hub_route()",
+      "body_md5": "d25922fbba76a4d42b62679997fd6f9f"
+    },
+    {
+      "signature": "public.geolock_resolve_road_node(double precision,double precision)",
+      "body_md5": "9701683fdcfeb2486c887860c6470262"
+    },
+    {
+      "signature": "public.geolock_road_component(text)",
+      "body_md5": "073a7b7b58064a72eee4db40581010cb"
+    },
+    {
+      "signature": "public.geolock_road_costs(bigint[],bigint[],double precision,double precision,double precision)",
+      "body_md5": "828217e0b8faeeb3d32fa726b3e06a2a"
+    },
+    {
+      "signature": "public.geolock_road_eligible_km(uuid,uuid)",
+      "body_md5": "e8b0b68574b762ecc6eb4fc07974d735"
+    },
+    {
+      "signature": "public.geolock_storage_can_delete_unattached_image(text,text)",
+      "body_md5": "eaa8127b8277099a36f74e4c34b3ca7b"
+    },
+    {
+      "signature": "public.geolock_storage_can_read_image(text,text)",
+      "body_md5": "885927f21c01b81cc411b3a62853a489"
+    },
+    {
+      "signature": "public.geolock_storage_can_upload_batch_image(text,text,jsonb)",
+      "body_md5": "fec3c993622a32a246dde8d37f59d478"
+    },
+    {
+      "signature": "public.geolock_storage_can_upload_donation_image(text,text,jsonb)",
+      "body_md5": "ffbbec15f8759d2b79c6f39427fb8ebf"
+    },
+    {
+      "signature": "public.geolock_transition_listing_donations(uuid,text,text)",
+      "body_md5": "8a050031901f6796ed74210e4d5cbfec"
+    },
+    {
+      "signature": "public.geolock_transition_listing_donations(uuid,text,text,uuid,uuid,text)",
+      "body_md5": "67f27a85fb9129c9017bb0e9178f8ba1"
+    },
+    {
+      "signature": "public.geolock_validate_donation_at_commit()",
+      "body_md5": "8a6d5eb35e5c21705d2ec7c6900826db"
+    },
+    {
+      "signature": "public.get_active_donation_categories()",
+      "body_md5": "f1da063f46583aa45b86699a94d754a1"
+    },
+    {
+      "signature": "public.get_authorized_audit_events(text,uuid)",
+      "body_md5": "3a32a7747d6a8c781bced44992e90741"
+    },
+    {
+      "signature": "public.get_batch_images(uuid)",
+      "body_md5": "e48f301a933598a5498a27c8f726c47a"
+    },
+    {
+      "signature": "public.get_claimed_listing_constituents(uuid)",
+      "body_md5": "2ce1a11125dd03f5c0dac491c63b825c"
+    },
+    {
+      "signature": "public.get_claimed_listing_detail(uuid)",
+      "body_md5": "b15fb1c6260eee67a4eb73766effcf15"
+    },
+    {
+      "signature": "public.get_donation_images(uuid)",
+      "body_md5": "8b7c2be87124f7730cf4266dc17b0907"
+    },
+    {
+      "signature": "public.get_eligible_hubs(uuid)",
+      "body_md5": "073ab402c8a196a36321e459f680c9cb"
+    },
+    {
+      "signature": "public.get_eligible_listing_constituents(uuid)",
+      "body_md5": "f11735aac3f85e5b88cdcb73d3eb0af8"
+    },
+    {
+      "signature": "public.get_hub_batch_details(uuid,uuid)",
+      "body_md5": "a3192ba61f90a0bfa06d0f74506e5a39"
+    },
+    {
+      "signature": "public.get_hub_dashboard(uuid)",
+      "body_md5": "fa3a9722ba4042416218155dd69d49ec"
+    },
+    {
+      "signature": "public.get_hub_donation_covers(uuid)",
+      "body_md5": "5ae5a70e1eeb8e75f575703378954ad3"
+    },
+    {
+      "signature": "public.get_my_authorized_route(uuid)",
+      "body_md5": "d2e9e87bda5611f0a4afe2013a8f9235"
+    },
+    {
+      "signature": "public.get_my_claim_cards()",
+      "body_md5": "fa676482bf10182463069f24a3fd818f"
+    },
+    {
+      "signature": "public.get_my_claim_cards_v2()",
+      "body_md5": "44da3209586085a93e76204e37288f13"
+    },
+    {
+      "signature": "public.get_my_claims()",
+      "body_md5": "c70ee6ce378a6cc4330fc62d87b9b302"
+    },
+    {
+      "signature": "public.get_my_donation_dashboard()",
+      "body_md5": "aa68200302eabbca8fc6ef26f4b475fc"
+    },
+    {
+      "signature": "public.get_my_donation_dashboard_v2()",
+      "body_md5": "a05b0ac0d38f37a196ed288773820d8e"
+    },
+    {
+      "signature": "public.get_my_donation_detail(uuid)",
+      "body_md5": "c4e234078a2a5fecba73b57bc1829c4a"
+    },
+    {
+      "signature": "public.get_my_donations()",
+      "body_md5": "bd0724a840d848a700aeaaf85ac0dfd2"
+    },
+    {
+      "signature": "public.get_my_hub_batches_dashboard(uuid)",
+      "body_md5": "041af7f1baa832f025cc7fac4ce27b8a"
+    },
+    {
+      "signature": "public.get_my_hub_inventory(uuid)",
+      "body_md5": "2805aba0d3d8c0c9896b516b9031b73e"
+    },
+    {
+      "signature": "public.get_my_hub_reservations(uuid)",
+      "body_md5": "e7a252cb971a424208446b4292a731fe"
+    },
+    {
+      "signature": "public.get_my_hubs()",
+      "body_md5": "13d11e4582dd7621549fcf442664b7c7"
+    },
+    {
+      "signature": "public.get_my_ngo_eligibility_refresh_status()",
+      "body_md5": "0fb3b7da7e5be45133fba5a200d33e45"
+    },
+    {
+      "signature": "public.get_my_profile()",
+      "body_md5": "cb09e69315a568e0fec4e739e27d890e"
+    },
+    {
+      "signature": "public.get_my_reconciliation_cases()",
+      "body_md5": "ef135eb954b7052703b4c1df5315b312"
+    },
+    {
+      "signature": "public.get_my_route_resolution(uuid)",
+      "body_md5": "f8cf1e5807aeabb5c788761ecd540785"
+    },
+    {
+      "signature": "public.get_my_route_resolution_receipt(uuid)",
+      "body_md5": "2421041911b62dc6cd48b6859efce81c"
+    },
+    {
+      "signature": "public.get_my_routing_authorization_receipt(uuid)",
+      "body_md5": "71203f7bc55086683d60f3d0afabbe54"
+    },
+    {
+      "signature": "public.get_my_routing_overview()",
+      "body_md5": "aae6de57397515712518dcdc6c72b762"
+    },
+    {
+      "signature": "public.get_route_resolution_for_operator(uuid)",
+      "body_md5": "30859479335ce319b95fc724486de2c7"
+    },
+    {
+      "signature": "public.guard_batch_immutability()",
+      "body_md5": "4b913afd4939445c21212b160b2bea65"
+    },
+    {
+      "signature": "public.guard_donation_items()",
+      "body_md5": "5a083d4ae35b8a9390ac478c6476484a"
+    },
+    {
+      "signature": "public.install_routing_policy(uuid,jsonb)",
+      "body_md5": "7b3549f82b239d6c6abbd4a5fee58b4e"
+    },
+    {
+      "signature": "public.list_my_route_resolution_cases()",
+      "body_md5": "608e9dffc5842b793f34a399778660a3"
+    },
+    {
+      "signature": "public.list_my_vehicles()",
+      "body_md5": "c48e4ce709b1be71b15c6fe219485a33"
+    },
+    {
+      "signature": "public.prevent_audit_mutation()",
+      "body_md5": "a7c986629317fa9c30a164636ff2e594"
+    },
+    {
+      "signature": "public.prevent_role_change()",
+      "body_md5": "3d71ad7cf75274c378a0c894e4bb4260"
+    },
+    {
+      "signature": "public.preview_location_routing(double precision,double precision)",
+      "body_md5": "96b9bbfae435b16d6ebe83d0a830b21d"
+    },
+    {
+      "signature": "public.process_listing_eligibility_refresh_jobs()",
+      "body_md5": "9e3c2dd8290344a942e5325d5efc9e69"
+    },
+    {
+      "signature": "public.process_ngo_eligibility_refresh_jobs()",
+      "body_md5": "428108c4c1ffa15524449660756ebf24"
+    },
+    {
+      "signature": "public.publish_whole_donation_batch(uuid,uuid[])",
+      "body_md5": "8c939f3006cb5ee94bffac048a2cfd2f"
+    },
+    {
+      "signature": "public.read_frozen_routing_graph(uuid,bigint,integer)",
+      "body_md5": "f3f732a1224fa0290077197f473026b6"
+    },
+    {
+      "signature": "public.read_pending_routing_snapshot(uuid)",
+      "body_md5": "5125c4a3cce5f4c0bf9aebdf83f73847"
+    },
+    {
+      "signature": "public.read_routing_snapshot_bundle(uuid)",
+      "body_md5": "443812854b91b1bf9f93d6fecbd48ced"
+    },
+    {
+      "signature": "public.read_routing_work_item(uuid)",
+      "body_md5": "1ee7721aca6bc5d8fd490898e0fcf6d9"
+    },
+    {
+      "signature": "public.recover_expired_claims(integer)",
+      "body_md5": "89e01f42d5ec23bfcbcdc47c1f4fd4e5"
+    },
+    {
+      "signature": "public.register_community_hub(text,text,double precision,double precision,numeric,text)",
+      "body_md5": "0fe0d7ff1bba8bcc6f4e609ce09ea3b0"
+    },
+    {
+      "signature": "public.register_my_vehicle(uuid,text,text,numeric,numeric,numeric,numeric,boolean)",
+      "body_md5": "1f46b02470b27134c2b79497e71f2303"
+    },
+    {
+      "signature": "public.register_role_profile(text,text,text,text,text,text,double precision,double precision,text)",
+      "body_md5": "5d52973b4a89505335999dbc9303e3c0"
+    },
+    {
+      "signature": "public.register_route_test_provenance(uuid,text,uuid,uuid,uuid[],uuid)",
+      "body_md5": "c11af47936e6a3894a3cadb3da8c83fa"
+    },
+    {
+      "signature": "public.report_my_route_interruption(uuid,text,uuid)",
+      "body_md5": "52819df2234b131a52633ad63d2f51a4"
+    },
+    {
+      "signature": "public.report_route_resolution_incident(uuid,uuid,text,uuid)",
+      "body_md5": "34c213ee1bee4b96675e33e8953b4eb2"
+    },
+    {
+      "signature": "public.require_donation_photo_before_commit()",
+      "body_md5": "e1af5b55edfbc9e867fbad499409eb59"
+    },
+    {
+      "signature": "public.reserve_hub_capacity(uuid,uuid)",
+      "body_md5": "d3d6820020e81482179691e4fe6254f3"
+    },
+    {
+      "signature": "public.seal_routing_snapshot(uuid,uuid)",
+      "body_md5": "21440a57a37758997fcffcd89cf416a0"
+    },
+    {
+      "signature": "public.set_my_vehicle_availability(uuid,bigint,boolean)",
+      "body_md5": "17d16365727bdfa482e8505b4ab64390"
+    },
+    {
+      "signature": "public.set_ngo_operating_location(text,double precision,double precision)",
+      "body_md5": "07d198a9330f1c7fe98c624c17c13e01"
+    },
+    {
+      "signature": "public.start_pickup(uuid)",
+      "body_md5": "cb306433867538804b67aa1a242867b4"
+    },
+    {
+      "signature": "public.store_routing_matrix(uuid,uuid,jsonb)",
+      "body_md5": "bccccc76068912ae1d3cbff42a18964f"
+    },
+    {
+      "signature": "public.submit_claim_reconciliation(uuid,boolean,uuid)",
+      "body_md5": "e752c02c40b04265aed0d995fb894e07"
+    },
+    {
+      "signature": "public.submit_route_resolution_evidence(uuid,uuid,text,bigint,uuid)",
+      "body_md5": "7122f77ea8ed84d28bc08fbf77192d40"
+    },
+    {
+      "signature": "public.submit_routing_candidate(uuid,uuid,jsonb)",
+      "body_md5": "85ff82ee813722c69a98e8d197bd5323"
+    },
+    {
+      "signature": "public.update_my_hub(uuid,text,text,double precision,double precision,numeric)",
+      "body_md5": "19f2f699c79616f309aa5ef46d85d106"
+    },
+    {
+      "signature": "public.update_my_profile(text,text,text,text)",
+      "body_md5": "7aa35e78a13c036b734ed88483d9d10d"
+    },
+    {
+      "signature": "public.update_my_vehicle(uuid,bigint,text,text,numeric,numeric,numeric,numeric)",
+      "body_md5": "634363ff0de591a55d4413c08f216f76"
+    },
+    {
+      "signature": "public.verify_ngo_location(uuid,boolean,text)",
+      "body_md5": "187912abd36c40a70909c1436afa80ab"
+    },
+    {
+      "signature": "routing_private.actor_lock(uuid,boolean)",
+      "body_md5": "b7de071f2da83c77809f4d505b2cc3b2"
+    },
+    {
+      "signature": "routing_private.admissible(jsonb,uuid,timestamp with time zone,jsonb)",
+      "body_md5": "86cdbf87fcaef3f3ac0e36cda4824418"
+    },
+    {
+      "signature": "routing_private.append_only()",
+      "body_md5": "bf4e4f93b210de23118f16eb3b5b6f33"
+    },
+    {
+      "signature": "routing_private.arc(jsonb,text,text)",
+      "body_md5": "ceb33e05e1bf4b7d8238daee42c13974"
+    },
+    {
+      "signature": "routing_private.check_remaining(uuid,uuid,timestamp with time zone)",
+      "body_md5": "fefd041705ec87001a10135923ac7acc"
+    },
+    {
+      "signature": "routing_private.close_collected(uuid)",
+      "body_md5": "e06bac2a616cc49f91e32042e592a24a"
+    },
+    {
+      "signature": "routing_private.finish_reconciled_collection(uuid)",
+      "body_md5": "088e94184198f3e680c6fc5d779dba8e"
+    },
+    {
+      "signature": "routing_private.freeze_network()",
+      "body_md5": "55f50fab862e381f21ed355a93c2bcea"
+    },
+    {
+      "signature": "routing_private.hash(jsonb)",
+      "body_md5": "9baadd9fb14fce159d94e4e0bd983c22"
+    },
+    {
+      "signature": "routing_private.legacy_complete_pickup(uuid,boolean)",
+      "body_md5": "ae1b885377292281da17951cb18afd55"
+    },
+    {
+      "signature": "routing_private.legacy_start_pickup(uuid)",
+      "body_md5": "e89b650c83713b04e8310f4c372f10f4"
+    },
+    {
+      "signature": "routing_private.lock_reconciliation_scope(uuid)",
+      "body_md5": "618ea50c0c300e98098cfa62333a8608"
+    },
+    {
+      "signature": "routing_private.lock_route(uuid,boolean)",
+      "body_md5": "ebc10b61666e492afd7bbbd23f0e7448"
+    },
+    {
+      "signature": "routing_private.lock_sources(uuid[])",
+      "body_md5": "52dc6262f3f85bd3c67a787401cf71aa"
+    },
+    {
+      "signature": "routing_private.network_digest(text,text)",
+      "body_md5": "26aceaa8835e3db8bba3a73879024212"
+    },
+    {
+      "signature": "routing_private.ngo_observation(uuid)",
+      "body_md5": "6da6cd58224e4d6e58c732b734a081cb"
+    },
+    {
+      "signature": "routing_private.observe_task(uuid)",
+      "body_md5": "53f058161125f26980f65303d45dccc1"
+    },
+    {
+      "signature": "routing_private.permit_reconciled_collection(uuid)",
+      "body_md5": "c5bbed4368a64f83ed837d6195b02050"
+    },
+    {
+      "signature": "routing_private.reconciliation_participant(uuid)",
+      "body_md5": "12ccab6a7919008674e2ff340aab9100"
+    },
+    {
+      "signature": "routing_private.snapshot_guard()",
+      "body_md5": "fd7b479db124345977509f8401b2dab6"
+    },
+    {
+      "signature": "routing_private.snapshot_task(jsonb,uuid)",
+      "body_md5": "61704ef635b841fe02fff0118a196aef"
+    },
+    {
+      "signature": "routing_private.task_digest(jsonb)",
+      "body_md5": "e28f2dba4773bbbe8e32a700047e6f6e"
+    },
+    {
+      "signature": "routing_private.task_guard()",
+      "body_md5": "4012fed7dad4a6f7767d39bed3de70e6"
+    },
+    {
+      "signature": "routing_private.task_window(jsonb,timestamp with time zone,jsonb)",
+      "body_md5": "82362da140f544be5d5ca5c622183fbb"
+    },
+    {
+      "signature": "routing_private.worker(text)",
+      "body_md5": "9fce37c17364e88eb1e2101be042a822"
+    }
+  ],
+  "current_route_resolution_functions": {
+    "local_reference": "results/automatic-routing-local/20261101T093043Z-90381d/resolution-function-fingerprints.json",
+    "local_reference_sha256": "9e21896499bd2e104bf576133825c2b6c3c273b9d80526935a80d35637cfd4ca",
+    "stage8_through_20261108_migration_sha256": "3d396843556173f762800a601c3ba5c05c8a8605d85313b21c7060250fc87c57",
+    "signatures": [
+      "public.finalize_route_resolution(uuid,bigint,uuid)",
+      "public.get_my_route_resolution(uuid)",
+      "public.get_my_route_resolution_receipt(uuid)",
+      "public.get_route_resolution_for_operator(uuid)",
+      "public.list_my_route_resolution_cases()",
+      "public.register_route_test_provenance(uuid,text,uuid,uuid,uuid[],uuid)",
+      "public.report_my_route_interruption(uuid,text,uuid)",
+      "public.report_route_resolution_incident(uuid,uuid,text,uuid)",
+      "public.submit_route_resolution_evidence(uuid,uuid,text,bigint,uuid)"
+    ],
+    "live_comparison": "All nine normalized DEV prosrc hashes match these disposable PostgreSQL 17 local definitions; owner, SECURITY DEFINER, configuration and reviewed grantee ACLs also matched the Stage 8 contract."
+  },
+  "pre_route_resolution_functions": [
+    {
+      "signature": "fleet_private.audit_vehicle()",
+      "body_md5": "d619dbeb835f25895892e6f273cece52"
+    },
+    {
+      "signature": "fleet_private.check_values(text,text,numeric,numeric,numeric,numeric)",
+      "body_md5": "c0ca17bb4a63b7d945cbeaf486d49a3d"
+    },
+    {
+      "signature": "fleet_private.installation_fingerprint()",
+      "body_md5": "d5164138c28a4dab30e1bfd49c2210e1"
+    },
+    {
+      "signature": "fleet_private.require_depot(uuid)",
+      "body_md5": "4ff6b95d8bd074358be734979185860d"
+    },
+    {
+      "signature": "fleet_private.require_ngo()",
+      "body_md5": "15d5c2547cabd5df199e104451f5c2d6"
+    },
+    {
+      "signature": "fleet_private.road_node_key(text)",
+      "body_md5": "9ce80356f48ab77f881476eef1a75e6a"
+    },
+    {
+      "signature": "fleet_private.route_vehicle_guard()",
+      "body_md5": "af9b1e0e2afd2201b4ac9c284fabf105"
+    },
+    {
+      "signature": "fleet_private.vehicle_guard()",
+      "body_md5": "d24a27fdec561037151e02371c72d2cf"
+    },
+    {
+      "signature": "fleet_private.vehicle_has_hold(uuid)",
+      "body_md5": "b0a70c53b48a09cd3cb9899ed5280690"
+    },
+    {
+      "signature": "public.add_donation_image(uuid,text,text,integer)",
+      "body_md5": "c83383de33f3ef72d174030f374b2df4"
+    },
+    {
+      "signature": "public.add_hub_batch_image(uuid,text,text,integer)",
+      "body_md5": "f47ffa8754a2ca9d89ac0b57b44f486d"
+    },
+    {
+      "signature": "public.assign_task_to_route(uuid,uuid,integer)",
+      "body_md5": "047f2b5d6a4483b8cef8e3b91c9dc299"
+    },
+    {
+      "signature": "public.attest_routing_candidate(uuid,text,jsonb)",
+      "body_md5": "99789f22097aabb066595f44a7cfdb48"
+    },
+    {
+      "signature": "public.authorize_my_routing_candidate(uuid,uuid,timestamp with time zone)",
+      "body_md5": "e383a34bfadba383cf71ac07b0854a47"
+    },
+    {
+      "signature": "public.begin_my_routing_snapshot(uuid,uuid,uuid[])",
+      "body_md5": "dca3ee04e8fbf991c4ef0993930ec185"
+    },
+    {
+      "signature": "public.can_read_geolock_batch_image(text)",
+      "body_md5": "980ac001f9332ce216738a5eecd06c1c"
+    },
+    {
+      "signature": "public.can_read_geolock_donation_image(text)",
+      "body_md5": "aaee6f68bf4084aa2a0bd3754950b863"
+    },
+    {
+      "signature": "public.cancel_claim(uuid,uuid)",
+      "body_md5": "f24c46b0c39e945df6d2e2bfb3862573"
+    },
+    {
+      "signature": "public.cancel_donation(uuid,uuid)",
+      "body_md5": "56a534a1d8825192ba7aedaee17ede67"
+    },
+    {
+      "signature": "public.cancel_my_unstarted_route(uuid)",
+      "body_md5": "25d5d50b727abd9cf94fd0b9c479e612"
+    },
+    {
+      "signature": "public.claim_listing(uuid,uuid)",
+      "body_md5": "2c1f60c876797c61b44b3cb43591bab8"
+    },
+    {
+      "signature": "public.close_my_collected_route(uuid,boolean)",
+      "body_md5": "5f83aea95b8c8971ea3bfcbcb8b3c18a"
+    },
+    {
+      "signature": "public.complete_pickup(uuid,boolean)",
+      "body_md5": "26f0cd8cebe783c65b45e05649693860"
+    },
+    {
+      "signature": "public.confirm_hub_receipt(uuid,numeric)",
+      "body_md5": "87466dfa244beb21f5260b96c781bf76"
+    },
+    {
+      "signature": "public.create_and_validate_donation(text,text,text,double precision,double precision,jsonb,text)",
+      "body_md5": "bacb88a5393d4ab8ba2cda9c093103fb"
+    },
+    {
+      "signature": "public.create_donation_with_images(uuid,text,text,text,double precision,double precision,jsonb,text,jsonb)",
+      "body_md5": "102cadd77c875339cbe12e5677c7872c"
+    },
+    {
+      "signature": "public.deactivate_my_vehicle(uuid,bigint)",
+      "body_md5": "bd9f7ae20650723ab15a9f883eb1ee4b"
+    },
+    {
+      "signature": "public.discover_eligible_listing_cards()",
+      "body_md5": "cc2a101133f658076b34cb428d390e6f"
+    },
+    {
+      "signature": "public.discover_eligible_listings()",
+      "body_md5": "461eb9da7be19b56d9234eef3d4b84d1"
+    },
+    {
+      "signature": "public.enforce_donation_transition()",
+      "body_md5": "c0cbbe68574ea42fafe9d2f60d08cff1"
+    },
+    {
+      "signature": "public.enforce_listing_transition()",
+      "body_md5": "c65f4b675734d8c28816066ea9f05603"
+    },
+    {
+      "signature": "public.freeze_routing_graph(uuid,text,text,text)",
+      "body_md5": "8e1434ea2727e30f898ddff289ac2df3"
+    },
+    {
+      "signature": "public.geolock_active_road_snapshot()",
+      "body_md5": "05ce5f7fce2666e732bff0fda29127a8"
+    },
+    {
+      "signature": "public.geolock_app_capabilities()",
+      "body_md5": "1f1e21b4da85990913a5f73166e99bb8"
+    },
+    {
+      "signature": "public.geolock_assert_donation_lifecycle(uuid)",
+      "body_md5": "3e7df59a90533e0708c51767889d930e"
+    },
+    {
+      "signature": "public.geolock_assign_road_node()",
+      "body_md5": "17710a30220b7e7bf8e00634840dfe1f"
+    },
+    {
+      "signature": "public.geolock_assign_vehicle_depot()",
+      "body_md5": "d3807a6d7126355db617a044b51bc772"
+    },
+    {
+      "signature": "public.geolock_backfill_road_nodes()",
+      "body_md5": "520a1e054ac15a07791a93f9fe811177"
+    },
+    {
+      "signature": "public.geolock_donation_hub_routes(uuid)",
+      "body_md5": "4abdb75f791674b46d5d67f4ad721687"
+    },
+    {
+      "signature": "public.geolock_listing_eligibility_ready(uuid)",
+      "body_md5": "8e1d352842db0b9477682eba70d14364"
+    },
+    {
+      "signature": "public.geolock_listing_eligibility_trigger()",
+      "body_md5": "623342a706a4ca4e0a607fba4ffbf7e1"
+    },
+    {
+      "signature": "public.geolock_lock_listing_donations(uuid,text[])",
+      "body_md5": "90816e7c6db3606dc8b6451a899d8036"
+    },
+    {
+      "signature": "public.geolock_ngo_eligibility_ready(uuid)",
+      "body_md5": "5eda52a6e184585256737391260badf8"
+    },
+    {
+      "signature": "public.geolock_ngo_listing_road_check(uuid,uuid)",
+      "body_md5": "93a7a7e6ae29713d182cee184fa52842"
+    },
+    {
+      "signature": "public.geolock_prepare_listing_eligibility()",
+      "body_md5": "3c497b7081433cefc548ac8761347096"
+    },
+    {
+      "signature": "public.geolock_refresh_listing_road_eligibility(uuid,uuid)",
+      "body_md5": "87630057b08e63ebae1308079be4e219"
+    },
+    {
+      "signature": "public.geolock_refresh_ngo_road_eligibility(uuid)",
+      "body_md5": "6542d9f3523a847628ea9967af6f5597"
+    },
+    {
+      "signature": "public.geolock_require_hub_route()",
+      "body_md5": "d25922fbba76a4d42b62679997fd6f9f"
+    },
+    {
+      "signature": "public.geolock_resolve_road_node(double precision,double precision)",
+      "body_md5": "9701683fdcfeb2486c887860c6470262"
+    },
+    {
+      "signature": "public.geolock_road_component(text)",
+      "body_md5": "073a7b7b58064a72eee4db40581010cb"
+    },
+    {
+      "signature": "public.geolock_road_costs(bigint[],bigint[],double precision,double precision,double precision)",
+      "body_md5": "828217e0b8faeeb3d32fa726b3e06a2a"
+    },
+    {
+      "signature": "public.geolock_road_eligible_km(uuid,uuid)",
+      "body_md5": "e8b0b68574b762ecc6eb4fc07974d735"
+    },
+    {
+      "signature": "public.geolock_storage_can_delete_unattached_image(text,text)",
+      "body_md5": "eaa8127b8277099a36f74e4c34b3ca7b"
+    },
+    {
+      "signature": "public.geolock_storage_can_read_image(text,text)",
+      "body_md5": "885927f21c01b81cc411b3a62853a489"
+    },
+    {
+      "signature": "public.geolock_storage_can_upload_batch_image(text,text,jsonb)",
+      "body_md5": "fec3c993622a32a246dde8d37f59d478"
+    },
+    {
+      "signature": "public.geolock_storage_can_upload_donation_image(text,text,jsonb)",
+      "body_md5": "ffbbec15f8759d2b79c6f39427fb8ebf"
+    },
+    {
+      "signature": "public.geolock_transition_listing_donations(uuid,text,text)",
+      "body_md5": "8a050031901f6796ed74210e4d5cbfec"
+    },
+    {
+      "signature": "public.geolock_transition_listing_donations(uuid,text,text,uuid,uuid,text)",
+      "body_md5": "67f27a85fb9129c9017bb0e9178f8ba1"
+    },
+    {
+      "signature": "public.geolock_validate_donation_at_commit()",
+      "body_md5": "8a6d5eb35e5c21705d2ec7c6900826db"
+    },
+    {
+      "signature": "public.get_active_donation_categories()",
+      "body_md5": "f1da063f46583aa45b86699a94d754a1"
+    },
+    {
+      "signature": "public.get_authorized_audit_events(text,uuid)",
+      "body_md5": "3a32a7747d6a8c781bced44992e90741"
+    },
+    {
+      "signature": "public.get_batch_images(uuid)",
+      "body_md5": "e48f301a933598a5498a27c8f726c47a"
+    },
+    {
+      "signature": "public.get_claimed_listing_constituents(uuid)",
+      "body_md5": "2ce1a11125dd03f5c0dac491c63b825c"
+    },
+    {
+      "signature": "public.get_claimed_listing_detail(uuid)",
+      "body_md5": "b15fb1c6260eee67a4eb73766effcf15"
+    },
+    {
+      "signature": "public.get_donation_images(uuid)",
+      "body_md5": "8b7c2be87124f7730cf4266dc17b0907"
+    },
+    {
+      "signature": "public.get_eligible_hubs(uuid)",
+      "body_md5": "073ab402c8a196a36321e459f680c9cb"
+    },
+    {
+      "signature": "public.get_eligible_listing_constituents(uuid)",
+      "body_md5": "f11735aac3f85e5b88cdcb73d3eb0af8"
+    },
+    {
+      "signature": "public.get_hub_batch_details(uuid,uuid)",
+      "body_md5": "a3192ba61f90a0bfa06d0f74506e5a39"
+    },
+    {
+      "signature": "public.get_hub_dashboard(uuid)",
+      "body_md5": "fa3a9722ba4042416218155dd69d49ec"
+    },
+    {
+      "signature": "public.get_hub_donation_covers(uuid)",
+      "body_md5": "5ae5a70e1eeb8e75f575703378954ad3"
+    },
+    {
+      "signature": "public.get_my_authorized_route(uuid)",
+      "body_md5": "df7eb088b25c083673b223f164b7dcfd"
+    },
+    {
+      "signature": "public.get_my_claim_cards()",
+      "body_md5": "fa676482bf10182463069f24a3fd818f"
+    },
+    {
+      "signature": "public.get_my_claim_cards_v2()",
+      "body_md5": "44da3209586085a93e76204e37288f13"
+    },
+    {
+      "signature": "public.get_my_claims()",
+      "body_md5": "c70ee6ce378a6cc4330fc62d87b9b302"
+    },
+    {
+      "signature": "public.get_my_donation_dashboard()",
+      "body_md5": "aa68200302eabbca8fc6ef26f4b475fc"
+    },
+    {
+      "signature": "public.get_my_donation_dashboard_v2()",
+      "body_md5": "a05b0ac0d38f37a196ed288773820d8e"
+    },
+    {
+      "signature": "public.get_my_donation_detail(uuid)",
+      "body_md5": "c4e234078a2a5fecba73b57bc1829c4a"
+    },
+    {
+      "signature": "public.get_my_donations()",
+      "body_md5": "bd0724a840d848a700aeaaf85ac0dfd2"
+    },
+    {
+      "signature": "public.get_my_hub_batches_dashboard(uuid)",
+      "body_md5": "041af7f1baa832f025cc7fac4ce27b8a"
+    },
+    {
+      "signature": "public.get_my_hub_inventory(uuid)",
+      "body_md5": "2805aba0d3d8c0c9896b516b9031b73e"
+    },
+    {
+      "signature": "public.get_my_hub_reservations(uuid)",
+      "body_md5": "e7a252cb971a424208446b4292a731fe"
+    },
+    {
+      "signature": "public.get_my_hubs()",
+      "body_md5": "13d11e4582dd7621549fcf442664b7c7"
+    },
+    {
+      "signature": "public.get_my_ngo_eligibility_refresh_status()",
+      "body_md5": "0fb3b7da7e5be45133fba5a200d33e45"
+    },
+    {
+      "signature": "public.get_my_profile()",
+      "body_md5": "cb09e69315a568e0fec4e739e27d890e"
+    },
+    {
+      "signature": "public.get_my_reconciliation_cases()",
+      "body_md5": "ef135eb954b7052703b4c1df5315b312"
+    },
+    {
+      "signature": "public.get_my_routing_authorization_receipt(uuid)",
+      "body_md5": "71203f7bc55086683d60f3d0afabbe54"
+    },
+    {
+      "signature": "public.get_my_routing_overview()",
+      "body_md5": "aae6de57397515712518dcdc6c72b762"
+    },
+    {
+      "signature": "public.guard_batch_immutability()",
+      "body_md5": "4b913afd4939445c21212b160b2bea65"
+    },
+    {
+      "signature": "public.guard_donation_items()",
+      "body_md5": "5a083d4ae35b8a9390ac478c6476484a"
+    },
+    {
+      "signature": "public.install_routing_policy(uuid,jsonb)",
+      "body_md5": "7b3549f82b239d6c6abbd4a5fee58b4e"
+    },
+    {
+      "signature": "public.list_my_vehicles()",
+      "body_md5": "c48e4ce709b1be71b15c6fe219485a33"
+    },
+    {
+      "signature": "public.prevent_audit_mutation()",
+      "body_md5": "a7c986629317fa9c30a164636ff2e594"
+    },
+    {
+      "signature": "public.prevent_role_change()",
+      "body_md5": "3d71ad7cf75274c378a0c894e4bb4260"
+    },
+    {
+      "signature": "public.preview_location_routing(double precision,double precision)",
+      "body_md5": "96b9bbfae435b16d6ebe83d0a830b21d"
+    },
+    {
+      "signature": "public.process_listing_eligibility_refresh_jobs()",
+      "body_md5": "9e3c2dd8290344a942e5325d5efc9e69"
+    },
+    {
+      "signature": "public.process_ngo_eligibility_refresh_jobs()",
+      "body_md5": "428108c4c1ffa15524449660756ebf24"
+    },
+    {
+      "signature": "public.publish_whole_donation_batch(uuid,uuid[])",
+      "body_md5": "8c939f3006cb5ee94bffac048a2cfd2f"
+    },
+    {
+      "signature": "public.read_frozen_routing_graph(uuid,bigint,integer)",
+      "body_md5": "f3f732a1224fa0290077197f473026b6"
+    },
+    {
+      "signature": "public.read_pending_routing_snapshot(uuid)",
+      "body_md5": "5125c4a3cce5f4c0bf9aebdf83f73847"
+    },
+    {
+      "signature": "public.read_routing_snapshot_bundle(uuid)",
+      "body_md5": "443812854b91b1bf9f93d6fecbd48ced"
+    },
+    {
+      "signature": "public.read_routing_work_item(uuid)",
+      "body_md5": "1ee7721aca6bc5d8fd490898e0fcf6d9"
+    },
+    {
+      "signature": "public.recover_expired_claims(integer)",
+      "body_md5": "89e01f42d5ec23bfcbcdc47c1f4fd4e5"
+    },
+    {
+      "signature": "public.register_community_hub(text,text,double precision,double precision,numeric,text)",
+      "body_md5": "0fe0d7ff1bba8bcc6f4e609ce09ea3b0"
+    },
+    {
+      "signature": "public.register_my_vehicle(uuid,text,text,numeric,numeric,numeric,numeric,boolean)",
+      "body_md5": "1f46b02470b27134c2b79497e71f2303"
+    },
+    {
+      "signature": "public.register_role_profile(text,text,text,text,text,text,double precision,double precision,text)",
+      "body_md5": "5d52973b4a89505335999dbc9303e3c0"
+    },
+    {
+      "signature": "public.require_donation_photo_before_commit()",
+      "body_md5": "e1af5b55edfbc9e867fbad499409eb59"
+    },
+    {
+      "signature": "public.reserve_hub_capacity(uuid,uuid)",
+      "body_md5": "d3d6820020e81482179691e4fe6254f3"
+    },
+    {
+      "signature": "public.seal_routing_snapshot(uuid,uuid)",
+      "body_md5": "21440a57a37758997fcffcd89cf416a0"
+    },
+    {
+      "signature": "public.set_my_vehicle_availability(uuid,bigint,boolean)",
+      "body_md5": "17d16365727bdfa482e8505b4ab64390"
+    },
+    {
+      "signature": "public.set_ngo_operating_location(text,double precision,double precision)",
+      "body_md5": "07d198a9330f1c7fe98c624c17c13e01"
+    },
+    {
+      "signature": "public.start_pickup(uuid)",
+      "body_md5": "cb306433867538804b67aa1a242867b4"
+    },
+    {
+      "signature": "public.store_routing_matrix(uuid,uuid,jsonb)",
+      "body_md5": "bccccc76068912ae1d3cbff42a18964f"
+    },
+    {
+      "signature": "public.submit_claim_reconciliation(uuid,boolean,uuid)",
+      "body_md5": "8cd1c3c183bb1af41bebc9094556a905"
+    },
+    {
+      "signature": "public.submit_routing_candidate(uuid,uuid,jsonb)",
+      "body_md5": "85ff82ee813722c69a98e8d197bd5323"
+    },
+    {
+      "signature": "public.update_my_hub(uuid,text,text,double precision,double precision,numeric)",
+      "body_md5": "19f2f699c79616f309aa5ef46d85d106"
+    },
+    {
+      "signature": "public.update_my_profile(text,text,text,text)",
+      "body_md5": "7aa35e78a13c036b734ed88483d9d10d"
+    },
+    {
+      "signature": "public.update_my_vehicle(uuid,bigint,text,text,numeric,numeric,numeric,numeric)",
+      "body_md5": "634363ff0de591a55d4413c08f216f76"
+    },
+    {
+      "signature": "public.verify_ngo_location(uuid,boolean,text)",
+      "body_md5": "187912abd36c40a70909c1436afa80ab"
+    },
+    {
+      "signature": "routing_private.actor_lock(uuid,boolean)",
+      "body_md5": "b7de071f2da83c77809f4d505b2cc3b2"
+    },
+    {
+      "signature": "routing_private.admissible(jsonb,uuid,timestamp with time zone,jsonb)",
+      "body_md5": "86cdbf87fcaef3f3ac0e36cda4824418"
+    },
+    {
+      "signature": "routing_private.append_only()",
+      "body_md5": "bf4e4f93b210de23118f16eb3b5b6f33"
+    },
+    {
+      "signature": "routing_private.arc(jsonb,text,text)",
+      "body_md5": "ceb33e05e1bf4b7d8238daee42c13974"
+    },
+    {
+      "signature": "routing_private.check_remaining(uuid,uuid,timestamp with time zone)",
+      "body_md5": "5dfaad95bb36f33dde8f0ce11c9af439"
+    },
+    {
+      "signature": "routing_private.close_collected(uuid)",
+      "body_md5": "e06bac2a616cc49f91e32042e592a24a"
+    },
+    {
+      "signature": "routing_private.finish_reconciled_collection(uuid)",
+      "body_md5": "088e94184198f3e680c6fc5d779dba8e"
+    },
+    {
+      "signature": "routing_private.freeze_network()",
+      "body_md5": "55f50fab862e381f21ed355a93c2bcea"
+    },
+    {
+      "signature": "routing_private.hash(jsonb)",
+      "body_md5": "9baadd9fb14fce159d94e4e0bd983c22"
+    },
+    {
+      "signature": "routing_private.legacy_complete_pickup(uuid,boolean)",
+      "body_md5": "ae1b885377292281da17951cb18afd55"
+    },
+    {
+      "signature": "routing_private.legacy_start_pickup(uuid)",
+      "body_md5": "e89b650c83713b04e8310f4c372f10f4"
+    },
+    {
+      "signature": "routing_private.lock_reconciliation_scope(uuid)",
+      "body_md5": "618ea50c0c300e98098cfa62333a8608"
+    },
+    {
+      "signature": "routing_private.lock_route(uuid,boolean)",
+      "body_md5": "ebc10b61666e492afd7bbbd23f0e7448"
+    },
+    {
+      "signature": "routing_private.lock_sources(uuid[])",
+      "body_md5": "52dc6262f3f85bd3c67a787401cf71aa"
+    },
+    {
+      "signature": "routing_private.network_digest(text,text)",
+      "body_md5": "26aceaa8835e3db8bba3a73879024212"
+    },
+    {
+      "signature": "routing_private.ngo_observation(uuid)",
+      "body_md5": "6da6cd58224e4d6e58c732b734a081cb"
+    },
+    {
+      "signature": "routing_private.observe_task(uuid)",
+      "body_md5": "53f058161125f26980f65303d45dccc1"
+    },
+    {
+      "signature": "routing_private.permit_reconciled_collection(uuid)",
+      "body_md5": "c5bbed4368a64f83ed837d6195b02050"
+    },
+    {
+      "signature": "routing_private.reconciliation_participant(uuid)",
+      "body_md5": "12ccab6a7919008674e2ff340aab9100"
+    },
+    {
+      "signature": "routing_private.snapshot_guard()",
+      "body_md5": "fd7b479db124345977509f8401b2dab6"
+    },
+    {
+      "signature": "routing_private.snapshot_task(jsonb,uuid)",
+      "body_md5": "61704ef635b841fe02fff0118a196aef"
+    },
+    {
+      "signature": "routing_private.task_digest(jsonb)",
+      "body_md5": "e28f2dba4773bbbe8e32a700047e6f6e"
+    },
+    {
+      "signature": "routing_private.task_guard()",
+      "body_md5": "ab3101347fdbd148116c634e6c6132ad"
+    },
+    {
+      "signature": "routing_private.task_window(jsonb,timestamp with time zone,jsonb)",
+      "body_md5": "82362da140f544be5d5ca5c622183fbb"
+    },
+    {
+      "signature": "routing_private.worker(text)",
+      "body_md5": "9fce37c17364e88eb1e2101be042a822"
+    }
+  ]
+}

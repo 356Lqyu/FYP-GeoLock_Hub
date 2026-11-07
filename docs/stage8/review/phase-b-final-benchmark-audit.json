@@ -1,0 +1,1169 @@
+{
+  "cases": [
+    {
+      "admitted": 1,
+      "methods": {
+        "distance_only": {
+          "plan_feasible": true,
+          "routes_used": 1,
+          "served_count": 1,
+          "status": "COMPLETE",
+          "total_cost": 9.5,
+          "total_route_minutes": 19.0,
+          "total_travel_km": 4.5,
+          "unserved_count": 0,
+          "weighted_secondary_cost": 9.5
+        },
+        "fcfs": {
+          "plan_feasible": true,
+          "routes_used": 1,
+          "served_count": 1,
+          "status": "COMPLETE",
+          "total_cost": 9.5,
+          "total_route_minutes": 19.0,
+          "total_travel_km": 4.5,
+          "unserved_count": 0,
+          "weighted_secondary_cost": 9.5
+        },
+        "nearest_neighbour": {
+          "plan_feasible": true,
+          "routes_used": 1,
+          "served_count": 1,
+          "status": "COMPLETE",
+          "total_cost": 9.5,
+          "total_route_minutes": 19.0,
+          "total_travel_km": 4.5,
+          "unserved_count": 0,
+          "weighted_secondary_cost": 9.5
+        },
+        "proposed": {
+          "plan_feasible": true,
+          "routes_used": 1,
+          "served_count": 1,
+          "status": "COMPLETE",
+          "total_cost": 9.5,
+          "total_route_minutes": 19.0,
+          "total_travel_km": 4.5,
+          "unserved_count": 0,
+          "weighted_secondary_cost": 9.5
+        }
+      },
+      "readiness": "READY_FOR_PLANNING",
+      "scenario": "phase_a/direct_only"
+    },
+    {
+      "admitted": 0,
+      "methods": {
+        "distance_only": {
+          "plan_feasible": false,
+          "routes_used": 0,
+          "served_count": 0,
+          "status": "NO_VALID_TASKS",
+          "total_cost": 0.0,
+          "total_route_minutes": 0.0,
+          "total_travel_km": 0.0,
+          "unserved_count": 0,
+          "weighted_secondary_cost": 0.0
+        },
+        "fcfs": {
+          "plan_feasible": false,
+          "routes_used": 0,
+          "served_count": 0,
+          "status": "NO_VALID_TASKS",
+          "total_cost": 0.0,
+          "total_route_minutes": 0.0,
+          "total_travel_km": 0.0,
+          "unserved_count": 0,
+          "weighted_secondary_cost": 0.0
+        },
+        "nearest_neighbour": {
+          "plan_feasible": false,
+          "routes_used": 0,
+          "served_count": 0,
+          "status": "NO_VALID_TASKS",
+          "total_cost": 0.0,
+          "total_route_minutes": 0.0,
+          "total_travel_km": 0.0,
+          "unserved_count": 0,
+          "weighted_secondary_cost": 0.0
+        },
+        "proposed": {
+          "plan_feasible": false,
+          "routes_used": 0,
+          "served_count": 0,
+          "status": "NO_VALID_TASKS",
+          "total_cost": 0.0,
+          "total_route_minutes": 0.0,
+          "total_travel_km": 0.0,
+          "unserved_count": 0,
+          "weighted_secondary_cost": 0.0
+        }
+      },
+      "readiness": "NO_VALID_TASKS",
+      "scenario": "phase_a/expired_claim"
+    },
+    {
+      "admitted": 1,
+      "methods": {
+        "distance_only": {
+          "plan_feasible": true,
+          "routes_used": 1,
+          "served_count": 1,
+          "status": "COMPLETE",
+          "total_cost": 16.0,
+          "total_route_minutes": 32.0,
+          "total_travel_km": 11.0,
+          "unserved_count": 0,
+          "weighted_secondary_cost": 16.0
+        },
+        "fcfs": {
+          "plan_feasible": true,
+          "routes_used": 1,
+          "served_count": 1,
+          "status": "COMPLETE",
+          "total_cost": 16.0,
+          "total_route_minutes": 32.0,
+          "total_travel_km": 11.0,
+          "unserved_count": 0,
+          "weighted_secondary_cost": 16.0
+        },
+        "nearest_neighbour": {
+          "plan_feasible": true,
+          "routes_used": 1,
+          "served_count": 1,
+          "status": "COMPLETE",
+          "total_cost": 16.0,
+          "total_route_minutes": 32.0,
+          "total_travel_km": 11.0,
+          "unserved_count": 0,
+          "weighted_secondary_cost": 16.0
+        },
+        "proposed": {
+          "plan_feasible": true,
+          "routes_used": 1,
+          "served_count": 1,
+          "status": "COMPLETE",
+          "total_cost": 16.0,
+          "total_route_minutes": 32.0,
+          "total_travel_km": 11.0,
+          "unserved_count": 0,
+          "weighted_secondary_cost": 16.0
+        }
+      },
+      "readiness": "READY_FOR_PLANNING",
+      "scenario": "phase_a/hub_only"
+    },
+    {
+      "admitted": 2,
+      "methods": {
+        "distance_only": {
+          "plan_feasible": false,
+          "routes_used": 0,
+          "served_count": 0,
+          "status": "ROUTE_UNAVAILABLE",
+          "total_cost": 0.0,
+          "total_route_minutes": 0.0,
+          "total_travel_km": 0.0,
+          "unserved_count": 2,
+          "weighted_secondary_cost": 0.0
+        },
+        "fcfs": {
+          "plan_feasible": false,
+          "routes_used": 0,
+          "served_count": 0,
+          "status": "ROUTE_UNAVAILABLE",
+          "total_cost": 0.0,
+          "total_route_minutes": 0.0,
+          "total_travel_km": 0.0,
+          "unserved_count": 2,
+          "weighted_secondary_cost": 0.0
+        },
+        "nearest_neighbour": {
+          "plan_feasible": false,
+          "routes_used": 0,
+          "served_count": 0,
+          "status": "ROUTE_UNAVAILABLE",
+          "total_cost": 0.0,
+          "total_route_minutes": 0.0,
+          "total_travel_km": 0.0,
+          "unserved_count": 2,
+          "weighted_secondary_cost": 0.0
+        },
+        "proposed": {
+          "plan_feasible": false,
+          "routes_used": 0,
+          "served_count": 0,
+          "status": "ROUTE_UNAVAILABLE",
+          "total_cost": 0.0,
+          "total_route_minutes": 0.0,
+          "total_travel_km": 0.0,
+          "unserved_count": 2,
+          "weighted_secondary_cost": 0.0
+        }
+      },
+      "readiness": "ROUTE_UNAVAILABLE",
+      "scenario": "phase_a/missing_edge"
+    },
+    {
+      "admitted": 2,
+      "methods": {
+        "distance_only": {
+          "plan_feasible": true,
+          "routes_used": 1,
+          "served_count": 2,
+          "status": "COMPLETE",
+          "total_cost": 21.2,
+          "total_route_minutes": 42.0,
+          "total_travel_km": 11.0,
+          "unserved_count": 0,
+          "weighted_secondary_cost": 21.2
+        },
+        "fcfs": {
+          "plan_feasible": true,
+          "routes_used": 2,
+          "served_count": 2,
+          "status": "COMPLETE",
+          "total_cost": 30.7,
+          "total_route_minutes": 51.0,
+          "total_travel_km": 15.5,
+          "unserved_count": 0,
+          "weighted_secondary_cost": 30.7
+        },
+        "nearest_neighbour": {
+          "plan_feasible": true,
+          "routes_used": 2,
+          "served_count": 2,
+          "status": "COMPLETE",
+          "total_cost": 30.7,
+          "total_route_minutes": 51.0,
+          "total_travel_km": 15.5,
+          "unserved_count": 0,
+          "weighted_secondary_cost": 30.7
+        },
+        "proposed": {
+          "plan_feasible": true,
+          "routes_used": 1,
+          "served_count": 2,
+          "status": "COMPLETE",
+          "total_cost": 21.2,
+          "total_route_minutes": 42.0,
+          "total_travel_km": 11.0,
+          "unserved_count": 0,
+          "weighted_secondary_cost": 21.2
+        }
+      },
+      "readiness": "READY_FOR_PLANNING",
+      "scenario": "phase_a/mixed"
+    },
+    {
+      "admitted": 0,
+      "methods": {
+        "distance_only": {
+          "plan_feasible": false,
+          "routes_used": 0,
+          "served_count": 0,
+          "status": "NO_VALID_TASKS",
+          "total_cost": 0.0,
+          "total_route_minutes": 0.0,
+          "total_travel_km": 0.0,
+          "unserved_count": 0,
+          "weighted_secondary_cost": 0.0
+        },
+        "fcfs": {
+          "plan_feasible": false,
+          "routes_used": 0,
+          "served_count": 0,
+          "status": "NO_VALID_TASKS",
+          "total_cost": 0.0,
+          "total_route_minutes": 0.0,
+          "total_travel_km": 0.0,
+          "unserved_count": 0,
+          "weighted_secondary_cost": 0.0
+        },
+        "nearest_neighbour": {
+          "plan_feasible": false,
+          "routes_used": 0,
+          "served_count": 0,
+          "status": "NO_VALID_TASKS",
+          "total_cost": 0.0,
+          "total_route_minutes": 0.0,
+          "total_travel_km": 0.0,
+          "unserved_count": 0,
+          "weighted_secondary_cost": 0.0
+        },
+        "proposed": {
+          "plan_feasible": false,
+          "routes_used": 0,
+          "served_count": 0,
+          "status": "NO_VALID_TASKS",
+          "total_cost": 0.0,
+          "total_route_minutes": 0.0,
+          "total_travel_km": 0.0,
+          "unserved_count": 0,
+          "weighted_secondary_cost": 0.0
+        }
+      },
+      "readiness": "NO_VALID_TASKS",
+      "scenario": "phase_a/no_tasks"
+    },
+    {
+      "admitted": 2,
+      "methods": {
+        "distance_only": {
+          "plan_feasible": false,
+          "routes_used": 0,
+          "served_count": 0,
+          "status": "NO_FEASIBLE_PLAN",
+          "total_cost": 0.0,
+          "total_route_minutes": 0.0,
+          "total_travel_km": 0.0,
+          "unserved_count": 2,
+          "weighted_secondary_cost": 0.0
+        },
+        "fcfs": {
+          "plan_feasible": false,
+          "routes_used": 0,
+          "served_count": 0,
+          "status": "NO_FEASIBLE_PLAN",
+          "total_cost": 0.0,
+          "total_route_minutes": 0.0,
+          "total_travel_km": 0.0,
+          "unserved_count": 2,
+          "weighted_secondary_cost": 0.0
+        },
+        "nearest_neighbour": {
+          "plan_feasible": false,
+          "routes_used": 0,
+          "served_count": 0,
+          "status": "NO_FEASIBLE_PLAN",
+          "total_cost": 0.0,
+          "total_route_minutes": 0.0,
+          "total_travel_km": 0.0,
+          "unserved_count": 2,
+          "weighted_secondary_cost": 0.0
+        },
+        "proposed": {
+          "plan_feasible": false,
+          "routes_used": 0,
+          "served_count": 0,
+          "status": "NO_FEASIBLE_PLAN",
+          "total_cost": 0.0,
+          "total_route_minutes": 0.0,
+          "total_travel_km": 0.0,
+          "unserved_count": 2,
+          "weighted_secondary_cost": 0.0
+        }
+      },
+      "readiness": "NO_FEASIBLE_PLAN",
+      "scenario": "phase_a/no_vehicles"
+    },
+    {
+      "admitted": 0,
+      "methods": {
+        "distance_only": {
+          "plan_feasible": false,
+          "routes_used": 0,
+          "served_count": 0,
+          "status": "NO_VALID_TASKS",
+          "total_cost": 0.0,
+          "total_route_minutes": 0.0,
+          "total_travel_km": 0.0,
+          "unserved_count": 0,
+          "weighted_secondary_cost": 0.0
+        },
+        "fcfs": {
+          "plan_feasible": false,
+          "routes_used": 0,
+          "served_count": 0,
+          "status": "NO_VALID_TASKS",
+          "total_cost": 0.0,
+          "total_route_minutes": 0.0,
+          "total_travel_km": 0.0,
+          "unserved_count": 0,
+          "weighted_secondary_cost": 0.0
+        },
+        "nearest_neighbour": {
+          "plan_feasible": false,
+          "routes_used": 0,
+          "served_count": 0,
+          "status": "NO_VALID_TASKS",
+          "total_cost": 0.0,
+          "total_route_minutes": 0.0,
+          "total_travel_km": 0.0,
+          "unserved_count": 0,
+          "weighted_secondary_cost": 0.0
+        },
+        "proposed": {
+          "plan_feasible": false,
+          "routes_used": 0,
+          "served_count": 0,
+          "status": "NO_VALID_TASKS",
+          "total_cost": 0.0,
+          "total_route_minutes": 0.0,
+          "total_travel_km": 0.0,
+          "unserved_count": 0,
+          "weighted_secondary_cost": 0.0
+        }
+      },
+      "readiness": "NO_VALID_TASKS",
+      "scenario": "phase_a/reconciliation"
+    },
+    {
+      "admitted": 2,
+      "methods": {
+        "distance_only": {
+          "plan_feasible": false,
+          "routes_used": 0,
+          "served_count": 0,
+          "status": "ROUTE_UNAVAILABLE",
+          "total_cost": 0.0,
+          "total_route_minutes": 0.0,
+          "total_travel_km": 0.0,
+          "unserved_count": 2,
+          "weighted_secondary_cost": 0.0
+        },
+        "fcfs": {
+          "plan_feasible": false,
+          "routes_used": 0,
+          "served_count": 0,
+          "status": "ROUTE_UNAVAILABLE",
+          "total_cost": 0.0,
+          "total_route_minutes": 0.0,
+          "total_travel_km": 0.0,
+          "unserved_count": 2,
+          "weighted_secondary_cost": 0.0
+        },
+        "nearest_neighbour": {
+          "plan_feasible": false,
+          "routes_used": 0,
+          "served_count": 0,
+          "status": "ROUTE_UNAVAILABLE",
+          "total_cost": 0.0,
+          "total_route_minutes": 0.0,
+          "total_travel_km": 0.0,
+          "unserved_count": 2,
+          "weighted_secondary_cost": 0.0
+        },
+        "proposed": {
+          "plan_feasible": false,
+          "routes_used": 0,
+          "served_count": 0,
+          "status": "ROUTE_UNAVAILABLE",
+          "total_cost": 0.0,
+          "total_route_minutes": 0.0,
+          "total_travel_km": 0.0,
+          "unserved_count": 2,
+          "weighted_secondary_cost": 0.0
+        }
+      },
+      "readiness": "ROUTE_UNAVAILABLE",
+      "scenario": "phase_a/unreachable"
+    },
+    {
+      "admitted": 2,
+      "methods": {
+        "distance_only": {
+          "plan_feasible": false,
+          "routes_used": 0,
+          "served_count": 0,
+          "status": "INFEASIBLE",
+          "total_cost": 0.0,
+          "total_route_minutes": 0.0,
+          "total_travel_km": 0.0,
+          "unserved_count": 2,
+          "weighted_secondary_cost": 0.0
+        },
+        "fcfs": {
+          "plan_feasible": false,
+          "routes_used": 1,
+          "served_count": 1,
+          "status": "INFEASIBLE",
+          "total_cost": 16.0,
+          "total_route_minutes": 32.0,
+          "total_travel_km": 11.0,
+          "unserved_count": 1,
+          "weighted_secondary_cost": 16.0
+        },
+        "nearest_neighbour": {
+          "plan_feasible": false,
+          "routes_used": 1,
+          "served_count": 1,
+          "status": "INFEASIBLE",
+          "total_cost": 16.0,
+          "total_route_minutes": 32.0,
+          "total_travel_km": 11.0,
+          "unserved_count": 1,
+          "weighted_secondary_cost": 16.0
+        },
+        "proposed": {
+          "plan_feasible": false,
+          "routes_used": 0,
+          "served_count": 0,
+          "status": "INFEASIBLE",
+          "total_cost": 0.0,
+          "total_route_minutes": 0.0,
+          "total_travel_km": 0.0,
+          "unserved_count": 2,
+          "weighted_secondary_cost": 0.0
+        }
+      },
+      "readiness": "READY_FOR_PLANNING",
+      "scenario": "phase_b/capacity_infeasible"
+    },
+    {
+      "admitted": 2,
+      "methods": {
+        "distance_only": {
+          "plan_feasible": true,
+          "routes_used": 1,
+          "served_count": 2,
+          "status": "COMPLETE",
+          "total_cost": 13.4,
+          "total_route_minutes": 29.0,
+          "total_travel_km": 4.5,
+          "unserved_count": 0,
+          "weighted_secondary_cost": 13.4
+        },
+        "fcfs": {
+          "plan_feasible": true,
+          "routes_used": 2,
+          "served_count": 2,
+          "status": "COMPLETE",
+          "total_cost": 22.9,
+          "total_route_minutes": 38.0,
+          "total_travel_km": 9.0,
+          "unserved_count": 0,
+          "weighted_secondary_cost": 22.9
+        },
+        "nearest_neighbour": {
+          "plan_feasible": true,
+          "routes_used": 2,
+          "served_count": 2,
+          "status": "COMPLETE",
+          "total_cost": 22.9,
+          "total_route_minutes": 38.0,
+          "total_travel_km": 9.0,
+          "unserved_count": 0,
+          "weighted_secondary_cost": 22.9
+        },
+        "proposed": {
+          "plan_feasible": true,
+          "routes_used": 1,
+          "served_count": 2,
+          "status": "COMPLETE",
+          "total_cost": 13.4,
+          "total_route_minutes": 29.0,
+          "total_travel_km": 4.5,
+          "unserved_count": 0,
+          "weighted_secondary_cost": 13.4
+        }
+      },
+      "readiness": "READY_FOR_PLANNING",
+      "scenario": "phase_b/colocated_tasks"
+    },
+    {
+      "admitted": 2,
+      "methods": {
+        "distance_only": {
+          "plan_feasible": true,
+          "routes_used": 1,
+          "served_count": 2,
+          "status": "COMPLETE",
+          "total_cost": 111.0,
+          "total_route_minutes": 42.0,
+          "total_travel_km": 11.0,
+          "unserved_count": 0,
+          "weighted_secondary_cost": 111.0
+        },
+        "fcfs": {
+          "plan_feasible": true,
+          "routes_used": 1,
+          "served_count": 2,
+          "status": "COMPLETE",
+          "total_cost": 111.0,
+          "total_route_minutes": 42.0,
+          "total_travel_km": 11.0,
+          "unserved_count": 0,
+          "weighted_secondary_cost": 111.0
+        },
+        "nearest_neighbour": {
+          "plan_feasible": true,
+          "routes_used": 1,
+          "served_count": 2,
+          "status": "COMPLETE",
+          "total_cost": 111.0,
+          "total_route_minutes": 42.0,
+          "total_travel_km": 11.0,
+          "unserved_count": 0,
+          "weighted_secondary_cost": 111.0
+        },
+        "proposed": {
+          "plan_feasible": true,
+          "routes_used": 2,
+          "served_count": 2,
+          "status": "COMPLETE",
+          "total_cost": 17.5,
+          "total_route_minutes": 51.0,
+          "total_travel_km": 15.5,
+          "unserved_count": 0,
+          "weighted_secondary_cost": 17.5
+        }
+      },
+      "readiness": "READY_FOR_PLANNING",
+      "scenario": "phase_b/cost_tradeoff"
+    },
+    {
+      "admitted": 2,
+      "methods": {
+        "distance_only": {
+          "plan_feasible": false,
+          "routes_used": 0,
+          "served_count": 0,
+          "status": "INFEASIBLE",
+          "total_cost": 0.0,
+          "total_route_minutes": 0.0,
+          "total_travel_km": 0.0,
+          "unserved_count": 2,
+          "weighted_secondary_cost": 0.0
+        },
+        "fcfs": {
+          "plan_feasible": false,
+          "routes_used": 0,
+          "served_count": 0,
+          "status": "INFEASIBLE",
+          "total_cost": 0.0,
+          "total_route_minutes": 0.0,
+          "total_travel_km": 0.0,
+          "unserved_count": 2,
+          "weighted_secondary_cost": 0.0
+        },
+        "nearest_neighbour": {
+          "plan_feasible": false,
+          "routes_used": 0,
+          "served_count": 0,
+          "status": "INFEASIBLE",
+          "total_cost": 0.0,
+          "total_route_minutes": 0.0,
+          "total_travel_km": 0.0,
+          "unserved_count": 2,
+          "weighted_secondary_cost": 0.0
+        },
+        "proposed": {
+          "plan_feasible": false,
+          "routes_used": 0,
+          "served_count": 0,
+          "status": "INFEASIBLE",
+          "total_cost": 0.0,
+          "total_route_minutes": 0.0,
+          "total_travel_km": 0.0,
+          "unserved_count": 2,
+          "weighted_secondary_cost": 0.0
+        }
+      },
+      "readiness": "READY_FOR_PLANNING",
+      "scenario": "phase_b/duration_infeasible"
+    },
+    {
+      "admitted": 1,
+      "methods": {
+        "distance_only": {
+          "plan_feasible": true,
+          "routes_used": 1,
+          "served_count": 1,
+          "status": "COMPLETE",
+          "total_cost": 9.5,
+          "total_route_minutes": 19.0,
+          "total_travel_km": 4.5,
+          "unserved_count": 0,
+          "weighted_secondary_cost": 9.5
+        },
+        "fcfs": {
+          "plan_feasible": true,
+          "routes_used": 1,
+          "served_count": 1,
+          "status": "COMPLETE",
+          "total_cost": 9.5,
+          "total_route_minutes": 19.0,
+          "total_travel_km": 4.5,
+          "unserved_count": 0,
+          "weighted_secondary_cost": 9.5
+        },
+        "nearest_neighbour": {
+          "plan_feasible": true,
+          "routes_used": 1,
+          "served_count": 1,
+          "status": "COMPLETE",
+          "total_cost": 9.5,
+          "total_route_minutes": 19.0,
+          "total_travel_km": 4.5,
+          "unserved_count": 0,
+          "weighted_secondary_cost": 9.5
+        },
+        "proposed": {
+          "plan_feasible": true,
+          "routes_used": 1,
+          "served_count": 1,
+          "status": "COMPLETE",
+          "total_cost": 9.5,
+          "total_route_minutes": 19.0,
+          "total_travel_km": 4.5,
+          "unserved_count": 0,
+          "weighted_secondary_cost": 9.5
+        }
+      },
+      "readiness": "READY_FOR_PLANNING",
+      "scenario": "phase_b/exact_duration"
+    },
+    {
+      "admitted": 2,
+      "methods": {
+        "distance_only": {
+          "plan_feasible": false,
+          "routes_used": 0,
+          "served_count": 0,
+          "status": "INFEASIBLE",
+          "total_cost": 0.0,
+          "total_route_minutes": 0.0,
+          "total_travel_km": 0.0,
+          "unserved_count": 2,
+          "weighted_secondary_cost": 0.0
+        },
+        "fcfs": {
+          "plan_feasible": false,
+          "routes_used": 0,
+          "served_count": 0,
+          "status": "INFEASIBLE",
+          "total_cost": 0.0,
+          "total_route_minutes": 0.0,
+          "total_travel_km": 0.0,
+          "unserved_count": 2,
+          "weighted_secondary_cost": 0.0
+        },
+        "nearest_neighbour": {
+          "plan_feasible": false,
+          "routes_used": 0,
+          "served_count": 0,
+          "status": "INFEASIBLE",
+          "total_cost": 0.0,
+          "total_route_minutes": 0.0,
+          "total_travel_km": 0.0,
+          "unserved_count": 2,
+          "weighted_secondary_cost": 0.0
+        },
+        "proposed": {
+          "plan_feasible": false,
+          "routes_used": 0,
+          "served_count": 0,
+          "status": "INFEASIBLE",
+          "total_cost": 0.0,
+          "total_route_minutes": 0.0,
+          "total_travel_km": 0.0,
+          "unserved_count": 2,
+          "weighted_secondary_cost": 0.0
+        }
+      },
+      "readiness": "READY_FOR_PLANNING",
+      "scenario": "phase_b/no_return_arc"
+    },
+    {
+      "admitted": 2,
+      "methods": {
+        "distance_only": {
+          "plan_feasible": true,
+          "routes_used": 1,
+          "served_count": 2,
+          "status": "COMPLETE",
+          "total_cost": 1000011.0,
+          "total_route_minutes": 42.0,
+          "total_travel_km": 11.0,
+          "unserved_count": 0,
+          "weighted_secondary_cost": 1000011.0
+        },
+        "fcfs": {
+          "plan_feasible": true,
+          "routes_used": 1,
+          "served_count": 2,
+          "status": "COMPLETE",
+          "total_cost": 1000011.0,
+          "total_route_minutes": 42.0,
+          "total_travel_km": 11.0,
+          "unserved_count": 0,
+          "weighted_secondary_cost": 1000011.0
+        },
+        "nearest_neighbour": {
+          "plan_feasible": true,
+          "routes_used": 1,
+          "served_count": 2,
+          "status": "COMPLETE",
+          "total_cost": 1000011.0,
+          "total_route_minutes": 42.0,
+          "total_travel_km": 11.0,
+          "unserved_count": 0,
+          "weighted_secondary_cost": 1000011.0
+        },
+        "proposed": {
+          "plan_feasible": true,
+          "routes_used": 1,
+          "served_count": 2,
+          "status": "COMPLETE",
+          "total_cost": 1000011.0,
+          "total_route_minutes": 42.0,
+          "total_travel_km": 11.0,
+          "unserved_count": 0,
+          "weighted_secondary_cost": 1000011.0
+        }
+      },
+      "readiness": "READY_FOR_PLANNING",
+      "scenario": "phase_b/primary_over_cost"
+    },
+    {
+      "admitted": 2,
+      "methods": {
+        "distance_only": {
+          "plan_feasible": false,
+          "routes_used": 0,
+          "served_count": 0,
+          "status": "INFEASIBLE",
+          "total_cost": 0.0,
+          "total_route_minutes": 0.0,
+          "total_travel_km": 0.0,
+          "unserved_count": 2,
+          "weighted_secondary_cost": 0.0
+        },
+        "fcfs": {
+          "plan_feasible": false,
+          "routes_used": 1,
+          "served_count": 1,
+          "status": "INFEASIBLE",
+          "total_cost": 9.5,
+          "total_route_minutes": 19.0,
+          "total_travel_km": 4.5,
+          "unserved_count": 1,
+          "weighted_secondary_cost": 9.5
+        },
+        "nearest_neighbour": {
+          "plan_feasible": false,
+          "routes_used": 1,
+          "served_count": 1,
+          "status": "INFEASIBLE",
+          "total_cost": 9.5,
+          "total_route_minutes": 19.0,
+          "total_travel_km": 4.5,
+          "unserved_count": 1,
+          "weighted_secondary_cost": 9.5
+        },
+        "proposed": {
+          "plan_feasible": false,
+          "routes_used": 0,
+          "served_count": 0,
+          "status": "INFEASIBLE",
+          "total_cost": 0.0,
+          "total_route_minutes": 0.0,
+          "total_travel_km": 0.0,
+          "unserved_count": 2,
+          "weighted_secondary_cost": 0.0
+        }
+      },
+      "readiness": "READY_FOR_PLANNING",
+      "scenario": "phase_b/unreachable_forbid"
+    },
+    {
+      "admitted": 2,
+      "methods": {
+        "distance_only": {
+          "plan_feasible": true,
+          "routes_used": 1,
+          "served_count": 1,
+          "status": "PARTIAL",
+          "total_cost": 13.4,
+          "total_route_minutes": 19.0,
+          "total_travel_km": 4.5,
+          "unserved_count": 1,
+          "weighted_secondary_cost": 13.4
+        },
+        "fcfs": {
+          "plan_feasible": true,
+          "routes_used": 1,
+          "served_count": 1,
+          "status": "PARTIAL",
+          "total_cost": 9.5,
+          "total_route_minutes": 19.0,
+          "total_travel_km": 4.5,
+          "unserved_count": 1,
+          "weighted_secondary_cost": 9.5
+        },
+        "nearest_neighbour": {
+          "plan_feasible": true,
+          "routes_used": 1,
+          "served_count": 1,
+          "status": "PARTIAL",
+          "total_cost": 9.5,
+          "total_route_minutes": 19.0,
+          "total_travel_km": 4.5,
+          "unserved_count": 1,
+          "weighted_secondary_cost": 9.5
+        },
+        "proposed": {
+          "plan_feasible": true,
+          "routes_used": 1,
+          "served_count": 1,
+          "status": "PARTIAL",
+          "total_cost": 9.5,
+          "total_route_minutes": 19.0,
+          "total_travel_km": 4.5,
+          "unserved_count": 1,
+          "weighted_secondary_cost": 9.5
+        }
+      },
+      "readiness": "READY_FOR_PLANNING",
+      "scenario": "phase_b/unreachable_optional"
+    },
+    {
+      "admitted": 2,
+      "methods": {
+        "distance_only": {
+          "plan_feasible": true,
+          "routes_used": 1,
+          "served_count": 2,
+          "status": "COMPLETE",
+          "total_cost": 16.0,
+          "total_route_minutes": 42.0,
+          "total_travel_km": 11.0,
+          "unserved_count": 0,
+          "weighted_secondary_cost": 16.0
+        },
+        "fcfs": {
+          "plan_feasible": true,
+          "routes_used": 1,
+          "served_count": 1,
+          "status": "PARTIAL",
+          "total_cost": 9.5,
+          "total_route_minutes": 19.0,
+          "total_travel_km": 4.5,
+          "unserved_count": 1,
+          "weighted_secondary_cost": 9.5
+        },
+        "nearest_neighbour": {
+          "plan_feasible": true,
+          "routes_used": 1,
+          "served_count": 1,
+          "status": "PARTIAL",
+          "total_cost": 9.5,
+          "total_route_minutes": 19.0,
+          "total_travel_km": 4.5,
+          "unserved_count": 1,
+          "weighted_secondary_cost": 9.5
+        },
+        "proposed": {
+          "plan_feasible": true,
+          "routes_used": 1,
+          "served_count": 2,
+          "status": "COMPLETE",
+          "total_cost": 16.0,
+          "total_route_minutes": 42.0,
+          "total_travel_km": 11.0,
+          "unserved_count": 0,
+          "weighted_secondary_cost": 16.0
+        }
+      },
+      "readiness": "READY_FOR_PLANNING",
+      "scenario": "phase_b/urgent_hub_optional"
+    },
+    {
+      "admitted": 1,
+      "methods": {
+        "distance_only": {
+          "plan_feasible": true,
+          "routes_used": 1,
+          "served_count": 1,
+          "status": "COMPLETE",
+          "total_cost": 9.5,
+          "total_route_minutes": 45.0,
+          "total_travel_km": 4.5,
+          "unserved_count": 0,
+          "weighted_secondary_cost": 9.5
+        },
+        "fcfs": {
+          "plan_feasible": true,
+          "routes_used": 1,
+          "served_count": 1,
+          "status": "COMPLETE",
+          "total_cost": 9.5,
+          "total_route_minutes": 45.0,
+          "total_travel_km": 4.5,
+          "unserved_count": 0,
+          "weighted_secondary_cost": 9.5
+        },
+        "nearest_neighbour": {
+          "plan_feasible": true,
+          "routes_used": 1,
+          "served_count": 1,
+          "status": "COMPLETE",
+          "total_cost": 9.5,
+          "total_route_minutes": 45.0,
+          "total_travel_km": 4.5,
+          "unserved_count": 0,
+          "weighted_secondary_cost": 9.5
+        },
+        "proposed": {
+          "plan_feasible": true,
+          "routes_used": 1,
+          "served_count": 1,
+          "status": "COMPLETE",
+          "total_cost": 9.5,
+          "total_route_minutes": 45.0,
+          "total_travel_km": 4.5,
+          "unserved_count": 0,
+          "weighted_secondary_cost": 9.5
+        }
+      },
+      "readiness": "READY_FOR_PLANNING",
+      "scenario": "phase_b/waiting"
+    },
+    {
+      "admitted": 1,
+      "methods": {
+        "distance_only": {
+          "plan_feasible": false,
+          "routes_used": 0,
+          "served_count": 0,
+          "status": "INFEASIBLE",
+          "total_cost": 0.0,
+          "total_route_minutes": 0.0,
+          "total_travel_km": 0.0,
+          "unserved_count": 1,
+          "weighted_secondary_cost": 0.0
+        },
+        "fcfs": {
+          "plan_feasible": false,
+          "routes_used": 0,
+          "served_count": 0,
+          "status": "INFEASIBLE",
+          "total_cost": 0.0,
+          "total_route_minutes": 0.0,
+          "total_travel_km": 0.0,
+          "unserved_count": 1,
+          "weighted_secondary_cost": 0.0
+        },
+        "nearest_neighbour": {
+          "plan_feasible": false,
+          "routes_used": 0,
+          "served_count": 0,
+          "status": "INFEASIBLE",
+          "total_cost": 0.0,
+          "total_route_minutes": 0.0,
+          "total_travel_km": 0.0,
+          "unserved_count": 1,
+          "weighted_secondary_cost": 0.0
+        },
+        "proposed": {
+          "plan_feasible": false,
+          "routes_used": 0,
+          "served_count": 0,
+          "status": "INFEASIBLE",
+          "total_cost": 0.0,
+          "total_route_minutes": 0.0,
+          "total_travel_km": 0.0,
+          "unserved_count": 1,
+          "weighted_secondary_cost": 0.0
+        }
+      },
+      "readiness": "READY_FOR_PLANNING",
+      "scenario": "phase_b/window_infeasible"
+    }
+  ],
+  "comparison_feasible": 40,
+  "comparison_status_counts": {
+    "COMPLETE": 34,
+    "INFEASIBLE": 20,
+    "NO_FEASIBLE_PLAN": 4,
+    "NO_VALID_TASKS": 12,
+    "PARTIAL": 6,
+    "ROUTE_UNAVAILABLE": 8
+  },
+  "dominance": {
+    "distance_only": {
+      "coverage_equal": 10,
+      "feasible_pairs": 10,
+      "lexicographic_better": 2,
+      "lexicographic_equal": 8,
+      "not_a_feasible_pair": 11,
+      "same_coverage_cost_better": 2,
+      "same_coverage_cost_equal": 8
+    },
+    "fcfs": {
+      "coverage_better": 1,
+      "coverage_equal": 9,
+      "feasible_pairs": 10,
+      "lexicographic_better": 4,
+      "lexicographic_equal": 6,
+      "not_a_feasible_pair": 11,
+      "same_coverage_cost_better": 3,
+      "same_coverage_cost_equal": 6
+    },
+    "nearest_neighbour": {
+      "coverage_better": 1,
+      "coverage_equal": 9,
+      "feasible_pairs": 10,
+      "lexicographic_better": 4,
+      "lexicographic_equal": 6,
+      "not_a_feasible_pair": 11,
+      "same_coverage_cost_better": 3,
+      "same_coverage_cost_equal": 6
+    }
+  },
+  "gap_records": {
+    "not_available": 192,
+    "supported_numeric_gap": 60
+  },
+  "maximum_admitted_tasks": 2,
+  "maximum_matrix_nodes": 3,
+  "maximum_vehicles": 3,
+  "non_timing_results_sha256": "3591b206c3375792008f17e7d90fd641779c3efba742636a992bddf68ee2cc0a",
+  "phase_a_files_preserved": 17,
+  "records_revalidated": 252,
+  "reproducible_groups": 84,
+  "runtime": {
+    "distance_only": {
+      "calls": 63,
+      "max_method_ms": 15.727699999843026,
+      "max_solver_ms": 12.9703,
+      "median_method_ms": 2.8806999998778338,
+      "median_solver_ms": 4.216,
+      "p95_method_ms_nearest_rank": 15.19209999969462,
+      "solver_calls": 45,
+      "timeout_count": 0
+    },
+    "fcfs": {
+      "calls": 63,
+      "max_method_ms": 1.5953999991324963,
+      "max_solver_ms": null,
+      "median_method_ms": 0.6812999999965541,
+      "median_solver_ms": null,
+      "p95_method_ms_nearest_rank": 1.2865999997302424,
+      "solver_calls": 0,
+      "timeout_count": 0
+    },
+    "nearest_neighbour": {
+      "calls": 63,
+      "max_method_ms": 1.7331999988527969,
+      "max_solver_ms": null,
+      "median_method_ms": 0.6831999999121763,
+      "median_solver_ms": null,
+      "p95_method_ms_nearest_rank": 1.036999999996624,
+      "solver_calls": 0,
+      "timeout_count": 0
+    },
+    "proposed": {
+      "calls": 63,
+      "max_method_ms": 20.617499998479616,
+      "max_solver_ms": 16.9632,
+      "median_method_ms": 2.1641000003000954,
+      "median_solver_ms": 4.3432,
+      "p95_method_ms_nearest_rank": 15.45819999955711,
+      "solver_calls": 45,
+      "timeout_count": 0
+    }
+  },
+  "source_manifest_verified": true
+}

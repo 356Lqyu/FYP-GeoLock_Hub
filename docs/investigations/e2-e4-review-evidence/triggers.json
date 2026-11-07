@@ -1,0 +1,422 @@
+[
+  {
+    "relation": "audit_events",
+    "tgname": "RI_ConstraintTrigger_c_16886",
+    "tgisinternal": true,
+    "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_c_16886\" AFTER INSERT ON public.audit_events FROM auth.users NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_check_ins\"()",
+    "function_name": "RI_FKey_check_ins"
+  },
+  {
+    "relation": "audit_events",
+    "tgname": "RI_ConstraintTrigger_c_16887",
+    "tgisinternal": true,
+    "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_c_16887\" AFTER UPDATE ON public.audit_events FROM auth.users NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_check_upd\"()",
+    "function_name": "RI_FKey_check_upd"
+  },
+  {
+    "relation": "audit_events",
+    "tgname": "resolution_audit_provenance",
+    "tgisinternal": false,
+    "definition": "CREATE TRIGGER resolution_audit_provenance BEFORE INSERT ON public.audit_events FOR EACH ROW EXECUTE FUNCTION resolution_private.audit_provenance()",
+    "function_name": "audit_provenance"
+  },
+  {
+    "relation": "audit_events",
+    "tgname": "trg_audit_append_only",
+    "tgisinternal": false,
+    "definition": "CREATE TRIGGER trg_audit_append_only BEFORE DELETE OR UPDATE ON public.audit_events FOR EACH ROW EXECUTE FUNCTION prevent_audit_mutation()",
+    "function_name": "prevent_audit_mutation"
+  },
+  {
+    "relation": "claim_leases",
+    "tgname": "RI_ConstraintTrigger_c_16891",
+    "tgisinternal": true,
+    "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_c_16891\" AFTER INSERT ON public.claim_leases FROM donation_claims NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_check_ins\"()",
+    "function_name": "RI_FKey_check_ins"
+  },
+  {
+    "relation": "claim_leases",
+    "tgname": "RI_ConstraintTrigger_c_16892",
+    "tgisinternal": true,
+    "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_c_16892\" AFTER UPDATE ON public.claim_leases FROM donation_claims NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_check_upd\"()",
+    "function_name": "RI_FKey_check_upd"
+  },
+  {
+    "relation": "claim_requests",
+    "tgname": "RI_ConstraintTrigger_a_16919",
+    "tgisinternal": true,
+    "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_16919\" AFTER DELETE ON public.claim_requests FROM donation_claims NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_del\"()",
+    "function_name": "RI_FKey_noaction_del"
+  },
+  {
+    "relation": "claim_requests",
+    "tgname": "RI_ConstraintTrigger_a_16920",
+    "tgisinternal": true,
+    "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_16920\" AFTER UPDATE ON public.claim_requests FROM donation_claims NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_upd\"()",
+    "function_name": "RI_FKey_noaction_upd"
+  },
+  {
+    "relation": "claim_requests",
+    "tgname": "RI_ConstraintTrigger_c_16896",
+    "tgisinternal": true,
+    "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_c_16896\" AFTER INSERT ON public.claim_requests FROM listings NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_check_ins\"()",
+    "function_name": "RI_FKey_check_ins"
+  },
+  {
+    "relation": "claim_requests",
+    "tgname": "RI_ConstraintTrigger_c_16897",
+    "tgisinternal": true,
+    "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_c_16897\" AFTER UPDATE ON public.claim_requests FROM listings NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_check_upd\"()",
+    "function_name": "RI_FKey_check_upd"
+  },
+  {
+    "relation": "claim_requests",
+    "tgname": "RI_ConstraintTrigger_c_16901",
+    "tgisinternal": true,
+    "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_c_16901\" AFTER INSERT ON public.claim_requests FROM ngo_profiles NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_check_ins\"()",
+    "function_name": "RI_FKey_check_ins"
+  },
+  {
+    "relation": "claim_requests",
+    "tgname": "RI_ConstraintTrigger_c_16902",
+    "tgisinternal": true,
+    "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_c_16902\" AFTER UPDATE ON public.claim_requests FROM ngo_profiles NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_check_upd\"()",
+    "function_name": "RI_FKey_check_upd"
+  },
+  {
+    "relation": "claim_requests",
+    "tgname": "RI_ConstraintTrigger_c_16966",
+    "tgisinternal": true,
+    "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_c_16966\" AFTER INSERT ON public.claim_requests FROM donation_claims NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_check_ins\"()",
+    "function_name": "RI_FKey_check_ins"
+  },
+  {
+    "relation": "claim_requests",
+    "tgname": "RI_ConstraintTrigger_c_16967",
+    "tgisinternal": true,
+    "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_c_16967\" AFTER UPDATE ON public.claim_requests FROM donation_claims NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_check_upd\"()",
+    "function_name": "RI_FKey_check_upd"
+  },
+  {
+    "relation": "donation_claims",
+    "tgname": "RI_ConstraintTrigger_a_16889",
+    "tgisinternal": true,
+    "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_16889\" AFTER DELETE ON public.donation_claims FROM claim_leases NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_del\"()",
+    "function_name": "RI_FKey_noaction_del"
+  },
+  {
+    "relation": "donation_claims",
+    "tgname": "RI_ConstraintTrigger_a_16890",
+    "tgisinternal": true,
+    "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_16890\" AFTER UPDATE ON public.donation_claims FROM claim_leases NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_upd\"()",
+    "function_name": "RI_FKey_noaction_upd"
+  },
+  {
+    "relation": "donation_claims",
+    "tgname": "RI_ConstraintTrigger_a_16964",
+    "tgisinternal": true,
+    "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_16964\" AFTER DELETE ON public.donation_claims FROM claim_requests NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_del\"()",
+    "function_name": "RI_FKey_noaction_del"
+  },
+  {
+    "relation": "donation_claims",
+    "tgname": "RI_ConstraintTrigger_a_16965",
+    "tgisinternal": true,
+    "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_16965\" AFTER UPDATE ON public.donation_claims FROM claim_requests NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_upd\"()",
+    "function_name": "RI_FKey_noaction_upd"
+  },
+  {
+    "relation": "donation_claims",
+    "tgname": "RI_ConstraintTrigger_a_17079",
+    "tgisinternal": true,
+    "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_17079\" AFTER DELETE ON public.donation_claims FROM pickup_tasks NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_del\"()",
+    "function_name": "RI_FKey_noaction_del"
+  },
+  {
+    "relation": "donation_claims",
+    "tgname": "RI_ConstraintTrigger_a_17080",
+    "tgisinternal": true,
+    "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_17080\" AFTER UPDATE ON public.donation_claims FROM pickup_tasks NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_upd\"()",
+    "function_name": "RI_FKey_noaction_upd"
+  },
+  {
+    "relation": "donation_claims",
+    "tgname": "RI_ConstraintTrigger_a_17148",
+    "tgisinternal": true,
+    "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_17148\" AFTER DELETE ON public.donation_claims FROM claim_cancellation_requests NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_del\"()",
+    "function_name": "RI_FKey_noaction_del"
+  },
+  {
+    "relation": "donation_claims",
+    "tgname": "RI_ConstraintTrigger_a_17149",
+    "tgisinternal": true,
+    "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_17149\" AFTER UPDATE ON public.donation_claims FROM claim_cancellation_requests NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_upd\"()",
+    "function_name": "RI_FKey_noaction_upd"
+  },
+  {
+    "relation": "donation_claims",
+    "tgname": "RI_ConstraintTrigger_a_17167",
+    "tgisinternal": true,
+    "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_17167\" AFTER DELETE ON public.donation_claims FROM claim_reconciliation_cases NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_del\"()",
+    "function_name": "RI_FKey_noaction_del"
+  },
+  {
+    "relation": "donation_claims",
+    "tgname": "RI_ConstraintTrigger_a_17168",
+    "tgisinternal": true,
+    "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_17168\" AFTER UPDATE ON public.donation_claims FROM claim_reconciliation_cases NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_upd\"()",
+    "function_name": "RI_FKey_noaction_upd"
+  },
+  {
+    "relation": "donation_claims",
+    "tgname": "RI_ConstraintTrigger_a_17603",
+    "tgisinternal": true,
+    "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_17603\" AFTER DELETE ON public.donation_claims FROM resolution_private.items NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_del\"()",
+    "function_name": "RI_FKey_noaction_del"
+  },
+  {
+    "relation": "donation_claims",
+    "tgname": "RI_ConstraintTrigger_a_17604",
+    "tgisinternal": true,
+    "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_17604\" AFTER UPDATE ON public.donation_claims FROM resolution_private.items NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_upd\"()",
+    "function_name": "RI_FKey_noaction_upd"
+  },
+  {
+    "relation": "donation_claims",
+    "tgname": "RI_ConstraintTrigger_a_17804",
+    "tgisinternal": true,
+    "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_17804\" AFTER DELETE ON public.donation_claims FROM routing_private.deferred_stops NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_del\"()",
+    "function_name": "RI_FKey_noaction_del"
+  },
+  {
+    "relation": "donation_claims",
+    "tgname": "RI_ConstraintTrigger_a_17805",
+    "tgisinternal": true,
+    "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_17805\" AFTER UPDATE ON public.donation_claims FROM routing_private.deferred_stops NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_upd\"()",
+    "function_name": "RI_FKey_noaction_upd"
+  },
+  {
+    "relation": "donation_claims",
+    "tgname": "RI_ConstraintTrigger_c_16911",
+    "tgisinternal": true,
+    "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_c_16911\" AFTER INSERT ON public.donation_claims FROM listings NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_check_ins\"()",
+    "function_name": "RI_FKey_check_ins"
+  },
+  {
+    "relation": "donation_claims",
+    "tgname": "RI_ConstraintTrigger_c_16912",
+    "tgisinternal": true,
+    "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_c_16912\" AFTER UPDATE ON public.donation_claims FROM listings NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_check_upd\"()",
+    "function_name": "RI_FKey_check_upd"
+  },
+  {
+    "relation": "donation_claims",
+    "tgname": "RI_ConstraintTrigger_c_16916",
+    "tgisinternal": true,
+    "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_c_16916\" AFTER INSERT ON public.donation_claims FROM ngo_profiles NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_check_ins\"()",
+    "function_name": "RI_FKey_check_ins"
+  },
+  {
+    "relation": "donation_claims",
+    "tgname": "RI_ConstraintTrigger_c_16917",
+    "tgisinternal": true,
+    "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_c_16917\" AFTER UPDATE ON public.donation_claims FROM ngo_profiles NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_check_upd\"()",
+    "function_name": "RI_FKey_check_upd"
+  },
+  {
+    "relation": "donation_claims",
+    "tgname": "RI_ConstraintTrigger_c_16921",
+    "tgisinternal": true,
+    "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_c_16921\" AFTER INSERT ON public.donation_claims FROM claim_requests NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_check_ins\"()",
+    "function_name": "RI_FKey_check_ins"
+  },
+  {
+    "relation": "donation_claims",
+    "tgname": "RI_ConstraintTrigger_c_16922",
+    "tgisinternal": true,
+    "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_c_16922\" AFTER UPDATE ON public.donation_claims FROM claim_requests NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_check_upd\"()",
+    "function_name": "RI_FKey_check_upd"
+  },
+  {
+    "relation": "donations",
+    "tgname": "RI_ConstraintTrigger_a_16924",
+    "tgisinternal": true,
+    "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_16924\" AFTER DELETE ON public.donations FROM donation_create_requests NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_del\"()",
+    "function_name": "RI_FKey_noaction_del"
+  },
+  {
+    "relation": "donations",
+    "tgname": "RI_ConstraintTrigger_a_16925",
+    "tgisinternal": true,
+    "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_16925\" AFTER UPDATE ON public.donations FROM donation_create_requests NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_upd\"()",
+    "function_name": "RI_FKey_noaction_upd"
+  },
+  {
+    "relation": "donations",
+    "tgname": "RI_ConstraintTrigger_a_16934",
+    "tgisinternal": true,
+    "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_16934\" AFTER DELETE ON public.donations FROM donation_images NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_cascade_del\"()",
+    "function_name": "RI_FKey_cascade_del"
+  },
+  {
+    "relation": "donations",
+    "tgname": "RI_ConstraintTrigger_a_16935",
+    "tgisinternal": true,
+    "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_16935\" AFTER UPDATE ON public.donations FROM donation_images NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_upd\"()",
+    "function_name": "RI_FKey_noaction_upd"
+  },
+  {
+    "relation": "donations",
+    "tgname": "RI_ConstraintTrigger_a_16949",
+    "tgisinternal": true,
+    "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_16949\" AFTER DELETE ON public.donations FROM donation_items NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_del\"()",
+    "function_name": "RI_FKey_noaction_del"
+  },
+  {
+    "relation": "donations",
+    "tgname": "RI_ConstraintTrigger_a_16950",
+    "tgisinternal": true,
+    "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_16950\" AFTER UPDATE ON public.donations FROM donation_items NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_upd\"()",
+    "function_name": "RI_FKey_noaction_upd"
+  },
+  {
+    "relation": "donations",
+    "tgname": "RI_ConstraintTrigger_a_17034",
+    "tgisinternal": true,
+    "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_17034\" AFTER DELETE ON public.donations FROM hub_reservations NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_del\"()",
+    "function_name": "RI_FKey_noaction_del"
+  },
+  {
+    "relation": "donations",
+    "tgname": "RI_ConstraintTrigger_a_17035",
+    "tgisinternal": true,
+    "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_17035\" AFTER UPDATE ON public.donations FROM hub_reservations NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_upd\"()",
+    "function_name": "RI_FKey_noaction_upd"
+  },
+  {
+    "relation": "donations",
+    "tgname": "RI_ConstraintTrigger_a_17049",
+    "tgisinternal": true,
+    "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_17049\" AFTER DELETE ON public.donations FROM listings NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_del\"()",
+    "function_name": "RI_FKey_noaction_del"
+  },
+  {
+    "relation": "donations",
+    "tgname": "RI_ConstraintTrigger_a_17050",
+    "tgisinternal": true,
+    "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_17050\" AFTER UPDATE ON public.donations FROM listings NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_upd\"()",
+    "function_name": "RI_FKey_noaction_upd"
+  },
+  {
+    "relation": "donations",
+    "tgname": "RI_ConstraintTrigger_c_16956",
+    "tgisinternal": true,
+    "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_c_16956\" AFTER INSERT ON public.donations FROM donor_profiles NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_check_ins\"()",
+    "function_name": "RI_FKey_check_ins"
+  },
+  {
+    "relation": "donations",
+    "tgname": "RI_ConstraintTrigger_c_16957",
+    "tgisinternal": true,
+    "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_c_16957\" AFTER UPDATE ON public.donations FROM donor_profiles NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_check_upd\"()",
+    "function_name": "RI_FKey_check_upd"
+  },
+  {
+    "relation": "donations",
+    "tgname": "donations_lifecycle_at_commit",
+    "tgisinternal": false,
+    "definition": "CREATE CONSTRAINT TRIGGER donations_lifecycle_at_commit AFTER INSERT OR UPDATE ON public.donations DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION geolock_validate_donation_at_commit()",
+    "function_name": "geolock_validate_donation_at_commit"
+  },
+  {
+    "relation": "donations",
+    "tgname": "donations_require_photo_at_commit",
+    "tgisinternal": false,
+    "definition": "CREATE CONSTRAINT TRIGGER donations_require_photo_at_commit AFTER INSERT ON public.donations DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION require_donation_photo_before_commit()",
+    "function_name": "require_donation_photo_before_commit"
+  },
+  {
+    "relation": "donations",
+    "tgname": "trg_donation_transition",
+    "tgisinternal": false,
+    "definition": "CREATE TRIGGER trg_donation_transition BEFORE UPDATE ON public.donations FOR EACH ROW EXECUTE FUNCTION enforce_donation_transition()",
+    "function_name": "enforce_donation_transition"
+  },
+  {
+    "relation": "listings",
+    "tgname": "RI_ConstraintTrigger_a_16894",
+    "tgisinternal": true,
+    "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_16894\" AFTER DELETE ON public.listings FROM claim_requests NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_del\"()",
+    "function_name": "RI_FKey_noaction_del"
+  },
+  {
+    "relation": "listings",
+    "tgname": "RI_ConstraintTrigger_a_16895",
+    "tgisinternal": true,
+    "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_16895\" AFTER UPDATE ON public.listings FROM claim_requests NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_upd\"()",
+    "function_name": "RI_FKey_noaction_upd"
+  },
+  {
+    "relation": "listings",
+    "tgname": "RI_ConstraintTrigger_a_16909",
+    "tgisinternal": true,
+    "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_16909\" AFTER DELETE ON public.listings FROM donation_claims NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_del\"()",
+    "function_name": "RI_FKey_noaction_del"
+  },
+  {
+    "relation": "listings",
+    "tgname": "RI_ConstraintTrigger_a_16910",
+    "tgisinternal": true,
+    "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_16910\" AFTER UPDATE ON public.listings FROM donation_claims NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_upd\"()",
+    "function_name": "RI_FKey_noaction_upd"
+  },
+  {
+    "relation": "listings",
+    "tgname": "RI_ConstraintTrigger_a_17172",
+    "tgisinternal": true,
+    "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_17172\" AFTER DELETE ON public.listings FROM claim_reconciliation_cases NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_del\"()",
+    "function_name": "RI_FKey_noaction_del"
+  },
+  {
+    "relation": "listings",
+    "tgname": "RI_ConstraintTrigger_a_17173",
+    "tgisinternal": true,
+    "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_17173\" AFTER UPDATE ON public.listings FROM claim_reconciliation_cases NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_upd\"()",
+    "function_name": "RI_FKey_noaction_upd"
+  },
+  {
+    "relation": "listings",
+    "tgname": "RI_ConstraintTrigger_c_17046",
+    "tgisinternal": true,
+    "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_c_17046\" AFTER INSERT ON public.listings FROM hub_batches NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_check_ins\"()",
+    "function_name": "RI_FKey_check_ins"
+  },
+  {
+    "relation": "listings",
+    "tgname": "RI_ConstraintTrigger_c_17047",
+    "tgisinternal": true,
+    "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_c_17047\" AFTER UPDATE ON public.listings FROM hub_batches NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_check_upd\"()",
+    "function_name": "RI_FKey_check_upd"
+  },
+  {
+    "relation": "listings",
+    "tgname": "RI_ConstraintTrigger_c_17051",
+    "tgisinternal": true,
+    "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_c_17051\" AFTER INSERT ON public.listings FROM donations NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_check_ins\"()",
+    "function_name": "RI_FKey_check_ins"
+  },
+  {
+    "relation": "listings",
+    "tgname": "RI_ConstraintTrigger_c_17052",
+    "tgisinternal": true,
+    "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_c_17052\" AFTER UPDATE ON public.listings FROM donations NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_check_upd\"()",
+    "function_name": "RI_FKey_check_upd"
+  },
+  {
+    "relation": "listings",
+    "tgname": "trg_listing_transition",
+    "tgisinternal": false,
+    "definition": "CREATE TRIGGER trg_listing_transition BEFORE UPDATE ON public.listings FOR EACH ROW EXECUTE FUNCTION enforce_listing_transition()",
+    "function_name": "enforce_listing_transition"
+  }
+]

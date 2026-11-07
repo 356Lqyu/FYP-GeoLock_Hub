@@ -1,0 +1,20 @@
+{
+  "checked_at": "2026-10-23 12:07:44.647442+00",
+  "job3": {
+    "active": false,
+    "command": "set lock_timeout = '5s'; set statement_timeout = '50s'; select public.recover_expired_claims(1);",
+    "schedule": "* * * * *",
+    "username": "postgres"
+  },
+  "job3_runs": 12,
+  "unfinished_job3": 0,
+  "fingerprint": "5ff6d8719db9681aae6f444b89dfbaee",
+  "alter_job_permissions": [
+    {
+      "owner": "supabase_admin",
+      "signature": "cron.alter_job(bigint,text,text,text,text,boolean)",
+      "postgres_execute": true
+    }
+  ],
+  "other_active_client_transactions": null
+}

@@ -1,0 +1,59 @@
+# Stage A 003 post-deployment verification
+
+Prepared only. No live mutation tests or fixtures were executed. No TEST environment is required/created by this procedure. Run catalog verification first; business tests run only after deployment and separate approval identifying synthetic DEV users/records, permitted changes, concurrency/injection scope and cleanup/recovery owner. Do not borrow operational donations or either expired ACTIVE claim. Passing mocked Flutter tests is not evidence of PostgreSQL rollback, triggers or live Auth behavior.
+
+## 1. Read-only acceptance before reopening clients
+
+Run `postflight.sql` through approved read-only DEV access and retain complete output. All 17 exact 003 function comparisons and all 28 preserved baseline comparisons must PASS; required private definitions, constraints, existing triggers, role boundaries/configuration remain intact. Confirm exactly one `routing_task_authority` trigger, enabled O, BEFORE UPDATE OF task_status, FOR EACH ROW, `routing_private.task_guard()`, tgtype 19. Verify intended direct and inherited EXECUTE/DML boundaries. Compare source/status counts with the maintenance snapshot. Zero-state cutover requires `legacy_inflight=0`; any unexpected legacy/task/route state stops reopening. Verify P11/release evidence separately; do not insert a fictitious historical migration row.
+
+Recheck source guards after installation: `claim_listing`, `recover_expired_claims`, audit helper remain unchanged. Existing `postflight.sql` is observation SQL: zero psql exit code does not classify returned FAIL rows as success. Use `expected-functions.json` as the exact metadata/hash/grantee reference. Verify new RPC visibility through the actual authenticated client; a stale PostgREST schema cache is a deployment observation, not permission to grant extra access or change SQL. Report PGRST202 distinctly and obtain a separately approved remedy if needed.
+
+## 2. Actual post-claim contract
+
+| Step | Actual API / backend authority | Expected result |
+|---|---|---|
+| Claim | NGO JWT: `claim_listing(p_listing,p_request)` | SUCCESS atomically creates claim, lease and pickup_task; default task CONFIRMED. Source donations become CLAIMED. A claim does not assign a vehicle/route. Request UUID persists across uncertain outcomes. |
+| Read eligibility | NGO JWT: `get_my_routing_overview()` | `contract=geolock.ngo-routing.v1`, owner ngo_id, `authorization_enforced=true`; eligible_tasks depends on a configured routing policy and admissible live claim/lease/source state. Owned managed routes only. |
+| Capture inputs | NGO JWT: `begin_my_routing_snapshot(p_request,p_policy,p_vehicle_ids)` | Owned snapshot bound to selected eligible vehicles and current tasks. The app never creates pickup_tasks or route-assignment rows. |
+| Compute/validate | Existing planner `POST /v1/plan`, body `{request_id,snapshot_id}`, NGO bearer JWT | Separately provisioned graph/planner/validator roles use `store_routing_matrix`, `seal_routing_snapshot`, `submit_routing_candidate`, read work items and `attest_routing_candidate`. Independent attestation is required. Worker result is ADVISORY_CANDIDATE with `dispatch_authority_issued=false`; it does not authorize dispatch. No ranking/AI change belongs here. |
+| Authorize publication | NGO JWT: `authorize_my_routing_candidate(p_request,p_candidate,p_depart_at)` | DB returns `candidate_id` and nonempty `route_ids`; creates managed binding/items, stops and active assignments, task PLANNED and route AUTHORISED. NGO/vehicle/source/window/capacity/digest/validation checks are enforced by 002. |
+| View route | NGO JWT: `get_my_authorized_route(p_route)` | Owned route with `authorization_confirmed`, per-stop `can_start`/`can_complete`, `can_cancel`/`can_close`, `dispatch_block_reason`. Client status text or local validation never grants permission. |
+| Start | NGO JWT: `start_pickup(p_claim)` from freshly read matching route/stop | Exact next stop after authorized departure, valid remaining route/lease and unused dispatch permit. Task DISPATCHED, route IN_PROGRESS, donation CLAIMED → PICKUP_IN_PROGRESS; audit written atomically. |
+| Complete | NGO JWT: `complete_pickup(p_claim,p_handover_confirmed=true)` after physical confirmation | Prior start required; task COLLECTED, donation PICKUP_IN_PROGRESS → COLLECTED, claim/lease COMPLETED, listing CLOSED. HUB_BATCH also updates active-member inventory and batch to COLLECTED. Reservations remain held. |
+| Close | NGO JWT: `close_my_collected_route(p_route,p_depot_return_confirmed=true)` | All route tasks resolved/collected; explicit depot return confirmation. Route COMPLETED, active assignments removed and managed items/binding released/closed. No fabricated vehicle field update. |
+| Cancel unstarted | NGO JWT: `cancel_my_unstarted_route(p_route)` | Only unchanged PLANNED unconsumed tasks and an unstarted route. Stops archived/removed, assignments released, tasks CONFIRMED, route CANCELLED. Claims/leases retained; started/stale route requires reconciliation. |
+| Reconcile | Existing claim-details participant workflow: `submit_claim_reconciliation(p_claim,p_handover_confirmed,p_request)` | Existing two-party source/custody checks retained; scoped locks, replay and collection permits added by 003. Reconciled collection updates task/item bookkeeping; does not implicitly close route/release reservations. Resolve donor/hub counterpart under their own JWT; no client-selected actor/NGO/case. |
+
+`assign_task_to_route(uuid,uuid,integer)` remains the post-002 fail-closed entry point (`VALIDATED_ROUTE_PUBLICATION_REQUIRED`). Never use it or direct table writes to shortcut authorization. Installing 003 alone leaves current policy/graph/worker prerequisites unresolved.
+
+## 3. Approved DEV test matrix
+
+Use isolated **records/accounts within DEV**, not a separate TEST database. First obtain explicit fixture approval and a manifest of synthetic NGO A/B, donor/hub participants, verified depot, vehicles, policy/graph, direct donation and whole-batch sources. Worker/validator provisioning, graph/policy installation and activation are separate database/write approvals, not implied by this test plan. Current policies/graphs are empty. Each test records exact inputs/request IDs, before/after read-only state, RPC outcome, SQLSTATE/reason and audit events. Never log JWTs/credentials.
+
+| Test | Action and PASS assertion |
+|---|---|
+| T01 catalog boundary | Run section 1. Required sources/metadata/ACLs and trigger all match, no unexpected preserved-object delta. |
+| T02 claim regression | Direct and HUB_BATCH claim/retry: one claim/lease/task per success, source transition/audit correct; rejected/idempotent attempts create no duplicate reservation or partially claimed batch. Compare existing donation/claim regression contracts. |
+| T03 route publication | Execute the actual sequence above with independently attested candidate. Verify owned route IDs, exact tasks/stops/order, current vehicle version, active assignments and route AUTHORISED. Replay exact authorization UUID/departure gives same routes. Stale/capacity/window/lease-invalid candidate fails without partial bindings/assignments. |
+| T04 NGO visibility | A sees its overview and detail; B's JWT cannot read A's route or mutate A's pickup. Anonymous requests denied by ACL. Worker/service roles have no newly granted pickup execution. UI clears stale/account-switched data. |
+| T05 start and order | Before departure/start without managed binding/wrong stop/wrong NGO/stale lease/forged candidate all reject. Correct next stop starts once, writes exact task/donation/route/audit state; no client assignment write. A second start is not a second dispatch. |
+| T06 completion | Without prior start or without true handover flag: reject with no state change. Correct completion closes claim/lease/listing and collects donation plus whole-batch inventory atomically. Repeat is rejected or handled exactly as implemented, never treated as another successful transition. Vehicle reservation persists until close. |
+| T07 close/cancel | After all collections, require explicit depot return, then release only that route's assignments. On a separate unstarted synthetic route, cancellation archives stops, returns tasks CONFIRMED and retains claim/lease; replay and attempts after start/stale inputs cannot release custody/reservations incorrectly. |
+| T08 reconciliation | Approved source counterpart and NGO submit matching handover evidence under separate JWTs/request IDs; verify waiting/replay results, eventual RESOLVED_COLLECTED state and matching task/item/source/inventory/audit state. Conflicting/unauthorized/reused-payload evidence cannot force release/collection; started/expired/stale cases follow actual manual-review rules. Do not assume every no-handover response releases a route. |
+| T09 bypass attempts | Under approved synthetic JWTs test direct task-status/assignment DML denial, private-helper EXECUTE denial, old assignment RPC rejection and foreign route operations. Verify failed operations leave reservations and custody unchanged. Do not grant rights for these tests. |
+| T10 transaction rollback | Using a fresh, explicitly approved synthetic transaction and authenticated actor context, snapshot claim/lease/task/source/route/item/assignment/inventory/audit state, exercise a successful allowed transition inside BEGIN, inspect it in the same session, then ROLLBACK and prove all business/audit state reverts from a new session. Mark consumed UUIDs as test-only. Sequence values need not roll back; never assert gapless sequences. An exception case should prove no partial state after failed authority/business checks. |
+| T11 failure/concurrency limit | Writer/migration lock races and injected audit/business failures were not validated by C.5. Do not install failure triggers, replace functions or rerun 003 on DEV to simulate them. Safe approved business-operation contention tests may be scoped separately; absent evidence remains NOT VALIDATED. A successful T10 rollback does not prove migration-DDL rollback or all concurrency schedules. |
+| T12 existing workflows | NGO claim list/detail/audit/cancel, donor donation creation/history and hub whole-batch inventory retain current behavior; expired claims remain expired until backend recovery, no local reopening. Test offline/lost response/account switch/refresh and physical handover confirmation. |
+
+Fresh catalog verification and app mocked tests may run before fixtures, but write tests must remain NOT RUN until approved. Do not mark a checklist PASS from function existence, a mocked transport or a displayed route status. Stop on the first unexplained state/audit/permission mismatch and keep workers/new authorizations paused.
+
+## 4. Local Flutter regression command
+
+From `frontend/geolock_hub_app`:
+
+```powershell
+flutter test --no-pub test/ngo_routing_test.dart test/claim_card_test.dart test/claim_request_test.dart test/donation_status_test.dart
+flutter analyze --no-pub lib/donation_pages.dart lib/routing/ngo_routes_page.dart lib/routing/ngo_routing_repository.dart test/ngo_routing_test.dart test/claim_card_test.dart
+```
+
+Actual preparation result: **49 tests PASS**, changed-source analysis **No issues found**. Tests use synthetic/mocked transports and do not connect to DEV. Added coverage includes managed-route navigation/refresh, no-policy planning disabled, blocked departure explanation, exact completion payload and separate fresh close/cancel flags. Existing unauthorized/stale/revoked-route, request replay, claims and donation-state regressions were retained. The first run exposed one obsolete test expecting a disabled legacy button; it now asserts the managed workflow has no direct pickup button, and the focused rerun passed. No database compatibility claim follows from these results.

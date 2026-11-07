@@ -1,0 +1,24 @@
+{
+  "project_ref": "rcgyuwiidqvrgbxswhqj",
+  "approved_prior_method": "Supabase MCP, explicit read-only transaction and rollback",
+  "current_supabase_query_tools_available": 0,
+  "approved_unattended_readonly_credentials_found": false,
+  "database_connection_attempted": false,
+  "current_node_edge_counts_verified": false,
+  "worker_profile_nonsecret_field_read": "sandbox filesystem access denied; no escalation or secret decryption attempted",
+  "historical_counts": {
+    "nodes": 926414,
+    "edges": 2145828,
+    "graph_id": "eab1f7ee-a8e0-4bed-a0e1-2c4bff024936",
+    "coverage": "OSM-OPS-20261018",
+    "evidence": "results/automatic-routing-dev-preflight/20261028-readonly/state.json"
+  },
+  "source_sha256": {
+    "backend/routing/worker_service/graph_cache.py": "f1186d21ce1fd7c29601fc906dec3a51cd2398b73631a413f5f5211f35cdbd3f",
+    "backend/routing/integration/graph_worker.py": "f6e84f9f53945a74d3bdd0349ddb96258946ccce1945999754d7f43d25820fb2",
+    "backend/routing/phase_c2/matrices.py": "cf5c850fb1c6bdb2aac048c71a11f7c292ad2a85c16971efd7d33e53466d2763",
+    "backend/routing/worker_service/orchestrator.py": "b35c5747f8534ccb96af38524a1748c12587c2f720bc1c46e1eb08b5e35611c1",
+    "backend/routing/worker_service/server.py": "7593492a1c13d8f9e68e449af026caa98955a160f5c9c80880cfef05a9024db7",
+    "backend/routing/phase_b/optimizers.py": "0de1c90a50b3964802c6fe6a6ef3f54d3bbc0439382733bc83971e79a0627eb9"
+  }
+}

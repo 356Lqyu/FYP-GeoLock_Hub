@@ -1,0 +1,464 @@
+{
+  "status": "EXECUTED",
+  "integrity": {
+    "version": "GEOLOCK-BM-v3.3",
+    "matrix_id": "OSM-DIRECTED-v3.3",
+    "dataset_seed": 20260915,
+    "scenario_counts": {
+      "HUB_RECOMMENDATION": 2000,
+      "HUB_RECOMMENDATION_VERIFICATION": 19,
+      "CLAIM_COORDINATION": 150,
+      "GEOFENCE_VERIFICATION": 100,
+      "LEASE_RECOVERY": 100,
+      "LEASE_ACTIVE_VERIFICATION": 25,
+      "HUB_AGGREGATION": 100,
+      "ROUTE_PLANNING": 100
+    },
+    "verified_sha256": {
+      "experiments\\repro_inputs\\v33\\road_nodes.csv": "a8905fb29f95b6ba02c099fd60a188f98ae92f01c7586995295b096b673df6ea",
+      "experiments\\repro_inputs\\v33\\road_distance_matrix.csv": "b9a272d2396354695ae2ec6fd744a17510f1b5e7c61989fe7b404d2d0e0133e1",
+      "experiments\\repro_inputs\\v33\\ngos.csv": "ddc14fe9958c272c7d8b7dc32b23ad6bfffd2a066f1b158a05a7cd3e5c535eaa",
+      "experiments\\repro_inputs\\v33\\vehicles.csv": "79be6284565e0f544914bcb6b0fb5a847a0756a6039808bfc03920046f571413",
+      "experiments\\repro_inputs\\v33\\hubs.csv": "1709d42ecdf1aa4dfe7e671315e8620587cebd161099d0f9769da10d77462ade",
+      "experiments\\repro_inputs\\v33\\donors.csv": "aefee7b3fc9b0c955f7ae3d60238dd4ec7cea49885dcd0545706acb797604e63",
+      "experiments\\repro_inputs\\v33\\donations.csv": "057dbd5b9486c79984ae2c64144daad2a4c4db6b8c0fbc233c1bcae9eb9b288b",
+      "experiments\\repro_inputs\\v33\\donation_hub_candidates.csv": "51e68ae42c7b3de39c5016615b29a157d4a0f12693ba356b3f0e005b0d42e7ca",
+      "experiments\\repro_inputs\\v33\\listings.csv": "71f8552af8731ac8b0ddfb205f32c78413088ba3bd3e2a1d4aa9830abe5e532f",
+      "experiments\\repro_inputs\\v33\\hub_batches.csv": "3ce5ceb404a4807f2885f5cbae3392ff309c536fb30181701970c2507ee5c3f4",
+      "experiments\\repro_inputs\\v33\\hub_batch_members.csv": "9c14be844ff948bd0a3c08ef7be7b1697b3cac279b602ba3c0263c23c25e8367",
+      "experiments\\repro_inputs\\v33\\scenarios.csv": "973d91972df90c0e39501a35ca2ae181d1a6af37d5ccb83c56e4b4bf2d5c966c",
+      "experiments\\repro_inputs\\v33\\scenario_members.csv": "7c09e2a9a040726458078c6d23370978a3cba6f155cb2b68aa2bbc356518e6d0",
+      "experiments\\repro_inputs\\v33\\claim_initial_states.csv": "30e5f3bbd933fd3827bcafb9d119d036ece0dbe1e17f0172f66b919cf98d1065",
+      "experiments\\repro_inputs\\v33\\verification_cases.csv": "740d57558291543ab9716188be59d5a96e97d41d5e6d83e26bf2a0027b28cc3a",
+      "baseline implementation\\source code\\fcfs_baseline.py": "f61583f5a26fe9706332b6884d94f4ac9ce468c10c33031877c34190aab388d5",
+      "baseline implementation\\source code\\nearest_next_baseline.py": "d434cd3a92055e310c220c09c2642d32fd4406c32c95630bb133eea81a375f5f",
+      "baseline implementation\\source code\\non_atomic_claim_baseline.py": "44eb362fbbb2b515154bb39b9830e865b39c86fdfc76da218ea82a32133d3dbb",
+      "baseline implementation\\source code\\protected_claim_without_lease_recovery_baseline.py": "9117604c5f2a76ede9356adcc72207d2ce74bd3f84292cf4b2567aaa15abdd95",
+      "benchmark dataset/dataset/generation_manifest.json": "139c823a20753e16bf1d6c0aea137ff03a171b57def95723d1be9bd4c66afe34"
+    },
+    "teammate_root": "C:\\Users\\User\\Downloads\\FYP-GeoLock_Hub-ss (1)\\FYP-GeoLock_Hub-ss",
+    "transport_repairs": [
+      {
+        "file": "road_nodes",
+        "source_sha256": "19b5f7e0157cf86d9e04dd2c326fad69d783d0634a0d35118e83ca1718e2bf94",
+        "manifest_sha256": "a8905fb29f95b6ba02c099fd60a188f98ae92f01c7586995295b096b673df6ea",
+        "repair": "CRLF bytes in separate copy only"
+      },
+      {
+        "file": "road_distance_matrix",
+        "source_sha256": "f2343b5e27c54b3287bc28025e2f4a66e90aad8ef8bfa03c5906a9911d7b79e3",
+        "manifest_sha256": "b9a272d2396354695ae2ec6fd744a17510f1b5e7c61989fe7b404d2d0e0133e1",
+        "repair": "CRLF bytes in separate copy only"
+      },
+      {
+        "file": "ngos",
+        "source_sha256": "da9ce85429acb9e62aec95f99bbc41f3347dbb67cdb3ceefd3978ba8f035a91a",
+        "manifest_sha256": "ddc14fe9958c272c7d8b7dc32b23ad6bfffd2a066f1b158a05a7cd3e5c535eaa",
+        "repair": "CRLF bytes in separate copy only"
+      },
+      {
+        "file": "vehicles",
+        "source_sha256": "6b58a4234459b124689cc86f48e9c0923ff648d1efb25851e3392ca990834e80",
+        "manifest_sha256": "79be6284565e0f544914bcb6b0fb5a847a0756a6039808bfc03920046f571413",
+        "repair": "CRLF bytes in separate copy only"
+      },
+      {
+        "file": "hubs",
+        "source_sha256": "ca5166d70c1a6c4435f02797958b42d1697f306b2cead9af0829d17b238ce7ad",
+        "manifest_sha256": "1709d42ecdf1aa4dfe7e671315e8620587cebd161099d0f9769da10d77462ade",
+        "repair": "CRLF bytes in separate copy only"
+      },
+      {
+        "file": "donors",
+        "source_sha256": "01b1ee883965d60b570506dd2c57a00f57c15c2f5ede28e6751d0621bad2911b",
+        "manifest_sha256": "aefee7b3fc9b0c955f7ae3d60238dd4ec7cea49885dcd0545706acb797604e63",
+        "repair": "CRLF bytes in separate copy only"
+      },
+      {
+        "file": "donations",
+        "source_sha256": "671b96bc3fb65a0f7cd7fe33fd5b3bee9048575455170c6044f9a55ffd80ef39",
+        "manifest_sha256": "057dbd5b9486c79984ae2c64144daad2a4c4db6b8c0fbc233c1bcae9eb9b288b",
+        "repair": "CRLF bytes in separate copy only"
+      },
+      {
+        "file": "donation_hub_candidates",
+        "source_sha256": "a38a2baf8b798e7839cda4036a55a735a089db7b1dca3a988cb65df854cb3b32",
+        "manifest_sha256": "51e68ae42c7b3de39c5016615b29a157d4a0f12693ba356b3f0e005b0d42e7ca",
+        "repair": "CRLF bytes in separate copy only"
+      },
+      {
+        "file": "listings",
+        "source_sha256": "8173a79498260cf7830e1b32dbb49f1c9ea727593a2c634aa853560b17c65038",
+        "manifest_sha256": "71f8552af8731ac8b0ddfb205f32c78413088ba3bd3e2a1d4aa9830abe5e532f",
+        "repair": "CRLF bytes in separate copy only"
+      },
+      {
+        "file": "hub_batches",
+        "source_sha256": "11916848b5c4f3b5d5151665e0f2e2f4b675343f3df2f178c4204be52568ce56",
+        "manifest_sha256": "3ce5ceb404a4807f2885f5cbae3392ff309c536fb30181701970c2507ee5c3f4",
+        "repair": "CRLF bytes in separate copy only"
+      },
+      {
+        "file": "hub_batch_members",
+        "source_sha256": "34ae0a29246dc396b1bf7806f1e6ac6b66e0a1e4b2883efa457a1ff06df5a4c5",
+        "manifest_sha256": "9c14be844ff948bd0a3c08ef7be7b1697b3cac279b602ba3c0263c23c25e8367",
+        "repair": "CRLF bytes in separate copy only"
+      },
+      {
+        "file": "scenarios",
+        "source_sha256": "a6c053d24bb587c82d394b10f265159e7ffb13c380ba9f3eb848741c482942d3",
+        "manifest_sha256": "973d91972df90c0e39501a35ca2ae181d1a6af37d5ccb83c56e4b4bf2d5c966c",
+        "repair": "CRLF bytes in separate copy only"
+      },
+      {
+        "file": "scenario_members",
+        "source_sha256": "ed8b69a605670118946465609977a99e8296fe2206c8fe01eda61f4ab9b0bb49",
+        "manifest_sha256": "7c09e2a9a040726458078c6d23370978a3cba6f155cb2b68aa2bbc356518e6d0",
+        "repair": "CRLF bytes in separate copy only"
+      },
+      {
+        "file": "claim_initial_states",
+        "source_sha256": "e67ce5dab2be7774a03964eeedb305887176146214d8b170b7685d64a7a20bc4",
+        "manifest_sha256": "30e5f3bbd933fd3827bcafb9d119d036ece0dbe1e17f0172f66b919cf98d1065",
+        "repair": "CRLF bytes in separate copy only"
+      },
+      {
+        "file": "verification_cases",
+        "source_sha256": "189bb7eb9e2bb06dee73f9bba1fd04a245ac43a4aebdfbd5d8ad25a9f5fe26b5",
+        "manifest_sha256": "740d57558291543ab9716188be59d5a96e97d41d5e6d83e26bf2a0027b28cc3a",
+        "repair": "CRLF bytes in separate copy only"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.14 (main, Aug 25 2026, 14:01:42) [MSC v.1944 64 bit (AMD64)]",
+    "executable": "C:\\Users\\User\\Downloads\\FYP-GeoLock_Hub\\.venv-stage8\\Scripts\\python.exe",
+    "platform": "Windows-11-10.0.22621-SP0",
+    "ortools": "9.15.6755",
+    "psycopg": "3.3.6",
+    "git_commit": "df626175c1413249ec2fceb314e0df431d5e692b",
+    "working_tree_dirty": true,
+    "remote_access": false
+  },
+  "source_sha256": {
+    "experiments\\e2_atomic_claiming\\run.py": "ccc9a4b18bf8aabb7342fea602597da5427e75f5d182d67c74d57c283b6aea9c",
+    "experiments\\repro_benchmark.py": "0094771155d3e45ef70f63fceca2042ccc92ff538fc68e827125dad3abb8aca7",
+    "experiments\\e2_claiming\\e2_runner.py": "69b7c040c29ec553f89ec587efa46a3e875d540d82ee84fd80f84d4f00f34600",
+    "supabase\\migrations\\20261017_donation_state_management.sql": "1b50aa1f7bc5cc6b84a19920ab9f3702e30966a3ffe92f96bbe8fc66806ebe94",
+    "supabase\\migrations\\20261017_registration_compatibility.sql": "f2ec52960632e798031fca027d2158deb399eb7bc0622730eff638f958f3cb26",
+    "supabase\\migrations\\20261017_role_dashboards_and_images.sql": "a84a3b8e5cbab48e9195666e9ba62d54086e81c0aad8aaed7bf7da296e9a8cee",
+    "supabase\\migrations\\20261017_stage1_location_and_read_rpcs.sql": "cbc4da8aca084218b6bbca1ec17b7938a8172213c2864dfb6ef6a3921e55b04c",
+    "supabase\\migrations\\20261018_donation_photo_and_availability_transition.sql": "ad56cc9753b6cf2c731476403090fcc746e80ec955ba9ee724913f0ac2800806",
+    "supabase\\migrations\\20261018_enforce_required_donation_photos.sql": "2d0821e897d956cc4bb20a10dae69407c92c7c4bb09e69c63bfd0fbc4dfa28ad",
+    "supabase\\migrations\\20261018_fix_photo_storage_policy_permissions.sql": "2e3adcd70728c3f25ed67e6ddc0a411f3b74830843973d2b7c88b268329ec81a",
+    "supabase\\migrations\\20261018_hub_reservation_reassignment_and_safe_cancellation.sql": "d83c8d896390520cb749151b0b7b372b4b71f37444ae78624be821991167a331",
+    "supabase\\migrations\\20261019_fix_cancel_donation_listing_join.sql": "69647a9b63b6126d15dc64ea36b620f9cfc38256de5b65baebf9ca9da52730c4",
+    "supabase\\migrations\\20261019_remove_validated_donation_state.sql": "5d5a8d3f7225f4b183e858c8ac0f5e56a88a3226de487970c2a905afc29c2bd0",
+    "supabase\\migrations\\20261019_retire_delivered_state.sql": "7085bda63e76e9ea54a1cb04b7a4f981be71667cdd746646ddd6cc3242d97f02",
+    "supabase\\migrations\\20261019_stage1_claim_recovery_and_reconciliation.sql": "ba8e2b00563bb5a0d0c1d95a3035b88420ac1e50c681e2bf0d242099ee703515",
+    "supabase\\migrations\\20261020_operational_road_node_resolution.sql": "a812baae1b9791a7a58ca9d2f2fe2ee435a2c6fa9ab7bb3aa5c501a0ffd978eb",
+    "supabase\\migrations\\20261020_revoke_anon_claim_listing_execute.sql": "5218461c3527ad37361f47d0569b8a41b357a704c9027bc8c791936d80e96ff3",
+    "supabase\\migrations\\20261021_auto_validate_ngo_registration_location.sql": "a40e00b8a744783f24f43b7bbc4799192cee0b7e6c9403d817ce3facfd9a31ed",
+    "supabase\\migrations\\20261022_role_onboarding_and_profile_management.sql": "7d825b897d2cf0a085626252b1f33558435b3dae90e0e0e6b05a319370f228e1",
+    "supabase\\migrations\\20261023_async_ngo_eligibility_refresh.sql": "f3048aab561a651f2d7ec666d4dd6531f8ccd0f352c70700c7c7466587a2247c",
+    "supabase\\migrations\\20261023_eligible_ngo_listing_details_and_photos.sql": "ed5e3876a4cd33dfc57ab8a39980c8eb581bdc37937874c8c7d06c8793284450",
+    "supabase\\migrations\\20261024_async_listing_eligibility_refresh.sql": "5939a4f00f6e485fd4c89f70d03c6be50a466559cd0c15a803c681f0313cf25e",
+    "supabase\\migrations\\20261025_fix_cancel_claim_audit_columns.sql": "ea679d0a14e1f6ffc6aef7fb3dd134eab94116b2a6a6b6c4308d04bc2a5b5541",
+    "supabase\\migrations\\20261026_fix_claim_recovery_reconciliation_audit_columns.sql": "747de54924d81c51bf5e3fdea5dd6a9497b4dd6a6d7f5855ebf9978467cf2a1f",
+    "supabase\\migrations\\20261027_persisted_donation_lifecycle.sql": "c40bff10daac4a25ea5852cec7d1123ed2a553357bb9f7faae4f1e98ed901b91",
+    "supabase\\migrations\\20261028_claim_card_expiry_and_paused_recovery.sql": "4e02dc1e1f34ff10e343b15ae23e0b236ff2fc8e9dcecb13ba6e32c199ee70dc",
+    "supabase\\migrations\\20261029_fix_claim_recovery_listing_expiration_race.sql": "064b1e4cd5b5cd38e1f77b91364af5ed99221926455d5d64ae7a4b70c1c31e7d",
+    "supabase\\migrations\\20261030_fix_claim_recovery_unresolved_reconciliation.sql": "e70759e708e966bb4bcd4528ba166f40c032c298d24ddc71af434d00c98db7cc",
+    "supabase\\migrations\\20261031_claim_audit_and_failure_capture.sql": "4c11ca6325856406e607b35b451c41fa461e620bf584543a053d2d16f0c222c8",
+    "supabase\\migrations\\20261103_remove_ngo_registration_number.sql": "cdbd7f5102330ef395461910693b54d749a44021015c0256f6bdb0768ac62080",
+    "supabase\\migrations\\20261104130000_unstarted_released_route_cancellation.sql": "7e77ede1b832d619dd3e3b9848e0501d5725bf57b1ad270c8b4c6e001d7430f1",
+    "supabase\\migrations\\20261104_released_claim_history_readers.sql": "613372a5b8ac19dcfe14c5952f0719a5f231cbd7b6bd015bce29f3244283a9cf",
+    "docs\\stage8\\stage-a\\forward-migrations\\20261101_routing_authority.sql": "fbe81acd7811e884536ed5bf125fb6b0b5eb71e6bd314872378e68b2da0ec94f",
+    "docs\\stage8\\stage-a\\forward-migrations\\20261102_routing_publication.sql": "96bc7763a30b7a641d6dc768dda4e255e12d4b9de2a5e52e8979cb0e26d1682f",
+    "docs\\stage8\\stage-a\\forward-migrations\\20261103_routing_pickup_and_reconciliation.sql": "6541f0a002ea56ad77c023e33ad1500ab2273cc821f87fa43d38e633bd6724ea",
+    "docs\\stage8\\stage-a\\forward-migrations\\20261104_routing_automatic_departure.sql": "74b098e891c49ee71a9cf1dde7c4e6d2fb9fdf31875ebc94488321fd48557dc4",
+    "docs\\stage8\\stage-a\\forward-migrations\\20261105_routing_receipt_readonly.sql": "a189c875e16c959bfa415c1fea7b53579c87f2abfc69f76064ae75b2e90f7e1a",
+    "docs\\stage8\\stage-a\\forward-migrations\\20261106_route_interruption_resolution.sql": "a9fe7713fe2ffd65816743b52abd43695d63d1ecbb45fd216983c4a952eca557",
+    "docs\\stage8\\stage-a\\forward-migrations\\20261107_donor_route_resolution_read.sql": "aacfdffb658ef66017995d6ab85e9cd747fcf6125f1d74f940f3121eb367b652",
+    "docs\\stage8\\stage-a\\forward-migrations\\20261108_per_stop_reconciliation.sql": "3d396843556173f762800a601c3ba5c05c8a8605d85313b21c7060250fc87c57",
+    "docs\\stage8\\stage-a\\forward-migrations\\20261109_claim_scoped_reconciliation.sql": "f98f5cd602473b725132a4d378db05eb07f03cdc68716cd0476fd2e4bda60a07"
+  },
+  "comparisons": "Same cluster/input order/concurrency; original teammate V3 schema versus current full GeoLock schema. Schema/lifecycle differences are explicit validity threats.",
+  "synthetic_auth_storage": true,
+  "eligibility": "Actual frozen matrix lookup adapter; not a fresh pgRouting graph recomputation",
+  "dev_connections": 0,
+  "method_runs": 1,
+  "baseline_extensions": {
+    "plpgsql": "1.0",
+    "postgis": "3.6.2"
+  },
+  "optional_extension_omission": "Only CREATE EXTENSION pgcrypto omitted; built-in pg_catalog.gen_random_uuid used. No pgcrypto routines needed.",
+  "function_catalog": {
+    "e2_baselines": {
+      "claim_listing(uuid,uuid)": {
+        "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+        "md5": "e1bd6879b57ecb9461fbf16dc713329d",
+        "owner": "postgres",
+        "definer": true
+      },
+      "recover_expired_claims(integer)": {
+        "acl": "{postgres=X/postgres,service_role=X/postgres}",
+        "md5": "a6b79863e3e7e8e8b4592fed4eebf927",
+        "owner": "postgres",
+        "definer": true
+      }
+    },
+    "e2_proposed": {
+      "claim_listing(uuid,uuid)": {
+        "acl": "{=X/postgres,postgres=X/postgres,authenticated=X/postgres}",
+        "md5": "2c1f60c876797c61b44b3cb43591bab8",
+        "owner": "postgres",
+        "definer": true
+      },
+      "recover_expired_claims(integer)": {
+        "acl": "{postgres=X/postgres,service_role=X/postgres}",
+        "md5": "05fe46d8b76085f71c87fcc5f6520775",
+        "owner": "postgres",
+        "definer": true
+      }
+    }
+  },
+  "postgresql": {
+    "functions": {
+      "public.claim_listing(uuid,uuid)": {
+        "owner": "postgres",
+        "config": [
+          "search_path=pg_catalog, public, extensions, pg_temp"
+        ],
+        "present": true,
+        "raw_md5": "2c1f60c876797c61b44b3cb43591bab8",
+        "body_chars": 8591,
+        "normalized_md5": "2c1f60c876797c61b44b3cb43591bab8",
+        "security_definer": true
+      },
+      "public.recover_expired_claims(integer)": {
+        "owner": "postgres",
+        "config": [
+          "search_path=pg_catalog, public, extensions, pg_temp"
+        ],
+        "present": true,
+        "raw_md5": "05fe46d8b76085f71c87fcc5f6520775",
+        "body_chars": 8270,
+        "normalized_md5": "05fe46d8b76085f71c87fcc5f6520775",
+        "security_definer": true
+      },
+      "routing_private.lock_route_for_recovery(uuid)": {
+        "owner": "postgres",
+        "config": [
+          "search_path=pg_catalog, pg_temp",
+          "TimeZone=UTC",
+          "extra_float_digits=0"
+        ],
+        "present": true,
+        "raw_md5": "20d815e7357e243757e1dc8b7d066a4e",
+        "body_chars": 971,
+        "normalized_md5": "20d815e7357e243757e1dc8b7d066a4e",
+        "security_definer": true
+      },
+      "routing_private.release_expired_unstarted_stop(uuid,uuid,uuid,uuid)": {
+        "owner": "postgres",
+        "config": [
+          "search_path=pg_catalog, pg_temp",
+          "TimeZone=UTC",
+          "extra_float_digits=0"
+        ],
+        "present": true,
+        "raw_md5": "a6abd6f8d3c96020a7e93df39483458a",
+        "body_chars": 3795,
+        "normalized_md5": "a6abd6f8d3c96020a7e93df39483458a",
+        "security_definer": true
+      }
+    },
+    "isolation": "read committed",
+    "port": 63075,
+    "host": "127.0.0.1/32",
+    "server_version_num": 170011,
+    "lease_minutes": 360,
+    "hash_normalization": "MD5 of prosrc after CRLF-to-LF replacement; raw MD5 and body length also reported",
+    "preflight_checks": [
+      {
+        "check": "public.claim_listing(uuid,uuid): present",
+        "expected": true,
+        "observed": true,
+        "status": "PASS"
+      },
+      {
+        "check": "public.claim_listing(uuid,uuid): normalized prosrc MD5",
+        "expected": "2c1f60c876797c61b44b3cb43591bab8",
+        "observed": "2c1f60c876797c61b44b3cb43591bab8",
+        "status": "PASS"
+      },
+      {
+        "check": "public.claim_listing(uuid,uuid): owner",
+        "expected": "postgres",
+        "observed": "postgres",
+        "status": "PASS"
+      },
+      {
+        "check": "public.claim_listing(uuid,uuid): SECURITY DEFINER",
+        "expected": true,
+        "observed": true,
+        "status": "PASS"
+      },
+      {
+        "check": "public.claim_listing(uuid,uuid): function config",
+        "expected": [
+          "search_path=pg_catalog, public, extensions, pg_temp"
+        ],
+        "observed": [
+          "search_path=pg_catalog, public, extensions, pg_temp"
+        ],
+        "status": "PASS"
+      },
+      {
+        "check": "public.recover_expired_claims(integer): present",
+        "expected": true,
+        "observed": true,
+        "status": "PASS"
+      },
+      {
+        "check": "public.recover_expired_claims(integer): normalized prosrc MD5",
+        "expected": "05fe46d8b76085f71c87fcc5f6520775",
+        "observed": "05fe46d8b76085f71c87fcc5f6520775",
+        "status": "PASS"
+      },
+      {
+        "check": "public.recover_expired_claims(integer): owner",
+        "expected": "postgres",
+        "observed": "postgres",
+        "status": "PASS"
+      },
+      {
+        "check": "public.recover_expired_claims(integer): SECURITY DEFINER",
+        "expected": true,
+        "observed": true,
+        "status": "PASS"
+      },
+      {
+        "check": "public.recover_expired_claims(integer): function config",
+        "expected": [
+          "search_path=pg_catalog, public, extensions, pg_temp"
+        ],
+        "observed": [
+          "search_path=pg_catalog, public, extensions, pg_temp"
+        ],
+        "status": "PASS"
+      },
+      {
+        "check": "routing_private.lock_route_for_recovery(uuid): present",
+        "expected": true,
+        "observed": true,
+        "status": "PASS"
+      },
+      {
+        "check": "routing_private.lock_route_for_recovery(uuid): normalized prosrc MD5",
+        "expected": "20d815e7357e243757e1dc8b7d066a4e",
+        "observed": "20d815e7357e243757e1dc8b7d066a4e",
+        "status": "PASS"
+      },
+      {
+        "check": "routing_private.lock_route_for_recovery(uuid): owner",
+        "expected": "postgres",
+        "observed": "postgres",
+        "status": "PASS"
+      },
+      {
+        "check": "routing_private.lock_route_for_recovery(uuid): SECURITY DEFINER",
+        "expected": true,
+        "observed": true,
+        "status": "PASS"
+      },
+      {
+        "check": "routing_private.lock_route_for_recovery(uuid): function config",
+        "expected": [
+          "search_path=pg_catalog, pg_temp",
+          "TimeZone=UTC",
+          "extra_float_digits=0"
+        ],
+        "observed": [
+          "search_path=pg_catalog, pg_temp",
+          "TimeZone=UTC",
+          "extra_float_digits=0"
+        ],
+        "status": "PASS"
+      },
+      {
+        "check": "routing_private.release_expired_unstarted_stop(uuid,uuid,uuid,uuid): present",
+        "expected": true,
+        "observed": true,
+        "status": "PASS"
+      },
+      {
+        "check": "routing_private.release_expired_unstarted_stop(uuid,uuid,uuid,uuid): normalized prosrc MD5",
+        "expected": "a6abd6f8d3c96020a7e93df39483458a",
+        "observed": "a6abd6f8d3c96020a7e93df39483458a",
+        "status": "PASS"
+      },
+      {
+        "check": "routing_private.release_expired_unstarted_stop(uuid,uuid,uuid,uuid): owner",
+        "expected": "postgres",
+        "observed": "postgres",
+        "status": "PASS"
+      },
+      {
+        "check": "routing_private.release_expired_unstarted_stop(uuid,uuid,uuid,uuid): SECURITY DEFINER",
+        "expected": true,
+        "observed": true,
+        "status": "PASS"
+      },
+      {
+        "check": "routing_private.release_expired_unstarted_stop(uuid,uuid,uuid,uuid): function config",
+        "expected": [
+          "search_path=pg_catalog, pg_temp",
+          "TimeZone=UTC",
+          "extra_float_digits=0"
+        ],
+        "observed": [
+          "search_path=pg_catalog, pg_temp",
+          "TimeZone=UTC",
+          "extra_float_digits=0"
+        ],
+        "status": "PASS"
+      },
+      {
+        "check": "database host is approved IPv4 loopback",
+        "expected": "127.0.0.1 (CIDR suffix optional)",
+        "observed": "127.0.0.1/32",
+        "status": "PASS"
+      },
+      {
+        "check": "database port matches isolated cluster",
+        "expected": 63075,
+        "observed": 63075,
+        "status": "PASS"
+      },
+      {
+        "check": "database isolation",
+        "expected": "read committed",
+        "observed": "read committed",
+        "status": "PASS"
+      },
+      {
+        "check": "PostgreSQL major version",
+        "expected": 17,
+        "observed": 17,
+        "status": "PASS"
+      },
+      {
+        "check": "claim lease configuration",
+        "expected": 360,
+        "observed": 360,
+        "status": "PASS"
+      }
+    ]
+  },
+  "postgis_baseline": "3.6.2 runtime (query catalog for exact)",
+  "proposed_results": 275,
+  "proposed_failures": 0,
+  "function_sources_unchanged": true
+}

@@ -1,0 +1,32 @@
+[
+  {
+    "relation": "claim_leases",
+    "conname": "claim_leases_claim_id_fkey",
+    "definition": "FOREIGN KEY (claim_id) REFERENCES donation_claims(claim_id)"
+  },
+  {
+    "relation": "claim_reconciliation_cases",
+    "conname": "claim_reconciliation_cases_listing_id_fkey",
+    "definition": "FOREIGN KEY (listing_id) REFERENCES listings(listing_id)"
+  },
+  {
+    "relation": "claim_requests",
+    "conname": "claim_requests_listing_id_fkey",
+    "definition": "FOREIGN KEY (listing_id) REFERENCES listings(listing_id)"
+  },
+  {
+    "relation": "claim_requests",
+    "conname": "claim_requests_ngo_user_id_fkey",
+    "definition": "FOREIGN KEY (ngo_user_id) REFERENCES ngo_profiles(user_id)"
+  },
+  {
+    "relation": "claim_requests",
+    "conname": "fk_request_result",
+    "definition": "FOREIGN KEY (result_claim_id) REFERENCES donation_claims(claim_id)"
+  },
+  {
+    "relation": "donation_claims",
+    "conname": "donation_claims_listing_id_fkey",
+    "definition": "FOREIGN KEY (listing_id) REFERENCES listings(listing_id)"
+  }
+]

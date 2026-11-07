@@ -1,0 +1,27 @@
+{
+  "target_project": "rcgyuwiidqvrgbxswhqj",
+  "status": "PREPARATION_ONLY_NOT_EXECUTED",
+  "migration": "docs\\stage8\\stage-a\\forward-migrations\\20261103_routing_pickup_and_reconciliation.sql",
+  "migration_sha256": "6541f0a002ea56ad77c023e33ad1500ab2273cc821f87fa43d38e633bd6724ea",
+  "generated": {
+    "preflight.sql": "ed201974382dddf4d3c32500dca0dfa8dcbceff55099ada6cff064f5abf5c48e",
+    "postflight.sql": "502a33741b2a052b01fc782cdc58490a1012ac36359930f6d7f24d0385a5f346",
+    "expected-functions.json": "633024070cd0207012c38dbc703bf8306a53c16a8d80f0f8aa9f265380b707b4",
+    "RUNBOOK.md": "6a735ad0ff3faab39e0a03c63118bf4d1ca9b81ce9eb165571550ba83ee283b0",
+    "DIRECT_DEV_DECISION.md": "10611ce73ddb5dcda72abec41e140272878bd0480d96aca1d111666642b806fa",
+    "BACKUP_AND_RECOVERY.md": "405696912131edf744e32baaaa66abb4bc2fb0b33ebd61520e16ed5f1930b168",
+    "POST_DEPLOYMENT_TESTS.md": "8fd21ecc4ef89961de5bf3dd48e6309d7860360501fcb013452198bf050445b8",
+    "POSTDEPLOYMENT_ASSESSMENT.md": "8b9dfd14afb7a2033ec86fd6a17fd9edcb41e3792bf51d416958afedd73a8891",
+    "ROUTING_INITIALIZATION_PROCEDURE.md": "d9e8e906d01991a3701f47ef6b0e987cd8447ee7cf8bdc2dc316c4a6ca6986e5",
+    "ACTION_SEQUENCE.md": "a9fef93c09a4ff735ae4c320b0b2045f47e662c0e44082060709cf8add0799fe",
+    "BACKUP_OPERATOR_STEPS.md": "389659fb624ba107698431419308652d0f7268a91c4b2408863a018bd04ea930",
+    "FINAL_DEPLOYMENT_CHECKPOINT.md": "bb96719e4c6333e68ab289bc9bbffaa28715d476de3967cd65502285a721b422",
+    "EXECUTION_APPROVAL.md": "f1e895826e82005addf9b92974b4512f12f8fca4c4eda414bb086f7c291cfc05",
+    "backup_pre003.ps1": "dfc56bc0077aa81685b40039f352380ca5a4683b88f378355452ef0573775489",
+    "backup_native_arguments.ps1": "c80ac943bb5450dd92df48caad91eb5af6c80997c12a1c9ea81d62d88c278d39",
+    "validate_backup_arguments.ps1": "6c7c3ed4bcf0e5622e36eb8f605fcf1ca322cbf7547aad60ea236ca2b5a362e3",
+    "backup_argv_probe.py": "fc56626855c1787652670f75c5e4acf698d20599a078f8a7deff95d6f6fd2173",
+    "offline_service_validation.conf": "c4aba25b5203b27c12116d246217e90b63bc65058203537aa1a276a172d695b0",
+    "build_readonly_checks.py": "d94e4b94ef6a4a8cbcf9c08caf7af501e793a37608773b25334034f3327d3744"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "functions": {
+    "geolock_prepare_listing_eligibility": "3c497b7081433cefc548ac8761347096",
+    "geolock_listing_eligibility_trigger": "623342a706a4ca4e0a607fba4ffbf7e1"
+  },
+  "claim_update_effect": "prepare retains unchanged generation/node; after trigger returns immediately for unchanged generation",
+  "reopen_effect": "coverage FOR SHARE, route resolution, eligibility cache delete/new job; no listing FOR UPDATE acquisition in trigger bodies",
+  "allowed_trigger_sets": [
+    [
+      "trg_listing_transition"
+    ],
+    [
+      "trg_listing_transition",
+      "zz_listing_eligibility_generation",
+      "trg_listing_road_eligibility"
+    ]
+  ]
+}

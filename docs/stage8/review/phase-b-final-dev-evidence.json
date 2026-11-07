@@ -1,0 +1,2188 @@
+{
+  "project_ref": "rcgyuwiidqvrgbxswhqj",
+  "project_url": "https://rcgyuwiidqvrgbxswhqj.supabase.co",
+  "scope": "Final Phase B design review. Only MCP metadata and SELECT catalog/aggregate inspection. No mutation or lifecycle RPC invocation.",
+  "sections": {
+    "columns": {
+      "query": "SELECT table_name,column_name,data_type,column_default,is_nullable FROM information_schema.columns WHERE table_schema='public' AND table_name IN ('vehicles','pickup_tasks','pickup_routes','pickup_route_stops','active_task_route_assignments','ngo_profiles','road_network_edges','road_network_coverage','donations','listings','claim_leases','donation_claims') ORDER BY table_name,ordinal_position;",
+      "data": [
+        {
+          "table_name": "active_task_route_assignments",
+          "column_name": "task_id",
+          "data_type": "uuid",
+          "column_default": null,
+          "is_nullable": "NO"
+        },
+        {
+          "table_name": "active_task_route_assignments",
+          "column_name": "route_id",
+          "data_type": "uuid",
+          "column_default": null,
+          "is_nullable": "NO"
+        },
+        {
+          "table_name": "active_task_route_assignments",
+          "column_name": "assigned_at",
+          "data_type": "timestamp with time zone",
+          "column_default": "now()",
+          "is_nullable": "NO"
+        },
+        {
+          "table_name": "claim_leases",
+          "column_name": "lease_id",
+          "data_type": "uuid",
+          "column_default": "gen_random_uuid()",
+          "is_nullable": "NO"
+        },
+        {
+          "table_name": "claim_leases",
+          "column_name": "claim_id",
+          "data_type": "uuid",
+          "column_default": null,
+          "is_nullable": "NO"
+        },
+        {
+          "table_name": "claim_leases",
+          "column_name": "lease_status",
+          "data_type": "text",
+          "column_default": "'ACTIVE'::text",
+          "is_nullable": "NO"
+        },
+        {
+          "table_name": "claim_leases",
+          "column_name": "issued_at",
+          "data_type": "timestamp with time zone",
+          "column_default": "clock_timestamp()",
+          "is_nullable": "NO"
+        },
+        {
+          "table_name": "claim_leases",
+          "column_name": "expires_at",
+          "data_type": "timestamp with time zone",
+          "column_default": null,
+          "is_nullable": "NO"
+        },
+        {
+          "table_name": "claim_leases",
+          "column_name": "closed_at",
+          "data_type": "timestamp with time zone",
+          "column_default": null,
+          "is_nullable": "YES"
+        },
+        {
+          "table_name": "claim_leases",
+          "column_name": "release_reason",
+          "data_type": "text",
+          "column_default": null,
+          "is_nullable": "YES"
+        },
+        {
+          "table_name": "donation_claims",
+          "column_name": "claim_id",
+          "data_type": "uuid",
+          "column_default": "gen_random_uuid()",
+          "is_nullable": "NO"
+        },
+        {
+          "table_name": "donation_claims",
+          "column_name": "listing_id",
+          "data_type": "uuid",
+          "column_default": null,
+          "is_nullable": "NO"
+        },
+        {
+          "table_name": "donation_claims",
+          "column_name": "ngo_user_id",
+          "data_type": "uuid",
+          "column_default": null,
+          "is_nullable": "NO"
+        },
+        {
+          "table_name": "donation_claims",
+          "column_name": "request_id",
+          "data_type": "uuid",
+          "column_default": null,
+          "is_nullable": "NO"
+        },
+        {
+          "table_name": "donation_claims",
+          "column_name": "claim_status",
+          "data_type": "text",
+          "column_default": "'ACTIVE'::text",
+          "is_nullable": "NO"
+        },
+        {
+          "table_name": "donation_claims",
+          "column_name": "claimed_at",
+          "data_type": "timestamp with time zone",
+          "column_default": "now()",
+          "is_nullable": "NO"
+        },
+        {
+          "table_name": "donation_claims",
+          "column_name": "closed_at",
+          "data_type": "timestamp with time zone",
+          "column_default": null,
+          "is_nullable": "YES"
+        },
+        {
+          "table_name": "donation_claims",
+          "column_name": "close_reason",
+          "data_type": "text",
+          "column_default": null,
+          "is_nullable": "YES"
+        },
+        {
+          "table_name": "donations",
+          "column_name": "donation_id",
+          "data_type": "uuid",
+          "column_default": "gen_random_uuid()",
+          "is_nullable": "NO"
+        },
+        {
+          "table_name": "donations",
+          "column_name": "donor_user_id",
+          "data_type": "uuid",
+          "column_default": null,
+          "is_nullable": "NO"
+        },
+        {
+          "table_name": "donations",
+          "column_name": "title",
+          "data_type": "text",
+          "column_default": null,
+          "is_nullable": "NO"
+        },
+        {
+          "table_name": "donations",
+          "column_name": "description",
+          "data_type": "text",
+          "column_default": null,
+          "is_nullable": "YES"
+        },
+        {
+          "table_name": "donations",
+          "column_name": "collection_path",
+          "data_type": "text",
+          "column_default": null,
+          "is_nullable": "YES"
+        },
+        {
+          "table_name": "donations",
+          "column_name": "donation_status",
+          "data_type": "text",
+          "column_default": "'SUBMITTED'::text",
+          "is_nullable": "NO"
+        },
+        {
+          "table_name": "donations",
+          "column_name": "pickup_address",
+          "data_type": "text",
+          "column_default": null,
+          "is_nullable": "YES"
+        },
+        {
+          "table_name": "donations",
+          "column_name": "latitude",
+          "data_type": "double precision",
+          "column_default": null,
+          "is_nullable": "YES"
+        },
+        {
+          "table_name": "donations",
+          "column_name": "longitude",
+          "data_type": "double precision",
+          "column_default": null,
+          "is_nullable": "YES"
+        },
+        {
+          "table_name": "donations",
+          "column_name": "pickup_road_node_id",
+          "data_type": "text",
+          "column_default": null,
+          "is_nullable": "YES"
+        },
+        {
+          "table_name": "donations",
+          "column_name": "total_weight_kg",
+          "data_type": "numeric",
+          "column_default": null,
+          "is_nullable": "YES"
+        },
+        {
+          "table_name": "donations",
+          "column_name": "availability_start",
+          "data_type": "timestamp with time zone",
+          "column_default": null,
+          "is_nullable": "YES"
+        },
+        {
+          "table_name": "donations",
+          "column_name": "availability_end",
+          "data_type": "timestamp with time zone",
+          "column_default": null,
+          "is_nullable": "YES"
+        },
+        {
+          "table_name": "donations",
+          "column_name": "created_at",
+          "data_type": "timestamp with time zone",
+          "column_default": "now()",
+          "is_nullable": "NO"
+        },
+        {
+          "table_name": "donations",
+          "column_name": "updated_at",
+          "data_type": "timestamp with time zone",
+          "column_default": "now()",
+          "is_nullable": "NO"
+        },
+        {
+          "table_name": "listings",
+          "column_name": "listing_id",
+          "data_type": "uuid",
+          "column_default": "gen_random_uuid()",
+          "is_nullable": "NO"
+        },
+        {
+          "table_name": "listings",
+          "column_name": "source_type",
+          "data_type": "text",
+          "column_default": null,
+          "is_nullable": "NO"
+        },
+        {
+          "table_name": "listings",
+          "column_name": "donation_id",
+          "data_type": "uuid",
+          "column_default": null,
+          "is_nullable": "YES"
+        },
+        {
+          "table_name": "listings",
+          "column_name": "batch_id",
+          "data_type": "uuid",
+          "column_default": null,
+          "is_nullable": "YES"
+        },
+        {
+          "table_name": "listings",
+          "column_name": "listing_status",
+          "data_type": "text",
+          "column_default": "'AVAILABLE'::text",
+          "is_nullable": "NO"
+        },
+        {
+          "table_name": "listings",
+          "column_name": "listing_weight_kg",
+          "data_type": "numeric",
+          "column_default": null,
+          "is_nullable": "NO"
+        },
+        {
+          "table_name": "listings",
+          "column_name": "pickup_latitude",
+          "data_type": "double precision",
+          "column_default": null,
+          "is_nullable": "NO"
+        },
+        {
+          "table_name": "listings",
+          "column_name": "pickup_longitude",
+          "data_type": "double precision",
+          "column_default": null,
+          "is_nullable": "NO"
+        },
+        {
+          "table_name": "listings",
+          "column_name": "pickup_road_node_id",
+          "data_type": "text",
+          "column_default": null,
+          "is_nullable": "YES"
+        },
+        {
+          "table_name": "listings",
+          "column_name": "listing_version",
+          "data_type": "bigint",
+          "column_default": "1",
+          "is_nullable": "NO"
+        },
+        {
+          "table_name": "listings",
+          "column_name": "created_at",
+          "data_type": "timestamp with time zone",
+          "column_default": "now()",
+          "is_nullable": "NO"
+        },
+        {
+          "table_name": "listings",
+          "column_name": "listing_expires_at",
+          "data_type": "timestamp with time zone",
+          "column_default": null,
+          "is_nullable": "YES"
+        },
+        {
+          "table_name": "listings",
+          "column_name": "eligibility_generation",
+          "data_type": "bigint",
+          "column_default": "0",
+          "is_nullable": "NO"
+        },
+        {
+          "table_name": "ngo_profiles",
+          "column_name": "user_id",
+          "data_type": "uuid",
+          "column_default": null,
+          "is_nullable": "NO"
+        },
+        {
+          "table_name": "ngo_profiles",
+          "column_name": "role",
+          "data_type": "text",
+          "column_default": "'NGO'::text",
+          "is_nullable": "NO"
+        },
+        {
+          "table_name": "ngo_profiles",
+          "column_name": "ngo_name",
+          "data_type": "text",
+          "column_default": null,
+          "is_nullable": "NO"
+        },
+        {
+          "table_name": "ngo_profiles",
+          "column_name": "registration_number",
+          "data_type": "text",
+          "column_default": null,
+          "is_nullable": "YES"
+        },
+        {
+          "table_name": "ngo_profiles",
+          "column_name": "operating_address",
+          "data_type": "text",
+          "column_default": null,
+          "is_nullable": "YES"
+        },
+        {
+          "table_name": "ngo_profiles",
+          "column_name": "latitude",
+          "data_type": "double precision",
+          "column_default": null,
+          "is_nullable": "YES"
+        },
+        {
+          "table_name": "ngo_profiles",
+          "column_name": "longitude",
+          "data_type": "double precision",
+          "column_default": null,
+          "is_nullable": "YES"
+        },
+        {
+          "table_name": "ngo_profiles",
+          "column_name": "road_node_id",
+          "data_type": "text",
+          "column_default": null,
+          "is_nullable": "YES"
+        },
+        {
+          "table_name": "ngo_profiles",
+          "column_name": "active_flag",
+          "data_type": "boolean",
+          "column_default": "true",
+          "is_nullable": "NO"
+        },
+        {
+          "table_name": "ngo_profiles",
+          "column_name": "location_verified_at",
+          "data_type": "timestamp with time zone",
+          "column_default": null,
+          "is_nullable": "YES"
+        },
+        {
+          "table_name": "ngo_profiles",
+          "column_name": "location_generation",
+          "data_type": "bigint",
+          "column_default": "0",
+          "is_nullable": "NO"
+        },
+        {
+          "table_name": "pickup_route_stops",
+          "column_name": "route_id",
+          "data_type": "uuid",
+          "column_default": null,
+          "is_nullable": "NO"
+        },
+        {
+          "table_name": "pickup_route_stops",
+          "column_name": "ngo_user_id",
+          "data_type": "uuid",
+          "column_default": null,
+          "is_nullable": "NO"
+        },
+        {
+          "table_name": "pickup_route_stops",
+          "column_name": "stop_order",
+          "data_type": "integer",
+          "column_default": null,
+          "is_nullable": "NO"
+        },
+        {
+          "table_name": "pickup_route_stops",
+          "column_name": "task_id",
+          "data_type": "uuid",
+          "column_default": null,
+          "is_nullable": "NO"
+        },
+        {
+          "table_name": "pickup_route_stops",
+          "column_name": "planned_arrival",
+          "data_type": "timestamp with time zone",
+          "column_default": null,
+          "is_nullable": "YES"
+        },
+        {
+          "table_name": "pickup_routes",
+          "column_name": "route_id",
+          "data_type": "uuid",
+          "column_default": "gen_random_uuid()",
+          "is_nullable": "NO"
+        },
+        {
+          "table_name": "pickup_routes",
+          "column_name": "ngo_user_id",
+          "data_type": "uuid",
+          "column_default": null,
+          "is_nullable": "NO"
+        },
+        {
+          "table_name": "pickup_routes",
+          "column_name": "vehicle_id",
+          "data_type": "uuid",
+          "column_default": null,
+          "is_nullable": "NO"
+        },
+        {
+          "table_name": "pickup_routes",
+          "column_name": "route_status",
+          "data_type": "text",
+          "column_default": "'DRAFT'::text",
+          "is_nullable": "NO"
+        },
+        {
+          "table_name": "pickup_routes",
+          "column_name": "matrix_id",
+          "data_type": "text",
+          "column_default": null,
+          "is_nullable": "YES"
+        },
+        {
+          "table_name": "pickup_routes",
+          "column_name": "total_distance_km",
+          "data_type": "numeric",
+          "column_default": null,
+          "is_nullable": "YES"
+        },
+        {
+          "table_name": "pickup_routes",
+          "column_name": "total_duration_min",
+          "data_type": "numeric",
+          "column_default": null,
+          "is_nullable": "YES"
+        },
+        {
+          "table_name": "pickup_routes",
+          "column_name": "planned_at",
+          "data_type": "timestamp with time zone",
+          "column_default": "now()",
+          "is_nullable": "NO"
+        },
+        {
+          "table_name": "pickup_routes",
+          "column_name": "authorised_at",
+          "data_type": "timestamp with time zone",
+          "column_default": null,
+          "is_nullable": "YES"
+        },
+        {
+          "table_name": "pickup_routes",
+          "column_name": "validation_reference",
+          "data_type": "text",
+          "column_default": null,
+          "is_nullable": "YES"
+        },
+        {
+          "table_name": "pickup_tasks",
+          "column_name": "task_id",
+          "data_type": "uuid",
+          "column_default": "gen_random_uuid()",
+          "is_nullable": "NO"
+        },
+        {
+          "table_name": "pickup_tasks",
+          "column_name": "claim_id",
+          "data_type": "uuid",
+          "column_default": null,
+          "is_nullable": "NO"
+        },
+        {
+          "table_name": "pickup_tasks",
+          "column_name": "listing_id",
+          "data_type": "uuid",
+          "column_default": null,
+          "is_nullable": "NO"
+        },
+        {
+          "table_name": "pickup_tasks",
+          "column_name": "ngo_user_id",
+          "data_type": "uuid",
+          "column_default": null,
+          "is_nullable": "NO"
+        },
+        {
+          "table_name": "pickup_tasks",
+          "column_name": "pickup_road_node_id",
+          "data_type": "text",
+          "column_default": null,
+          "is_nullable": "NO"
+        },
+        {
+          "table_name": "pickup_tasks",
+          "column_name": "load_kg",
+          "data_type": "numeric",
+          "column_default": null,
+          "is_nullable": "NO"
+        },
+        {
+          "table_name": "pickup_tasks",
+          "column_name": "task_status",
+          "data_type": "text",
+          "column_default": "'CONFIRMED'::text",
+          "is_nullable": "NO"
+        },
+        {
+          "table_name": "pickup_tasks",
+          "column_name": "created_at",
+          "data_type": "timestamp with time zone",
+          "column_default": "now()",
+          "is_nullable": "NO"
+        },
+        {
+          "table_name": "road_network_coverage",
+          "column_name": "network_snapshot_id",
+          "data_type": "text",
+          "column_default": null,
+          "is_nullable": "NO"
+        },
+        {
+          "table_name": "road_network_coverage",
+          "column_name": "coverage_area",
+          "data_type": "USER-DEFINED",
+          "column_default": null,
+          "is_nullable": "NO"
+        },
+        {
+          "table_name": "road_network_coverage",
+          "column_name": "max_snap_distance_m",
+          "data_type": "integer",
+          "column_default": "500",
+          "is_nullable": "NO"
+        },
+        {
+          "table_name": "road_network_coverage",
+          "column_name": "provenance",
+          "data_type": "text",
+          "column_default": null,
+          "is_nullable": "NO"
+        },
+        {
+          "table_name": "road_network_coverage",
+          "column_name": "dataset_kind",
+          "data_type": "text",
+          "column_default": "'OPERATIONAL'::text",
+          "is_nullable": "NO"
+        },
+        {
+          "table_name": "road_network_coverage",
+          "column_name": "node_count",
+          "data_type": "integer",
+          "column_default": null,
+          "is_nullable": "YES"
+        },
+        {
+          "table_name": "road_network_coverage",
+          "column_name": "edge_count",
+          "data_type": "integer",
+          "column_default": null,
+          "is_nullable": "YES"
+        },
+        {
+          "table_name": "road_network_coverage",
+          "column_name": "approved_at",
+          "data_type": "timestamp with time zone",
+          "column_default": null,
+          "is_nullable": "YES"
+        },
+        {
+          "table_name": "road_network_coverage",
+          "column_name": "active_flag",
+          "data_type": "boolean",
+          "column_default": "false",
+          "is_nullable": "NO"
+        },
+        {
+          "table_name": "road_network_coverage",
+          "column_name": "created_at",
+          "data_type": "timestamp with time zone",
+          "column_default": "clock_timestamp()",
+          "is_nullable": "NO"
+        },
+        {
+          "table_name": "road_network_edges",
+          "column_name": "edge_id",
+          "data_type": "integer",
+          "column_default": null,
+          "is_nullable": "NO"
+        },
+        {
+          "table_name": "road_network_edges",
+          "column_name": "source_node",
+          "data_type": "bigint",
+          "column_default": null,
+          "is_nullable": "NO"
+        },
+        {
+          "table_name": "road_network_edges",
+          "column_name": "target_node",
+          "data_type": "bigint",
+          "column_default": null,
+          "is_nullable": "NO"
+        },
+        {
+          "table_name": "road_network_edges",
+          "column_name": "road_km",
+          "data_type": "real",
+          "column_default": null,
+          "is_nullable": "NO"
+        },
+        {
+          "table_name": "road_network_edges",
+          "column_name": "travel_minutes",
+          "data_type": "real",
+          "column_default": null,
+          "is_nullable": "NO"
+        },
+        {
+          "table_name": "vehicles",
+          "column_name": "vehicle_id",
+          "data_type": "uuid",
+          "column_default": "gen_random_uuid()",
+          "is_nullable": "NO"
+        },
+        {
+          "table_name": "vehicles",
+          "column_name": "ngo_user_id",
+          "data_type": "uuid",
+          "column_default": null,
+          "is_nullable": "NO"
+        },
+        {
+          "table_name": "vehicles",
+          "column_name": "vehicle_label",
+          "data_type": "text",
+          "column_default": null,
+          "is_nullable": "NO"
+        },
+        {
+          "table_name": "vehicles",
+          "column_name": "payload_capacity_kg",
+          "data_type": "numeric",
+          "column_default": null,
+          "is_nullable": "NO"
+        },
+        {
+          "table_name": "vehicles",
+          "column_name": "depot_road_node_id",
+          "data_type": "text",
+          "column_default": null,
+          "is_nullable": "YES"
+        },
+        {
+          "table_name": "vehicles",
+          "column_name": "active_flag",
+          "data_type": "boolean",
+          "column_default": "true",
+          "is_nullable": "NO"
+        }
+      ]
+    },
+    "constraints": {
+      "query": "SELECT c.relname AS table_name,k.conname,k.convalidated,pg_get_constraintdef(k.oid,true) AS definition FROM pg_constraint k JOIN pg_class c ON c.oid=k.conrelid JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='public' AND c.relname IN ('vehicles','pickup_tasks','pickup_routes','pickup_route_stops','active_task_route_assignments','donations','listings','donation_claims','claim_leases') ORDER BY c.relname,k.conname;",
+      "data": [
+        {
+          "table_name": "active_task_route_assignments",
+          "conname": "active_task_route_assignments_pkey",
+          "convalidated": true,
+          "definition": "PRIMARY KEY (task_id)"
+        },
+        {
+          "table_name": "active_task_route_assignments",
+          "conname": "active_task_route_assignments_route_id_fkey",
+          "convalidated": true,
+          "definition": "FOREIGN KEY (route_id) REFERENCES pickup_routes(route_id)"
+        },
+        {
+          "table_name": "active_task_route_assignments",
+          "conname": "active_task_route_assignments_task_id_fkey",
+          "convalidated": true,
+          "definition": "FOREIGN KEY (task_id) REFERENCES pickup_tasks(task_id)"
+        },
+        {
+          "table_name": "active_task_route_assignments",
+          "conname": "active_task_route_assignments_task_id_route_id_key",
+          "convalidated": true,
+          "definition": "UNIQUE (task_id, route_id)"
+        },
+        {
+          "table_name": "claim_leases",
+          "conname": "claim_leases_check",
+          "convalidated": true,
+          "definition": "CHECK (expires_at > issued_at)"
+        },
+        {
+          "table_name": "claim_leases",
+          "conname": "claim_leases_claim_id_fkey",
+          "convalidated": true,
+          "definition": "FOREIGN KEY (claim_id) REFERENCES donation_claims(claim_id)"
+        },
+        {
+          "table_name": "claim_leases",
+          "conname": "claim_leases_claim_id_key",
+          "convalidated": true,
+          "definition": "UNIQUE (claim_id)"
+        },
+        {
+          "table_name": "claim_leases",
+          "conname": "claim_leases_lease_status_check",
+          "convalidated": true,
+          "definition": "CHECK (lease_status = ANY (ARRAY['ACTIVE'::text, 'EXPIRED'::text, 'RELEASED'::text, 'COMPLETED'::text, 'RECONCILIATION_REQUIRED'::text]))"
+        },
+        {
+          "table_name": "claim_leases",
+          "conname": "claim_leases_pkey",
+          "convalidated": true,
+          "definition": "PRIMARY KEY (lease_id)"
+        },
+        {
+          "table_name": "donation_claims",
+          "conname": "donation_claims_claim_id_listing_id_ngo_user_id_key",
+          "convalidated": true,
+          "definition": "UNIQUE (claim_id, listing_id, ngo_user_id)"
+        },
+        {
+          "table_name": "donation_claims",
+          "conname": "donation_claims_claim_status_check",
+          "convalidated": true,
+          "definition": "CHECK (claim_status = ANY (ARRAY['ACTIVE'::text, 'RELEASED'::text, 'EXPIRED'::text, 'COMPLETED'::text, 'CANCELLED'::text, 'RECONCILIATION_REQUIRED'::text]))"
+        },
+        {
+          "table_name": "donation_claims",
+          "conname": "donation_claims_listing_id_fkey",
+          "convalidated": true,
+          "definition": "FOREIGN KEY (listing_id) REFERENCES listings(listing_id)"
+        },
+        {
+          "table_name": "donation_claims",
+          "conname": "donation_claims_ngo_user_id_fkey",
+          "convalidated": true,
+          "definition": "FOREIGN KEY (ngo_user_id) REFERENCES ngo_profiles(user_id)"
+        },
+        {
+          "table_name": "donation_claims",
+          "conname": "donation_claims_pkey",
+          "convalidated": true,
+          "definition": "PRIMARY KEY (claim_id)"
+        },
+        {
+          "table_name": "donation_claims",
+          "conname": "donation_claims_request_id_fkey",
+          "convalidated": true,
+          "definition": "FOREIGN KEY (request_id) REFERENCES claim_requests(request_id)"
+        },
+        {
+          "table_name": "donation_claims",
+          "conname": "donation_claims_request_id_key",
+          "convalidated": true,
+          "definition": "UNIQUE (request_id)"
+        },
+        {
+          "table_name": "donations",
+          "conname": "donations_check",
+          "convalidated": true,
+          "definition": "CHECK (availability_start IS NULL OR availability_end IS NULL OR availability_end > availability_start)"
+        },
+        {
+          "table_name": "donations",
+          "conname": "donations_check1",
+          "convalidated": true,
+          "definition": "CHECK ((latitude IS NULL) = (longitude IS NULL))"
+        },
+        {
+          "table_name": "donations",
+          "conname": "donations_collection_path_check",
+          "convalidated": true,
+          "definition": "CHECK (collection_path = ANY (ARRAY['DIRECT_PICKUP'::text, 'HUB_COLLECTION'::text]))"
+        },
+        {
+          "table_name": "donations",
+          "conname": "donations_description_length",
+          "convalidated": false,
+          "definition": "CHECK (description IS NULL OR char_length(description) <= 1000) NOT VALID"
+        },
+        {
+          "table_name": "donations",
+          "conname": "donations_donation_status_check",
+          "convalidated": true,
+          "definition": "CHECK (donation_status = ANY (ARRAY['SUBMITTED'::text, 'AVAILABLE'::text, 'HUB_ASSIGNED'::text, 'AT_HUB'::text, 'BATCHED'::text, 'CLAIMED'::text, 'PICKUP_IN_PROGRESS'::text, 'COLLECTED'::text, 'CANCELLED'::text]))"
+        },
+        {
+          "table_name": "donations",
+          "conname": "donations_donor_user_id_fkey",
+          "convalidated": true,
+          "definition": "FOREIGN KEY (donor_user_id) REFERENCES donor_profiles(user_id)"
+        },
+        {
+          "table_name": "donations",
+          "conname": "donations_latitude_check",
+          "convalidated": true,
+          "definition": "CHECK (latitude >= '-90'::integer::double precision AND latitude <= 90::double precision)"
+        },
+        {
+          "table_name": "donations",
+          "conname": "donations_lifecycle_at_commit",
+          "convalidated": true,
+          "definition": "TRIGGER DEFERRABLE INITIALLY DEFERRED"
+        },
+        {
+          "table_name": "donations",
+          "conname": "donations_longitude_check",
+          "convalidated": true,
+          "definition": "CHECK (longitude >= '-180'::integer::double precision AND longitude <= 180::double precision)"
+        },
+        {
+          "table_name": "donations",
+          "conname": "donations_pkey",
+          "convalidated": true,
+          "definition": "PRIMARY KEY (donation_id)"
+        },
+        {
+          "table_name": "donations",
+          "conname": "donations_require_photo_at_commit",
+          "convalidated": true,
+          "definition": "TRIGGER DEFERRABLE INITIALLY DEFERRED"
+        },
+        {
+          "table_name": "donations",
+          "conname": "donations_title_length",
+          "convalidated": false,
+          "definition": "CHECK (char_length(btrim(title)) >= 1 AND char_length(btrim(title)) <= 80) NOT VALID"
+        },
+        {
+          "table_name": "donations",
+          "conname": "donations_total_weight_kg_check",
+          "convalidated": true,
+          "definition": "CHECK (total_weight_kg > 0::numeric)"
+        },
+        {
+          "table_name": "listings",
+          "conname": "listings_batch_id_fkey",
+          "convalidated": true,
+          "definition": "FOREIGN KEY (batch_id) REFERENCES hub_batches(batch_id)"
+        },
+        {
+          "table_name": "listings",
+          "conname": "listings_check",
+          "convalidated": true,
+          "definition": "CHECK (source_type = 'DIRECT_DONATION'::text AND donation_id IS NOT NULL AND batch_id IS NULL OR source_type = 'HUB_BATCH'::text AND batch_id IS NOT NULL AND donation_id IS NULL)"
+        },
+        {
+          "table_name": "listings",
+          "conname": "listings_donation_id_fkey",
+          "convalidated": true,
+          "definition": "FOREIGN KEY (donation_id) REFERENCES donations(donation_id)"
+        },
+        {
+          "table_name": "listings",
+          "conname": "listings_listing_status_check",
+          "convalidated": true,
+          "definition": "CHECK (listing_status = ANY (ARRAY['AVAILABLE'::text, 'CLAIMED'::text, 'CLOSED'::text, 'CANCELLED'::text]))"
+        },
+        {
+          "table_name": "listings",
+          "conname": "listings_listing_version_check",
+          "convalidated": true,
+          "definition": "CHECK (listing_version > 0)"
+        },
+        {
+          "table_name": "listings",
+          "conname": "listings_listing_weight_kg_check",
+          "convalidated": true,
+          "definition": "CHECK (listing_weight_kg > 0::numeric)"
+        },
+        {
+          "table_name": "listings",
+          "conname": "listings_pickup_latitude_check",
+          "convalidated": true,
+          "definition": "CHECK (pickup_latitude >= '-90'::integer::double precision AND pickup_latitude <= 90::double precision)"
+        },
+        {
+          "table_name": "listings",
+          "conname": "listings_pickup_longitude_check",
+          "convalidated": true,
+          "definition": "CHECK (pickup_longitude >= '-180'::integer::double precision AND pickup_longitude <= 180::double precision)"
+        },
+        {
+          "table_name": "listings",
+          "conname": "listings_pkey",
+          "convalidated": true,
+          "definition": "PRIMARY KEY (listing_id)"
+        },
+        {
+          "table_name": "listings",
+          "conname": "listings_source_type_check",
+          "convalidated": true,
+          "definition": "CHECK (source_type = ANY (ARRAY['DIRECT_DONATION'::text, 'HUB_BATCH'::text]))"
+        },
+        {
+          "table_name": "pickup_route_stops",
+          "conname": "pickup_route_stops_pkey",
+          "convalidated": true,
+          "definition": "PRIMARY KEY (route_id, stop_order)"
+        },
+        {
+          "table_name": "pickup_route_stops",
+          "conname": "pickup_route_stops_route_id_ngo_user_id_fkey",
+          "convalidated": true,
+          "definition": "FOREIGN KEY (route_id, ngo_user_id) REFERENCES pickup_routes(route_id, ngo_user_id)"
+        },
+        {
+          "table_name": "pickup_route_stops",
+          "conname": "pickup_route_stops_route_id_task_id_key",
+          "convalidated": true,
+          "definition": "UNIQUE (route_id, task_id)"
+        },
+        {
+          "table_name": "pickup_route_stops",
+          "conname": "pickup_route_stops_stop_order_check",
+          "convalidated": true,
+          "definition": "CHECK (stop_order > 0)"
+        },
+        {
+          "table_name": "pickup_route_stops",
+          "conname": "pickup_route_stops_task_id_fkey",
+          "convalidated": true,
+          "definition": "FOREIGN KEY (task_id) REFERENCES pickup_tasks(task_id)"
+        },
+        {
+          "table_name": "pickup_routes",
+          "conname": "pickup_routes_ngo_user_id_fkey",
+          "convalidated": true,
+          "definition": "FOREIGN KEY (ngo_user_id) REFERENCES ngo_profiles(user_id)"
+        },
+        {
+          "table_name": "pickup_routes",
+          "conname": "pickup_routes_pkey",
+          "convalidated": true,
+          "definition": "PRIMARY KEY (route_id)"
+        },
+        {
+          "table_name": "pickup_routes",
+          "conname": "pickup_routes_route_id_ngo_user_id_key",
+          "convalidated": true,
+          "definition": "UNIQUE (route_id, ngo_user_id)"
+        },
+        {
+          "table_name": "pickup_routes",
+          "conname": "pickup_routes_route_status_check",
+          "convalidated": true,
+          "definition": "CHECK (route_status = ANY (ARRAY['DRAFT'::text, 'VALIDATED'::text, 'AUTHORISED'::text, 'IN_PROGRESS'::text, 'COMPLETED'::text, 'CANCELLED'::text, 'STALE'::text]))"
+        },
+        {
+          "table_name": "pickup_routes",
+          "conname": "pickup_routes_total_distance_km_check",
+          "convalidated": true,
+          "definition": "CHECK (total_distance_km >= 0::numeric)"
+        },
+        {
+          "table_name": "pickup_routes",
+          "conname": "pickup_routes_total_duration_min_check",
+          "convalidated": true,
+          "definition": "CHECK (total_duration_min >= 0::numeric)"
+        },
+        {
+          "table_name": "pickup_routes",
+          "conname": "pickup_routes_vehicle_id_ngo_user_id_fkey",
+          "convalidated": true,
+          "definition": "FOREIGN KEY (vehicle_id, ngo_user_id) REFERENCES vehicles(vehicle_id, ngo_user_id)"
+        },
+        {
+          "table_name": "pickup_tasks",
+          "conname": "pickup_tasks_claim_id_key",
+          "convalidated": true,
+          "definition": "UNIQUE (claim_id)"
+        },
+        {
+          "table_name": "pickup_tasks",
+          "conname": "pickup_tasks_claim_id_listing_id_ngo_user_id_fkey",
+          "convalidated": true,
+          "definition": "FOREIGN KEY (claim_id, listing_id, ngo_user_id) REFERENCES donation_claims(claim_id, listing_id, ngo_user_id)"
+        },
+        {
+          "table_name": "pickup_tasks",
+          "conname": "pickup_tasks_load_kg_check",
+          "convalidated": true,
+          "definition": "CHECK (load_kg > 0::numeric)"
+        },
+        {
+          "table_name": "pickup_tasks",
+          "conname": "pickup_tasks_pkey",
+          "convalidated": true,
+          "definition": "PRIMARY KEY (task_id)"
+        },
+        {
+          "table_name": "pickup_tasks",
+          "conname": "pickup_tasks_task_status_check",
+          "convalidated": true,
+          "definition": "CHECK (task_status = ANY (ARRAY['CONFIRMED'::text, 'PLANNED'::text, 'DISPATCHED'::text, 'COLLECTED'::text, 'CANCELLED'::text, 'STALE'::text]))"
+        },
+        {
+          "table_name": "vehicles",
+          "conname": "vehicles_ngo_user_id_fkey",
+          "convalidated": true,
+          "definition": "FOREIGN KEY (ngo_user_id) REFERENCES ngo_profiles(user_id)"
+        },
+        {
+          "table_name": "vehicles",
+          "conname": "vehicles_payload_capacity_kg_check",
+          "convalidated": true,
+          "definition": "CHECK (payload_capacity_kg > 0::numeric)"
+        },
+        {
+          "table_name": "vehicles",
+          "conname": "vehicles_pkey",
+          "convalidated": true,
+          "definition": "PRIMARY KEY (vehicle_id)"
+        },
+        {
+          "table_name": "vehicles",
+          "conname": "vehicles_vehicle_id_ngo_user_id_key",
+          "convalidated": true,
+          "definition": "UNIQUE (vehicle_id, ngo_user_id)"
+        }
+      ]
+    },
+    "functions": {
+      "query": "SELECT p.proname,p.oid::regprocedure::text AS signature,pg_get_userbyid(p.proowner) AS owner,p.prosecdef,p.proacl::text AS acl,pg_get_functiondef(p.oid) AS definition FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace WHERE n.nspname='public' AND p.proname IN ('start_pickup','assign_task_to_route','claim_listing','complete_pickup','recover_expired_claims','geolock_assign_vehicle_depot','geolock_road_costs','geolock_lock_listing_donations','geolock_transition_listing_donations','enforce_donation_transition','geolock_assert_donation_lifecycle','prevent_audit_mutation') ORDER BY p.proname;",
+      "data": [
+        {
+          "proname": "assign_task_to_route",
+          "signature": "assign_task_to_route(uuid,uuid,integer)",
+          "owner": "postgres",
+          "prosecdef": true,
+          "acl": "{postgres=X/postgres,anon=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+          "definition": "CREATE OR REPLACE FUNCTION public.assign_task_to_route(p_route uuid, p_task uuid, p_stop_order integer)\n RETURNS void\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public', 'extensions', 'pg_temp'\nAS $function$\r\ndeclare v_actor uuid:=auth.uid();v_r public.pickup_routes%rowtype;\r\n v_t public.pickup_tasks%rowtype;\r\nbegin\r\n select * into v_r from public.pickup_routes where route_id=p_route for update;\r\n if not found or v_r.ngo_user_id is distinct from v_actor or v_r.route_status<>'DRAFT'\r\n then raise exception 'ROUTE_NOT_EDITABLE_BY_NGO'; end if;\r\n select * into v_t from public.pickup_tasks where task_id=p_task for update;\r\n if not found or v_t.ngo_user_id<>v_actor or v_t.task_status not in ('CONFIRMED','PLANNED')\r\n then raise exception 'TASK_NOT_ASSIGNABLE'; end if;\r\n if not exists(select 1 from public.donation_claims c\r\n join public.claim_leases l on l.claim_id=c.claim_id\r\n where c.claim_id=v_t.claim_id and c.claim_status='ACTIVE'\r\n and l.lease_status='ACTIVE' and l.expires_at>clock_timestamp())\r\n then raise exception 'STALE_CLAIM'; end if;\r\n insert into public.active_task_route_assignments(task_id,route_id)\r\n values(p_task,p_route);\r\n insert into public.pickup_route_stops(route_id,ngo_user_id,stop_order,task_id)\r\n values(p_route,v_actor,p_stop_order,p_task);\r\n update public.pickup_tasks set task_status='PLANNED' where task_id=p_task;\r\n insert into public.audit_events(actor_user_id,actor_role,entity_type,entity_id,event_type,\r\n requested_state,resulting_state,outcome,details)\r\n values(v_actor,'NGO','TASK',p_task,'ASSIGN_ROUTE','PLANNED','PLANNED','SUCCESS',\r\n jsonb_build_object('route_id',p_route));\r\nend $function$\n"
+        },
+        {
+          "proname": "claim_listing",
+          "signature": "claim_listing(uuid,uuid)",
+          "owner": "postgres",
+          "prosecdef": true,
+          "acl": "{postgres=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+          "definition": "CREATE OR REPLACE FUNCTION public.claim_listing(p_listing uuid, p_request uuid)\n RETURNS jsonb\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public', 'extensions', 'pg_temp'\nAS $function$\r\ndeclare\r\n  v_actor uuid:=auth.uid(); v_ngo public.ngo_profiles%rowtype;\r\n  v_req public.claim_requests%rowtype; v_l public.listings%rowtype;\r\n  v_digest text; v_reason text; v_claim uuid; v_lease uuid; v_mins integer;\r\n  v_success boolean:=false; v_outcome text;\r\nbegin\r\n  if v_actor is null then raise exception 'UNAUTHENTICATED'; end if;\r\n  select * into v_ngo from public.ngo_profiles\r\n   where user_id=v_actor and active_flag for share;\r\n  if not found then raise exception 'ACTIVE_NGO_ONLY'; end if;\r\n  if p_request is null or p_listing is null then raise exception 'REQUEST_AND_LISTING_REQUIRED'; end if;\r\n\r\n  v_digest:=md5(p_listing::text||':'||v_actor::text);\r\n  insert into public.claim_requests(request_id,listing_id,ngo_user_id,request_digest)\r\n  values(p_request,p_listing,v_actor,v_digest) on conflict(request_id) do nothing;\r\n  select * into v_req from public.claim_requests where request_id=p_request for update;\r\n  if v_req.request_digest<>v_digest or v_req.listing_id<>p_listing or v_req.ngo_user_id<>v_actor then\r\n    raise exception 'IDEMPOTENCY_KEY_REUSED_WITH_DIFFERENT_PAYLOAD';\r\n  end if;\r\n  if v_req.outcome is not null then\r\n    return jsonb_build_object('outcome',v_req.outcome,'claim_id',v_req.result_claim_id,\r\n      'reason_code',v_req.reason_code,'replayed',true);\r\n  end if;\r\n  select * into v_l from public.listings where listing_id=p_listing for update;\r\n  if not found then v_reason:='LISTING_NOT_FOUND';\r\n  elsif v_l.listing_status<>'AVAILABLE' then v_reason:='CLAIM_CONFLICT';\r\n  elsif v_l.listing_expires_at is not null and v_l.listing_expires_at<=clock_timestamp() then v_reason:='LISTING_EXPIRED';\r\n  elsif v_ngo.location_verified_at is null or v_ngo.road_node_id is null then v_reason:='ELIGIBILITY_UNDETERMINED';\r\n  elsif public.geolock_ngo_listing_road_check(v_actor,p_listing)->>'outcome'<>'ELIGIBLE'\r\n    then v_reason:=public.geolock_ngo_listing_road_check(v_actor,p_listing)->>'outcome';\r\n  elsif v_l.source_type='DIRECT_DONATION' and not exists(\r\n    select 1 from public.donations d where d.donation_id=v_l.donation_id and d.donation_status='AVAILABLE')\r\n    then v_reason:='DONATION_NOT_READY';\r\n  elsif v_l.source_type='HUB_BATCH' and not exists(\r\n    select 1 from public.hub_batches b where b.batch_id=v_l.batch_id and b.batch_status='PUBLISHED')\r\n    then v_reason:='BATCH_NOT_PUBLISHED';\r\n  elsif not public.geolock_lock_listing_donations(p_listing,\r\n    array[case when v_l.source_type='DIRECT_DONATION' then 'AVAILABLE' else 'BATCHED' end])\r\n    then v_reason:='DONATION_SET_NOT_READY';\r\n  else\r\n    select claim_lease_minutes into v_mins from public.coordination_config where singleton;\r\n    if v_mins is null then raise exception 'CLAIM_LEASE_NOT_CONFIGURED'; end if;\r\n    insert into public.donation_claims(listing_id,ngo_user_id,request_id)\r\n      values(p_listing,v_actor,p_request) returning claim_id into v_claim;\r\n    insert into public.claim_leases(claim_id,expires_at)\r\n      values(v_claim,clock_timestamp()+make_interval(mins=>v_mins)) returning lease_id into v_lease;\r\n    update public.listings set listing_status='CLAIMED',listing_version=listing_version+1\r\n      where listing_id=p_listing;\r\n    insert into public.pickup_tasks(claim_id,listing_id,ngo_user_id,pickup_road_node_id,load_kg)\r\n      values(v_claim,p_listing,v_actor,v_l.pickup_road_node_id,v_l.listing_weight_kg);\r\n    perform public.geolock_transition_listing_donations(p_listing,\r\n      case when v_l.source_type='DIRECT_DONATION' then 'AVAILABLE' else 'BATCHED' end,'CLAIMED');\r\n    v_success:=true;\r\n  end if;\r\n  v_outcome:=case when v_success then 'SUCCESS'\r\n    when v_reason in ('OUTSIDE_GEOFENCE','ROUTE_UNAVAILABLE') then 'INELIGIBLE' else 'CONFLICT' end;\r\n  update public.claim_requests set outcome=v_outcome,result_claim_id=v_claim,\r\n    reason_code=v_reason,completed_at=clock_timestamp() where request_id=p_request;\r\n  insert into public.audit_events(actor_user_id,actor_role,entity_type,entity_id,event_type,\r\n    request_id,claim_id,lease_id,previous_state,requested_state,resulting_state,\r\n    reason_code,outcome,details,configuration_version)\r\n  select v_actor,'NGO','LISTING',p_listing,'CLAIM_ATTEMPT',p_request,v_claim,v_lease,\r\n    v_l.listing_status,'CLAIMED',case when v_success then 'CLAIMED' else v_l.listing_status end,\r\n    v_reason,case when v_success then 'SUCCESS' else 'REJECTED' end,\r\n    jsonb_build_object('ngo_id',v_actor),cfg.config_version\r\n    from public.coordination_config cfg where cfg.singleton;\r\n  return jsonb_build_object('outcome',v_outcome,'claim_id',v_claim,\r\n    'reason_code',v_reason,'replayed',false);\r\nend;\r\n$function$\n"
+        },
+        {
+          "proname": "complete_pickup",
+          "signature": "complete_pickup(uuid,boolean)",
+          "owner": "postgres",
+          "prosecdef": true,
+          "acl": "{postgres=X/postgres,anon=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+          "definition": "CREATE OR REPLACE FUNCTION public.complete_pickup(p_claim uuid, p_handover_confirmed boolean)\n RETURNS void\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public', 'extensions', 'pg_temp'\nAS $function$\r\ndeclare v_actor uuid:=auth.uid();v_c public.donation_claims%rowtype;\r\n v_l public.listings%rowtype;v_lease public.claim_leases%rowtype;\r\nbegin\r\n select * into v_c from public.donation_claims where claim_id=p_claim for update;\r\n if not found or v_c.ngo_user_id is distinct from v_actor or v_c.claim_status<>'ACTIVE'\r\n then raise exception 'NOT_ACTIVE_CLAIM_HOLDER'; end if;\r\n select * into v_lease from public.claim_leases where claim_id=p_claim for update;\r\n if not found or v_lease.lease_status<>'ACTIVE' or v_lease.expires_at<=clock_timestamp()\r\n then raise exception 'STALE_OR_EXPIRED_LEASE'; end if;\r\n if p_handover_confirmed is distinct from true then raise exception 'HANDOVER_NOT_CONFIRMED'; end if;\r\n select * into v_l from public.listings where listing_id=v_c.listing_id for update;\r\n if v_l.listing_status<>'CLAIMED' then raise exception 'LISTING_NOT_CLAIMED'; end if;\r\n update public.pickup_tasks set task_status='COLLECTED'\r\n where claim_id=p_claim and task_status='DISPATCHED';\r\n if not found then raise exception 'PICKUP_NOT_STARTED'; end if;\r\n perform public.geolock_transition_listing_donations(v_l.listing_id,'PICKUP_IN_PROGRESS','COLLECTED');\r\n if v_l.source_type='HUB_BATCH' then\r\n  update public.hub_inventory set inventory_status='COLLECTED'\r\n  where donation_id in(select donation_id from public.hub_batch_members\r\n    where batch_id=v_l.batch_id and membership_status='ACTIVE');\r\n  update public.hub_batches set batch_status='COLLECTED' where batch_id=v_l.batch_id;\r\n end if;\r\n update public.listings set listing_status='CLOSED',listing_version=listing_version+1\r\n where listing_id=v_l.listing_id;\r\n update public.donation_claims set claim_status='COMPLETED',closed_at=clock_timestamp()\r\n where claim_id=p_claim;\r\n update public.claim_leases set lease_status='COMPLETED',closed_at=clock_timestamp()\r\n where claim_id=p_claim;\r\n insert into public.audit_events(actor_user_id,actor_role,entity_type,entity_id,event_type,\r\n claim_id,lease_id,requested_state,resulting_state,outcome)\r\n values(v_actor,'NGO','CLAIM',p_claim,'COMPLETE_PICKUP',p_claim,v_lease.lease_id,\r\n 'COLLECTED','COLLECTED','SUCCESS');\r\nend $function$\n"
+        },
+        {
+          "proname": "enforce_donation_transition",
+          "signature": "enforce_donation_transition()",
+          "owner": "postgres",
+          "prosecdef": false,
+          "acl": "{postgres=X/postgres,anon=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+          "definition": "CREATE OR REPLACE FUNCTION public.enforce_donation_transition()\n RETURNS trigger\n LANGUAGE plpgsql\n SET search_path TO 'public', 'pg_temp'\nAS $function$\r\nbegin\r\n  if new.donation_status is distinct from old.donation_status and not (\r\n    (old.donation_status='SUBMITTED' and new.donation_status='AVAILABLE'\r\n      and new.collection_path='DIRECT_PICKUP' and new.total_weight_kg>=10)\r\n    or (old.donation_status='SUBMITTED' and new.donation_status='HUB_ASSIGNED'\r\n      and new.collection_path='HUB_COLLECTION' and new.total_weight_kg>0 and new.total_weight_kg<10)\r\n    or (old.donation_status in ('SUBMITTED','AVAILABLE','HUB_ASSIGNED') and new.donation_status='CANCELLED')\r\n    or (old.donation_status='AVAILABLE' and new.donation_status='CLAIMED' and new.collection_path='DIRECT_PICKUP')\r\n    or (old.donation_status='HUB_ASSIGNED' and new.donation_status='AT_HUB')\r\n    or (old.donation_status='AT_HUB' and new.donation_status='BATCHED')\r\n    or (old.donation_status='BATCHED' and new.donation_status='CLAIMED' and new.collection_path='HUB_COLLECTION')\r\n    or (old.donation_status='CLAIMED' and new.donation_status='PICKUP_IN_PROGRESS')\r\n    or (old.donation_status='CLAIMED' and new.donation_status='AVAILABLE' and new.collection_path='DIRECT_PICKUP')\r\n    or (old.donation_status='CLAIMED' and new.donation_status='BATCHED' and new.collection_path='HUB_COLLECTION')\r\n    or (old.donation_status='PICKUP_IN_PROGRESS' and new.donation_status='COLLECTED')\r\n  ) then\r\n    raise exception 'INVALID_DONATION_TRANSITION: % -> %',old.donation_status,new.donation_status;\r\n  end if;\r\n  new.updated_at=clock_timestamp();\r\n  return new;\r\nend;\r\n$function$\n"
+        },
+        {
+          "proname": "geolock_assert_donation_lifecycle",
+          "signature": "geolock_assert_donation_lifecycle(uuid)",
+          "owner": "postgres",
+          "prosecdef": false,
+          "acl": "{postgres=X/postgres}",
+          "definition": "CREATE OR REPLACE FUNCTION public.geolock_assert_donation_lifecycle(p_donation uuid)\n RETURNS void\n LANGUAGE plpgsql\n SET search_path TO 'pg_catalog', 'public', 'pg_temp'\nAS $function$\r\ndeclare v_d public.donations%rowtype; v_l public.listings%rowtype;\r\n  v_b public.hub_batches%rowtype;\r\nbegin\r\n  select * into v_d from public.donations where donation_id=p_donation;\r\n  if not found then return; end if;\r\n  if v_d.collection_path is null or v_d.total_weight_kg is null or v_d.total_weight_kg<=0\r\n    or (v_d.collection_path='DIRECT_PICKUP') is distinct from (v_d.total_weight_kg>=10)\r\n    or (v_d.collection_path='DIRECT_PICKUP' and v_d.donation_status in ('SUBMITTED','HUB_ASSIGNED','AT_HUB','BATCHED'))\r\n    or (v_d.collection_path='HUB_COLLECTION' and v_d.donation_status='AVAILABLE') then\r\n    raise exception 'DONATION_FINALIZATION_REQUIRED: %',p_donation;\r\n  end if;\r\n  if v_d.donation_status in ('CANCELLED','SUBMITTED','HUB_ASSIGNED','AT_HUB') then return; end if;\r\n  if v_d.collection_path='DIRECT_PICKUP' then\r\n    select * into v_l from public.listings where donation_id=p_donation and source_type='DIRECT_DONATION';\r\n  else\r\n    select b.* into v_b from public.hub_batches b join public.hub_batch_members m using(batch_id)\r\n      where m.donation_id=p_donation and m.membership_status='ACTIVE';\r\n    if not found or v_b.batch_status<>(case when v_d.donation_status='COLLECTED' then 'COLLECTED' else 'PUBLISHED' end)\r\n      or (select count(*) from public.hub_batch_members m\r\n        where m.batch_id=v_b.batch_id and m.membership_status='ACTIVE')<>v_b.batch_donation_count\r\n      or exists(select 1 from public.hub_batch_members m join public.donations d using(donation_id)\r\n        where m.batch_id=v_b.batch_id and m.membership_status='ACTIVE'\r\n          and (d.donation_status<>v_d.donation_status or d.collection_path<>'HUB_COLLECTION'))\r\n      or exists(select 1 from public.hub_batch_members m where m.batch_id=v_b.batch_id\r\n        and m.membership_status='ACTIVE' and not exists(select 1 from public.hub_inventory hi\r\n          where hi.donation_id=m.donation_id and hi.hub_id=v_b.hub_id\r\n            and hi.inventory_status=case when v_d.donation_status='COLLECTED' then 'COLLECTED' else 'BATCHED' end)) then\r\n      raise exception 'BATCH_DONATION_SET_INCONSISTENT: %',p_donation;\r\n    end if;\r\n    select * into v_l from public.listings where batch_id=v_b.batch_id and source_type='HUB_BATCH';\r\n  end if;\r\n  if v_l.listing_id is null then raise exception 'DONATION_LISTING_REQUIRED: %',p_donation; end if;\r\n  if v_d.donation_status in ('AVAILABLE','BATCHED') then\r\n    if v_l.listing_status<>'AVAILABLE' or exists(select 1 from public.donation_claims c\r\n      where c.listing_id=v_l.listing_id and c.claim_status in ('ACTIVE','RECONCILIATION_REQUIRED')) then\r\n      raise exception 'AVAILABLE_DONATION_COORDINATION_MISMATCH: %',p_donation;\r\n    end if;\r\n  elsif v_d.donation_status='COLLECTED' then\r\n    if v_l.listing_status<>'CLOSED' or not exists(\r\n      select 1 from public.donation_claims c join public.claim_leases le using(claim_id)\r\n      join public.pickup_tasks t using(claim_id)\r\n      where c.listing_id=v_l.listing_id and t.listing_id=v_l.listing_id\r\n        and c.claim_status='COMPLETED' and le.lease_status='COMPLETED' and t.task_status='COLLECTED') then\r\n      raise exception 'COLLECTED_DONATION_COORDINATION_MISMATCH: %',p_donation;\r\n    end if;\r\n  elsif v_d.donation_status in ('CLAIMED','PICKUP_IN_PROGRESS') then\r\n    if v_l.listing_status<>'CLAIMED' or not exists(\r\n      select 1 from public.donation_claims c join public.claim_leases le using(claim_id)\r\n      join public.pickup_tasks t using(claim_id)\r\n      where c.listing_id=v_l.listing_id and t.listing_id=v_l.listing_id\r\n        and c.claim_status in ('ACTIVE','RECONCILIATION_REQUIRED') and le.lease_status=c.claim_status\r\n        and ((v_d.donation_status='CLAIMED' and t.task_status in ('CONFIRMED','PLANNED'))\r\n          or (v_d.donation_status='PICKUP_IN_PROGRESS' and t.task_status='DISPATCHED'))) then\r\n      raise exception 'CLAIMED_DONATION_COORDINATION_MISMATCH: %',p_donation;\r\n    end if;\r\n  end if;\r\nend;\r\n$function$\n"
+        },
+        {
+          "proname": "geolock_assign_vehicle_depot",
+          "signature": "geolock_assign_vehicle_depot()",
+          "owner": "postgres",
+          "prosecdef": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres}",
+          "definition": "CREATE OR REPLACE FUNCTION public.geolock_assign_vehicle_depot()\n RETURNS trigger\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public', 'pg_temp'\nAS $function$\r\nbegin\r\n  select n.road_node_id into new.depot_road_node_id\r\n    from public.ngo_profiles n\r\n   where n.user_id = new.ngo_user_id and n.location_verified_at is not null;\r\n  return new;\r\nend $function$\n"
+        },
+        {
+          "proname": "geolock_lock_listing_donations",
+          "signature": "geolock_lock_listing_donations(uuid,text[])",
+          "owner": "postgres",
+          "prosecdef": false,
+          "acl": "{postgres=X/postgres}",
+          "definition": "CREATE OR REPLACE FUNCTION public.geolock_lock_listing_donations(p_listing uuid, p_states text[])\n RETURNS boolean\n LANGUAGE plpgsql\n SET search_path TO 'pg_catalog', 'public', 'pg_temp'\nAS $function$\r\ndeclare v_l public.listings%rowtype; v_b public.hub_batches%rowtype;\r\n  v_id uuid; v_count integer:=0; v_ok boolean:=true; v_d public.donations%rowtype;\r\nbegin\r\n  select * into v_l from public.listings where listing_id=p_listing for update;\r\n  if not found then return false; end if;\r\n  if v_l.source_type='DIRECT_DONATION' then\r\n    select * into v_d from public.donations where donation_id=v_l.donation_id for update;\r\n    return coalesce(found and v_d.collection_path='DIRECT_PICKUP' and v_d.donation_status=any(p_states),false);\r\n  end if;\r\n  if v_l.source_type<>'HUB_BATCH' then return false; end if;\r\n  select * into v_b from public.hub_batches where batch_id=v_l.batch_id for update;\r\n  if not found or v_b.batch_status not in ('PUBLISHED','COLLECTED') then return false; end if;\r\n  -- Membership is immutable once published, and its parent batch is now locked.\r\n  for v_id in select m.donation_id from public.hub_batch_members m\r\n    where m.batch_id=v_l.batch_id and m.membership_status='ACTIVE' order by m.donation_id\r\n  loop\r\n    v_count:=v_count+1;\r\n    select * into v_d from public.donations where donation_id=v_id for update;\r\n    if not found or v_d.collection_path<>'HUB_COLLECTION'\r\n      or not (v_d.donation_status=any(p_states)) then v_ok:=false; end if;\r\n  end loop;\r\n  -- Lock inventory in the same UUID order after locking the entire donation set.\r\n  for v_id in select m.donation_id from public.hub_batch_members m\r\n    where m.batch_id=v_l.batch_id and m.membership_status='ACTIVE' order by m.donation_id\r\n  loop\r\n    perform 1 from public.hub_inventory hi where hi.donation_id=v_id\r\n      and hi.hub_id=v_b.hub_id\r\n      and (hi.inventory_status='BATCHED'\r\n        or ('COLLECTED'=any(p_states) and hi.inventory_status in ('COLLECTED','RECONCILIATION_REQUIRED'))) for update;\r\n    if not found then v_ok:=false; end if;\r\n  end loop;\r\n  return v_ok and v_count>0 and v_count=v_b.batch_donation_count;\r\nend;\r\n$function$\n"
+        },
+        {
+          "proname": "geolock_road_costs",
+          "signature": "geolock_road_costs(bigint[],bigint[],double precision,double precision,double precision)",
+          "owner": "postgres",
+          "prosecdef": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres}",
+          "definition": "CREATE OR REPLACE FUNCTION public.geolock_road_costs(p_sources bigint[], p_targets bigint[], p_center_lat double precision, p_center_lon double precision, p_radius_m double precision)\n RETURNS TABLE(source_node bigint, target_node bigint, road_km double precision)\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public', 'extensions', 'pg_temp'\nAS $function$\r\ndeclare v_snapshot text := public.geolock_active_road_snapshot(); v_sql text;\r\nbegin\r\n  if v_snapshot is null or coalesce(cardinality(p_sources), 0) = 0\r\n     or coalesce(cardinality(p_targets), 0) = 0 then\r\n    return;\r\n  end if;\r\n  v_sql := format(\r\n    'select e.edge_id as id, e.source_node as source, e.target_node as target,\r\n            e.road_km::float8 as cost, -1::float8 as reverse_cost\r\n       from public.road_network_nodes n\r\n       join public.road_network_edges e on e.source_node = n.osm_node_id\r\n      where n.network_snapshot_id = %L and n.active_flag\r\n        and extensions.ST_DWithin(n.geog,\r\n              extensions.ST_SetSRID(extensions.ST_MakePoint(%L::float8, %L::float8), 4326)::extensions.geography,\r\n              %L::float8)',\r\n    v_snapshot, p_center_lon, p_center_lat, p_radius_m);\r\n  return query\r\n    select s, s, 0::float8\r\n      from unnest(p_sources) s where s = any(p_targets)\r\n    union all\r\n    select c.start_vid, c.end_vid, c.agg_cost\r\n      from extensions.pgr_dijkstraCost(v_sql, p_sources, p_targets, true) c;\r\n  -- road_km is stored as real (float4); sums are exact to well under 1 m.\r\nend $function$\n"
+        },
+        {
+          "proname": "geolock_transition_listing_donations",
+          "signature": "geolock_transition_listing_donations(uuid,text,text)",
+          "owner": "postgres",
+          "prosecdef": false,
+          "acl": "{postgres=X/postgres}",
+          "definition": "CREATE OR REPLACE FUNCTION public.geolock_transition_listing_donations(p_listing uuid, p_from text, p_to text)\n RETURNS void\n LANGUAGE plpgsql\n SET search_path TO 'pg_catalog', 'public', 'pg_temp'\nAS $function$\r\ndeclare v_l public.listings%rowtype; v_id uuid; v_claim uuid; v_lease uuid;\r\nbegin\r\n  if not public.geolock_lock_listing_donations(p_listing,array[p_from]) then\r\n    raise exception 'LISTING_DONATION_SET_STATE_MISMATCH';\r\n  end if;\r\n  select * into v_l from public.listings where listing_id=p_listing;\r\n  select c.claim_id,le.lease_id into v_claim,v_lease\r\n  from public.donation_claims c left join public.claim_leases le using(claim_id)\r\n  where c.listing_id=p_listing order by c.claimed_at desc,c.claim_id desc limit 1;\r\n  for v_id in\r\n    select d.donation_id from public.donations d\r\n    where (v_l.source_type='DIRECT_DONATION' and d.donation_id=v_l.donation_id)\r\n      or (v_l.source_type='HUB_BATCH' and exists(select 1 from public.hub_batch_members m\r\n        where m.batch_id=v_l.batch_id and m.donation_id=d.donation_id and m.membership_status='ACTIVE'))\r\n    order by d.donation_id\r\n  loop\r\n    update public.donations set donation_status=p_to where donation_id=v_id and donation_status=p_from;\r\n    if not found then raise exception 'LISTING_DONATION_SET_CHANGED'; end if;\r\n    insert into public.audit_events(actor_user_id,actor_role,entity_type,entity_id,event_type,\r\n      claim_id,lease_id,previous_state,requested_state,resulting_state,outcome,details)\r\n    values(auth.uid(),case when auth.uid() is null then 'SYSTEM'\r\n      else (select role from public.user_profiles where user_id=auth.uid()) end,\r\n      'DONATION',v_id,'DONATION_STATUS_CHANGED',v_claim,v_lease,p_from,p_to,p_to,'SUCCESS',\r\n      jsonb_build_object('listing_id',p_listing));\r\n  end loop;\r\nend;\r\n$function$\n"
+        },
+        {
+          "proname": "prevent_audit_mutation",
+          "signature": "prevent_audit_mutation()",
+          "owner": "postgres",
+          "prosecdef": false,
+          "acl": "{postgres=X/postgres,anon=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+          "definition": "CREATE OR REPLACE FUNCTION public.prevent_audit_mutation()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\r\nbegin raise exception 'AUDIT_APPEND_ONLY'; end $function$\n"
+        },
+        {
+          "proname": "recover_expired_claims",
+          "signature": "recover_expired_claims(integer)",
+          "owner": "postgres",
+          "prosecdef": true,
+          "acl": "{postgres=X/postgres,service_role=X/postgres}",
+          "definition": "CREATE OR REPLACE FUNCTION public.recover_expired_claims(p_limit integer DEFAULT 100)\n RETURNS integer\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'pg_catalog', 'public', 'extensions', 'pg_temp'\nAS $function$\r\ndeclare\r\n  v_rec record; v_c public.donation_claims%rowtype; v_le public.claim_leases%rowtype;\r\n  v_l public.listings%rowtype; v_t public.pickup_tasks%rowtype;\r\n  v_uncertain boolean; v_count integer:=0; v_did uuid; v_cfg text;\r\nbegin\r\n  if auth.role() is distinct from 'service_role' and session_user <> 'postgres' then\r\n    raise exception 'TRUSTED_SCHEDULER_ONLY';\r\n  end if;\r\n  for v_rec in\r\n    select c.claim_id,cl.lease_id,cl.expires_at from public.donation_claims c\r\n    join public.claim_leases cl using(claim_id)\r\n    where c.claim_status='ACTIVE' and cl.lease_status='ACTIVE' and cl.expires_at<=clock_timestamp()\r\n    order by cl.expires_at,c.claim_id\r\n    for update of c skip locked\r\n    limit greatest(1,least(coalesce(p_limit,100),1000))\r\n  loop\r\n    select c.* into v_c from public.donation_claims c where c.claim_id=v_rec.claim_id;\r\n    -- Current row lock was obtained on claim above; follow V3 writer order.\r\n    select le.* into v_le from public.claim_leases le where le.lease_id=v_rec.lease_id for update;\r\n    if v_c.claim_status<>'ACTIVE' or v_le.lease_status<>'ACTIVE'\r\n       or v_le.expires_at>clock_timestamp() then continue; end if;\r\n    select l.* into v_l from public.listings l where l.listing_id=v_c.listing_id for update;\r\n    select t.* into v_t from public.pickup_tasks t where t.claim_id=v_c.claim_id for update;\r\n\r\n    -- Unresolved custody evidence for this claim or listing fences reopening.\r\n    v_uncertain := exists(select 1 from public.claim_reconciliation_cases rc\r\n        where (rc.claim_id=v_c.claim_id or rc.listing_id=v_l.listing_id)\r\n          and rc.case_status in ('OPEN','MANUAL_REVIEW'))\r\n      or v_l.listing_id is null\r\n      or v_t.task_id is null\r\n      or v_l.listing_status<>'CLAIMED'\r\n      or v_t.task_status<>'CONFIRMED'\r\n      or exists(select 1 from public.active_task_route_assignments a where a.task_id=v_t.task_id)\r\n      or exists(select 1 from public.pickup_route_stops s\r\n        where s.task_id=v_t.task_id)\r\n      or (v_l.source_type='DIRECT_DONATION' and exists(select 1 from public.donations d\r\n        where d.donation_id=v_l.donation_id and d.donation_status in ('PICKUP_IN_PROGRESS','COLLECTED','DELIVERED')))\r\n      or (v_l.source_type='HUB_BATCH' and exists(select 1 from public.hub_batch_members m\r\n        join public.donations d using(donation_id) where m.batch_id=v_l.batch_id\r\n        and m.membership_status='ACTIVE' and d.donation_status in ('PICKUP_IN_PROGRESS','COLLECTED','DELIVERED')));\r\n    if v_l.source_type='DIRECT_DONATION' then\r\n      v_uncertain:=v_uncertain or not exists(select 1 from public.donations d\r\n        where d.donation_id=v_l.donation_id and d.donation_status='CLAIMED');\r\n    elsif v_l.source_type='HUB_BATCH' then\r\n      v_uncertain:=v_uncertain\r\n        or not exists(select 1 from public.hub_batch_members m\r\n          where m.batch_id=v_l.batch_id and m.membership_status='ACTIVE')\r\n        or exists(select 1 from public.hub_batch_members m join public.donations d using(donation_id)\r\n          where m.batch_id=v_l.batch_id and m.membership_status='ACTIVE'\r\n            and d.donation_status<>'CLAIMED')\r\n        or exists(select 1 from public.hub_batch_members m join public.hub_inventory hi using(donation_id)\r\n          where m.batch_id=v_l.batch_id and m.membership_status='ACTIVE'\r\n            and hi.inventory_status<>'BATCHED');\r\n    end if;\r\n    if v_l.listing_id is not null then\r\n      v_uncertain:=not public.geolock_lock_listing_donations(v_l.listing_id,array['CLAIMED']) or v_uncertain;\r\n    end if;\r\n    -- Decide listing expiry only after acquiring the donation/batch lock set.\r\n    -- An expired listing cannot be safely reopened; retain custody for reconciliation.\r\n    v_uncertain:=v_uncertain\r\n      or (v_l.listing_expires_at is not null and v_l.listing_expires_at<=clock_timestamp());\r\n    if v_uncertain then\r\n      update public.claim_leases set lease_status='RECONCILIATION_REQUIRED' where lease_id=v_le.lease_id;\r\n      update public.donation_claims set claim_status='RECONCILIATION_REQUIRED' where claim_id=v_c.claim_id;\r\n      if v_l.listing_id is not null then\r\n        insert into public.claim_reconciliation_cases(claim_id,listing_id,donation_id,source_type,case_status)\r\n          values(v_c.claim_id,v_l.listing_id,v_l.donation_id,v_l.source_type,'OPEN')\r\n          on conflict(claim_id) do nothing;\r\n      end if;\r\n    else\r\n      update public.claim_leases set lease_status='RELEASED',closed_at=clock_timestamp(),release_reason='EXPIRED_SAFE_RELEASE'\r\n        where lease_id=v_le.lease_id;\r\n      update public.donation_claims set claim_status='RELEASED',closed_at=clock_timestamp(),close_reason='EXPIRED_SAFE_RELEASE'\r\n        where claim_id=v_c.claim_id;\r\n      update public.pickup_tasks set task_status='STALE' where task_id=v_t.task_id;\r\n      if v_l.listing_status='CLAIMED' and (v_l.listing_expires_at is null or v_l.listing_expires_at>clock_timestamp()) then\r\n        update public.listings set listing_status='AVAILABLE',listing_version=listing_version+1\r\n          where listing_id=v_l.listing_id and listing_status='CLAIMED';\r\n        perform public.geolock_transition_listing_donations(v_l.listing_id,'CLAIMED',\r\n          case when v_l.source_type='DIRECT_DONATION' then 'AVAILABLE' else 'BATCHED' end);\r\n      else\r\n        raise exception 'RECOVERY_LISTING_REOPEN_PRECONDITION_CHANGED';\r\n      end if;\r\n    end if;\r\n    select c.config_version into v_cfg from public.coordination_config c where c.singleton;\r\n    insert into public.audit_events(actor_role,entity_type,entity_id,event_type,claim_id,lease_id,\r\n      correlation_id,previous_state,requested_state,resulting_state,reason_code,outcome,\r\n      software_version,configuration_version,details)\r\n    values('SYSTEM','CLAIM',v_c.claim_id,'LEASE_RECOVERY',v_c.claim_id,v_le.lease_id,\r\n      gen_random_uuid(),'ACTIVE',case when v_uncertain then 'RECONCILIATION_REQUIRED' else 'RELEASED' end,\r\n      case when v_uncertain then 'RECONCILIATION_REQUIRED' else 'RELEASED' end,\r\n      case when v_uncertain then 'HANDOVER_OR_ROUTE_ACTIVITY_UNCERTAIN' else 'EXPIRED_SAFE_RELEASE' end,\r\n      'SUCCESS','geolock-stage1-2026-10-19',v_cfg,\r\n      jsonb_build_object('donation_id',v_l.donation_id,\r\n        'listing_id',v_l.listing_id,'task_id',v_t.task_id));\r\n    v_count:=v_count+1;\r\n  end loop;\r\n  return v_count;\r\nend;\r\n$function$\n"
+        },
+        {
+          "proname": "start_pickup",
+          "signature": "start_pickup(uuid)",
+          "owner": "postgres",
+          "prosecdef": true,
+          "acl": "{postgres=X/postgres,anon=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+          "definition": "CREATE OR REPLACE FUNCTION public.start_pickup(p_claim uuid)\n RETURNS void\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public', 'extensions', 'pg_temp'\nAS $function$\r\ndeclare v_actor uuid:=auth.uid();v_c public.donation_claims%rowtype;\r\n v_l public.listings%rowtype;v_lease public.claim_leases%rowtype;\r\nbegin\r\n select * into v_c from public.donation_claims where claim_id=p_claim for update;\r\n if not found or v_c.ngo_user_id is distinct from v_actor or v_c.claim_status<>'ACTIVE'\r\n then raise exception 'NOT_ACTIVE_CLAIM_HOLDER'; end if;\r\n select * into v_lease from public.claim_leases where claim_id=p_claim for update;\r\n if not found or v_lease.lease_status<>'ACTIVE' or v_lease.expires_at<=clock_timestamp()\r\n then raise exception 'STALE_OR_EXPIRED_LEASE'; end if;\r\n select * into v_l from public.listings where listing_id=v_c.listing_id for update;\r\n if v_l.listing_status<>'CLAIMED' then raise exception 'LISTING_NOT_CLAIMED'; end if;\r\n update public.pickup_tasks set task_status='DISPATCHED'\r\n where claim_id=p_claim and task_status in ('CONFIRMED','PLANNED');\r\n if not found then raise exception 'PICKUP_TASK_NOT_DISPATCHABLE'; end if;\r\n perform public.geolock_transition_listing_donations(v_l.listing_id,'CLAIMED','PICKUP_IN_PROGRESS');\r\n insert into public.audit_events(actor_user_id,actor_role,entity_type,entity_id,event_type,\r\n claim_id,lease_id,requested_state,resulting_state,outcome)\r\n values(v_actor,'NGO','CLAIM',p_claim,'START_PICKUP',p_claim,v_lease.lease_id,\r\n 'PICKUP_IN_PROGRESS','PICKUP_IN_PROGRESS','SUCCESS');\r\nend $function$\n"
+        }
+      ]
+    },
+    "security": {
+      "query": "SELECT c.relname,pg_get_userbyid(c.relowner) AS owner,c.relrowsecurity,c.relforcerowsecurity,r.rolname,has_table_privilege(r.rolname,c.oid,'SELECT') AS can_select,has_table_privilege(r.rolname,c.oid,'INSERT') AS can_insert,has_table_privilege(r.rolname,c.oid,'UPDATE') AS can_update,has_table_privilege(r.rolname,c.oid,'DELETE') AS can_delete FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace CROSS JOIN pg_roles r WHERE n.nspname='public' AND c.relname IN ('vehicles','pickup_tasks','pickup_routes','pickup_route_stops','active_task_route_assignments','donations','listings','claim_leases','donation_claims','road_network_edges') AND r.rolname IN ('anon','authenticated','service_role') ORDER BY c.relname,r.rolname;",
+      "data": [
+        {
+          "relname": "active_task_route_assignments",
+          "owner": "postgres",
+          "relrowsecurity": true,
+          "relforcerowsecurity": false,
+          "rolname": "anon",
+          "can_select": true,
+          "can_insert": true,
+          "can_update": true,
+          "can_delete": true
+        },
+        {
+          "relname": "active_task_route_assignments",
+          "owner": "postgres",
+          "relrowsecurity": true,
+          "relforcerowsecurity": false,
+          "rolname": "authenticated",
+          "can_select": true,
+          "can_insert": true,
+          "can_update": true,
+          "can_delete": true
+        },
+        {
+          "relname": "active_task_route_assignments",
+          "owner": "postgres",
+          "relrowsecurity": true,
+          "relforcerowsecurity": false,
+          "rolname": "service_role",
+          "can_select": true,
+          "can_insert": true,
+          "can_update": true,
+          "can_delete": true
+        },
+        {
+          "relname": "claim_leases",
+          "owner": "postgres",
+          "relrowsecurity": true,
+          "relforcerowsecurity": false,
+          "rolname": "anon",
+          "can_select": true,
+          "can_insert": true,
+          "can_update": true,
+          "can_delete": true
+        },
+        {
+          "relname": "claim_leases",
+          "owner": "postgres",
+          "relrowsecurity": true,
+          "relforcerowsecurity": false,
+          "rolname": "authenticated",
+          "can_select": true,
+          "can_insert": true,
+          "can_update": true,
+          "can_delete": true
+        },
+        {
+          "relname": "claim_leases",
+          "owner": "postgres",
+          "relrowsecurity": true,
+          "relforcerowsecurity": false,
+          "rolname": "service_role",
+          "can_select": true,
+          "can_insert": true,
+          "can_update": true,
+          "can_delete": true
+        },
+        {
+          "relname": "donation_claims",
+          "owner": "postgres",
+          "relrowsecurity": true,
+          "relforcerowsecurity": false,
+          "rolname": "anon",
+          "can_select": true,
+          "can_insert": true,
+          "can_update": true,
+          "can_delete": true
+        },
+        {
+          "relname": "donation_claims",
+          "owner": "postgres",
+          "relrowsecurity": true,
+          "relforcerowsecurity": false,
+          "rolname": "authenticated",
+          "can_select": true,
+          "can_insert": true,
+          "can_update": true,
+          "can_delete": true
+        },
+        {
+          "relname": "donation_claims",
+          "owner": "postgres",
+          "relrowsecurity": true,
+          "relforcerowsecurity": false,
+          "rolname": "service_role",
+          "can_select": true,
+          "can_insert": true,
+          "can_update": true,
+          "can_delete": true
+        },
+        {
+          "relname": "donations",
+          "owner": "postgres",
+          "relrowsecurity": true,
+          "relforcerowsecurity": false,
+          "rolname": "anon",
+          "can_select": true,
+          "can_insert": true,
+          "can_update": true,
+          "can_delete": true
+        },
+        {
+          "relname": "donations",
+          "owner": "postgres",
+          "relrowsecurity": true,
+          "relforcerowsecurity": false,
+          "rolname": "authenticated",
+          "can_select": true,
+          "can_insert": true,
+          "can_update": true,
+          "can_delete": true
+        },
+        {
+          "relname": "donations",
+          "owner": "postgres",
+          "relrowsecurity": true,
+          "relforcerowsecurity": false,
+          "rolname": "service_role",
+          "can_select": true,
+          "can_insert": true,
+          "can_update": true,
+          "can_delete": true
+        },
+        {
+          "relname": "listings",
+          "owner": "postgres",
+          "relrowsecurity": true,
+          "relforcerowsecurity": false,
+          "rolname": "anon",
+          "can_select": true,
+          "can_insert": true,
+          "can_update": true,
+          "can_delete": true
+        },
+        {
+          "relname": "listings",
+          "owner": "postgres",
+          "relrowsecurity": true,
+          "relforcerowsecurity": false,
+          "rolname": "authenticated",
+          "can_select": true,
+          "can_insert": true,
+          "can_update": true,
+          "can_delete": true
+        },
+        {
+          "relname": "listings",
+          "owner": "postgres",
+          "relrowsecurity": true,
+          "relforcerowsecurity": false,
+          "rolname": "service_role",
+          "can_select": true,
+          "can_insert": true,
+          "can_update": true,
+          "can_delete": true
+        },
+        {
+          "relname": "pickup_route_stops",
+          "owner": "postgres",
+          "relrowsecurity": true,
+          "relforcerowsecurity": false,
+          "rolname": "anon",
+          "can_select": true,
+          "can_insert": true,
+          "can_update": true,
+          "can_delete": true
+        },
+        {
+          "relname": "pickup_route_stops",
+          "owner": "postgres",
+          "relrowsecurity": true,
+          "relforcerowsecurity": false,
+          "rolname": "authenticated",
+          "can_select": true,
+          "can_insert": true,
+          "can_update": true,
+          "can_delete": true
+        },
+        {
+          "relname": "pickup_route_stops",
+          "owner": "postgres",
+          "relrowsecurity": true,
+          "relforcerowsecurity": false,
+          "rolname": "service_role",
+          "can_select": true,
+          "can_insert": true,
+          "can_update": true,
+          "can_delete": true
+        },
+        {
+          "relname": "pickup_routes",
+          "owner": "postgres",
+          "relrowsecurity": true,
+          "relforcerowsecurity": false,
+          "rolname": "anon",
+          "can_select": true,
+          "can_insert": true,
+          "can_update": true,
+          "can_delete": true
+        },
+        {
+          "relname": "pickup_routes",
+          "owner": "postgres",
+          "relrowsecurity": true,
+          "relforcerowsecurity": false,
+          "rolname": "authenticated",
+          "can_select": true,
+          "can_insert": true,
+          "can_update": true,
+          "can_delete": true
+        },
+        {
+          "relname": "pickup_routes",
+          "owner": "postgres",
+          "relrowsecurity": true,
+          "relforcerowsecurity": false,
+          "rolname": "service_role",
+          "can_select": true,
+          "can_insert": true,
+          "can_update": true,
+          "can_delete": true
+        },
+        {
+          "relname": "pickup_tasks",
+          "owner": "postgres",
+          "relrowsecurity": true,
+          "relforcerowsecurity": false,
+          "rolname": "anon",
+          "can_select": true,
+          "can_insert": true,
+          "can_update": true,
+          "can_delete": true
+        },
+        {
+          "relname": "pickup_tasks",
+          "owner": "postgres",
+          "relrowsecurity": true,
+          "relforcerowsecurity": false,
+          "rolname": "authenticated",
+          "can_select": true,
+          "can_insert": true,
+          "can_update": true,
+          "can_delete": true
+        },
+        {
+          "relname": "pickup_tasks",
+          "owner": "postgres",
+          "relrowsecurity": true,
+          "relforcerowsecurity": false,
+          "rolname": "service_role",
+          "can_select": true,
+          "can_insert": true,
+          "can_update": true,
+          "can_delete": true
+        },
+        {
+          "relname": "road_network_edges",
+          "owner": "postgres",
+          "relrowsecurity": true,
+          "relforcerowsecurity": false,
+          "rolname": "anon",
+          "can_select": false,
+          "can_insert": false,
+          "can_update": false,
+          "can_delete": false
+        },
+        {
+          "relname": "road_network_edges",
+          "owner": "postgres",
+          "relrowsecurity": true,
+          "relforcerowsecurity": false,
+          "rolname": "authenticated",
+          "can_select": false,
+          "can_insert": false,
+          "can_update": false,
+          "can_delete": false
+        },
+        {
+          "relname": "road_network_edges",
+          "owner": "postgres",
+          "relrowsecurity": true,
+          "relforcerowsecurity": false,
+          "rolname": "service_role",
+          "can_select": true,
+          "can_insert": true,
+          "can_update": true,
+          "can_delete": true
+        },
+        {
+          "relname": "vehicles",
+          "owner": "postgres",
+          "relrowsecurity": true,
+          "relforcerowsecurity": false,
+          "rolname": "anon",
+          "can_select": true,
+          "can_insert": true,
+          "can_update": true,
+          "can_delete": true
+        },
+        {
+          "relname": "vehicles",
+          "owner": "postgres",
+          "relrowsecurity": true,
+          "relforcerowsecurity": false,
+          "rolname": "authenticated",
+          "can_select": true,
+          "can_insert": true,
+          "can_update": true,
+          "can_delete": true
+        },
+        {
+          "relname": "vehicles",
+          "owner": "postgres",
+          "relrowsecurity": true,
+          "relforcerowsecurity": false,
+          "rolname": "service_role",
+          "can_select": true,
+          "can_insert": true,
+          "can_update": true,
+          "can_delete": true
+        }
+      ]
+    },
+    "policies": {
+      "query": "SELECT tablename,policyname,roles,cmd,qual,with_check FROM pg_policies WHERE schemaname='public' AND tablename IN ('vehicles','pickup_tasks','pickup_routes','pickup_route_stops','active_task_route_assignments','donations','listings','claim_leases','donation_claims','road_network_edges');",
+      "data": []
+    },
+    "schema_roles": {
+      "query": "SELECT rolname,rolsuper,rolbypassrls,rolcanlogin,has_schema_privilege(rolname,'public','CREATE') AS public_create FROM pg_roles WHERE rolname IN ('anon','authenticated','service_role','postgres');",
+      "data": [
+        {
+          "rolname": "authenticated",
+          "rolsuper": false,
+          "rolbypassrls": false,
+          "rolcanlogin": false,
+          "public_create": false
+        },
+        {
+          "rolname": "anon",
+          "rolsuper": false,
+          "rolbypassrls": false,
+          "rolcanlogin": false,
+          "public_create": false
+        },
+        {
+          "rolname": "service_role",
+          "rolsuper": false,
+          "rolbypassrls": true,
+          "rolcanlogin": false,
+          "public_create": false
+        },
+        {
+          "rolname": "postgres",
+          "rolsuper": false,
+          "rolbypassrls": true,
+          "rolcanlogin": true,
+          "public_create": true
+        }
+      ]
+    },
+    "defaults": {
+      "query": "SELECT pg_get_userbyid(d.defaclrole) AS owner,n.nspname,d.defaclobjtype,d.defaclacl::text FROM pg_default_acl d LEFT JOIN pg_namespace n ON n.oid=d.defaclnamespace WHERE n.nspname='public' OR d.defaclnamespace=0;",
+      "data": [
+        {
+          "owner": "postgres",
+          "nspname": "public",
+          "defaclobjtype": "r",
+          "defaclacl": "{postgres=arwdDxtm/postgres,anon=arwdDxtm/postgres,authenticated=arwdDxtm/postgres,service_role=arwdDxtm/postgres}"
+        },
+        {
+          "owner": "postgres",
+          "nspname": "public",
+          "defaclobjtype": "f",
+          "defaclacl": "{postgres=X/postgres,anon=X/postgres,authenticated=X/postgres,service_role=X/postgres}"
+        },
+        {
+          "owner": "postgres",
+          "nspname": "public",
+          "defaclobjtype": "S",
+          "defaclacl": "{postgres=rwU/postgres,anon=rwU/postgres,authenticated=rwU/postgres,service_role=rwU/postgres}"
+        },
+        {
+          "owner": "supabase_admin",
+          "nspname": "public",
+          "defaclobjtype": "S",
+          "defaclacl": "{postgres=rwU/supabase_admin,anon=rwU/supabase_admin,authenticated=rwU/supabase_admin,service_role=rwU/supabase_admin}"
+        },
+        {
+          "owner": "supabase_admin",
+          "nspname": "public",
+          "defaclobjtype": "r",
+          "defaclacl": "{postgres=arwdDxtm/supabase_admin,anon=arwdDxtm/supabase_admin,authenticated=arwdDxtm/supabase_admin,service_role=arwdDxtm/supabase_admin}"
+        },
+        {
+          "owner": "supabase_admin",
+          "nspname": "public",
+          "defaclobjtype": "f",
+          "defaclacl": "{postgres=X/supabase_admin,anon=X/supabase_admin,authenticated=X/supabase_admin,service_role=X/supabase_admin}"
+        }
+      ]
+    },
+    "triggers": {
+      "query": "SELECT c.relname,t.tgname,t.tgenabled,pg_get_triggerdef(t.oid,true) AS definition FROM pg_trigger t JOIN pg_class c ON c.oid=t.tgrelid JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='public' AND NOT t.tgisinternal AND c.relname IN ('vehicles','pickup_tasks','pickup_routes','pickup_route_stops','active_task_route_assignments','donations','listings') ORDER BY c.relname,t.tgname;",
+      "data": [
+        {
+          "relname": "donations",
+          "tgname": "donations_lifecycle_at_commit",
+          "tgenabled": "O",
+          "definition": "CREATE CONSTRAINT TRIGGER donations_lifecycle_at_commit AFTER INSERT OR UPDATE ON donations DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION geolock_validate_donation_at_commit()"
+        },
+        {
+          "relname": "donations",
+          "tgname": "donations_require_photo_at_commit",
+          "tgenabled": "O",
+          "definition": "CREATE CONSTRAINT TRIGGER donations_require_photo_at_commit AFTER INSERT ON donations DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION require_donation_photo_before_commit()"
+        },
+        {
+          "relname": "donations",
+          "tgname": "trg_donation_road_node",
+          "tgenabled": "O",
+          "definition": "CREATE TRIGGER trg_donation_road_node BEFORE INSERT ON donations FOR EACH ROW EXECUTE FUNCTION geolock_assign_road_node()"
+        },
+        {
+          "relname": "donations",
+          "tgname": "trg_donation_transition",
+          "tgenabled": "O",
+          "definition": "CREATE TRIGGER trg_donation_transition BEFORE UPDATE ON donations FOR EACH ROW EXECUTE FUNCTION enforce_donation_transition()"
+        },
+        {
+          "relname": "listings",
+          "tgname": "trg_listing_road_eligibility",
+          "tgenabled": "O",
+          "definition": "CREATE TRIGGER trg_listing_road_eligibility AFTER INSERT OR UPDATE ON listings FOR EACH ROW EXECUTE FUNCTION geolock_listing_eligibility_trigger()"
+        },
+        {
+          "relname": "listings",
+          "tgname": "trg_listing_transition",
+          "tgenabled": "O",
+          "definition": "CREATE TRIGGER trg_listing_transition BEFORE UPDATE ON listings FOR EACH ROW EXECUTE FUNCTION enforce_listing_transition()"
+        },
+        {
+          "relname": "listings",
+          "tgname": "zz_listing_eligibility_generation",
+          "tgenabled": "O",
+          "definition": "CREATE TRIGGER zz_listing_eligibility_generation BEFORE INSERT OR UPDATE ON listings FOR EACH ROW EXECUTE FUNCTION geolock_prepare_listing_eligibility()"
+        },
+        {
+          "relname": "vehicles",
+          "tgname": "trg_vehicle_depot_node",
+          "tgenabled": "O",
+          "definition": "CREATE TRIGGER trg_vehicle_depot_node BEFORE INSERT OR UPDATE OF depot_road_node_id, ngo_user_id ON vehicles FOR EACH ROW EXECUTE FUNCTION geolock_assign_vehicle_depot()"
+        }
+      ]
+    },
+    "inventory": {
+      "query": "SELECT 'table' AS kind,c.relname AS name FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='public' AND c.relkind='r' UNION ALL SELECT 'function',p.oid::regprocedure::text FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace WHERE n.nspname='public' AND p.prokind='f' ORDER BY kind,name;",
+      "data": [
+        {
+          "kind": "function",
+          "name": "add_donation_image(uuid,text,text,integer)"
+        },
+        {
+          "kind": "function",
+          "name": "add_hub_batch_image(uuid,text,text,integer)"
+        },
+        {
+          "kind": "function",
+          "name": "assign_task_to_route(uuid,uuid,integer)"
+        },
+        {
+          "kind": "function",
+          "name": "can_read_geolock_batch_image(text)"
+        },
+        {
+          "kind": "function",
+          "name": "can_read_geolock_donation_image(text)"
+        },
+        {
+          "kind": "function",
+          "name": "cancel_claim(uuid,uuid)"
+        },
+        {
+          "kind": "function",
+          "name": "cancel_donation(uuid,uuid)"
+        },
+        {
+          "kind": "function",
+          "name": "claim_listing(uuid,uuid)"
+        },
+        {
+          "kind": "function",
+          "name": "complete_pickup(uuid,boolean)"
+        },
+        {
+          "kind": "function",
+          "name": "confirm_hub_receipt(uuid,numeric)"
+        },
+        {
+          "kind": "function",
+          "name": "create_and_validate_donation(text,text,text,double precision,do"
+        },
+        {
+          "kind": "function",
+          "name": "create_donation_with_images(uuid,text,text,text,double precisio"
+        },
+        {
+          "kind": "function",
+          "name": "discover_eligible_listing_cards()"
+        },
+        {
+          "kind": "function",
+          "name": "discover_eligible_listings()"
+        },
+        {
+          "kind": "function",
+          "name": "enforce_donation_transition()"
+        },
+        {
+          "kind": "function",
+          "name": "enforce_listing_transition()"
+        },
+        {
+          "kind": "function",
+          "name": "geolock_active_road_snapshot()"
+        },
+        {
+          "kind": "function",
+          "name": "geolock_app_capabilities()"
+        },
+        {
+          "kind": "function",
+          "name": "geolock_assert_donation_lifecycle(uuid)"
+        },
+        {
+          "kind": "function",
+          "name": "geolock_assign_road_node()"
+        },
+        {
+          "kind": "function",
+          "name": "geolock_assign_vehicle_depot()"
+        },
+        {
+          "kind": "function",
+          "name": "geolock_backfill_road_nodes()"
+        },
+        {
+          "kind": "function",
+          "name": "geolock_donation_hub_routes(uuid)"
+        },
+        {
+          "kind": "function",
+          "name": "geolock_listing_eligibility_ready(uuid)"
+        },
+        {
+          "kind": "function",
+          "name": "geolock_listing_eligibility_trigger()"
+        },
+        {
+          "kind": "function",
+          "name": "geolock_lock_listing_donations(uuid,text[])"
+        },
+        {
+          "kind": "function",
+          "name": "geolock_ngo_eligibility_ready(uuid)"
+        },
+        {
+          "kind": "function",
+          "name": "geolock_ngo_listing_road_check(uuid,uuid)"
+        },
+        {
+          "kind": "function",
+          "name": "geolock_prepare_listing_eligibility()"
+        },
+        {
+          "kind": "function",
+          "name": "geolock_refresh_listing_road_eligibility(uuid,uuid)"
+        },
+        {
+          "kind": "function",
+          "name": "geolock_refresh_ngo_road_eligibility(uuid)"
+        },
+        {
+          "kind": "function",
+          "name": "geolock_require_hub_route()"
+        },
+        {
+          "kind": "function",
+          "name": "geolock_resolve_road_node(double precision,double precision)"
+        },
+        {
+          "kind": "function",
+          "name": "geolock_road_component(text)"
+        },
+        {
+          "kind": "function",
+          "name": "geolock_road_costs(bigint[],bigint[],double precision,double pr"
+        },
+        {
+          "kind": "function",
+          "name": "geolock_road_eligible_km(uuid,uuid)"
+        },
+        {
+          "kind": "function",
+          "name": "geolock_storage_can_delete_unattached_image(text,text)"
+        },
+        {
+          "kind": "function",
+          "name": "geolock_storage_can_read_image(text,text)"
+        },
+        {
+          "kind": "function",
+          "name": "geolock_storage_can_upload_batch_image(text,text,jsonb)"
+        },
+        {
+          "kind": "function",
+          "name": "geolock_storage_can_upload_donation_image(text,text,jsonb)"
+        },
+        {
+          "kind": "function",
+          "name": "geolock_transition_listing_donations(uuid,text,text)"
+        },
+        {
+          "kind": "function",
+          "name": "geolock_validate_donation_at_commit()"
+        },
+        {
+          "kind": "function",
+          "name": "get_active_donation_categories()"
+        },
+        {
+          "kind": "function",
+          "name": "get_authorized_audit_events(text,uuid)"
+        },
+        {
+          "kind": "function",
+          "name": "get_batch_images(uuid)"
+        },
+        {
+          "kind": "function",
+          "name": "get_claimed_listing_constituents(uuid)"
+        },
+        {
+          "kind": "function",
+          "name": "get_claimed_listing_detail(uuid)"
+        },
+        {
+          "kind": "function",
+          "name": "get_donation_images(uuid)"
+        },
+        {
+          "kind": "function",
+          "name": "get_eligible_hubs(uuid)"
+        },
+        {
+          "kind": "function",
+          "name": "get_eligible_listing_constituents(uuid)"
+        },
+        {
+          "kind": "function",
+          "name": "get_hub_batch_details(uuid,uuid)"
+        },
+        {
+          "kind": "function",
+          "name": "get_hub_dashboard(uuid)"
+        },
+        {
+          "kind": "function",
+          "name": "get_hub_donation_covers(uuid)"
+        },
+        {
+          "kind": "function",
+          "name": "get_my_claim_cards()"
+        },
+        {
+          "kind": "function",
+          "name": "get_my_claim_cards_v2()"
+        },
+        {
+          "kind": "function",
+          "name": "get_my_claims()"
+        },
+        {
+          "kind": "function",
+          "name": "get_my_donation_dashboard()"
+        },
+        {
+          "kind": "function",
+          "name": "get_my_donation_dashboard_v2()"
+        },
+        {
+          "kind": "function",
+          "name": "get_my_donation_detail(uuid)"
+        },
+        {
+          "kind": "function",
+          "name": "get_my_donations()"
+        },
+        {
+          "kind": "function",
+          "name": "get_my_hub_batches_dashboard(uuid)"
+        },
+        {
+          "kind": "function",
+          "name": "get_my_hub_inventory(uuid)"
+        },
+        {
+          "kind": "function",
+          "name": "get_my_hub_reservations(uuid)"
+        },
+        {
+          "kind": "function",
+          "name": "get_my_hubs()"
+        },
+        {
+          "kind": "function",
+          "name": "get_my_ngo_eligibility_refresh_status()"
+        },
+        {
+          "kind": "function",
+          "name": "get_my_profile()"
+        },
+        {
+          "kind": "function",
+          "name": "get_my_reconciliation_cases()"
+        },
+        {
+          "kind": "function",
+          "name": "guard_batch_immutability()"
+        },
+        {
+          "kind": "function",
+          "name": "guard_donation_items()"
+        },
+        {
+          "kind": "function",
+          "name": "prevent_audit_mutation()"
+        },
+        {
+          "kind": "function",
+          "name": "prevent_role_change()"
+        },
+        {
+          "kind": "function",
+          "name": "preview_location_routing(double precision,double precision)"
+        },
+        {
+          "kind": "function",
+          "name": "process_listing_eligibility_refresh_jobs()"
+        },
+        {
+          "kind": "function",
+          "name": "process_ngo_eligibility_refresh_jobs()"
+        },
+        {
+          "kind": "function",
+          "name": "publish_whole_donation_batch(uuid,uuid[])"
+        },
+        {
+          "kind": "function",
+          "name": "recover_expired_claims(integer)"
+        },
+        {
+          "kind": "function",
+          "name": "register_community_hub(text,text,double precision,double precis"
+        },
+        {
+          "kind": "function",
+          "name": "register_role_profile(text,text,text,text,text,text,double prec"
+        },
+        {
+          "kind": "function",
+          "name": "require_donation_photo_before_commit()"
+        },
+        {
+          "kind": "function",
+          "name": "reserve_hub_capacity(uuid,uuid)"
+        },
+        {
+          "kind": "function",
+          "name": "set_ngo_operating_location(text,double precision,double precisi"
+        },
+        {
+          "kind": "function",
+          "name": "start_pickup(uuid)"
+        },
+        {
+          "kind": "function",
+          "name": "submit_claim_reconciliation(uuid,boolean,uuid)"
+        },
+        {
+          "kind": "function",
+          "name": "update_my_hub(uuid,text,text,double precision,double precision,"
+        },
+        {
+          "kind": "function",
+          "name": "update_my_profile(text,text,text,text)"
+        },
+        {
+          "kind": "function",
+          "name": "verify_ngo_location(uuid,boolean,text)"
+        },
+        {
+          "kind": "table",
+          "name": "active_task_route_assignments"
+        },
+        {
+          "kind": "table",
+          "name": "audit_events"
+        },
+        {
+          "kind": "table",
+          "name": "claim_cancellation_requests"
+        },
+        {
+          "kind": "table",
+          "name": "claim_leases"
+        },
+        {
+          "kind": "table",
+          "name": "claim_reconciliation_cases"
+        },
+        {
+          "kind": "table",
+          "name": "claim_reconciliation_evidence"
+        },
+        {
+          "kind": "table",
+          "name": "claim_requests"
+        },
+        {
+          "kind": "table",
+          "name": "community_hubs"
+        },
+        {
+          "kind": "table",
+          "name": "coordination_config"
+        },
+        {
+          "kind": "table",
+          "name": "donation_cancellation_requests"
+        },
+        {
+          "kind": "table",
+          "name": "donation_categories"
+        },
+        {
+          "kind": "table",
+          "name": "donation_claims"
+        },
+        {
+          "kind": "table",
+          "name": "donation_create_requests"
+        },
+        {
+          "kind": "table",
+          "name": "donation_images"
+        },
+        {
+          "kind": "table",
+          "name": "donation_items"
+        },
+        {
+          "kind": "table",
+          "name": "donations"
+        },
+        {
+          "kind": "table",
+          "name": "donor_profiles"
+        },
+        {
+          "kind": "table",
+          "name": "hub_accepted_categories"
+        },
+        {
+          "kind": "table",
+          "name": "hub_admin_profiles"
+        },
+        {
+          "kind": "table",
+          "name": "hub_batch_images"
+        },
+        {
+          "kind": "table",
+          "name": "hub_batch_members"
+        },
+        {
+          "kind": "table",
+          "name": "hub_batches"
+        },
+        {
+          "kind": "table",
+          "name": "hub_inventory"
+        },
+        {
+          "kind": "table",
+          "name": "hub_receipts"
+        },
+        {
+          "kind": "table",
+          "name": "hub_reservations"
+        },
+        {
+          "kind": "table",
+          "name": "listing_eligibility_refresh_jobs"
+        },
+        {
+          "kind": "table",
+          "name": "listings"
+        },
+        {
+          "kind": "table",
+          "name": "ngo_eligibility_refresh_jobs"
+        },
+        {
+          "kind": "table",
+          "name": "ngo_listing_road_eligibility"
+        },
+        {
+          "kind": "table",
+          "name": "ngo_profiles"
+        },
+        {
+          "kind": "table",
+          "name": "pickup_route_stops"
+        },
+        {
+          "kind": "table",
+          "name": "pickup_routes"
+        },
+        {
+          "kind": "table",
+          "name": "pickup_tasks"
+        },
+        {
+          "kind": "table",
+          "name": "road_network_coverage"
+        },
+        {
+          "kind": "table",
+          "name": "road_network_edges"
+        },
+        {
+          "kind": "table",
+          "name": "road_network_nodes"
+        },
+        {
+          "kind": "table",
+          "name": "user_profiles"
+        },
+        {
+          "kind": "table",
+          "name": "vehicles"
+        }
+      ]
+    },
+    "counts": {
+      "query": "SELECT clock_timestamp() AS inspected_at,(SELECT count(*) FROM public.vehicles) AS vehicles,(SELECT count(*) FROM public.pickup_routes) AS routes,(SELECT count(*) FROM public.pickup_tasks WHERE task_status='CONFIRMED') AS confirmed_tasks,(SELECT count(*) FROM public.pickup_tasks WHERE task_status='DISPATCHED') AS dispatched_tasks;",
+      "data": [
+        {
+          "inspected_at": "2026-10-23 19:44:13.281554+00",
+          "vehicles": 0,
+          "routes": 0,
+          "confirmed_tasks": 0,
+          "dispatched_tasks": 0
+        }
+      ]
+    },
+    "cron": {
+      "query": "SELECT jobname,schedule,active FROM cron.job WHERE jobname ~* '(claim|recover)' OR command ~* 'recover_expired_claims';",
+      "data": [
+        {
+          "jobname": "geolock-expired-claim-recovery",
+          "schedule": "* * * * *",
+          "active": false
+        }
+      ]
+    },
+    "network": {
+      "query": "SELECT network_snapshot_id,dataset_kind,provenance,node_count,edge_count,approved_at,active_flag FROM public.road_network_coverage WHERE active_flag;",
+      "data": [
+        {
+          "network_snapshot_id": "OSM-OPS-20261018",
+          "dataset_kind": "OPERATIONAL",
+          "provenance": "OPERATIONAL; OpenStreetMap via Geofabrik malaysia-singapore-brunei-261018.osm.pbf; md5=962e5488d557f21ed6f8cfba88eec0ad; osm_timestamp=2026-10-18T20:25:06Z; licence=ODbL-1.0; builder=build_operational_road_network.py sha256=188bde7568b4d9eb",
+          "node_count": 926414,
+          "edge_count": 2145828,
+          "approved_at": "2026-10-20 11:03:49.311259+00",
+          "active_flag": true
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,562 @@
+{
+  "kind": "OFFLINE_SYNTHETIC_PROFILE",
+  "at_utc": "2026-11-06T15:21:43.912124+00:00",
+  "host": {
+    "total_physical_mb": 20257,
+    "available_physical_mb": 10076
+  },
+  "python": "3.12.14",
+  "nodes": 2000,
+  "edges": 3998,
+  "limits": {
+    "private_bytes": 536870912,
+    "wall_seconds": 60,
+    "full_dev_graph_loaded": false
+  },
+  "no_network_calls": true,
+  "no_dev_writes": true,
+  "load_seconds": 0.15082559999996192,
+  "first_matrix_seconds": 0.5503910999998425,
+  "repeat_matrix_seconds": 0.5831139999997959,
+  "restart_disk_load_seconds": 0.150360899999896,
+  "jsonl_bytes": 553558,
+  "graph_rpc_calls": 2,
+  "repeat_matrix_extra_rpc_calls": 0,
+  "csr_payload_bytes": 143952,
+  "csr_array_allocated_bytes": 153356,
+  "csr_roundtrip_matrix_equal": true,
+  "detour_reference_equal": true,
+  "cropped_path_rejected": true,
+  "phase_profiles": [
+    {
+      "phase": "export_validation"
+    },
+    {
+      "phase": "graph_conversion_and_freeze",
+      "export_validation_seconds": 0.005477400000017951
+    },
+    {
+      "phase": "matrix_build",
+      "export_validation_seconds": 0.005477400000017951,
+      "graph_conversion_and_freeze_seconds": 0.2623686000001726
+    },
+    {
+      "phase": "matrix_build",
+      "export_validation_seconds": 0.005477400000017951,
+      "graph_conversion_and_freeze_seconds": 0.2623686000001726,
+      "matrix": {
+        "phase": "canonical_decode",
+        "searches": [
+          {
+            "settled_nodes": 3,
+            "discovered_nodes": 3,
+            "unsettled_targets": 0,
+            "seconds": 0.0002549999999246211
+          },
+          {
+            "settled_nodes": 3,
+            "discovered_nodes": 3,
+            "unsettled_targets": 0,
+            "seconds": 0.00018819999991137593
+          },
+          {
+            "settled_nodes": 4,
+            "discovered_nodes": 5,
+            "unsettled_targets": 0,
+            "seconds": 0.00018359999990025244
+          }
+        ]
+      }
+    },
+    {
+      "phase": "matrix_build",
+      "export_validation_seconds": 0.005477400000017951,
+      "graph_conversion_and_freeze_seconds": 0.2623686000001726,
+      "matrix": {
+        "phase": "digest_verification",
+        "searches": [
+          {
+            "settled_nodes": 3,
+            "discovered_nodes": 3,
+            "unsettled_targets": 0,
+            "seconds": 0.0002549999999246211
+          },
+          {
+            "settled_nodes": 3,
+            "discovered_nodes": 3,
+            "unsettled_targets": 0,
+            "seconds": 0.00018819999991137593
+          },
+          {
+            "settled_nodes": 4,
+            "discovered_nodes": 5,
+            "unsettled_targets": 0,
+            "seconds": 0.00018359999990025244
+          }
+        ],
+        "canonical_decode_seconds": 0.021871900000178357
+      }
+    },
+    {
+      "phase": "matrix_build",
+      "export_validation_seconds": 0.005477400000017951,
+      "graph_conversion_and_freeze_seconds": 0.2623686000001726,
+      "matrix": {
+        "phase": "contract_reconstruction",
+        "searches": [
+          {
+            "settled_nodes": 3,
+            "discovered_nodes": 3,
+            "unsettled_targets": 0,
+            "seconds": 0.0002549999999246211
+          },
+          {
+            "settled_nodes": 3,
+            "discovered_nodes": 3,
+            "unsettled_targets": 0,
+            "seconds": 0.00018819999991137593
+          },
+          {
+            "settled_nodes": 4,
+            "discovered_nodes": 5,
+            "unsettled_targets": 0,
+            "seconds": 0.00018359999990025244
+          }
+        ],
+        "canonical_decode_seconds": 0.021871900000178357,
+        "digest_verification_seconds": 0.052828699999963646
+      }
+    },
+    {
+      "phase": "matrix_build",
+      "export_validation_seconds": 0.005477400000017951,
+      "graph_conversion_and_freeze_seconds": 0.2623686000001726,
+      "matrix": {
+        "phase": "adjacency_construction",
+        "searches": [
+          {
+            "settled_nodes": 3,
+            "discovered_nodes": 3,
+            "unsettled_targets": 0,
+            "seconds": 0.0002549999999246211
+          },
+          {
+            "settled_nodes": 3,
+            "discovered_nodes": 3,
+            "unsettled_targets": 0,
+            "seconds": 0.00018819999991137593
+          },
+          {
+            "settled_nodes": 4,
+            "discovered_nodes": 5,
+            "unsettled_targets": 0,
+            "seconds": 0.00018359999990025244
+          }
+        ],
+        "canonical_decode_seconds": 0.021871900000178357,
+        "digest_verification_seconds": 0.052828699999963646,
+        "contract_reconstruction_seconds": 0.19617410000000746
+      }
+    },
+    {
+      "phase": "matrix_build",
+      "export_validation_seconds": 0.005477400000017951,
+      "graph_conversion_and_freeze_seconds": 0.2623686000001726,
+      "matrix": {
+        "phase": "directed_search",
+        "searches": [
+          {
+            "settled_nodes": 3,
+            "discovered_nodes": 3,
+            "unsettled_targets": 0,
+            "seconds": 0.0002549999999246211
+          },
+          {
+            "settled_nodes": 3,
+            "discovered_nodes": 3,
+            "unsettled_targets": 0,
+            "seconds": 0.00018819999991137593
+          },
+          {
+            "settled_nodes": 4,
+            "discovered_nodes": 5,
+            "unsettled_targets": 0,
+            "seconds": 0.00018359999990025244
+          }
+        ],
+        "canonical_decode_seconds": 0.021871900000178357,
+        "digest_verification_seconds": 0.052828699999963646,
+        "contract_reconstruction_seconds": 0.19617410000000746,
+        "adjacency_construction_seconds": 0.006390300000020943
+      }
+    },
+    {
+      "phase": "matrix_build",
+      "export_validation_seconds": 0.005477400000017951,
+      "graph_conversion_and_freeze_seconds": 0.2623686000001726,
+      "matrix": {
+        "phase": "directed_search",
+        "searches": [
+          {
+            "settled_nodes": 3,
+            "discovered_nodes": 3,
+            "unsettled_targets": 0,
+            "seconds": 0.0002549999999246211
+          },
+          {
+            "settled_nodes": 3,
+            "discovered_nodes": 3,
+            "unsettled_targets": 0,
+            "seconds": 0.00018819999991137593
+          },
+          {
+            "settled_nodes": 4,
+            "discovered_nodes": 5,
+            "unsettled_targets": 0,
+            "seconds": 0.00018359999990025244
+          }
+        ],
+        "canonical_decode_seconds": 0.021871900000178357,
+        "digest_verification_seconds": 0.052828699999963646,
+        "contract_reconstruction_seconds": 0.19617410000000746,
+        "adjacency_construction_seconds": 0.006390300000020943
+      }
+    },
+    {
+      "phase": "matrix_build",
+      "export_validation_seconds": 0.005477400000017951,
+      "graph_conversion_and_freeze_seconds": 0.2623686000001726,
+      "matrix": {
+        "phase": "directed_search",
+        "searches": [
+          {
+            "settled_nodes": 3,
+            "discovered_nodes": 3,
+            "unsettled_targets": 0,
+            "seconds": 0.0002549999999246211
+          },
+          {
+            "settled_nodes": 3,
+            "discovered_nodes": 3,
+            "unsettled_targets": 0,
+            "seconds": 0.00018819999991137593
+          },
+          {
+            "settled_nodes": 4,
+            "discovered_nodes": 5,
+            "unsettled_targets": 0,
+            "seconds": 0.00018359999990025244
+          }
+        ],
+        "canonical_decode_seconds": 0.021871900000178357,
+        "digest_verification_seconds": 0.052828699999963646,
+        "contract_reconstruction_seconds": 0.19617410000000746,
+        "adjacency_construction_seconds": 0.006390300000020943
+      }
+    },
+    {
+      "phase": "matrix_build",
+      "export_validation_seconds": 0.005477400000017951,
+      "graph_conversion_and_freeze_seconds": 0.2623686000001726,
+      "matrix": {
+        "phase": "directed_search",
+        "searches": [
+          {
+            "settled_nodes": 3,
+            "discovered_nodes": 3,
+            "unsettled_targets": 0,
+            "seconds": 0.0002549999999246211
+          },
+          {
+            "settled_nodes": 3,
+            "discovered_nodes": 3,
+            "unsettled_targets": 0,
+            "seconds": 0.00018819999991137593
+          },
+          {
+            "settled_nodes": 4,
+            "discovered_nodes": 5,
+            "unsettled_targets": 0,
+            "seconds": 0.00018359999990025244
+          }
+        ],
+        "canonical_decode_seconds": 0.021871900000178357,
+        "digest_verification_seconds": 0.052828699999963646,
+        "contract_reconstruction_seconds": 0.19617410000000746,
+        "adjacency_construction_seconds": 0.006390300000020943
+      }
+    },
+    {
+      "phase": "matrix_build",
+      "export_validation_seconds": 0.005477400000017951,
+      "graph_conversion_and_freeze_seconds": 0.2623686000001726,
+      "matrix": {
+        "phase": "complete",
+        "searches": [
+          {
+            "settled_nodes": 3,
+            "discovered_nodes": 3,
+            "unsettled_targets": 0,
+            "seconds": 0.0002549999999246211
+          },
+          {
+            "settled_nodes": 3,
+            "discovered_nodes": 3,
+            "unsettled_targets": 0,
+            "seconds": 0.00018819999991137593
+          },
+          {
+            "settled_nodes": 4,
+            "discovered_nodes": 5,
+            "unsettled_targets": 0,
+            "seconds": 0.00018359999990025244
+          }
+        ],
+        "canonical_decode_seconds": 0.021871900000178357,
+        "digest_verification_seconds": 0.052828699999963646,
+        "contract_reconstruction_seconds": 0.19617410000000746,
+        "adjacency_construction_seconds": 0.006390300000020943,
+        "directed_search_seconds": 0.0010127000000466069
+      }
+    },
+    {
+      "phase": "complete",
+      "export_validation_seconds": 0.005477400000017951,
+      "graph_conversion_and_freeze_seconds": 0.2623686000001726,
+      "matrix": {
+        "phase": "complete",
+        "searches": [
+          {
+            "settled_nodes": 3,
+            "discovered_nodes": 3,
+            "unsettled_targets": 0,
+            "seconds": 0.0002549999999246211
+          },
+          {
+            "settled_nodes": 3,
+            "discovered_nodes": 3,
+            "unsettled_targets": 0,
+            "seconds": 0.00018819999991137593
+          },
+          {
+            "settled_nodes": 4,
+            "discovered_nodes": 5,
+            "unsettled_targets": 0,
+            "seconds": 0.00018359999990025244
+          }
+        ],
+        "canonical_decode_seconds": 0.021871900000178357,
+        "digest_verification_seconds": 0.052828699999963646,
+        "contract_reconstruction_seconds": 0.19617410000000746,
+        "adjacency_construction_seconds": 0.006390300000020943,
+        "directed_search_seconds": 0.0010127000000466069
+      },
+      "matrix_build_seconds": 0.28247289999990244
+    }
+  ],
+  "events": [
+    {
+      "phase": "imports_complete",
+      "elapsed_seconds": 7.8e-05,
+      "traced_current_bytes": 160,
+      "traced_interval_peak_bytes": 160,
+      "private_bytes": 25935872,
+      "working_set_bytes": 37261312,
+      "peak_private_bytes": 27652096,
+      "peak_working_set_bytes": 37261312
+    },
+    {
+      "phase": "synthetic_rpc_fixture_created",
+      "elapsed_seconds": 0.041895,
+      "traced_current_bytes": 1490300,
+      "traced_interval_peak_bytes": 1490300,
+      "private_bytes": 29057024,
+      "working_set_bytes": 40345600,
+      "peak_private_bytes": 29057024,
+      "peak_working_set_bytes": 40345600
+    },
+    {
+      "phase": "cache_load_complete",
+      "elapsed_seconds": 0.198105,
+      "traced_current_bytes": 2651029,
+      "traced_interval_peak_bytes": 3849737,
+      "private_bytes": 33705984,
+      "working_set_bytes": 45817856,
+      "peak_private_bytes": 34193408,
+      "peak_working_set_bytes": 46219264
+    },
+    {
+      "phase": "matrix_export_validation",
+      "elapsed_seconds": 0.198528,
+      "traced_current_bytes": 2652350,
+      "traced_interval_peak_bytes": 2653608,
+      "private_bytes": 33705984,
+      "working_set_bytes": 45817856,
+      "peak_private_bytes": 34193408,
+      "peak_working_set_bytes": 46219264
+    },
+    {
+      "phase": "matrix_graph_conversion_and_freeze",
+      "elapsed_seconds": 0.204056,
+      "traced_current_bytes": 2873608,
+      "traced_interval_peak_bytes": 2873608,
+      "private_bytes": 33705984,
+      "working_set_bytes": 45817856,
+      "peak_private_bytes": 34193408,
+      "peak_working_set_bytes": 46219264
+    },
+    {
+      "phase": "matrix_matrix_build",
+      "elapsed_seconds": 0.466381,
+      "traced_current_bytes": 3092456,
+      "traced_interval_peak_bytes": 6487369,
+      "private_bytes": 36020224,
+      "working_set_bytes": 48177152,
+      "peak_private_bytes": 39641088,
+      "peak_working_set_bytes": 51597312
+    },
+    {
+      "phase": "matrix_matrix_build",
+      "elapsed_seconds": 0.466432,
+      "traced_current_bytes": 3093908,
+      "traced_interval_peak_bytes": 3093908,
+      "private_bytes": 36020224,
+      "working_set_bytes": 48177152,
+      "peak_private_bytes": 39641088,
+      "peak_working_set_bytes": 51597312
+    },
+    {
+      "phase": "matrix_matrix_build",
+      "elapsed_seconds": 0.488349,
+      "traced_current_bytes": 4855421,
+      "traced_interval_peak_bytes": 4856114,
+      "private_bytes": 37883904,
+      "working_set_bytes": 49844224,
+      "peak_private_bytes": 39641088,
+      "peak_working_set_bytes": 51597312
+    },
+    {
+      "phase": "matrix_matrix_build",
+      "elapsed_seconds": 0.541166,
+      "traced_current_bytes": 4856589,
+      "traced_interval_peak_bytes": 5702981,
+      "private_bytes": 39481344,
+      "working_set_bytes": 50929664,
+      "peak_private_bytes": 39641088,
+      "peak_working_set_bytes": 51597312
+    },
+    {
+      "phase": "matrix_matrix_build",
+      "elapsed_seconds": 0.737348,
+      "traced_current_bytes": 4871993,
+      "traced_interval_peak_bytes": 7151333,
+      "private_bytes": 40198144,
+      "working_set_bytes": 51478528,
+      "peak_private_bytes": 42307584,
+      "peak_working_set_bytes": 53710848
+    },
+    {
+      "phase": "matrix_matrix_build",
+      "elapsed_seconds": 0.743739,
+      "traced_current_bytes": 5098372,
+      "traced_interval_peak_bytes": 5098372,
+      "private_bytes": 40263680,
+      "working_set_bytes": 51544064,
+      "peak_private_bytes": 42307584,
+      "peak_working_set_bytes": 53710848
+    },
+    {
+      "phase": "matrix_matrix_build",
+      "elapsed_seconds": 0.744119,
+      "traced_current_bytes": 5101616,
+      "traced_interval_peak_bytes": 5101616,
+      "private_bytes": 40263680,
+      "working_set_bytes": 51548160,
+      "peak_private_bytes": 42307584,
+      "peak_working_set_bytes": 53710848
+    },
+    {
+      "phase": "matrix_matrix_build",
+      "elapsed_seconds": 0.744419,
+      "traced_current_bytes": 5103132,
+      "traced_interval_peak_bytes": 5103132,
+      "private_bytes": 40263680,
+      "working_set_bytes": 51548160,
+      "peak_private_bytes": 42307584,
+      "peak_working_set_bytes": 53710848
+    },
+    {
+      "phase": "matrix_matrix_build",
+      "elapsed_seconds": 0.74465,
+      "traced_current_bytes": 5105184,
+      "traced_interval_peak_bytes": 5105184,
+      "private_bytes": 40263680,
+      "working_set_bytes": 51548160,
+      "peak_private_bytes": 42307584,
+      "peak_working_set_bytes": 53710848
+    },
+    {
+      "phase": "matrix_matrix_build",
+      "elapsed_seconds": 0.744715,
+      "traced_current_bytes": 5107058,
+      "traced_interval_peak_bytes": 5107058,
+      "private_bytes": 40263680,
+      "working_set_bytes": 51548160,
+      "peak_private_bytes": 42307584,
+      "peak_working_set_bytes": 53710848
+    },
+    {
+      "phase": "matrix_complete",
+      "elapsed_seconds": 0.748838,
+      "traced_current_bytes": 3107839,
+      "traced_interval_peak_bytes": 5107522,
+      "private_bytes": 38502400,
+      "working_set_bytes": 49827840,
+      "peak_private_bytes": 42307584,
+      "peak_working_set_bytes": 53710848
+    },
+    {
+      "phase": "repeat_matrix_complete",
+      "elapsed_seconds": 1.332038,
+      "traced_current_bytes": 2686886,
+      "traced_interval_peak_bytes": 7163943,
+      "private_bytes": 39370752,
+      "working_set_bytes": 50843648,
+      "peak_private_bytes": 42307584,
+      "peak_working_set_bytes": 53710848
+    },
+    {
+      "phase": "restart_disk_load_complete",
+      "elapsed_seconds": 1.483201,
+      "traced_current_bytes": 4517903,
+      "traced_interval_peak_bytes": 6279797,
+      "private_bytes": 40218624,
+      "working_set_bytes": 51728384,
+      "peak_private_bytes": 42307584,
+      "peak_working_set_bytes": 53710848
+    },
+    {
+      "phase": "csr_roundtrip_equal_complete",
+      "elapsed_seconds": 2.704308,
+      "traced_current_bytes": 6129598,
+      "traced_interval_peak_bytes": 10634151,
+      "private_bytes": 50520064,
+      "working_set_bytes": 61722624,
+      "peak_private_bytes": 53067776,
+      "peak_working_set_bytes": 64806912
+    }
+  ],
+  "source_sha256": {
+    "backend/routing/worker_service/graph_cache.py": "f1186d21ce1fd7c29601fc906dec3a51cd2398b73631a413f5f5211f35cdbd3f",
+    "backend/routing/integration/graph_worker.py": "f6e84f9f53945a74d3bdd0349ddb96258946ccce1945999754d7f43d25820fb2",
+    "backend/routing/phase_c2/matrices.py": "cf5c850fb1c6bdb2aac048c71a11f7c292ad2a85c16971efd7d33e53466d2763",
+    "backend/routing/worker_service/orchestrator.py": "b35c5747f8534ccb96af38524a1748c12587c2f720bc1c46e1eb08b5e35611c1",
+    "backend/routing/worker_service/server.py": "7593492a1c13d8f9e68e449af026caa98955a160f5c9c80880cfef05a9024db7"
+  },
+  "limitations": [
+    "Small synthetic graph; cannot infer full graph RSS or free-tier latency",
+    "Tracemalloc adds runtime and allocation overhead; native memory tracked by Windows counters",
+    "CSR is storage roundtrip only; routing still runs original builder; not an optimized planner",
+    "Peak phase samples are not additive or complete live-process memory profiles"
+  ]
+}

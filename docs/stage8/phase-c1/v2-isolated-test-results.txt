@@ -1,0 +1,49 @@
+test_01_legacy_preservation_and_idempotency (__main__.FleetV2Tests.test_01_legacy_preservation_and_idempotency) ... ok
+test_all_nonterminal_routes_protect_operational_fields (__main__.FleetV2Tests.test_all_nonterminal_routes_protect_operational_fields) ... ok
+test_anonymous_donor_inactive_and_missing_identity (__main__.FleetV2Tests.test_anonymous_donor_inactive_and_missing_identity) ... ok
+test_audit_is_atomic_and_idempotent_noop (__main__.FleetV2Tests.test_audit_is_atomic_and_idempotent_noop) ... ok
+test_cancel_or_stale_cannot_release_unresolved_route (__main__.FleetV2Tests.test_cancel_or_stale_cannot_release_unresolved_route) ... ok
+test_cancellation_commit_releases_vehicle (__main__.FleetV2Tests.test_cancellation_commit_releases_vehicle) ... ok
+test_cancellation_rollback_keeps_vehicle_held (__main__.FleetV2Tests.test_cancellation_rollback_keeps_vehicle_held) ... ok
+test_column_acl_drift_removed_on_repeat (__main__.FleetV2Tests.test_column_acl_drift_removed_on_repeat) ... ok
+test_column_type_drift_aborts_without_repair (__main__.FleetV2Tests.test_column_type_drift_aborts_without_repair) ... ok
+test_completed_requires_collected_members_and_assignment_cleanup (__main__.FleetV2Tests.test_completed_requires_collected_members_and_assignment_cleanup) ... ok
+test_completion_first_then_vehicle_edit (__main__.FleetV2Tests.test_completion_first_then_vehicle_edit) ... ok
+test_database_constraints_reject_nonfinite_and_negative_cost (__main__.FleetV2Tests.test_database_constraints_reject_nonfinite_and_negative_cost) ... ok
+test_deactivate_preserves_identity_and_history (__main__.FleetV2Tests.test_deactivate_preserves_identity_and_history) ... ok
+test_depot_client_value_is_not_authority (__main__.FleetV2Tests.test_depot_client_value_is_not_authority) ... ok
+test_direct_writes_reads_helpers_and_service_denied (__main__.FleetV2Tests.test_direct_writes_reads_helpers_and_service_denied) ... ok
+test_disabled_original_depot_trigger_aborts (__main__.FleetV2Tests.test_disabled_original_depot_trigger_aborts) ... ok
+test_failed_audit_rolls_back_registration (__main__.FleetV2Tests.test_failed_audit_rolls_back_registration) ... ok
+test_identity_and_owner_immutable (__main__.FleetV2Tests.test_identity_and_owner_immutable) ... ok
+test_idle_depot_revocation_disables_planning (__main__.FleetV2Tests.test_idle_depot_revocation_disables_planning) ... ok
+test_invalid_update_and_incomplete_legacy_availability (__main__.FleetV2Tests.test_invalid_update_and_incomplete_legacy_availability) ... ok
+test_invalid_values (__main__.FleetV2Tests.test_invalid_values) ... ok
+test_label_edit_also_preserves_reserved_vehicle_version (__main__.FleetV2Tests.test_label_edit_also_preserves_reserved_vehicle_version) ... ok
+test_location_refresh_preserved_and_reserved_refresh_rejected (__main__.FleetV2Tests.test_location_refresh_preserved_and_reserved_refresh_rejected) ... ok
+test_named_constraint_drift_aborts (__main__.FleetV2Tests.test_named_constraint_drift_aborts) ... ok
+test_owner_isolation_all_mutations_and_list (__main__.FleetV2Tests.test_owner_isolation_all_mutations_and_list) ... ok
+test_private_search_path_and_execute_acls (__main__.FleetV2Tests.test_private_search_path_and_execute_acls) ... ok
+test_race_deactivation_first_blocks_route (__main__.FleetV2Tests.test_race_deactivation_first_blocks_route) ... ok
+test_race_route_first_blocks_deactivation (__main__.FleetV2Tests.test_race_route_first_blocks_deactivation) ... ok
+test_registration_retry_and_conflict (__main__.FleetV2Tests.test_registration_retry_and_conflict) ... ok
+test_route_binding_rejects_unavailable_foreign_and_active_delete (__main__.FleetV2Tests.test_route_binding_rejects_unavailable_foreign_and_active_delete) ... ok
+test_schema_collision_aborts (__main__.FleetV2Tests.test_schema_collision_aborts) ... ok
+test_service_cannot_bypass_vehicle_guards (__main__.FleetV2Tests.test_service_cannot_bypass_vehicle_guards) ... ok
+test_service_selected_privileges_and_no_grant_option (__main__.FleetV2Tests.test_service_selected_privileges_and_no_grant_option) ... ok
+test_stale_releases_only_after_explicit_task_resolution (__main__.FleetV2Tests.test_stale_releases_only_after_explicit_task_resolution) ... ok
+test_stronger_isolation_rejected (__main__.FleetV2Tests.test_stronger_isolation_rejected) ... ok
+test_terminal_route_not_reactivated_after_fleet_change (__main__.FleetV2Tests.test_terminal_route_not_reactivated_after_fleet_change) ... ok
+test_terminal_route_releases_protection (__main__.FleetV2Tests.test_terminal_route_releases_protection) ... ok
+test_terminal_route_with_legacy_activity_still_holds_vehicle (__main__.FleetV2Tests.test_terminal_route_with_legacy_activity_still_holds_vehicle) ... ok
+test_unreviewed_policy_aborts_migration (__main__.FleetV2Tests.test_unreviewed_policy_aborts_migration) ... ok
+test_unverified_after_registration_not_plannable (__main__.FleetV2Tests.test_unverified_after_registration_not_plannable) ... ok
+test_unverified_invalid_inactive_wrong_snapshot_depots (__main__.FleetV2Tests.test_unverified_invalid_inactive_wrong_snapshot_depots) ... ok
+test_update_version_and_availability (__main__.FleetV2Tests.test_update_version_and_availability) ... ok
+test_zero_and_multiple_vehicles (__main__.FleetV2Tests.test_zero_and_multiple_vehicles) ... ok
+test_zero_costs_are_explicit_and_valid (__main__.FleetV2Tests.test_zero_costs_are_explicit_and_valid) ... ok
+
+----------------------------------------------------------------------
+Ran 44 tests in 56.038s
+
+OK

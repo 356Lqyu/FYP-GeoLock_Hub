@@ -1,0 +1,21 @@
+{
+  "scope": "FOCUSED_LOCAL_CORRECTION_ONLY",
+  "dev_writes": 0,
+  "dev_migration_execution": 0,
+  "changes": [
+    "002 separately validates nominal cutoff-relative offsets and replays actual departure-relative waiting",
+    "Authorized binding stores the retimed stops/return; candidate remains immutable"
+  ],
+  "python_tests_passed": 2,
+  "isolated_sql_tests_passed": 2,
+  "ortools_version": "9.15.6755",
+  "solver": "Google OR-Tools CP-SAT: CpSolver.solve(model), coverage then secondary objective",
+  "worker_timing_basis": "NOMINAL_DEPARTURE_AT_SNAPSHOT_CUTOFF; actual-departure retiming is PostgreSQL authority",
+  "worker_roles_match_001_grants": true,
+  "migrations": {
+    "001_authority_proposal.sql": "ae4ad5fe603e6d169de42420dbee5f3c59908976a03f95526e46d50e3f0b86f9",
+    "002_publication_proposal.sql": "b01ce0ce3be66abfef755b81a73aa84dde8a57d8d27400af9ccd19e9b5ddd831",
+    "003_pickup_enforcement_proposal.sql": "e968ca18e5d70b70c91467dcef567b45ce8cb24aa075b1a6340e1f0c529b5ab7"
+  },
+  "live_activation": "NO_GO_UNTIL_MANUAL_PREREQUISITES_COMPLETE"
+}

@@ -1,0 +1,66 @@
+{
+  "engine": "compact",
+  "scope": "SYNTHETIC-1000-NODES-3000-EDGES-NOT-FULL-NETWORK",
+  "fixture_sha256": "aa346d9169354a56787e62bbb5080c5df61c2bfc1980bebba490297c2f074aa0",
+  "platform": "Windows-11-10.0.22621-SP0",
+  "python": "3.12.14",
+  "node_count": 1000,
+  "edge_count": 3000,
+  "required_nodes": 3,
+  "cgroup_before": {
+    "memory.max": null,
+    "cpu.max": null,
+    "memory.peak": null,
+    "memory.events": null
+  },
+  "startup_and_fixture_seconds": 0.4971623000001273,
+  "after_fixture": {
+    "peak_rss_bytes": 40845312,
+    "peak_commit_bytes": 26030080
+  },
+  "compact_payload_bytes": 100008,
+  "warm_seconds": 0.04819279999992432,
+  "artifact_write_and_seal_seconds": 0.0075697000002037385,
+  "artifact_restore_seconds": 0.001034099999742466,
+  "matrix_seconds": [
+    0.030846000000110507,
+    0.03237780000017665,
+    0.03488210000023173
+  ],
+  "matrix_sha256": "32dbb385501226b876d9a30486c89d0f80c90c4bc8acf3d55abbc814d1571e09",
+  "after_matrix": {
+    "peak_rss_bytes": 47325184,
+    "peak_commit_bytes": 32849920
+  },
+  "four_methods_solver_seconds": 0.8256627999999182,
+  "methods": [
+    "fcfs",
+    "nearest_neighbour",
+    "distance_only",
+    "proposed"
+  ],
+  "all_four_plans_valid": true,
+  "independent_validation_seconds": 0.0023132000001169217,
+  "validation_status": {
+    "candidate_digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+    "snapshot_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "matrix_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "input_sha256": "ede61a78863941c7dbce7fdd8e68802e60069511ebe9d35d3cac5f817d22d5c4",
+    "matrix_sha256": "32dbb385501226b876d9a30486c89d0f80c90c4bc8acf3d55abbc814d1571e09",
+    "validator_build": "OFFLINE-RENDER-BENCHMARK",
+    "valid": true,
+    "feasible": true,
+    "dispatch_authority_issued": false
+  },
+  "final_memory": {
+    "peak_rss_bytes": 92016640,
+    "peak_commit_bytes": 297152512
+  },
+  "cgroup_after": {
+    "memory.max": null,
+    "cpu.max": null,
+    "memory.peak": null,
+    "memory.events": null
+  },
+  "total_seconds": 1.5448645999999826
+}

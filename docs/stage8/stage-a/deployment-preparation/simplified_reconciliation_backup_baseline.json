@@ -1,0 +1,241 @@
+{
+  "project_ref": "rcgyuwiidqvrgbxswhqj",
+  "observed_at_utc": "2026-11-04T14:22:09Z",
+  "purpose": "PRE_SIMPLIFIED_RECONCILIATION_CURRENT_DEV",
+  "functions": [
+{"signature":"public.begin_my_routing_snapshot(uuid,uuid,uuid[])","name":"public.begin_my_routing_snapshot","body_md5":"dca3ee04e8fbf991c4ef0993930ec185","owner":"postgres","definer":true,"acl":"{postgres=X/postgres,authenticated=X/postgres}"},
+{"signature":"public.get_claimed_listing_detail(uuid)","name":"public.get_claimed_listing_detail","body_md5":"b15fb1c6260eee67a4eb73766effcf15","owner":"postgres","definer":true,"acl":"{postgres=X/postgres,anon=X/postgres,authenticated=X/postgres,service_role=X/postgres}"},
+    {
+      "signature": "fleet_private.require_depot(uuid)",
+      "name": "fleet_private.require_depot",
+      "body_md5": "4ff6b95d8bd074358be734979185860d",
+      "owner": "postgres",
+      "definer": true,
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "signature": "public.cancel_my_unstarted_route(uuid)",
+      "name": "public.cancel_my_unstarted_route",
+      "body_md5": "25d5d50b727abd9cf94fd0b9c479e612",
+      "owner": "postgres",
+      "definer": true,
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}"
+    },
+    {
+      "signature": "public.close_my_collected_route(uuid,boolean)",
+      "name": "public.close_my_collected_route",
+      "body_md5": "5f83aea95b8c8971ea3bfcbcb8b3c18a",
+      "owner": "postgres",
+      "definer": true,
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}"
+    },
+    {
+      "signature": "public.close_my_resolved_route(uuid,boolean,uuid)",
+      "name": "public.close_my_resolved_route",
+      "body_md5": "1de1767851ac4a68e68e3c17f8e5d421",
+      "owner": "postgres",
+      "definer": true,
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}"
+    },
+    {
+      "signature": "public.enforce_donation_transition()",
+      "name": "public.enforce_donation_transition",
+      "body_md5": "50f7c982be9c6cce75174e09f73649ae",
+      "owner": "postgres",
+      "definer": false,
+      "acl": "{postgres=X/postgres,anon=X/postgres,authenticated=X/postgres,service_role=X/postgres}"
+    },
+    {
+      "signature": "public.geolock_assert_donation_lifecycle(uuid)",
+      "name": "public.geolock_assert_donation_lifecycle",
+      "body_md5": "3e7df59a90533e0708c51767889d930e",
+      "owner": "postgres",
+      "definer": false,
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "signature": "public.geolock_lock_listing_donations(uuid,text[])",
+      "name": "public.geolock_lock_listing_donations",
+      "body_md5": "90816e7c6db3606dc8b6451a899d8036",
+      "owner": "postgres",
+      "definer": false,
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "signature": "public.geolock_transition_listing_donations(uuid,text,text)",
+      "name": "public.geolock_transition_listing_donations",
+      "body_md5": "8a050031901f6796ed74210e4d5cbfec",
+      "owner": "postgres",
+      "definer": false,
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "signature": "public.geolock_transition_listing_donations(uuid,text,text,uuid,uuid,text)",
+      "name": "public.geolock_transition_listing_donations",
+      "body_md5": "67f27a85fb9129c9017bb0e9178f8ba1",
+      "owner": "postgres",
+      "definer": false,
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "signature": "public.get_my_authorized_route(uuid)",
+      "name": "public.get_my_authorized_route",
+      "body_md5": "167e9843e6e026df8844f441af77fded",
+      "owner": "postgres",
+      "definer": true,
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}"
+    },
+    {
+      "signature": "public.get_my_authorized_route_pre_deferral(uuid)",
+      "name": "public.get_my_authorized_route_pre_deferral",
+      "body_md5": "df7eb088b25c083673b223f164b7dcfd",
+      "owner": "postgres",
+      "definer": true,
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}"
+    },
+    {
+      "signature": "public.get_my_claim_cards_v2()",
+      "name": "public.get_my_claim_cards_v2",
+      "body_md5": "44da3209586085a93e76204e37288f13",
+      "owner": "postgres",
+      "definer": true,
+      "acl": "{postgres=X/postgres,authenticated=X/postgres,service_role=X/postgres}"
+    },
+    {
+      "signature": "public.get_my_donation_claim_reconciliation(uuid)",
+      "name": "public.get_my_donation_claim_reconciliation",
+      "body_md5": "b23b62f1d1fad22a9eabc907157ea7d1",
+      "owner": "postgres",
+      "definer": true,
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}"
+    },
+    {
+      "signature": "public.get_my_reconciliation_cases()",
+      "name": "public.get_my_reconciliation_cases",
+      "body_md5": "ef135eb954b7052703b4c1df5315b312",
+      "owner": "postgres",
+      "definer": true,
+      "acl": "{postgres=X/postgres,authenticated=X/postgres,service_role=X/postgres}"
+    },
+    {
+      "signature": "public.submit_claim_reconciliation(uuid,boolean,uuid)",
+      "name": "public.submit_claim_reconciliation",
+      "body_md5": "e752c02c40b04265aed0d995fb894e07",
+      "owner": "postgres",
+      "definer": true,
+      "acl": "{postgres=X/postgres,authenticated=X/postgres,service_role=X/postgres}"
+    },
+    {
+      "signature": "resolution_private.actor_key()",
+      "name": "resolution_private.actor_key",
+      "body_md5": "5cad2a30b4626899cd8f017736729d5f",
+      "owner": "postgres",
+      "definer": true,
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "signature": "resolution_private.receipt(text,uuid,text,jsonb)",
+      "name": "resolution_private.receipt",
+      "body_md5": "93cc5a0866ca81b66513e7986a7c1a29",
+      "owner": "postgres",
+      "definer": true,
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "signature": "resolution_private.release_allowed(uuid,text)",
+      "name": "resolution_private.release_allowed",
+      "body_md5": "270d3df3b0c2fe221133db681ab2a4b8",
+      "owner": "postgres",
+      "definer": true,
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "signature": "resolution_private.save_receipt(text,uuid,text,jsonb,jsonb)",
+      "name": "resolution_private.save_receipt",
+      "body_md5": "de64d3d69fe99d9d3c1a073ac5a01711",
+      "owner": "postgres",
+      "definer": true,
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "signature": "routing_private.check_remaining(uuid,uuid,timestamp with time zone)",
+      "name": "routing_private.check_remaining",
+      "body_md5": "fefd041705ec87001a10135923ac7acc",
+      "owner": "postgres",
+      "definer": true,
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "signature": "routing_private.close_collected(uuid)",
+      "name": "routing_private.close_collected",
+      "body_md5": "e06bac2a616cc49f91e32042e592a24a",
+      "owner": "postgres",
+      "definer": true,
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "signature": "routing_private.finish_reconciled_collection(uuid)",
+      "name": "routing_private.finish_reconciled_collection",
+      "body_md5": "088e94184198f3e680c6fc5d779dba8e",
+      "owner": "postgres",
+      "definer": true,
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "signature": "routing_private.lock_reconciliation_scope(uuid)",
+      "name": "routing_private.lock_reconciliation_scope",
+      "body_md5": "618ea50c0c300e98098cfa62333a8608",
+      "owner": "postgres",
+      "definer": true,
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "signature": "routing_private.lock_route(uuid,boolean)",
+      "name": "routing_private.lock_route",
+      "body_md5": "ebc10b61666e492afd7bbbd23f0e7448",
+      "owner": "postgres",
+      "definer": true,
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "signature": "routing_private.observe_task(uuid)",
+      "name": "routing_private.observe_task",
+      "body_md5": "53f058161125f26980f65303d45dccc1",
+      "owner": "postgres",
+      "definer": true,
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "signature": "routing_private.permit_reconciled_collection(uuid)",
+      "name": "routing_private.permit_reconciled_collection",
+      "body_md5": "c5bbed4368a64f83ed837d6195b02050",
+      "owner": "postgres",
+      "definer": true,
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "signature": "routing_private.reconciliation_participant(uuid)",
+      "name": "routing_private.reconciliation_participant",
+      "body_md5": "12ccab6a7919008674e2ff340aab9100",
+      "owner": "postgres",
+      "definer": true,
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "signature": "routing_private.task_digest(jsonb)",
+      "name": "routing_private.task_digest",
+      "body_md5": "e28f2dba4773bbbe8e32a700047e6f6e",
+      "owner": "postgres",
+      "definer": false,
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "signature": "routing_private.task_guard()",
+      "name": "routing_private.task_guard",
+      "body_md5": "4012fed7dad4a6f7767d39bed3de70e6",
+      "owner": "postgres",
+      "definer": true,
+      "acl": "{postgres=X/postgres}"
+    }
+  ]
+}

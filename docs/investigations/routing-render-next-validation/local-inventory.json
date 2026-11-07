@@ -1,0 +1,118 @@
+{
+  "at_utc": "2026-11-06T16:23:15.543606+00:00",
+  "platform": "Windows-11-10.0.22621-SP0",
+  "windows_build": 22621,
+  "commands": {
+    "docker": null,
+    "podman": null,
+    "nerdctl": null,
+    "wsl": "C:\\Windows\\system32\\wsl.EXE",
+    "wslc": null,
+    "lima": null,
+    "colima": null
+  },
+  "network_or_database_access": false,
+  "software_installed": false,
+  "install_paths": {
+    "C:\\Program Files\\Docker\\Docker\\Docker Desktop.exe": false,
+    "C:\\Program Files\\Docker\\Docker\\resources\\bin\\docker.exe": false,
+    "C:\\Program Files\\RedHat\\Podman\\podman.exe": false,
+    "C:\\Users\\User\\AppData\\Local\\Programs\\DockerDesktop\\Docker Desktop.exe": false,
+    "C:\\Users\\User\\AppData\\Local\\Programs\\podman-desktop\\Podman Desktop.exe": false
+  },
+  "wsl": [
+    {
+      "command": [
+        "wsl.exe",
+        "--status"
+      ],
+      "exit_code": 50,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "wsl.exe",
+        "--list",
+        "--verbose"
+      ],
+      "exit_code": 1,
+      "stdout": "\r\r\nCopyright (c) Microsoft Corporation. All rights reserved.\r\r\n\r\r\nUsage: wsl.exe [Argument]\r\r\n\r\r\nArguments:\r\r\n\r\r\n    --install <Options>\r\r\n        Install Windows Subsystem for Linux features. If no options are specified,\r\r\n        the recommended features will be installed along with the default distribution.\r\r\n\r\r\n        To view the default distribution as well as a list of other valid distributions,\r\r\n        use 'wsl --list --online'.\r\r\n\r\r\n        Options:\r\r\n            --distribution, -d [Argument]\r\r\n                Specifies the distribution to be downloaded and installed by name.\r\r\n\r\r\n                Arguments:\r\r\n                    A valid distribution name (not case sensitive).\r\r\n\r\r\n                Examples:\r\r\n                    wsl --install -d Ubuntu\r\r\n                    wsl --install --distribution Debian\r\r\n\r\r\n            --inbox\r\r\n                Install the optional Windows feature instead of the version available via the Microsoft Store.\r\r\n\r\r\n            --enable-wsl1\r\r\n                Enable WSL1 support with the Microsoft Store version.\r\r\n\r\r\n            --no-distribution\r\r\n                Do not install a distribution (cannot be used with --distribution).\r\r\n\r\r\n            --no-launch, -n\r\r\n                Do not launch the distribution after install.\r\r\n\r\r\n            --web-download\r\r\n                Download the most recent version of WSL from the internet instead of the Microsoft Store.\r\r\n\r\r\n    --list, -l [Options]\r\r\n        Lists distributions.\r\r\n\r\r\n        Options:\r\r\n            --online, -o\r\r\n                Displays a list of available distributions for install with 'wsl --install'.\r\r\n\r\r\n    --status\r\r\n        Show the status of Windows Subsystem for Linux.\r\r\n\r\r\n    --help\r\r\n        Display usage information.\r\r\n",
+      "stderr": ""
+    }
+  ],
+  "graph": {
+    "path": "results\\worker-readiness\\20261027T083653Z-5f56bb\\graphs\\eab1f7ee-a8e0-4bed-a0e1-2c4bff024936.jsonl",
+    "bytes": 319523682,
+    "file_sha256": "a525f79eada8fc65ce0568fd0cdba66237f1e5e6e3009bb4fa0e7482fc70accb",
+    "pages": 215,
+    "manifest": {
+      "content_digest": "5e06dab0fb4d2b97ac53fd9a1178dc46aa6b98811aefbaef96528c604a04012a",
+      "coverage_snapshot": "OSM-OPS-20261018",
+      "created_at": "2026-10-26T19:58:54.947084+00:00",
+      "edge_count": 2145828,
+      "float_output_profile": "PG_REAL_OUTPUT_0",
+      "graph_id": "eab1f7ee-a8e0-4bed-a0e1-2c4bff024936",
+      "node_count": 926414,
+      "precision_policy": "EXACT_MAX_6_DECIMALS",
+      "request_id": "eb29d74d-d556-4135-b200-a691902cfbba",
+      "speed_profile": "OSM_MAXSPEED_OR_CLASS_DEFAULT_BUILD_188bde7568b4d9eb_DIST5DP_TIME4DP_NO_LIVE_TRAFFIC_PG_REAL_OUTPUT_0"
+    },
+    "counts_cursors_endpoints": "PASS",
+    "provenance": "Historical independent SHA256 in docs/stage8/functional-routing/LOCAL_SERVICE_PREPARATION.md; frozen identity in FROZEN_DEV_PILOT.md",
+    "fresh_dev_manifest_verified": false
+  },
+  "bundle_candidate": {
+    "path": "results\\proposed-only-routing\\runtime-compatibility-input.json",
+    "sha256": "efaa5bf99367138c7ca9e316d265046d7ba154a70fde30c582d9f6e6b45724b2",
+    "bytes": 7847,
+    "snapshot_fields": [
+      "snapshot_id",
+      "ngo_id",
+      "request_id",
+      "body"
+    ],
+    "matrix_fields": [
+      "graph_id",
+      "body"
+    ],
+    "graph_id": "eab1f7ee-a8e0-4bed-a0e1-2c4bff024936",
+    "coverage": "OSM-OPS-20261018",
+    "required_nodes": 5,
+    "observations": 4,
+    "status": "NOT_APPROVED_SANITIZED_BENCHMARK_INPUT",
+    "missing_snapshot_fields": [
+      "cutoff",
+      "sealed_at",
+      "digest"
+    ],
+    "limitation": "Actual historical DEV SELECT capture; presentation compatibility only. No independent approved fixture seal or sanitization/admission review established."
+  },
+  "profiles": [
+    {
+      "memory_mb": 512,
+      "cpus": 0.1,
+      "planner": "NOT_TESTED",
+      "validator": "NOT_TESTED"
+    },
+    {
+      "memory_mb": 2048,
+      "cpus": 1,
+      "planner": "NOT_TESTED",
+      "validator": "NOT_TESTED"
+    },
+    {
+      "memory_mb": 4096,
+      "cpus": 2,
+      "planner": "NOT_TESTED",
+      "validator": "NOT_TESTED"
+    },
+    {
+      "memory_mb": 8192,
+      "cpus": 2,
+      "planner": "NOT_TESTED",
+      "validator": "NOT_TESTED"
+    }
+  ],
+  "original_sources_unchanged": true
+}

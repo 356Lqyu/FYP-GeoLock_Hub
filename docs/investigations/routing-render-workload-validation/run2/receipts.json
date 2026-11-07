@@ -1,0 +1,2921 @@
+[
+  {
+    "label": "compile-sealed-full-graph",
+    "profile": "8gb-2cpu",
+    "image_id": "sha256:9dad7a112d031c65cd92c83880c9ce876b0ce79de36c1220b787c0b19e186173",
+    "exit_code": 0,
+    "oom": false,
+    "external_timeout": false,
+    "wall_seconds": 64.03099999999995,
+    "limits": {
+      "Memory": 8589934592,
+      "MemorySwap": 8589934592,
+      "NanoCpus": 2000000000,
+      "NetworkMode": "none",
+      "ReadonlyRootfs": true
+    },
+    "result": {
+      "mode": "graph",
+      "engine": "compact",
+      "scope": "APPROVED_HISTORICAL_FULL_GRAPH_THREE_NODE_MATRIX_ONLY_NO_ROUTING_BUNDLE",
+      "nodes": 926414,
+      "edges": 2145828,
+      "load_seconds": 16.342892118000236,
+      "compile_and_optional_artifact_seconds": 45.29929179199917,
+      "matrix_seconds": [
+        0.0022443810003096587,
+        0.001935444000082498
+      ],
+      "full_matrix_parity": true,
+      "artifact_sha256": "7958972d08ea412c7515a47521640588528daa206440a198db2ad47507b8bd01",
+      "graph_sha256": "cbccfa866bebbffe8382f6f54f9fdacb3a470d84d581e954e59014fd9454d005",
+      "total_seconds": 62.144536093999704,
+      "metrics": {
+        "process_peak_rss_bytes": 1583206400,
+        "process_cpu_seconds": 53.02089,
+        "cgroup": {
+          "memory.max": "8589934592",
+          "memory.peak": "1576972288",
+          "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+          "cpu.max": "200000 100000",
+          "cpu.stat": "usage_usec 53025150\nuser_usec 49499499\nsystem_usec 3525651\nnice_usec 0\nnr_periods 622\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0"
+        }
+      }
+    }
+  },
+  {
+    "label": "prepare-and-parity-available-nodes",
+    "profile": "8gb-2cpu",
+    "image_id": "sha256:9dad7a112d031c65cd92c83880c9ce876b0ce79de36c1220b787c0b19e186173",
+    "exit_code": 0,
+    "oom": false,
+    "external_timeout": false,
+    "wall_seconds": 271.70300000000043,
+    "limits": {
+      "Memory": 8589934592,
+      "MemorySwap": 8589934592,
+      "NanoCpus": 2000000000,
+      "NetworkMode": "none",
+      "ReadonlyRootfs": true
+    },
+    "result": {
+      "scope": "MODELED_OFFLINE_CAPACITY_ONLY_NO_DB_ENVELOPES_OR_RECEIPTS",
+      "cases": [
+        {
+          "name": "small",
+          "pickups": 3,
+          "vehicles": 2,
+          "required_nodes": 4,
+          "provisional": true,
+          "observed_real_world_demand": false,
+          "operational_approval": null,
+          "snapshot_sha256": "c04595789830de52f6c0a6fd3d179d59e27e273398fb3789b8688049a79bf5f9",
+          "matrix_sha256": "d3e1b8dd049e7f6fcc0aea6cfad9eeab776f6269e3e45cbea1c9afc4bf3dfb88",
+          "raw_graph_matrix_sha256": "ee50adfe52f7b8a2d23ae6ef1511661d6f9316394492e60bb09b4ce7e0bdb4bd"
+        },
+        {
+          "name": "typical-provisional",
+          "pickups": 10,
+          "vehicles": 2,
+          "required_nodes": 11,
+          "provisional": true,
+          "observed_real_world_demand": false,
+          "operational_approval": null,
+          "snapshot_sha256": "4eeb08827dcc5425b77b4816dd0f985542bb3266fc8cc94e51f4c70670f9021c",
+          "matrix_sha256": "9e153e77898e66ec0f3df212883f4f4d28437d703d195a4f4bd153264560841b",
+          "raw_graph_matrix_sha256": "846214085e23d470cf37fe889ff9ae067541fdbdde1336ff7245fd9b50de5b95"
+        },
+        {
+          "name": "large-provisional",
+          "pickups": 25,
+          "vehicles": 5,
+          "required_nodes": 26,
+          "provisional": true,
+          "observed_real_world_demand": false,
+          "operational_approval": null,
+          "snapshot_sha256": "fb16b81bcd2d6bf49711d30a56cff93c3abef77087106e106c4135d9c0da7eed",
+          "matrix_sha256": "63501a1845feb4bb296bca4a34a2ac78cfeb0bd63434b5308d2365f1438d8bb7",
+          "raw_graph_matrix_sha256": "992993cb64e22e37b8aad78b4a602fc16a47530d0203bc9b84fd35ba5c236c2f"
+        },
+        {
+          "name": "source-boundary-stress",
+          "pickups": 100,
+          "vehicles": 10,
+          "required_nodes": 100,
+          "provisional": true,
+          "observed_real_world_demand": false,
+          "operational_approval": null,
+          "snapshot_sha256": "041a4af98c6496a2ba52324f8aa1defe8685f532e8362c5c130b0901d0d03142",
+          "matrix_sha256": "45284d92038697a0606d3873583cedfadd01a127e725fc6b08ae1a53e0880db3",
+          "raw_graph_matrix_sha256": "955331c5a7b64401fcb8d38f40f5c3412da02c5ab45680ae65767c2f216dcfad"
+        }
+      ],
+      "source_frozen_fixture_sha256": "e9b8e722f15c3b72df33b11829d09f7515379ea05f5db791816d41105208d17f",
+      "source_road_nodes_sha256": "a8905fb29f95b6ba02c099fd60a188f98ae92f01c7586995295b096b673df6ea",
+      "graph_file_sha256": "a525f79eada8fc65ce0568fd0cdba66237f1e5e6e3009bb4fa0e7482fc70accb",
+      "artifact_sha256": "7958972d08ea412c7515a47521640588528daa206440a198db2ad47507b8bd01",
+      "graph_nodes": 926414,
+      "graph_edges": 2145828,
+      "mutually_reachable_candidates": 223,
+      "modeled_radius_km": 17,
+      "largest_selected_straight_line_km": 16.950248281495245,
+      "node_selection": "99 distance-quantile public benchmark nodes mutually reachable with selected benchmark depot; full graph retained for every shortest path",
+      "selected_base_scenario": "SCN-ROUTE_PLANNING-0045",
+      "depot_selection_evidence": [
+        {
+          "scenario": "SCN-ROUTE_PLANNING-0016",
+          "status": "DEPOT_NOT_IN_GRAPH"
+        },
+        {
+          "scenario": "SCN-ROUTE_PLANNING-0045",
+          "matching_nodes_in_radius": 223,
+          "mutually_reachable": 223
+        },
+        {
+          "scenario": "SCN-ROUTE_PLANNING-0100",
+          "matching_nodes_in_radius": 77,
+          "mutually_reachable": 77
+        }
+      ],
+      "largest_required_nodes": 100,
+      "legacy_csr_parity": true,
+      "csr_matrix_seconds": 64.82608520699978,
+      "legacy_matrix_seconds": 180.00286630499977,
+      "assumptions": [
+        "Provisional 3/10/25/100 pickups and 2/2/5/10 vehicles authorized by current user request, not empirical NGO distributions",
+        "Distinct pickup nodes use only known mutually reachable benchmark coordinates, capped at 99 plus depot; co-location is explicit",
+        "Direct-only modeled pickups; no new hub batch/inventory facts",
+        "Original synthetic E4 cutoff/windows/leases, 10min service, optional pickups, 240min horizon, 100kg/500kg fleet templates retained",
+        "Original 30s solver wall budget, one worker, seed42; ExecutionConfig deterministic 0.25s/pass unchanged",
+        "Local state tokens and canonical input hashes describe synthetic modeled facts; no DB digests, approvals or receipts minted"
+      ],
+      "wall_seconds": 270.7026506380007,
+      "metrics": {
+        "peak_rss_bytes": 4063293440,
+        "cpu_seconds": 260.191815,
+        "cgroup": {
+          "memory.max": "8589934592",
+          "memory.peak": "4061929472",
+          "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+          "cpu.max": "200000 100000",
+          "cpu.stat": "usage_usec 260197788\nuser_usec 249040498\nsystem_usec 11157290\nnice_usec 0\nnr_periods 2709\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0"
+        }
+      }
+    }
+  },
+  {
+    "label": "small-8gb-2cpu-planner",
+    "profile": "8gb-2cpu",
+    "image_id": "sha256:9dad7a112d031c65cd92c83880c9ce876b0ce79de36c1220b787c0b19e186173",
+    "exit_code": 0,
+    "oom": false,
+    "external_timeout": false,
+    "wall_seconds": 10.75,
+    "limits": {
+      "Memory": 8589934592,
+      "MemorySwap": 8589934592,
+      "NanoCpus": 2000000000,
+      "NetworkMode": "none",
+      "ReadonlyRootfs": true
+    },
+    "result": {
+      "case": "small",
+      "pickups": 3,
+      "vehicles": 2,
+      "nodes": 4,
+      "artifact_load_seconds": 1.3276233529995807,
+      "matrix_seconds": 5.538965876000475,
+      "methods": [
+        {
+          "method": "fcfs",
+          "wall_seconds": 0.0027255960003458313,
+          "validation_seconds": 0.0034690130005401443,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "served": 3,
+          "unserved": 0,
+          "status": "COMPLETE",
+          "timeout": false,
+          "coverage_optimal": false,
+          "secondary_optimal": false,
+          "solver_statuses": [],
+          "solver_runtime_seconds": 0.0
+        },
+        {
+          "method": "nearest_neighbour",
+          "wall_seconds": 0.0043483969993758365,
+          "validation_seconds": 0.004793457000232593,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "served": 3,
+          "unserved": 0,
+          "status": "COMPLETE",
+          "timeout": false,
+          "coverage_optimal": false,
+          "secondary_optimal": false,
+          "solver_statuses": [],
+          "solver_runtime_seconds": 0.0
+        },
+        {
+          "method": "distance_only",
+          "wall_seconds": 2.216435418999936,
+          "validation_seconds": 0.0019945340000049328,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "served": 3,
+          "unserved": 0,
+          "status": "COMPLETE",
+          "timeout": false,
+          "coverage_optimal": true,
+          "secondary_optimal": true,
+          "solver_statuses": [
+            "OPTIMAL",
+            "OPTIMAL"
+          ],
+          "solver_runtime_seconds": 0.020408654000000002
+        },
+        {
+          "method": "proposed",
+          "wall_seconds": 0.02716756500012707,
+          "validation_seconds": 0.0016744930007916992,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "served": 3,
+          "unserved": 0,
+          "status": "COMPLETE",
+          "timeout": false,
+          "coverage_optimal": true,
+          "secondary_optimal": true,
+          "solver_statuses": [
+            "OPTIMAL",
+            "OPTIMAL"
+          ],
+          "solver_runtime_seconds": 0.023114289000000003
+        }
+      ],
+      "proposed_usable": true,
+      "all_plans_valid": true,
+      "any_solver_timeout": false,
+      "wall_seconds": 9.685179692999554,
+      "metrics": {
+        "peak_rss_bytes": 293081088,
+        "cpu_seconds": 9.490780999999998,
+        "cgroup": {
+          "memory.max": "8589934592",
+          "memory.peak": "347414528",
+          "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+          "cpu.max": "200000 100000",
+          "cpu.stat": "usage_usec 9495446\nuser_usec 8397472\nsystem_usec 1097974\nnice_usec 0\nnr_periods 98\nnr_throttled 3\nthrottled_usec 1175234\nnr_bursts 0\nburst_usec 0"
+        }
+      }
+    }
+  },
+  {
+    "label": "small-512mb-0.1cpu-planner",
+    "profile": "512mb-0.1cpu",
+    "image_id": "sha256:9dad7a112d031c65cd92c83880c9ce876b0ce79de36c1220b787c0b19e186173",
+    "exit_code": 0,
+    "oom": false,
+    "external_timeout": false,
+    "wall_seconds": 55.73399999999947,
+    "limits": {
+      "Memory": 536870912,
+      "MemorySwap": 536870912,
+      "NanoCpus": 100000000,
+      "NetworkMode": "none",
+      "ReadonlyRootfs": true
+    },
+    "result": {
+      "case": "small",
+      "pickups": 3,
+      "vehicles": 2,
+      "nodes": 4,
+      "artifact_load_seconds": 11.99613952800064,
+      "matrix_seconds": 28.196980667999924,
+      "methods": [
+        {
+          "method": "fcfs",
+          "wall_seconds": 0.0018137320003006607,
+          "validation_seconds": 0.09482303000004322,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "served": 3,
+          "unserved": 0,
+          "status": "COMPLETE",
+          "timeout": false,
+          "coverage_optimal": false,
+          "secondary_optimal": false,
+          "solver_statuses": [],
+          "solver_runtime_seconds": 0.0
+        },
+        {
+          "method": "nearest_neighbour",
+          "wall_seconds": 0.003215404999536986,
+          "validation_seconds": 0.002011279000726063,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "served": 3,
+          "unserved": 0,
+          "status": "COMPLETE",
+          "timeout": false,
+          "coverage_optimal": false,
+          "secondary_optimal": false,
+          "solver_statuses": [],
+          "solver_runtime_seconds": 0.0
+        },
+        {
+          "method": "distance_only",
+          "wall_seconds": 7.699960939000448,
+          "validation_seconds": 0.0016557769995415583,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "served": 3,
+          "unserved": 0,
+          "status": "COMPLETE",
+          "timeout": false,
+          "coverage_optimal": true,
+          "secondary_optimal": true,
+          "solver_statuses": [
+            "OPTIMAL",
+            "OPTIMAL"
+          ],
+          "solver_runtime_seconds": 0.20622830800000003
+        },
+        {
+          "method": "proposed",
+          "wall_seconds": 0.2987596129996746,
+          "validation_seconds": 0.0023363410000456497,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "served": 3,
+          "unserved": 0,
+          "status": "COMPLETE",
+          "timeout": false,
+          "coverage_optimal": true,
+          "secondary_optimal": true,
+          "solver_statuses": [
+            "OPTIMAL",
+            "OPTIMAL"
+          ],
+          "solver_runtime_seconds": 0.207495125
+        }
+      ],
+      "proposed_usable": true,
+      "all_plans_valid": true,
+      "any_solver_timeout": false,
+      "wall_seconds": 52.90478436899957,
+      "metrics": {
+        "peak_rss_bytes": 293584896,
+        "cpu_seconds": 5.396349,
+        "cgroup": {
+          "memory.max": "536870912",
+          "memory.peak": "284221440",
+          "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+          "cpu.max": "10000 100000",
+          "cpu.stat": "usage_usec 5400142\nuser_usec 4942147\nsystem_usec 457994\nnice_usec 0\nnr_periods 537\nnr_throttled 537\nthrottled_usec 50395688\nnr_bursts 0\nburst_usec 0"
+        }
+      }
+    }
+  },
+  {
+    "label": "small-2gb-1cpu-planner",
+    "profile": "2gb-1cpu",
+    "image_id": "sha256:9dad7a112d031c65cd92c83880c9ce876b0ce79de36c1220b787c0b19e186173",
+    "exit_code": 0,
+    "oom": false,
+    "external_timeout": false,
+    "wall_seconds": 6.2960000000002765,
+    "limits": {
+      "Memory": 2147483648,
+      "MemorySwap": 2147483648,
+      "NanoCpus": 1000000000,
+      "NetworkMode": "none",
+      "ReadonlyRootfs": true
+    },
+    "result": {
+      "case": "small",
+      "pickups": 3,
+      "vehicles": 2,
+      "nodes": 4,
+      "artifact_load_seconds": 1.4719209690001662,
+      "matrix_seconds": 2.495256084000175,
+      "methods": [
+        {
+          "method": "fcfs",
+          "wall_seconds": 0.0014210890003596433,
+          "validation_seconds": 0.0010817889997269958,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "served": 3,
+          "unserved": 0,
+          "status": "COMPLETE",
+          "timeout": false,
+          "coverage_optimal": false,
+          "secondary_optimal": false,
+          "solver_statuses": [],
+          "solver_runtime_seconds": 0.0
+        },
+        {
+          "method": "nearest_neighbour",
+          "wall_seconds": 0.0012085939997632522,
+          "validation_seconds": 0.0010796859996844432,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "served": 3,
+          "unserved": 0,
+          "status": "COMPLETE",
+          "timeout": false,
+          "coverage_optimal": false,
+          "secondary_optimal": false,
+          "solver_statuses": [],
+          "solver_runtime_seconds": 0.0
+        },
+        {
+          "method": "distance_only",
+          "wall_seconds": 0.7288433290004832,
+          "validation_seconds": 0.001239240000359132,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "served": 3,
+          "unserved": 0,
+          "status": "COMPLETE",
+          "timeout": false,
+          "coverage_optimal": true,
+          "secondary_optimal": true,
+          "solver_statuses": [
+            "OPTIMAL",
+            "OPTIMAL"
+          ],
+          "solver_runtime_seconds": 0.016451026
+        },
+        {
+          "method": "proposed",
+          "wall_seconds": 0.01741217500057246,
+          "validation_seconds": 0.0013228749994596,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "served": 3,
+          "unserved": 0,
+          "status": "COMPLETE",
+          "timeout": false,
+          "coverage_optimal": true,
+          "secondary_optimal": true,
+          "solver_statuses": [
+            "OPTIMAL",
+            "OPTIMAL"
+          ],
+          "solver_runtime_seconds": 0.014403052000000001
+        }
+      ],
+      "proposed_usable": true,
+      "all_plans_valid": true,
+      "any_solver_timeout": false,
+      "wall_seconds": 5.237771940999664,
+      "metrics": {
+        "peak_rss_bytes": 293687296,
+        "cpu_seconds": 5.13906,
+        "cgroup": {
+          "memory.max": "2147483648",
+          "memory.peak": "284495872",
+          "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+          "cpu.max": "100000 100000",
+          "cpu.stat": "usage_usec 5141759\nuser_usec 4688900\nsystem_usec 452859\nnice_usec 0\nnr_periods 53\nnr_throttled 7\nthrottled_usec 1492643\nnr_bursts 0\nburst_usec 0"
+        }
+      }
+    }
+  },
+  {
+    "label": "small-4gb-2cpu-planner",
+    "profile": "4gb-2cpu",
+    "image_id": "sha256:9dad7a112d031c65cd92c83880c9ce876b0ce79de36c1220b787c0b19e186173",
+    "exit_code": 0,
+    "oom": false,
+    "external_timeout": false,
+    "wall_seconds": 5.671999999999571,
+    "limits": {
+      "Memory": 4294967296,
+      "MemorySwap": 4294967296,
+      "NanoCpus": 2000000000,
+      "NetworkMode": "none",
+      "ReadonlyRootfs": true
+    },
+    "result": {
+      "case": "small",
+      "pickups": 3,
+      "vehicles": 2,
+      "nodes": 4,
+      "artifact_load_seconds": 1.0017166190000353,
+      "matrix_seconds": 2.418872620000002,
+      "methods": [
+        {
+          "method": "fcfs",
+          "wall_seconds": 0.00178734400014946,
+          "validation_seconds": 0.0013822400005665259,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "served": 3,
+          "unserved": 0,
+          "status": "COMPLETE",
+          "timeout": false,
+          "coverage_optimal": false,
+          "secondary_optimal": false,
+          "solver_statuses": [],
+          "solver_runtime_seconds": 0.0
+        },
+        {
+          "method": "nearest_neighbour",
+          "wall_seconds": 0.0021810919997733436,
+          "validation_seconds": 0.001840353999796207,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "served": 3,
+          "unserved": 0,
+          "status": "COMPLETE",
+          "timeout": false,
+          "coverage_optimal": false,
+          "secondary_optimal": false,
+          "solver_statuses": [],
+          "solver_runtime_seconds": 0.0
+        },
+        {
+          "method": "distance_only",
+          "wall_seconds": 0.7737119069997789,
+          "validation_seconds": 0.0012521339995146263,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "served": 3,
+          "unserved": 0,
+          "status": "COMPLETE",
+          "timeout": false,
+          "coverage_optimal": true,
+          "secondary_optimal": true,
+          "solver_statuses": [
+            "OPTIMAL",
+            "OPTIMAL"
+          ],
+          "solver_runtime_seconds": 0.016245532
+        },
+        {
+          "method": "proposed",
+          "wall_seconds": 0.016345181000360753,
+          "validation_seconds": 0.0011985979999735719,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "served": 3,
+          "unserved": 0,
+          "status": "COMPLETE",
+          "timeout": false,
+          "coverage_optimal": true,
+          "secondary_optimal": true,
+          "solver_statuses": [
+            "OPTIMAL",
+            "OPTIMAL"
+          ],
+          "solver_runtime_seconds": 0.013434401000000002
+        }
+      ],
+      "proposed_usable": true,
+      "all_plans_valid": true,
+      "any_solver_timeout": false,
+      "wall_seconds": 4.645812829000533,
+      "metrics": {
+        "peak_rss_bytes": 293425152,
+        "cpu_seconds": 5.060966,
+        "cgroup": {
+          "memory.max": "4294967296",
+          "memory.peak": "284000256",
+          "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+          "cpu.max": "200000 100000",
+          "cpu.stat": "usage_usec 5064804\nuser_usec 4592459\nsystem_usec 472344\nnice_usec 0\nnr_periods 48\nnr_throttled 3\nthrottled_usec 1696244\nnr_bursts 0\nburst_usec 0"
+        }
+      }
+    }
+  },
+  {
+    "label": "small-512mb-0.1cpu-validator",
+    "profile": "512mb-0.1cpu",
+    "image_id": "sha256:73141a58d0e949a11a794e344ee19ed4ca0d46f88bb9699e8ebb3ddff0179371",
+    "exit_code": 0,
+    "oom": false,
+    "external_timeout": false,
+    "wall_seconds": 5.765000000000327,
+    "limits": {
+      "Memory": 536870912,
+      "MemorySwap": 536870912,
+      "NanoCpus": 100000000,
+      "NetworkMode": "none",
+      "ReadonlyRootfs": true
+    },
+    "result": {
+      "scope": "SEPARATE_INDEPENDENT_RAW_PLAN_VALIDATION_NOT_DB_WORK_ITEM_ATTESTATION",
+      "methods": [
+        {
+          "method": "fcfs",
+          "seconds": 0.0014942220004741102,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "timeout": false
+        },
+        {
+          "method": "nearest_neighbour",
+          "seconds": 0.0012045849998685298,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "timeout": false
+        },
+        {
+          "method": "distance_only",
+          "seconds": 0.0010867620003409684,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "timeout": false
+        },
+        {
+          "method": "proposed",
+          "seconds": 0.001064114000655536,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "timeout": false
+        }
+      ],
+      "input_sha256": "c04595789830de52f6c0a6fd3d179d59e27e273398fb3789b8688049a79bf5f9",
+      "all_valid": true,
+      "wall_seconds": 4.197602129000188,
+      "metrics": {
+        "peak_rss_bytes": 25661440,
+        "cpu_seconds": 0.514551,
+        "cgroup": {
+          "memory.max": "536870912",
+          "memory.peak": "17195008",
+          "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+          "cpu.max": "10000 100000",
+          "cpu.stat": "usage_usec 518500\nuser_usec 468322\nsystem_usec 50177\nnice_usec 0\nnr_periods 50\nnr_throttled 50\nthrottled_usec 4631286\nnr_bursts 0\nburst_usec 0"
+        }
+      }
+    },
+    "plan_source_file": "small-512mb-0.1cpu-planner-plans.json"
+  },
+  {
+    "label": "small-2gb-1cpu-validator",
+    "profile": "2gb-1cpu",
+    "image_id": "sha256:73141a58d0e949a11a794e344ee19ed4ca0d46f88bb9699e8ebb3ddff0179371",
+    "exit_code": 0,
+    "oom": false,
+    "external_timeout": false,
+    "wall_seconds": 1.0460000000002765,
+    "limits": {
+      "Memory": 2147483648,
+      "MemorySwap": 2147483648,
+      "NanoCpus": 1000000000,
+      "NetworkMode": "none",
+      "ReadonlyRootfs": true
+    },
+    "result": {
+      "scope": "SEPARATE_INDEPENDENT_RAW_PLAN_VALIDATION_NOT_DB_WORK_ITEM_ATTESTATION",
+      "methods": [
+        {
+          "method": "fcfs",
+          "seconds": 0.0017659630002526683,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "timeout": false
+        },
+        {
+          "method": "nearest_neighbour",
+          "seconds": 0.0014665839998997399,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "timeout": false
+        },
+        {
+          "method": "distance_only",
+          "seconds": 0.0015500370000154362,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "timeout": false
+        },
+        {
+          "method": "proposed",
+          "seconds": 0.001396175000081712,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "timeout": false
+        }
+      ],
+      "input_sha256": "c04595789830de52f6c0a6fd3d179d59e27e273398fb3789b8688049a79bf5f9",
+      "all_valid": true,
+      "wall_seconds": 0.32519653500003187,
+      "metrics": {
+        "peak_rss_bytes": 25698304,
+        "cpu_seconds": 0.397063,
+        "cgroup": {
+          "memory.max": "2147483648",
+          "memory.peak": "16941056",
+          "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+          "cpu.max": "100000 100000",
+          "cpu.stat": "usage_usec 400799\nuser_usec 355347\nsystem_usec 45451\nnice_usec 0\nnr_periods 4\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0"
+        }
+      }
+    },
+    "plan_source_file": "small-2gb-1cpu-planner-plans.json"
+  },
+  {
+    "label": "small-4gb-2cpu-validator",
+    "profile": "4gb-2cpu",
+    "image_id": "sha256:73141a58d0e949a11a794e344ee19ed4ca0d46f88bb9699e8ebb3ddff0179371",
+    "exit_code": 0,
+    "oom": false,
+    "external_timeout": false,
+    "wall_seconds": 1.2029999999995198,
+    "limits": {
+      "Memory": 4294967296,
+      "MemorySwap": 4294967296,
+      "NanoCpus": 2000000000,
+      "NetworkMode": "none",
+      "ReadonlyRootfs": true
+    },
+    "result": {
+      "scope": "SEPARATE_INDEPENDENT_RAW_PLAN_VALIDATION_NOT_DB_WORK_ITEM_ATTESTATION",
+      "methods": [
+        {
+          "method": "fcfs",
+          "seconds": 0.0013564809996751137,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "timeout": false
+        },
+        {
+          "method": "nearest_neighbour",
+          "seconds": 0.0022613210003328277,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "timeout": false
+        },
+        {
+          "method": "distance_only",
+          "seconds": 0.0017554720006955904,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "timeout": false
+        },
+        {
+          "method": "proposed",
+          "seconds": 0.0013056190000497736,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "timeout": false
+        }
+      ],
+      "input_sha256": "c04595789830de52f6c0a6fd3d179d59e27e273398fb3789b8688049a79bf5f9",
+      "all_valid": true,
+      "wall_seconds": 0.42941980700015847,
+      "metrics": {
+        "peak_rss_bytes": 25944064,
+        "cpu_seconds": 0.509691,
+        "cgroup": {
+          "memory.max": "4294967296",
+          "memory.peak": "16740352",
+          "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+          "cpu.max": "200000 100000",
+          "cpu.stat": "usage_usec 512403\nuser_usec 467311\nsystem_usec 45091\nnice_usec 0\nnr_periods 5\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0"
+        }
+      }
+    },
+    "plan_source_file": "small-4gb-2cpu-planner-plans.json"
+  },
+  {
+    "label": "small-8gb-2cpu-validator",
+    "profile": "8gb-2cpu",
+    "image_id": "sha256:73141a58d0e949a11a794e344ee19ed4ca0d46f88bb9699e8ebb3ddff0179371",
+    "exit_code": 0,
+    "oom": false,
+    "external_timeout": false,
+    "wall_seconds": 1.2969999999995707,
+    "limits": {
+      "Memory": 8589934592,
+      "MemorySwap": 8589934592,
+      "NanoCpus": 2000000000,
+      "NetworkMode": "none",
+      "ReadonlyRootfs": true
+    },
+    "result": {
+      "scope": "SEPARATE_INDEPENDENT_RAW_PLAN_VALIDATION_NOT_DB_WORK_ITEM_ATTESTATION",
+      "methods": [
+        {
+          "method": "fcfs",
+          "seconds": 0.0014513880005324609,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "timeout": false
+        },
+        {
+          "method": "nearest_neighbour",
+          "seconds": 0.0014258909995987779,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "timeout": false
+        },
+        {
+          "method": "distance_only",
+          "seconds": 0.0012492100004237727,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "timeout": false
+        },
+        {
+          "method": "proposed",
+          "seconds": 0.001113646999328921,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "timeout": false
+        }
+      ],
+      "input_sha256": "c04595789830de52f6c0a6fd3d179d59e27e273398fb3789b8688049a79bf5f9",
+      "all_valid": true,
+      "wall_seconds": 0.4068561789999876,
+      "metrics": {
+        "peak_rss_bytes": 25702400,
+        "cpu_seconds": 0.49680899999999995,
+        "cgroup": {
+          "memory.max": "8589934592",
+          "memory.peak": "17199104",
+          "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+          "cpu.max": "200000 100000",
+          "cpu.stat": "usage_usec 500679\nuser_usec 459300\nsystem_usec 41378\nnice_usec 0\nnr_periods 5\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0"
+        }
+      }
+    },
+    "plan_source_file": "small-8gb-2cpu-planner-plans.json"
+  },
+  {
+    "label": "typical-provisional-8gb-2cpu-planner",
+    "profile": "8gb-2cpu",
+    "image_id": "sha256:9dad7a112d031c65cd92c83880c9ce876b0ce79de36c1220b787c0b19e186173",
+    "exit_code": 0,
+    "oom": false,
+    "external_timeout": false,
+    "wall_seconds": 13.42199999999957,
+    "limits": {
+      "Memory": 8589934592,
+      "MemorySwap": 8589934592,
+      "NanoCpus": 2000000000,
+      "NetworkMode": "none",
+      "ReadonlyRootfs": true
+    },
+    "result": {
+      "case": "typical-provisional",
+      "pickups": 10,
+      "vehicles": 2,
+      "nodes": 11,
+      "artifact_load_seconds": 1.4400178720006807,
+      "matrix_seconds": 7.253856026999529,
+      "methods": [
+        {
+          "method": "fcfs",
+          "wall_seconds": 0.003567449000001943,
+          "validation_seconds": 0.0027955790001215064,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "served": 10,
+          "unserved": 0,
+          "status": "COMPLETE",
+          "timeout": false,
+          "coverage_optimal": false,
+          "secondary_optimal": false,
+          "solver_statuses": [],
+          "solver_runtime_seconds": 0.0
+        },
+        {
+          "method": "nearest_neighbour",
+          "wall_seconds": 0.005089625000437081,
+          "validation_seconds": 0.002666884000063874,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "served": 10,
+          "unserved": 0,
+          "status": "COMPLETE",
+          "timeout": false,
+          "coverage_optimal": false,
+          "secondary_optimal": false,
+          "solver_statuses": [],
+          "solver_runtime_seconds": 0.0
+        },
+        {
+          "method": "distance_only",
+          "wall_seconds": 1.3916518200003338,
+          "validation_seconds": 0.003036045000044396,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "served": 10,
+          "unserved": 0,
+          "status": "COMPLETE",
+          "timeout": true,
+          "coverage_optimal": true,
+          "secondary_optimal": false,
+          "solver_statuses": [
+            "OPTIMAL",
+            "FEASIBLE"
+          ],
+          "solver_runtime_seconds": 0.543095855
+        },
+        {
+          "method": "proposed",
+          "wall_seconds": 0.5730664220000108,
+          "validation_seconds": 0.0036441629999899305,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "served": 10,
+          "unserved": 0,
+          "status": "COMPLETE",
+          "timeout": true,
+          "coverage_optimal": true,
+          "secondary_optimal": false,
+          "solver_statuses": [
+            "OPTIMAL",
+            "FEASIBLE"
+          ],
+          "solver_runtime_seconds": 0.562976763
+        }
+      ],
+      "proposed_usable": true,
+      "all_plans_valid": true,
+      "any_solver_timeout": true,
+      "wall_seconds": 11.57678959200075,
+      "metrics": {
+        "peak_rss_bytes": 325873664,
+        "cpu_seconds": 12.063988,
+        "cgroup": {
+          "memory.max": "8589934592",
+          "memory.peak": "277716992",
+          "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+          "cpu.max": "200000 100000",
+          "cpu.stat": "usage_usec 12069707\nuser_usec 11503563\nsystem_usec 566143\nnice_usec 0\nnr_periods 121\nnr_throttled 3\nthrottled_usec 1632818\nnr_bursts 0\nburst_usec 0"
+        }
+      }
+    }
+  },
+  {
+    "label": "typical-provisional-512mb-0.1cpu-planner",
+    "profile": "512mb-0.1cpu",
+    "image_id": "sha256:9dad7a112d031c65cd92c83880c9ce876b0ce79de36c1220b787c0b19e186173",
+    "exit_code": 0,
+    "oom": false,
+    "external_timeout": false,
+    "wall_seconds": 124.46900000000005,
+    "limits": {
+      "Memory": 536870912,
+      "MemorySwap": 536870912,
+      "NanoCpus": 100000000,
+      "NetworkMode": "none",
+      "ReadonlyRootfs": true
+    },
+    "result": {
+      "case": "typical-provisional",
+      "pickups": 10,
+      "vehicles": 2,
+      "nodes": 11,
+      "artifact_load_seconds": 12.194751211000039,
+      "matrix_seconds": 80.50851188900015,
+      "methods": [
+        {
+          "method": "fcfs",
+          "wall_seconds": 0.09589622600014991,
+          "validation_seconds": 0.0028875259995402303,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "served": 10,
+          "unserved": 0,
+          "status": "COMPLETE",
+          "timeout": false,
+          "coverage_optimal": false,
+          "secondary_optimal": false,
+          "solver_statuses": [],
+          "solver_runtime_seconds": 0.0
+        },
+        {
+          "method": "nearest_neighbour",
+          "wall_seconds": 0.09742718200050149,
+          "validation_seconds": 0.0037232269996820833,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "served": 10,
+          "unserved": 0,
+          "status": "COMPLETE",
+          "timeout": false,
+          "coverage_optimal": false,
+          "secondary_optimal": false,
+          "solver_statuses": [],
+          "solver_runtime_seconds": 0.0
+        },
+        {
+          "method": "distance_only",
+          "wall_seconds": 16.397404067000025,
+          "validation_seconds": 0.09238882200043008,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "served": 10,
+          "unserved": 0,
+          "status": "COMPLETE",
+          "timeout": true,
+          "coverage_optimal": true,
+          "secondary_optimal": false,
+          "solver_statuses": [
+            "OPTIMAL",
+            "FEASIBLE"
+          ],
+          "solver_runtime_seconds": 9.207065159
+        },
+        {
+          "method": "proposed",
+          "wall_seconds": 9.008868223000718,
+          "validation_seconds": 0.09405348499967658,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "served": 10,
+          "unserved": 0,
+          "status": "COMPLETE",
+          "timeout": true,
+          "coverage_optimal": true,
+          "secondary_optimal": false,
+          "solver_statuses": [
+            "OPTIMAL",
+            "FEASIBLE"
+          ],
+          "solver_runtime_seconds": 8.899831235
+        }
+      ],
+      "proposed_usable": true,
+      "all_plans_valid": true,
+      "any_solver_timeout": true,
+      "wall_seconds": 121.79146350200062,
+      "metrics": {
+        "peak_rss_bytes": 325808128,
+        "cpu_seconds": 12.277533,
+        "cgroup": {
+          "memory.max": "536870912",
+          "memory.peak": "277405696",
+          "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+          "cpu.max": "10000 100000",
+          "cpu.stat": "usage_usec 12280380\nuser_usec 11835547\nsystem_usec 444833\nnice_usec 0\nnr_periods 1226\nnr_throttled 1226\nthrottled_usec 112293406\nnr_bursts 0\nburst_usec 0"
+        }
+      }
+    }
+  },
+  {
+    "label": "typical-provisional-2gb-1cpu-planner",
+    "profile": "2gb-1cpu",
+    "image_id": "sha256:9dad7a112d031c65cd92c83880c9ce876b0ce79de36c1220b787c0b19e186173",
+    "exit_code": 0,
+    "oom": false,
+    "external_timeout": false,
+    "wall_seconds": 10.858999999999469,
+    "limits": {
+      "Memory": 2147483648,
+      "MemorySwap": 2147483648,
+      "NanoCpus": 1000000000,
+      "NetworkMode": "none",
+      "ReadonlyRootfs": true
+    },
+    "result": {
+      "case": "typical-provisional",
+      "pickups": 10,
+      "vehicles": 2,
+      "nodes": 11,
+      "artifact_load_seconds": 1.2178049009999086,
+      "matrix_seconds": 6.065563674000259,
+      "methods": [
+        {
+          "method": "fcfs",
+          "wall_seconds": 0.004253111000252829,
+          "validation_seconds": 0.003403534000426589,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "served": 10,
+          "unserved": 0,
+          "status": "COMPLETE",
+          "timeout": false,
+          "coverage_optimal": false,
+          "secondary_optimal": false,
+          "solver_statuses": [],
+          "solver_runtime_seconds": 0.0
+        },
+        {
+          "method": "nearest_neighbour",
+          "wall_seconds": 0.004163169000094058,
+          "validation_seconds": 0.0028475869994508685,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "served": 10,
+          "unserved": 0,
+          "status": "COMPLETE",
+          "timeout": false,
+          "coverage_optimal": false,
+          "secondary_optimal": false,
+          "solver_statuses": [],
+          "solver_runtime_seconds": 0.0
+        },
+        {
+          "method": "distance_only",
+          "wall_seconds": 1.3031103470002563,
+          "validation_seconds": 0.0034003670007223263,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "served": 10,
+          "unserved": 0,
+          "status": "COMPLETE",
+          "timeout": true,
+          "coverage_optimal": true,
+          "secondary_optimal": false,
+          "solver_statuses": [
+            "OPTIMAL",
+            "FEASIBLE"
+          ],
+          "solver_runtime_seconds": 0.563490821
+        },
+        {
+          "method": "proposed",
+          "wall_seconds": 0.6965604360002544,
+          "validation_seconds": 0.0034510400000726804,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "served": 10,
+          "unserved": 0,
+          "status": "COMPLETE",
+          "timeout": true,
+          "coverage_optimal": true,
+          "secondary_optimal": false,
+          "solver_statuses": [
+            "OPTIMAL",
+            "FEASIBLE"
+          ],
+          "solver_runtime_seconds": 0.6843273300000001
+        }
+      ],
+      "proposed_usable": true,
+      "all_plans_valid": true,
+      "any_solver_timeout": true,
+      "wall_seconds": 9.781636423000236,
+      "metrics": {
+        "peak_rss_bytes": 325718016,
+        "cpu_seconds": 9.803111999999999,
+        "cgroup": {
+          "memory.max": "2147483648",
+          "memory.peak": "277508096",
+          "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+          "cpu.max": "100000 100000",
+          "cpu.stat": "usage_usec 9806749\nuser_usec 9394000\nsystem_usec 412748\nnice_usec 0\nnr_periods 98\nnr_throttled 4\nthrottled_usec 2012785\nnr_bursts 0\nburst_usec 0"
+        }
+      }
+    }
+  },
+  {
+    "label": "typical-provisional-4gb-2cpu-planner",
+    "profile": "4gb-2cpu",
+    "image_id": "sha256:9dad7a112d031c65cd92c83880c9ce876b0ce79de36c1220b787c0b19e186173",
+    "exit_code": 0,
+    "oom": false,
+    "external_timeout": false,
+    "wall_seconds": 9.717999999999847,
+    "limits": {
+      "Memory": 4294967296,
+      "MemorySwap": 4294967296,
+      "NanoCpus": 2000000000,
+      "NetworkMode": "none",
+      "ReadonlyRootfs": true
+    },
+    "result": {
+      "case": "typical-provisional",
+      "pickups": 10,
+      "vehicles": 2,
+      "nodes": 11,
+      "artifact_load_seconds": 0.950932990000183,
+      "matrix_seconds": 5.47706114399989,
+      "methods": [
+        {
+          "method": "fcfs",
+          "wall_seconds": 0.0063921630007826025,
+          "validation_seconds": 0.0027865849997397163,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "served": 10,
+          "unserved": 0,
+          "status": "COMPLETE",
+          "timeout": false,
+          "coverage_optimal": false,
+          "secondary_optimal": false,
+          "solver_statuses": [],
+          "solver_runtime_seconds": 0.0
+        },
+        {
+          "method": "nearest_neighbour",
+          "wall_seconds": 0.0039201290001074085,
+          "validation_seconds": 0.002866214999812655,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "served": 10,
+          "unserved": 0,
+          "status": "COMPLETE",
+          "timeout": false,
+          "coverage_optimal": false,
+          "secondary_optimal": false,
+          "solver_statuses": [],
+          "solver_runtime_seconds": 0.0
+        },
+        {
+          "method": "distance_only",
+          "wall_seconds": 1.201492416000292,
+          "validation_seconds": 0.002930177000052936,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "served": 10,
+          "unserved": 0,
+          "status": "COMPLETE",
+          "timeout": true,
+          "coverage_optimal": true,
+          "secondary_optimal": false,
+          "solver_statuses": [
+            "OPTIMAL",
+            "FEASIBLE"
+          ],
+          "solver_runtime_seconds": 0.58348699
+        },
+        {
+          "method": "proposed",
+          "wall_seconds": 0.5889415029996599,
+          "validation_seconds": 0.004362665000371635,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "served": 10,
+          "unserved": 0,
+          "status": "COMPLETE",
+          "timeout": true,
+          "coverage_optimal": true,
+          "secondary_optimal": false,
+          "solver_statuses": [
+            "OPTIMAL",
+            "FEASIBLE"
+          ],
+          "solver_runtime_seconds": 0.579446436
+        }
+      ],
+      "proposed_usable": true,
+      "all_plans_valid": true,
+      "any_solver_timeout": true,
+      "wall_seconds": 8.726071458999286,
+      "metrics": {
+        "peak_rss_bytes": 325599232,
+        "cpu_seconds": 9.177773,
+        "cgroup": {
+          "memory.max": "4294967296",
+          "memory.peak": "277811200",
+          "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+          "cpu.max": "200000 100000",
+          "cpu.stat": "usage_usec 9182434\nuser_usec 8773791\nsystem_usec 408642\nnice_usec 0\nnr_periods 89\nnr_throttled 3\nthrottled_usec 1182058\nnr_bursts 0\nburst_usec 0"
+        }
+      }
+    }
+  },
+  {
+    "label": "typical-provisional-512mb-0.1cpu-validator",
+    "profile": "512mb-0.1cpu",
+    "image_id": "sha256:73141a58d0e949a11a794e344ee19ed4ca0d46f88bb9699e8ebb3ddff0179371",
+    "exit_code": 0,
+    "oom": false,
+    "external_timeout": false,
+    "wall_seconds": 4.938000000000102,
+    "limits": {
+      "Memory": 536870912,
+      "MemorySwap": 536870912,
+      "NanoCpus": 100000000,
+      "NetworkMode": "none",
+      "ReadonlyRootfs": true
+    },
+    "result": {
+      "scope": "SEPARATE_INDEPENDENT_RAW_PLAN_VALIDATION_NOT_DB_WORK_ITEM_ATTESTATION",
+      "methods": [
+        {
+          "method": "fcfs",
+          "seconds": 0.09072457599995687,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "timeout": false
+        },
+        {
+          "method": "nearest_neighbour",
+          "seconds": 0.0027797910006484017,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "timeout": false
+        },
+        {
+          "method": "distance_only",
+          "seconds": 0.0027763859998231055,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "timeout": true
+        },
+        {
+          "method": "proposed",
+          "seconds": 0.09443170200029272,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "timeout": true
+        }
+      ],
+      "input_sha256": "4eeb08827dcc5425b77b4816dd0f985542bb3266fc8cc94e51f4c70670f9021c",
+      "all_valid": true,
+      "wall_seconds": 3.796299684000587,
+      "metrics": {
+        "peak_rss_bytes": 25808896,
+        "cpu_seconds": 0.43880899999999995,
+        "cgroup": {
+          "memory.max": "536870912",
+          "memory.peak": "16982016",
+          "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+          "cpu.max": "10000 100000",
+          "cpu.stat": "usage_usec 441440\nuser_usec 412650\nsystem_usec 28789\nnice_usec 0\nnr_periods 43\nnr_throttled 42\nthrottled_usec 3822703\nnr_bursts 0\nburst_usec 0"
+        }
+      }
+    },
+    "plan_source_file": "typical-provisional-512mb-0.1cpu-planner-plans.json"
+  },
+  {
+    "label": "typical-provisional-2gb-1cpu-validator",
+    "profile": "2gb-1cpu",
+    "image_id": "sha256:73141a58d0e949a11a794e344ee19ed4ca0d46f88bb9699e8ebb3ddff0179371",
+    "exit_code": 0,
+    "oom": false,
+    "external_timeout": false,
+    "wall_seconds": 1.344000000000051,
+    "limits": {
+      "Memory": 2147483648,
+      "MemorySwap": 2147483648,
+      "NanoCpus": 1000000000,
+      "NetworkMode": "none",
+      "ReadonlyRootfs": true
+    },
+    "result": {
+      "scope": "SEPARATE_INDEPENDENT_RAW_PLAN_VALIDATION_NOT_DB_WORK_ITEM_ATTESTATION",
+      "methods": [
+        {
+          "method": "fcfs",
+          "seconds": 0.003420808000555553,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "timeout": false
+        },
+        {
+          "method": "nearest_neighbour",
+          "seconds": 0.0031350190001830924,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "timeout": false
+        },
+        {
+          "method": "distance_only",
+          "seconds": 0.003307650000351714,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "timeout": true
+        },
+        {
+          "method": "proposed",
+          "seconds": 0.003129045999230584,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "timeout": true
+        }
+      ],
+      "input_sha256": "4eeb08827dcc5425b77b4816dd0f985542bb3266fc8cc94e51f4c70670f9021c",
+      "all_valid": true,
+      "wall_seconds": 0.4478711720003048,
+      "metrics": {
+        "peak_rss_bytes": 25944064,
+        "cpu_seconds": 0.537935,
+        "cgroup": {
+          "memory.max": "2147483648",
+          "memory.peak": "17203200",
+          "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+          "cpu.max": "100000 100000",
+          "cpu.stat": "usage_usec 544222\nuser_usec 508207\nsystem_usec 36014\nnice_usec 0\nnr_periods 6\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0"
+        }
+      }
+    },
+    "plan_source_file": "typical-provisional-2gb-1cpu-planner-plans.json"
+  },
+  {
+    "label": "typical-provisional-4gb-2cpu-validator",
+    "profile": "4gb-2cpu",
+    "image_id": "sha256:73141a58d0e949a11a794e344ee19ed4ca0d46f88bb9699e8ebb3ddff0179371",
+    "exit_code": 0,
+    "oom": false,
+    "external_timeout": false,
+    "wall_seconds": 1.5150000000003274,
+    "limits": {
+      "Memory": 4294967296,
+      "MemorySwap": 4294967296,
+      "NanoCpus": 2000000000,
+      "NetworkMode": "none",
+      "ReadonlyRootfs": true
+    },
+    "result": {
+      "scope": "SEPARATE_INDEPENDENT_RAW_PLAN_VALIDATION_NOT_DB_WORK_ITEM_ATTESTATION",
+      "methods": [
+        {
+          "method": "fcfs",
+          "seconds": 0.005078537999906985,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "timeout": false
+        },
+        {
+          "method": "nearest_neighbour",
+          "seconds": 0.0034077949994753,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "timeout": false
+        },
+        {
+          "method": "distance_only",
+          "seconds": 0.005916422000154853,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "timeout": true
+        },
+        {
+          "method": "proposed",
+          "seconds": 0.004209544000332244,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "timeout": true
+        }
+      ],
+      "input_sha256": "4eeb08827dcc5425b77b4816dd0f985542bb3266fc8cc94e51f4c70670f9021c",
+      "all_valid": true,
+      "wall_seconds": 0.6019755300003453,
+      "metrics": {
+        "peak_rss_bytes": 25645056,
+        "cpu_seconds": 0.715557,
+        "cgroup": {
+          "memory.max": "4294967296",
+          "memory.peak": "17530880",
+          "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+          "cpu.max": "200000 100000",
+          "cpu.stat": "usage_usec 720306\nuser_usec 662681\nsystem_usec 57624\nnice_usec 0\nnr_periods 7\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0"
+        }
+      }
+    },
+    "plan_source_file": "typical-provisional-4gb-2cpu-planner-plans.json"
+  },
+  {
+    "label": "typical-provisional-8gb-2cpu-validator",
+    "profile": "8gb-2cpu",
+    "image_id": "sha256:73141a58d0e949a11a794e344ee19ed4ca0d46f88bb9699e8ebb3ddff0179371",
+    "exit_code": 0,
+    "oom": false,
+    "external_timeout": false,
+    "wall_seconds": 1.6720000000004802,
+    "limits": {
+      "Memory": 8589934592,
+      "MemorySwap": 8589934592,
+      "NanoCpus": 2000000000,
+      "NetworkMode": "none",
+      "ReadonlyRootfs": true
+    },
+    "result": {
+      "scope": "SEPARATE_INDEPENDENT_RAW_PLAN_VALIDATION_NOT_DB_WORK_ITEM_ATTESTATION",
+      "methods": [
+        {
+          "method": "fcfs",
+          "seconds": 0.004392539000036777,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "timeout": false
+        },
+        {
+          "method": "nearest_neighbour",
+          "seconds": 0.00452077400041162,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "timeout": false
+        },
+        {
+          "method": "distance_only",
+          "seconds": 0.004384089999803109,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "timeout": true
+        },
+        {
+          "method": "proposed",
+          "seconds": 0.004127694999624509,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "timeout": true
+        }
+      ],
+      "input_sha256": "4eeb08827dcc5425b77b4816dd0f985542bb3266fc8cc94e51f4c70670f9021c",
+      "all_valid": true,
+      "wall_seconds": 0.5257924640000056,
+      "metrics": {
+        "peak_rss_bytes": 26169344,
+        "cpu_seconds": 0.689716,
+        "cgroup": {
+          "memory.max": "8589934592",
+          "memory.peak": "17408000",
+          "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+          "cpu.max": "200000 100000",
+          "cpu.stat": "usage_usec 694234\nuser_usec 599025\nsystem_usec 95209\nnice_usec 0\nnr_periods 6\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0"
+        }
+      }
+    },
+    "plan_source_file": "typical-provisional-8gb-2cpu-planner-plans.json"
+  },
+  {
+    "label": "large-provisional-8gb-2cpu-planner",
+    "profile": "8gb-2cpu",
+    "image_id": "sha256:9dad7a112d031c65cd92c83880c9ce876b0ce79de36c1220b787c0b19e186173",
+    "exit_code": 0,
+    "oom": false,
+    "external_timeout": false,
+    "wall_seconds": 23.563000000000102,
+    "limits": {
+      "Memory": 8589934592,
+      "MemorySwap": 8589934592,
+      "NanoCpus": 2000000000,
+      "NetworkMode": "none",
+      "ReadonlyRootfs": true
+    },
+    "result": {
+      "case": "large-provisional",
+      "pickups": 25,
+      "vehicles": 5,
+      "nodes": 26,
+      "artifact_load_seconds": 1.588703231999716,
+      "matrix_seconds": 17.55187701700015,
+      "methods": [
+        {
+          "method": "fcfs",
+          "wall_seconds": 0.015031509000436927,
+          "validation_seconds": 0.008531860000402958,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "served": 25,
+          "unserved": 0,
+          "status": "COMPLETE",
+          "timeout": false,
+          "coverage_optimal": false,
+          "secondary_optimal": false,
+          "solver_statuses": [],
+          "solver_runtime_seconds": 0.0
+        },
+        {
+          "method": "nearest_neighbour",
+          "wall_seconds": 0.013921544000368158,
+          "validation_seconds": 0.0086447980002049,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "served": 25,
+          "unserved": 0,
+          "status": "COMPLETE",
+          "timeout": false,
+          "coverage_optimal": false,
+          "secondary_optimal": false,
+          "solver_statuses": [],
+          "solver_runtime_seconds": 0.0
+        },
+        {
+          "method": "distance_only",
+          "wall_seconds": 1.5267200959997353,
+          "validation_seconds": 0.013183140999899479,
+          "valid": true,
+          "feasible": false,
+          "usable": false,
+          "served": 0,
+          "unserved": 25,
+          "status": "OPTIMISATION_TIMEOUT",
+          "timeout": true,
+          "coverage_optimal": false,
+          "secondary_optimal": false,
+          "solver_statuses": [
+            "UNKNOWN"
+          ],
+          "solver_runtime_seconds": 0.551523149
+        },
+        {
+          "method": "proposed",
+          "wall_seconds": 0.6650301649997346,
+          "validation_seconds": 0.009844891999819083,
+          "valid": true,
+          "feasible": false,
+          "usable": false,
+          "served": 0,
+          "unserved": 25,
+          "status": "OPTIMISATION_TIMEOUT",
+          "timeout": true,
+          "coverage_optimal": false,
+          "secondary_optimal": false,
+          "solver_statuses": [
+            "UNKNOWN"
+          ],
+          "solver_runtime_seconds": 0.567937318
+        }
+      ],
+      "proposed_usable": false,
+      "all_plans_valid": true,
+      "any_solver_timeout": true,
+      "wall_seconds": 22.19776253999953,
+      "metrics": {
+        "peak_rss_bytes": 339034112,
+        "cpu_seconds": 22.652846,
+        "cgroup": {
+          "memory.max": "8589934592",
+          "memory.peak": "310292480",
+          "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+          "cpu.max": "200000 100000",
+          "cpu.stat": "usage_usec 22657662\nuser_usec 22123548\nsystem_usec 534113\nnice_usec 0\nnr_periods 225\nnr_throttled 3\nthrottled_usec 1493219\nnr_bursts 0\nburst_usec 0"
+        }
+      }
+    }
+  },
+  {
+    "label": "large-provisional-512mb-0.1cpu-planner",
+    "profile": "512mb-0.1cpu",
+    "image_id": "sha256:9dad7a112d031c65cd92c83880c9ce876b0ce79de36c1220b787c0b19e186173",
+    "exit_code": 0,
+    "oom": false,
+    "external_timeout": false,
+    "wall_seconds": 259.40599999999995,
+    "limits": {
+      "Memory": 536870912,
+      "MemorySwap": 536870912,
+      "NanoCpus": 100000000,
+      "NetworkMode": "none",
+      "ReadonlyRootfs": true
+    },
+    "result": {
+      "case": "large-provisional",
+      "pickups": 25,
+      "vehicles": 5,
+      "nodes": 26,
+      "artifact_load_seconds": 12.598359952000465,
+      "matrix_seconds": 215.10119996499998,
+      "methods": [
+        {
+          "method": "fcfs",
+          "wall_seconds": 0.2005216269999437,
+          "validation_seconds": 0.10004285500053811,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "served": 25,
+          "unserved": 0,
+          "status": "COMPLETE",
+          "timeout": false,
+          "coverage_optimal": false,
+          "secondary_optimal": false,
+          "solver_statuses": [],
+          "solver_runtime_seconds": 0.0
+        },
+        {
+          "method": "nearest_neighbour",
+          "wall_seconds": 0.29715355999996973,
+          "validation_seconds": 0.10639703900051245,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "served": 25,
+          "unserved": 0,
+          "status": "COMPLETE",
+          "timeout": false,
+          "coverage_optimal": false,
+          "secondary_optimal": false,
+          "solver_statuses": [],
+          "solver_runtime_seconds": 0.0
+        },
+        {
+          "method": "distance_only",
+          "wall_seconds": 16.494062826000118,
+          "validation_seconds": 0.10300506200019299,
+          "valid": true,
+          "feasible": false,
+          "usable": false,
+          "served": 0,
+          "unserved": 25,
+          "status": "OPTIMISATION_TIMEOUT",
+          "timeout": true,
+          "coverage_optimal": false,
+          "secondary_optimal": false,
+          "solver_statuses": [
+            "UNKNOWN"
+          ],
+          "solver_runtime_seconds": 8.296005344000001
+        },
+        {
+          "method": "proposed",
+          "wall_seconds": 7.493716055000732,
+          "validation_seconds": 0.10315173699927982,
+          "valid": true,
+          "feasible": false,
+          "usable": false,
+          "served": 0,
+          "unserved": 25,
+          "status": "OPTIMISATION_TIMEOUT",
+          "timeout": true,
+          "coverage_optimal": false,
+          "secondary_optimal": false,
+          "solver_statuses": [
+            "UNKNOWN"
+          ],
+          "solver_runtime_seconds": 6.502721309
+        }
+      ],
+      "proposed_usable": false,
+      "all_plans_valid": true,
+      "any_solver_timeout": true,
+      "wall_seconds": 256.6137091089995,
+      "metrics": {
+        "peak_rss_bytes": 338374656,
+        "cpu_seconds": 25.75801,
+        "cgroup": {
+          "memory.max": "536870912",
+          "memory.peak": "310571008",
+          "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+          "cpu.max": "10000 100000",
+          "cpu.stat": "usage_usec 25762128\nuser_usec 25261492\nsystem_usec 500635\nnice_usec 0\nnr_periods 2573\nnr_throttled 2573\nthrottled_usec 233424304\nnr_bursts 0\nburst_usec 0"
+        }
+      }
+    }
+  },
+  {
+    "label": "large-provisional-2gb-1cpu-planner",
+    "profile": "2gb-1cpu",
+    "image_id": "sha256:9dad7a112d031c65cd92c83880c9ce876b0ce79de36c1220b787c0b19e186173",
+    "exit_code": 0,
+    "oom": false,
+    "external_timeout": false,
+    "wall_seconds": 20.235000000000582,
+    "limits": {
+      "Memory": 2147483648,
+      "MemorySwap": 2147483648,
+      "NanoCpus": 1000000000,
+      "NetworkMode": "none",
+      "ReadonlyRootfs": true
+    },
+    "result": {
+      "case": "large-provisional",
+      "pickups": 25,
+      "vehicles": 5,
+      "nodes": 26,
+      "artifact_load_seconds": 1.3468277519996263,
+      "matrix_seconds": 14.914453395999772,
+      "methods": [
+        {
+          "method": "fcfs",
+          "wall_seconds": 0.016083683999568166,
+          "validation_seconds": 0.011380332000044291,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "served": 25,
+          "unserved": 0,
+          "status": "COMPLETE",
+          "timeout": false,
+          "coverage_optimal": false,
+          "secondary_optimal": false,
+          "solver_statuses": [],
+          "solver_runtime_seconds": 0.0
+        },
+        {
+          "method": "nearest_neighbour",
+          "wall_seconds": 0.016678064999723574,
+          "validation_seconds": 0.008789937000074133,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "served": 25,
+          "unserved": 0,
+          "status": "COMPLETE",
+          "timeout": false,
+          "coverage_optimal": false,
+          "secondary_optimal": false,
+          "solver_statuses": [],
+          "solver_runtime_seconds": 0.0
+        },
+        {
+          "method": "distance_only",
+          "wall_seconds": 1.5347066069998618,
+          "validation_seconds": 0.014536434999172343,
+          "valid": true,
+          "feasible": false,
+          "usable": false,
+          "served": 0,
+          "unserved": 25,
+          "status": "OPTIMISATION_TIMEOUT",
+          "timeout": true,
+          "coverage_optimal": false,
+          "secondary_optimal": false,
+          "solver_statuses": [
+            "UNKNOWN"
+          ],
+          "solver_runtime_seconds": 0.657014163
+        },
+        {
+          "method": "proposed",
+          "wall_seconds": 0.8143314660001124,
+          "validation_seconds": 0.014394603999789979,
+          "valid": true,
+          "feasible": false,
+          "usable": false,
+          "served": 0,
+          "unserved": 25,
+          "status": "OPTIMISATION_TIMEOUT",
+          "timeout": true,
+          "coverage_optimal": false,
+          "secondary_optimal": false,
+          "solver_statuses": [
+            "UNKNOWN"
+          ],
+          "solver_runtime_seconds": 0.7012992410000001
+        }
+      ],
+      "proposed_usable": false,
+      "all_plans_valid": true,
+      "any_solver_timeout": true,
+      "wall_seconds": 19.186280271000214,
+      "metrics": {
+        "peak_rss_bytes": 340672512,
+        "cpu_seconds": 19.191561,
+        "cgroup": {
+          "memory.max": "2147483648",
+          "memory.peak": "310915072",
+          "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+          "cpu.max": "100000 100000",
+          "cpu.stat": "usage_usec 19195491\nuser_usec 18712711\nsystem_usec 482779\nnice_usec 0\nnr_periods 193\nnr_throttled 41\nthrottled_usec 1366648\nnr_bursts 0\nburst_usec 0"
+        }
+      }
+    }
+  },
+  {
+    "label": "large-provisional-4gb-2cpu-planner",
+    "profile": "4gb-2cpu",
+    "image_id": "sha256:9dad7a112d031c65cd92c83880c9ce876b0ce79de36c1220b787c0b19e186173",
+    "exit_code": 0,
+    "oom": false,
+    "external_timeout": false,
+    "wall_seconds": 22.640000000000327,
+    "limits": {
+      "Memory": 4294967296,
+      "MemorySwap": 4294967296,
+      "NanoCpus": 2000000000,
+      "NetworkMode": "none",
+      "ReadonlyRootfs": true
+    },
+    "result": {
+      "case": "large-provisional",
+      "pickups": 25,
+      "vehicles": 5,
+      "nodes": 26,
+      "artifact_load_seconds": 1.076407243000176,
+      "matrix_seconds": 17.7801746060004,
+      "methods": [
+        {
+          "method": "fcfs",
+          "wall_seconds": 0.018795969000166224,
+          "validation_seconds": 0.013686941000742081,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "served": 25,
+          "unserved": 0,
+          "status": "COMPLETE",
+          "timeout": false,
+          "coverage_optimal": false,
+          "secondary_optimal": false,
+          "solver_statuses": [],
+          "solver_runtime_seconds": 0.0
+        },
+        {
+          "method": "nearest_neighbour",
+          "wall_seconds": 0.018343745000493072,
+          "validation_seconds": 0.011776037999879918,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "served": 25,
+          "unserved": 0,
+          "status": "COMPLETE",
+          "timeout": false,
+          "coverage_optimal": false,
+          "secondary_optimal": false,
+          "solver_statuses": [],
+          "solver_runtime_seconds": 0.0
+        },
+        {
+          "method": "distance_only",
+          "wall_seconds": 1.5300501990004705,
+          "validation_seconds": 0.011118956999780494,
+          "valid": true,
+          "feasible": false,
+          "usable": false,
+          "served": 0,
+          "unserved": 25,
+          "status": "OPTIMISATION_TIMEOUT",
+          "timeout": true,
+          "coverage_optimal": false,
+          "secondary_optimal": false,
+          "solver_statuses": [
+            "UNKNOWN"
+          ],
+          "solver_runtime_seconds": 0.6317353370000001
+        },
+        {
+          "method": "proposed",
+          "wall_seconds": 0.6638066260002233,
+          "validation_seconds": 0.012794384999324393,
+          "valid": true,
+          "feasible": false,
+          "usable": false,
+          "served": 0,
+          "unserved": 25,
+          "status": "OPTIMISATION_TIMEOUT",
+          "timeout": true,
+          "coverage_optimal": false,
+          "secondary_optimal": false,
+          "solver_statuses": [
+            "UNKNOWN"
+          ],
+          "solver_runtime_seconds": 0.5824923430000001
+        }
+      ],
+      "proposed_usable": false,
+      "all_plans_valid": true,
+      "any_solver_timeout": true,
+      "wall_seconds": 21.528366735999953,
+      "metrics": {
+        "peak_rss_bytes": 338661376,
+        "cpu_seconds": 21.939808,
+        "cgroup": {
+          "memory.max": "4294967296",
+          "memory.peak": "310480896",
+          "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+          "cpu.max": "200000 100000",
+          "cpu.stat": "usage_usec 21943996\nuser_usec 21546402\nsystem_usec 397594\nnice_usec 0\nnr_periods 217\nnr_throttled 3\nthrottled_usec 1352462\nnr_bursts 0\nburst_usec 0"
+        }
+      }
+    }
+  },
+  {
+    "label": "large-provisional-512mb-0.1cpu-validator",
+    "profile": "512mb-0.1cpu",
+    "image_id": "sha256:73141a58d0e949a11a794e344ee19ed4ca0d46f88bb9699e8ebb3ddff0179371",
+    "exit_code": 0,
+    "oom": false,
+    "external_timeout": false,
+    "wall_seconds": 6.203000000000429,
+    "limits": {
+      "Memory": 536870912,
+      "MemorySwap": 536870912,
+      "NanoCpus": 100000000,
+      "NetworkMode": "none",
+      "ReadonlyRootfs": true
+    },
+    "result": {
+      "scope": "SEPARATE_INDEPENDENT_RAW_PLAN_VALIDATION_NOT_DB_WORK_ITEM_ATTESTATION",
+      "methods": [
+        {
+          "method": "fcfs",
+          "seconds": 0.10150546200020472,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "timeout": false
+        },
+        {
+          "method": "nearest_neighbour",
+          "seconds": 0.10280747700016946,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "timeout": false
+        },
+        {
+          "method": "distance_only",
+          "seconds": 0.09964729500006797,
+          "valid": true,
+          "feasible": false,
+          "usable": false,
+          "timeout": true
+        },
+        {
+          "method": "proposed",
+          "seconds": 0.10088004999943223,
+          "valid": true,
+          "feasible": false,
+          "usable": false,
+          "timeout": true
+        }
+      ],
+      "input_sha256": "fb16b81bcd2d6bf49711d30a56cff93c3abef77087106e106c4135d9c0da7eed",
+      "all_valid": true,
+      "wall_seconds": 4.794206071999724,
+      "metrics": {
+        "peak_rss_bytes": 25890816,
+        "cpu_seconds": 0.558384,
+        "cgroup": {
+          "memory.max": "536870912",
+          "memory.peak": "17240064",
+          "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+          "cpu.max": "10000 100000",
+          "cpu.stat": "usage_usec 560845\nuser_usec 508458\nsystem_usec 52386\nnice_usec 0\nnr_periods 55\nnr_throttled 55\nthrottled_usec 4889934\nnr_bursts 0\nburst_usec 0"
+        }
+      }
+    },
+    "plan_source_file": "large-provisional-512mb-0.1cpu-planner-plans.json"
+  },
+  {
+    "label": "large-provisional-2gb-1cpu-validator",
+    "profile": "2gb-1cpu",
+    "image_id": "sha256:73141a58d0e949a11a794e344ee19ed4ca0d46f88bb9699e8ebb3ddff0179371",
+    "exit_code": 0,
+    "oom": false,
+    "external_timeout": false,
+    "wall_seconds": 1.5159999999996217,
+    "limits": {
+      "Memory": 2147483648,
+      "MemorySwap": 2147483648,
+      "NanoCpus": 1000000000,
+      "NetworkMode": "none",
+      "ReadonlyRootfs": true
+    },
+    "result": {
+      "scope": "SEPARATE_INDEPENDENT_RAW_PLAN_VALIDATION_NOT_DB_WORK_ITEM_ATTESTATION",
+      "methods": [
+        {
+          "method": "fcfs",
+          "seconds": 0.01520647600045777,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "timeout": false
+        },
+        {
+          "method": "nearest_neighbour",
+          "seconds": 0.0144492290000926,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "timeout": false
+        },
+        {
+          "method": "distance_only",
+          "seconds": 0.011415334999583138,
+          "valid": true,
+          "feasible": false,
+          "usable": false,
+          "timeout": true
+        },
+        {
+          "method": "proposed",
+          "seconds": 0.013276359999508713,
+          "valid": true,
+          "feasible": false,
+          "usable": false,
+          "timeout": true
+        }
+      ],
+      "input_sha256": "fb16b81bcd2d6bf49711d30a56cff93c3abef77087106e106c4135d9c0da7eed",
+      "all_valid": true,
+      "wall_seconds": 0.714487609000571,
+      "metrics": {
+        "peak_rss_bytes": 25944064,
+        "cpu_seconds": 0.793265,
+        "cgroup": {
+          "memory.max": "2147483648",
+          "memory.peak": "17219584",
+          "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+          "cpu.max": "100000 100000",
+          "cpu.stat": "usage_usec 797490\nuser_usec 721135\nsystem_usec 76355\nnice_usec 0\nnr_periods 9\nnr_throttled 1\nthrottled_usec 728\nnr_bursts 0\nburst_usec 0"
+        }
+      }
+    },
+    "plan_source_file": "large-provisional-2gb-1cpu-planner-plans.json"
+  },
+  {
+    "label": "large-provisional-4gb-2cpu-validator",
+    "profile": "4gb-2cpu",
+    "image_id": "sha256:73141a58d0e949a11a794e344ee19ed4ca0d46f88bb9699e8ebb3ddff0179371",
+    "exit_code": 0,
+    "oom": false,
+    "external_timeout": false,
+    "wall_seconds": 1.7340000000003783,
+    "limits": {
+      "Memory": 4294967296,
+      "MemorySwap": 4294967296,
+      "NanoCpus": 2000000000,
+      "NetworkMode": "none",
+      "ReadonlyRootfs": true
+    },
+    "result": {
+      "scope": "SEPARATE_INDEPENDENT_RAW_PLAN_VALIDATION_NOT_DB_WORK_ITEM_ATTESTATION",
+      "methods": [
+        {
+          "method": "fcfs",
+          "seconds": 0.01707086300029914,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "timeout": false
+        },
+        {
+          "method": "nearest_neighbour",
+          "seconds": 0.01472648599974491,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "timeout": false
+        },
+        {
+          "method": "distance_only",
+          "seconds": 0.01612139999997453,
+          "valid": true,
+          "feasible": false,
+          "usable": false,
+          "timeout": true
+        },
+        {
+          "method": "proposed",
+          "seconds": 0.019385522000447963,
+          "valid": true,
+          "feasible": false,
+          "usable": false,
+          "timeout": true
+        }
+      ],
+      "input_sha256": "fb16b81bcd2d6bf49711d30a56cff93c3abef77087106e106c4135d9c0da7eed",
+      "all_valid": true,
+      "wall_seconds": 0.7000906309995116,
+      "metrics": {
+        "peak_rss_bytes": 26222592,
+        "cpu_seconds": 0.8369049999999999,
+        "cgroup": {
+          "memory.max": "4294967296",
+          "memory.peak": "17408000",
+          "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+          "cpu.max": "200000 100000",
+          "cpu.stat": "usage_usec 842789\nuser_usec 753648\nsystem_usec 89141\nnice_usec 0\nnr_periods 9\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0"
+        }
+      }
+    },
+    "plan_source_file": "large-provisional-4gb-2cpu-planner-plans.json"
+  },
+  {
+    "label": "large-provisional-8gb-2cpu-validator",
+    "profile": "8gb-2cpu",
+    "image_id": "sha256:73141a58d0e949a11a794e344ee19ed4ca0d46f88bb9699e8ebb3ddff0179371",
+    "exit_code": 0,
+    "oom": false,
+    "external_timeout": false,
+    "wall_seconds": 1.875,
+    "limits": {
+      "Memory": 8589934592,
+      "MemorySwap": 8589934592,
+      "NanoCpus": 2000000000,
+      "NetworkMode": "none",
+      "ReadonlyRootfs": true
+    },
+    "result": {
+      "scope": "SEPARATE_INDEPENDENT_RAW_PLAN_VALIDATION_NOT_DB_WORK_ITEM_ATTESTATION",
+      "methods": [
+        {
+          "method": "fcfs",
+          "seconds": 0.022897535000083735,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "timeout": false
+        },
+        {
+          "method": "nearest_neighbour",
+          "seconds": 0.039530320999801916,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "timeout": false
+        },
+        {
+          "method": "distance_only",
+          "seconds": 0.021556818000135536,
+          "valid": true,
+          "feasible": false,
+          "usable": false,
+          "timeout": true
+        },
+        {
+          "method": "proposed",
+          "seconds": 0.026596153999889793,
+          "valid": true,
+          "feasible": false,
+          "usable": false,
+          "timeout": true
+        }
+      ],
+      "input_sha256": "fb16b81bcd2d6bf49711d30a56cff93c3abef77087106e106c4135d9c0da7eed",
+      "all_valid": true,
+      "wall_seconds": 0.7417245840006217,
+      "metrics": {
+        "peak_rss_bytes": 25833472,
+        "cpu_seconds": 0.853085,
+        "cgroup": {
+          "memory.max": "8589934592",
+          "memory.peak": "16769024",
+          "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+          "cpu.max": "200000 100000",
+          "cpu.stat": "usage_usec 858427\nuser_usec 797689\nsystem_usec 60737\nnice_usec 0\nnr_periods 9\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0"
+        }
+      }
+    },
+    "plan_source_file": "large-provisional-8gb-2cpu-planner-plans.json"
+  },
+  {
+    "label": "source-boundary-stress-8gb-2cpu-planner",
+    "profile": "8gb-2cpu",
+    "image_id": "sha256:9dad7a112d031c65cd92c83880c9ce876b0ce79de36c1220b787c0b19e186173",
+    "exit_code": 0,
+    "oom": false,
+    "external_timeout": false,
+    "wall_seconds": 86.89100000000053,
+    "limits": {
+      "Memory": 8589934592,
+      "MemorySwap": 8589934592,
+      "NanoCpus": 2000000000,
+      "NetworkMode": "none",
+      "ReadonlyRootfs": true
+    },
+    "result": {
+      "case": "source-boundary-stress",
+      "pickups": 100,
+      "vehicles": 10,
+      "nodes": 100,
+      "artifact_load_seconds": 2.8626603510001587,
+      "matrix_seconds": 71.17435816600027,
+      "methods": [
+        {
+          "method": "fcfs",
+          "wall_seconds": 0.24255456799983222,
+          "validation_seconds": 0.1199655829996118,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "served": 65,
+          "unserved": 35,
+          "status": "PARTIAL",
+          "timeout": false,
+          "coverage_optimal": false,
+          "secondary_optimal": false,
+          "solver_statuses": [],
+          "solver_runtime_seconds": 0.0
+        },
+        {
+          "method": "nearest_neighbour",
+          "wall_seconds": 0.20537141299973882,
+          "validation_seconds": 0.11420893400008936,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "served": 90,
+          "unserved": 10,
+          "status": "PARTIAL",
+          "timeout": false,
+          "coverage_optimal": false,
+          "secondary_optimal": false,
+          "solver_statuses": [],
+          "solver_runtime_seconds": 0.0
+        },
+        {
+          "method": "distance_only",
+          "wall_seconds": 4.958328455999435,
+          "validation_seconds": 0.09711294099997758,
+          "valid": true,
+          "feasible": false,
+          "usable": false,
+          "served": 0,
+          "unserved": 100,
+          "status": "OPTIMISATION_TIMEOUT",
+          "timeout": true,
+          "coverage_optimal": false,
+          "secondary_optimal": false,
+          "solver_statuses": [
+            "UNKNOWN"
+          ],
+          "solver_runtime_seconds": 2.009327065
+        },
+        {
+          "method": "proposed",
+          "wall_seconds": 3.9832584520008822,
+          "validation_seconds": 0.10790097099925333,
+          "valid": true,
+          "feasible": false,
+          "usable": false,
+          "served": 0,
+          "unserved": 100,
+          "status": "OPTIMISATION_TIMEOUT",
+          "timeout": true,
+          "coverage_optimal": false,
+          "secondary_optimal": false,
+          "solver_statuses": [
+            "UNKNOWN"
+          ],
+          "solver_runtime_seconds": 1.8766758000000001
+        }
+      ],
+      "proposed_usable": false,
+      "all_plans_valid": true,
+      "any_solver_timeout": true,
+      "wall_seconds": 85.0099880810003,
+      "metrics": {
+        "peak_rss_bytes": 570212352,
+        "cpu_seconds": 85.01896599999999,
+        "cgroup": {
+          "memory.max": "8589934592",
+          "memory.peak": "523599872",
+          "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+          "cpu.max": "200000 100000",
+          "cpu.stat": "usage_usec 85025422\nuser_usec 84292410\nsystem_usec 733012\nnice_usec 0\nnr_periods 854\nnr_throttled 3\nthrottled_usec 1567048\nnr_bursts 0\nburst_usec 0"
+        }
+      }
+    }
+  },
+  {
+    "label": "source-boundary-stress-512mb-0.1cpu-planner",
+    "profile": "512mb-0.1cpu",
+    "image_id": "sha256:9dad7a112d031c65cd92c83880c9ce876b0ce79de36c1220b787c0b19e186173",
+    "exit_code": 137,
+    "oom": false,
+    "external_timeout": true,
+    "wall_seconds": 300.4849999999997,
+    "limits": {
+      "Memory": 536870912,
+      "MemorySwap": 536870912,
+      "NanoCpus": 100000000,
+      "NetworkMode": "none",
+      "ReadonlyRootfs": true
+    }
+  },
+  {
+    "label": "source-boundary-stress-2gb-1cpu-planner",
+    "profile": "2gb-1cpu",
+    "image_id": "sha256:9dad7a112d031c65cd92c83880c9ce876b0ce79de36c1220b787c0b19e186173",
+    "exit_code": 0,
+    "oom": false,
+    "external_timeout": false,
+    "wall_seconds": 85.92100000000028,
+    "limits": {
+      "Memory": 2147483648,
+      "MemorySwap": 2147483648,
+      "NanoCpus": 1000000000,
+      "NetworkMode": "none",
+      "ReadonlyRootfs": true
+    },
+    "result": {
+      "case": "source-boundary-stress",
+      "pickups": 100,
+      "vehicles": 10,
+      "nodes": 100,
+      "artifact_load_seconds": 1.5391899599999306,
+      "matrix_seconds": 71.71828997299963,
+      "methods": [
+        {
+          "method": "fcfs",
+          "wall_seconds": 0.1941990049999731,
+          "validation_seconds": 0.09848080399933679,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "served": 65,
+          "unserved": 35,
+          "status": "PARTIAL",
+          "timeout": false,
+          "coverage_optimal": false,
+          "secondary_optimal": false,
+          "solver_statuses": [],
+          "solver_runtime_seconds": 0.0
+        },
+        {
+          "method": "nearest_neighbour",
+          "wall_seconds": 0.1811197679999168,
+          "validation_seconds": 0.0884830349996264,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "served": 90,
+          "unserved": 10,
+          "status": "PARTIAL",
+          "timeout": false,
+          "coverage_optimal": false,
+          "secondary_optimal": false,
+          "solver_statuses": [],
+          "solver_runtime_seconds": 0.0
+        },
+        {
+          "method": "distance_only",
+          "wall_seconds": 5.340521211000123,
+          "validation_seconds": 0.09622402800050622,
+          "valid": true,
+          "feasible": false,
+          "usable": false,
+          "served": 0,
+          "unserved": 100,
+          "status": "OPTIMISATION_TIMEOUT",
+          "timeout": true,
+          "coverage_optimal": false,
+          "secondary_optimal": false,
+          "solver_statuses": [
+            "UNKNOWN"
+          ],
+          "solver_runtime_seconds": 2.146798795
+        },
+        {
+          "method": "proposed",
+          "wall_seconds": 4.63901725300002,
+          "validation_seconds": 0.11781758699999045,
+          "valid": true,
+          "feasible": false,
+          "usable": false,
+          "served": 0,
+          "unserved": 100,
+          "status": "OPTIMISATION_TIMEOUT",
+          "timeout": true,
+          "coverage_optimal": false,
+          "secondary_optimal": false,
+          "solver_statuses": [
+            "UNKNOWN"
+          ],
+          "solver_runtime_seconds": 2.3277551880000003
+        }
+      ],
+      "proposed_usable": false,
+      "all_plans_valid": true,
+      "any_solver_timeout": true,
+      "wall_seconds": 84.74610590500015,
+      "metrics": {
+        "peak_rss_bytes": 569741312,
+        "cpu_seconds": 84.671368,
+        "cgroup": {
+          "memory.max": "2147483648",
+          "memory.peak": "523165696",
+          "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+          "cpu.max": "100000 100000",
+          "cpu.stat": "usage_usec 84679494\nuser_usec 84075640\nsystem_usec 603853\nnice_usec 0\nnr_periods 849\nnr_throttled 7\nthrottled_usec 1661167\nnr_bursts 0\nburst_usec 0"
+        }
+      }
+    }
+  },
+  {
+    "label": "source-boundary-stress-4gb-2cpu-planner",
+    "profile": "4gb-2cpu",
+    "image_id": "sha256:9dad7a112d031c65cd92c83880c9ce876b0ce79de36c1220b787c0b19e186173",
+    "exit_code": 0,
+    "oom": false,
+    "external_timeout": false,
+    "wall_seconds": 88.21799999999985,
+    "limits": {
+      "Memory": 4294967296,
+      "MemorySwap": 4294967296,
+      "NanoCpus": 2000000000,
+      "NetworkMode": "none",
+      "ReadonlyRootfs": true
+    },
+    "result": {
+      "case": "source-boundary-stress",
+      "pickups": 100,
+      "vehicles": 10,
+      "nodes": 100,
+      "artifact_load_seconds": 1.1675045739993948,
+      "matrix_seconds": 74.4727600389997,
+      "methods": [
+        {
+          "method": "fcfs",
+          "wall_seconds": 0.20086704200002714,
+          "validation_seconds": 0.12395017699964228,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "served": 65,
+          "unserved": 35,
+          "status": "PARTIAL",
+          "timeout": false,
+          "coverage_optimal": false,
+          "secondary_optimal": false,
+          "solver_statuses": [],
+          "solver_runtime_seconds": 0.0
+        },
+        {
+          "method": "nearest_neighbour",
+          "wall_seconds": 0.18512658099916734,
+          "validation_seconds": 0.09268043599968223,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "served": 90,
+          "unserved": 10,
+          "status": "PARTIAL",
+          "timeout": false,
+          "coverage_optimal": false,
+          "secondary_optimal": false,
+          "solver_statuses": [],
+          "solver_runtime_seconds": 0.0
+        },
+        {
+          "method": "distance_only",
+          "wall_seconds": 5.434161382000639,
+          "validation_seconds": 0.09480075899955409,
+          "valid": true,
+          "feasible": false,
+          "usable": false,
+          "served": 0,
+          "unserved": 100,
+          "status": "OPTIMISATION_TIMEOUT",
+          "timeout": true,
+          "coverage_optimal": false,
+          "secondary_optimal": false,
+          "solver_statuses": [
+            "UNKNOWN"
+          ],
+          "solver_runtime_seconds": 2.408828958
+        },
+        {
+          "method": "proposed",
+          "wall_seconds": 4.45660233900071,
+          "validation_seconds": 0.10740905099919473,
+          "valid": true,
+          "feasible": false,
+          "usable": false,
+          "served": 0,
+          "unserved": 100,
+          "status": "OPTIMISATION_TIMEOUT",
+          "timeout": true,
+          "coverage_optimal": false,
+          "secondary_optimal": false,
+          "solver_statuses": [
+            "UNKNOWN"
+          ],
+          "solver_runtime_seconds": 2.152160046
+        }
+      ],
+      "proposed_usable": false,
+      "all_plans_valid": true,
+      "any_solver_timeout": true,
+      "wall_seconds": 86.95301465000011,
+      "metrics": {
+        "peak_rss_bytes": 569778176,
+        "cpu_seconds": 87.25217599999999,
+        "cgroup": {
+          "memory.max": "4294967296",
+          "memory.peak": "522469376",
+          "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+          "cpu.max": "200000 100000",
+          "cpu.stat": "usage_usec 87255428\nuser_usec 86722331\nsystem_usec 533096\nnice_usec 0\nnr_periods 871\nnr_throttled 3\nthrottled_usec 1295381\nnr_bursts 0\nburst_usec 0"
+        }
+      }
+    }
+  },
+  {
+    "label": "source-boundary-stress-512mb-0.1cpu-validator",
+    "profile": "512mb-0.1cpu",
+    "image_id": "sha256:73141a58d0e949a11a794e344ee19ed4ca0d46f88bb9699e8ebb3ddff0179371",
+    "exit_code": 0,
+    "oom": false,
+    "external_timeout": false,
+    "wall_seconds": 12.265999999999622,
+    "limits": {
+      "Memory": 536870912,
+      "MemorySwap": 536870912,
+      "NanoCpus": 100000000,
+      "NetworkMode": "none",
+      "ReadonlyRootfs": true
+    },
+    "result": {
+      "scope": "SEPARATE_INDEPENDENT_RAW_PLAN_VALIDATION_NOT_DB_WORK_ITEM_ATTESTATION",
+      "methods": [
+        {
+          "method": "fcfs",
+          "seconds": 1.502067223999802,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "timeout": false
+        },
+        {
+          "method": "nearest_neighbour",
+          "seconds": 1.3010812960001203,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "timeout": false
+        },
+        {
+          "method": "distance_only",
+          "seconds": 1.2014485650006463,
+          "valid": true,
+          "feasible": false,
+          "usable": false,
+          "timeout": true
+        },
+        {
+          "method": "proposed",
+          "seconds": 1.5977675820004151,
+          "valid": true,
+          "feasible": false,
+          "usable": false,
+          "timeout": true
+        }
+      ],
+      "input_sha256": "041a4af98c6496a2ba52324f8aa1defe8685f532e8362c5c130b0901d0d03142",
+      "all_valid": true,
+      "wall_seconds": 10.69173654199949,
+      "metrics": {
+        "peak_rss_bytes": 32927744,
+        "cpu_seconds": 1.169114,
+        "cgroup": {
+          "memory.max": "536870912",
+          "memory.peak": "23928832",
+          "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+          "cpu.max": "10000 100000",
+          "cpu.stat": "usage_usec 1174384\nuser_usec 1087749\nsystem_usec 86634\nnice_usec 0\nnr_periods 115\nnr_throttled 115\nthrottled_usec 10373294\nnr_bursts 0\nburst_usec 0"
+        }
+      }
+    },
+    "plan_source_file": "source-boundary-stress-8gb-2cpu-planner-plans.json"
+  },
+  {
+    "label": "source-boundary-stress-2gb-1cpu-validator",
+    "profile": "2gb-1cpu",
+    "image_id": "sha256:73141a58d0e949a11a794e344ee19ed4ca0d46f88bb9699e8ebb3ddff0179371",
+    "exit_code": 0,
+    "oom": false,
+    "external_timeout": false,
+    "wall_seconds": 1.9219999999995707,
+    "limits": {
+      "Memory": 2147483648,
+      "MemorySwap": 2147483648,
+      "NanoCpus": 1000000000,
+      "NetworkMode": "none",
+      "ReadonlyRootfs": true
+    },
+    "result": {
+      "scope": "SEPARATE_INDEPENDENT_RAW_PLAN_VALIDATION_NOT_DB_WORK_ITEM_ATTESTATION",
+      "methods": [
+        {
+          "method": "fcfs",
+          "seconds": 0.11861513999974704,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "timeout": false
+        },
+        {
+          "method": "nearest_neighbour",
+          "seconds": 0.10293317700052285,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "timeout": false
+        },
+        {
+          "method": "distance_only",
+          "seconds": 0.09578304800015758,
+          "valid": true,
+          "feasible": false,
+          "usable": false,
+          "timeout": true
+        },
+        {
+          "method": "proposed",
+          "seconds": 0.11147397500008083,
+          "valid": true,
+          "feasible": false,
+          "usable": false,
+          "timeout": true
+        }
+      ],
+      "input_sha256": "041a4af98c6496a2ba52324f8aa1defe8685f532e8362c5c130b0901d0d03142",
+      "all_valid": true,
+      "wall_seconds": 1.0414704819995677,
+      "metrics": {
+        "peak_rss_bytes": 32493568,
+        "cpu_seconds": 1.1418899999999998,
+        "cgroup": {
+          "memory.max": "2147483648",
+          "memory.peak": "23879680",
+          "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+          "cpu.max": "100000 100000",
+          "cpu.stat": "usage_usec 1147916\nuser_usec 1079444\nsystem_usec 68472\nnice_usec 0\nnr_periods 12\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0"
+        }
+      }
+    },
+    "plan_source_file": "source-boundary-stress-2gb-1cpu-planner-plans.json"
+  },
+  {
+    "label": "source-boundary-stress-4gb-2cpu-validator",
+    "profile": "4gb-2cpu",
+    "image_id": "sha256:73141a58d0e949a11a794e344ee19ed4ca0d46f88bb9699e8ebb3ddff0179371",
+    "exit_code": 0,
+    "oom": false,
+    "external_timeout": false,
+    "wall_seconds": 1.6880000000001019,
+    "limits": {
+      "Memory": 4294967296,
+      "MemorySwap": 4294967296,
+      "NanoCpus": 2000000000,
+      "NetworkMode": "none",
+      "ReadonlyRootfs": true
+    },
+    "result": {
+      "scope": "SEPARATE_INDEPENDENT_RAW_PLAN_VALIDATION_NOT_DB_WORK_ITEM_ATTESTATION",
+      "methods": [
+        {
+          "method": "fcfs",
+          "seconds": 0.11417711900048744,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "timeout": false
+        },
+        {
+          "method": "nearest_neighbour",
+          "seconds": 0.10841090800022357,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "timeout": false
+        },
+        {
+          "method": "distance_only",
+          "seconds": 0.10040957599994726,
+          "valid": true,
+          "feasible": false,
+          "usable": false,
+          "timeout": true
+        },
+        {
+          "method": "proposed",
+          "seconds": 0.0886516020000272,
+          "valid": true,
+          "feasible": false,
+          "usable": false,
+          "timeout": true
+        }
+      ],
+      "input_sha256": "041a4af98c6496a2ba52324f8aa1defe8685f532e8362c5c130b0901d0d03142",
+      "all_valid": true,
+      "wall_seconds": 0.894998427000246,
+      "metrics": {
+        "peak_rss_bytes": 32727040,
+        "cpu_seconds": 0.99363,
+        "cgroup": {
+          "memory.max": "4294967296",
+          "memory.peak": "23896064",
+          "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+          "cpu.max": "200000 100000",
+          "cpu.stat": "usage_usec 1002217\nuser_usec 922359\nsystem_usec 79857\nnice_usec 0\nnr_periods 10\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0"
+        }
+      }
+    },
+    "plan_source_file": "source-boundary-stress-4gb-2cpu-planner-plans.json"
+  },
+  {
+    "label": "source-boundary-stress-8gb-2cpu-validator",
+    "profile": "8gb-2cpu",
+    "image_id": "sha256:73141a58d0e949a11a794e344ee19ed4ca0d46f88bb9699e8ebb3ddff0179371",
+    "exit_code": 0,
+    "oom": false,
+    "external_timeout": false,
+    "wall_seconds": 2.7349999999996726,
+    "limits": {
+      "Memory": 8589934592,
+      "MemorySwap": 8589934592,
+      "NanoCpus": 2000000000,
+      "NetworkMode": "none",
+      "ReadonlyRootfs": true
+    },
+    "result": {
+      "scope": "SEPARATE_INDEPENDENT_RAW_PLAN_VALIDATION_NOT_DB_WORK_ITEM_ATTESTATION",
+      "methods": [
+        {
+          "method": "fcfs",
+          "seconds": 0.18949782900017453,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "timeout": false
+        },
+        {
+          "method": "nearest_neighbour",
+          "seconds": 0.1458858070000133,
+          "valid": true,
+          "feasible": true,
+          "usable": true,
+          "timeout": false
+        },
+        {
+          "method": "distance_only",
+          "seconds": 0.15403241199965123,
+          "valid": true,
+          "feasible": false,
+          "usable": false,
+          "timeout": true
+        },
+        {
+          "method": "proposed",
+          "seconds": 0.12821649800025625,
+          "valid": true,
+          "feasible": false,
+          "usable": false,
+          "timeout": true
+        }
+      ],
+      "input_sha256": "041a4af98c6496a2ba52324f8aa1defe8685f532e8362c5c130b0901d0d03142",
+      "all_valid": true,
+      "wall_seconds": 1.5021098970000821,
+      "metrics": {
+        "peak_rss_bytes": 32849920,
+        "cpu_seconds": 1.740203,
+        "cgroup": {
+          "memory.max": "8589934592",
+          "memory.peak": "23826432",
+          "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+          "cpu.max": "200000 100000",
+          "cpu.stat": "usage_usec 1748347\nuser_usec 1619733\nsystem_usec 128614\nnice_usec 0\nnr_periods 19\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0"
+        }
+      }
+    },
+    "plan_source_file": "source-boundary-stress-8gb-2cpu-planner-plans.json"
+  }
+]

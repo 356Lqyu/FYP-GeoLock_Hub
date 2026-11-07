@@ -1,0 +1,20 @@
+test_abrupt_process_exit_releases_lock_and_preserves_committed_steps_then_restore (backend.routing.hosted.tests.test_recovery_rehearsal.RecoveryRehearsalTests.test_abrupt_process_exit_releases_lock_and_preserves_committed_steps_then_restore) ... ERROR
+
+======================================================================
+ERROR: test_abrupt_process_exit_releases_lock_and_preserves_committed_steps_then_restore (backend.routing.hosted.tests.test_recovery_rehearsal.RecoveryRehearsalTests.test_abrupt_process_exit_releases_lock_and_preserves_committed_steps_then_restore)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\User\Downloads\FYP-GeoLock_Hub\backend\routing\hosted\tests\test_recovery_rehearsal.py", line 64, in test_abrupt_process_exit_releases_lock_and_preserves_committed_steps_then_restore
+    with journal.claim(SID,OWNER,REQ):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\contextlib.py", line 137, in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+  File "C:\Users\User\Downloads\FYP-GeoLock_Hub\backend\routing\worker_service\journal.py", line 72, in claim
+    db.execute('INSERT OR IGNORE INTO jobs VALUES(?,?,?)',(snapshot,owner,request))
+sqlite3.OperationalError: disk I/O error
+
+----------------------------------------------------------------------
+Ran 1 test in 0.294s
+
+FAILED (errors=1)

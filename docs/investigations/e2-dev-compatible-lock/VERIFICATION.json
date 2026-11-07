@@ -1,0 +1,15 @@
+{
+  "decision": "LOCAL PASS",
+  "deployment_ready": false,
+  "focused_checks_tests": 43,
+  "completed_scenarios": 275,
+  "single_active_claim_cases": 275,
+  "all_historical_seals_unchanged": true,
+  "full_run_sources_unchanged": true,
+  "all_owned_clusters_stopped": true,
+  "dev_connections": 0,
+  "dev_writes": 0,
+  "backup_restore_operations": 0,
+  "forward_sha256": "655976ab697031c3025e78ad967db4e7f6a755e091a21031de2d3a8e441fee8c",
+  "rollback_sha256": "3209f20240bc19bda4cac7e3cc656179247fd76640ce979d643b15ba38604cd6"
+}

@@ -1,0 +1,55 @@
+{
+  "status": "PLANNING_ONLY",
+  "project_ref": "rcgyuwiidqvrgbxswhqj",
+  "project_url_confirmed": "https://rcgyuwiidqvrgbxswhqj.supabase.co",
+  "query_mode": "SELECT-only; aggregate identities, no credentials or contact details",
+  "migration_sha256": "f50af9705de117bdd12581f2515605c8e5c548e0fee7ae01d7ea33ecfbb0cb05",
+  "counts": {
+    "stops": 0,
+    "routes": 0,
+    "vehicles": 0,
+    "assignments": 0
+  },
+  "coverage": [
+    {
+      "kind": "OPERATIONAL",
+      "active": true,
+      "approved": true,
+      "snapshot": "OSM-OPS-20261018"
+    }
+  ],
+  "observed_at": "2026-10-24T10:56:50.602674+00:00",
+  "rpc_definitions": [
+    {
+      "signature": "deactivate_my_vehicle(uuid,bigint)",
+      "definition": "CREATE OR REPLACE FUNCTION public.deactivate_my_vehicle(p_vehicle_id uuid, p_expected_version bigint)\n RETURNS jsonb\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'pg_catalog', 'pg_temp'\nAS $function$\r\nDECLARE v_actor uuid:=fleet_private.require_ngo(); v public.vehicles%rowtype;\r\nBEGIN\r\n  SELECT * INTO v FROM public.vehicles WHERE vehicle_id=p_vehicle_id AND ngo_user_id=v_actor FOR UPDATE;\r\n  IF NOT FOUND THEN RAISE EXCEPTION 'VEHICLE_NOT_FOUND'; END IF;\r\n  IF p_expected_version IS NULL OR v.vehicle_version<>p_expected_version THEN RAISE EXCEPTION 'VEHICLE_VERSION_CONFLICT'; END IF;\r\n  UPDATE public.vehicles SET active_flag=false,available_for_planning=false WHERE vehicle_id=v.vehicle_id RETURNING * INTO v;\r\n  RETURN to_jsonb(v)-'registration_payload';\r\nEND $function$\n"
+    },
+    {
+      "signature": "list_my_vehicles()",
+      "definition": "CREATE OR REPLACE FUNCTION public.list_my_vehicles()\n RETURNS jsonb\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'pg_catalog', 'pg_temp'\nAS $function$\r\nDECLARE v_actor uuid:=fleet_private.require_ngo(); v_rows jsonb;\r\nBEGIN\r\n  SELECT coalesce(jsonb_agg((to_jsonb(v)-'registration_payload')||jsonb_build_object('eligible_for_planning',\r\n    coalesce(v.active_flag AND v.available_for_planning AND n.location_verified_at IS NOT NULL\r\n    AND v.depot_road_node_id=n.road_node_id AND EXISTS(SELECT 1 FROM public.road_network_nodes rn\r\n      JOIN public.road_network_coverage c ON c.network_snapshot_id=rn.network_snapshot_id\r\n      WHERE rn.osm_node_id=fleet_private.road_node_key(v.depot_road_node_id) AND rn.active_flag AND c.active_flag\r\n      AND c.dataset_kind='OPERATIONAL' AND c.approved_at IS NOT NULL)\r\n    AND NOT fleet_private.vehicle_has_hold(v.vehicle_id),false)) ORDER BY v.vehicle_id),'[]'::jsonb)\r\n    INTO v_rows FROM public.vehicles v JOIN public.ngo_profiles n ON n.user_id=v.ngo_user_id WHERE v.ngo_user_id=v_actor;\r\n  RETURN jsonb_build_object('vehicles',v_rows,'fleet_outcome',CASE WHEN EXISTS(\r\n    SELECT 1 FROM jsonb_array_elements(v_rows) e WHERE (e->>'eligible_for_planning')::boolean)\r\n    THEN 'AVAILABLE_VEHICLES' ELSE 'NO_FEASIBLE_PLAN' END,\r\n    'reason',CASE WHEN jsonb_array_length(v_rows)=0 THEN 'NO_REGISTERED_VEHICLES' ELSE 'SEE_VEHICLE_ELIGIBILITY' END);\r\nEND $function$\n"
+    },
+    {
+      "signature": "register_my_vehicle(uuid,text,text,numeric,numeric,numeric,numeric,boolean)",
+      "definition": "CREATE OR REPLACE FUNCTION public.register_my_vehicle(p_request_id uuid, p_label text, p_vehicle_type text, p_capacity_kg numeric, p_fixed_cost_rm numeric, p_distance_cost_rm_per_km numeric, p_max_route_duration_min numeric, p_available boolean DEFAULT false)\n RETURNS jsonb\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'pg_catalog', 'pg_temp'\nAS $function$\r\nDECLARE v_actor uuid:=fleet_private.require_ngo(); v public.vehicles%rowtype; v_payload jsonb; v_node text;\r\nBEGIN\r\n  IF p_request_id IS NULL OR p_available IS NULL THEN RAISE EXCEPTION 'REQUEST_AND_AVAILABILITY_REQUIRED'; END IF;\r\n  PERFORM fleet_private.check_values(p_label,p_vehicle_type,p_capacity_kg,p_fixed_cost_rm,p_distance_cost_rm_per_km,p_max_route_duration_min);\r\n  v_payload:=jsonb_build_array(btrim(p_label),btrim(p_vehicle_type),p_capacity_kg,p_fixed_cost_rm,p_distance_cost_rm_per_km,p_max_route_duration_min,p_available);\r\n  -- Serializes retries for this owner/request, without trusting an owner parameter.\r\n  PERFORM pg_advisory_xact_lock(hashtextextended(v_actor::text||':'||p_request_id::text,0));\r\n  SELECT * INTO v FROM public.vehicles WHERE ngo_user_id=v_actor AND registration_request_id=p_request_id;\r\n  IF FOUND THEN\r\n    IF v.registration_payload IS DISTINCT FROM v_payload THEN RAISE EXCEPTION 'REGISTRATION_REQUEST_CONFLICT'; END IF;\r\n    RETURN to_jsonb(v)-'registration_payload';\r\n  END IF;\r\n  v_node:=fleet_private.require_depot(v_actor);\r\n  INSERT INTO public.vehicles(ngo_user_id,vehicle_label,vehicle_type,payload_capacity_kg,fixed_cost_rm,\r\n    distance_cost_rm_per_km,max_route_duration_min,depot_road_node_id,available_for_planning,registration_request_id,registration_payload)\r\n  VALUES(v_actor,btrim(p_label),btrim(p_vehicle_type),p_capacity_kg,p_fixed_cost_rm,p_distance_cost_rm_per_km,\r\n    p_max_route_duration_min,v_node,p_available,p_request_id,v_payload) RETURNING * INTO v;\r\n  RETURN to_jsonb(v)-'registration_payload';\r\nEND $function$\n"
+    },
+    {
+      "signature": "set_my_vehicle_availability(uuid,bigint,boolean)",
+      "definition": "CREATE OR REPLACE FUNCTION public.set_my_vehicle_availability(p_vehicle_id uuid, p_expected_version bigint, p_available boolean)\n RETURNS jsonb\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'pg_catalog', 'pg_temp'\nAS $function$\r\nDECLARE v_actor uuid:=fleet_private.require_ngo(); v public.vehicles%rowtype;\r\nBEGIN\r\n  SELECT * INTO v FROM public.vehicles WHERE vehicle_id=p_vehicle_id AND ngo_user_id=v_actor FOR UPDATE;\r\n  IF NOT FOUND THEN RAISE EXCEPTION 'VEHICLE_NOT_FOUND'; END IF;\r\n  IF NOT v.active_flag THEN RAISE EXCEPTION 'VEHICLE_DEACTIVATED'; END IF;\r\n  IF p_expected_version IS NULL OR v.vehicle_version<>p_expected_version THEN RAISE EXCEPTION 'VEHICLE_VERSION_CONFLICT'; END IF;\r\n  IF p_available IS NULL THEN RAISE EXCEPTION 'AVAILABILITY_REQUIRED'; END IF;\r\n  IF p_available THEN PERFORM fleet_private.require_depot(v_actor); END IF;\r\n  UPDATE public.vehicles SET available_for_planning=p_available WHERE vehicle_id=v.vehicle_id RETURNING * INTO v;\r\n  RETURN to_jsonb(v)-'registration_payload';\r\nEND $function$\n"
+    },
+    {
+      "signature": "update_my_vehicle(uuid,bigint,text,text,numeric,numeric,numeric,numeric)",
+      "definition": "CREATE OR REPLACE FUNCTION public.update_my_vehicle(p_vehicle_id uuid, p_expected_version bigint, p_label text, p_vehicle_type text, p_capacity_kg numeric, p_fixed_cost_rm numeric, p_distance_cost_rm_per_km numeric, p_max_route_duration_min numeric)\n RETURNS jsonb\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'pg_catalog', 'pg_temp'\nAS $function$\r\nDECLARE v_actor uuid:=fleet_private.require_ngo(); v public.vehicles%rowtype;\r\nBEGIN\r\n  SELECT * INTO v FROM public.vehicles WHERE vehicle_id=p_vehicle_id AND ngo_user_id=v_actor FOR UPDATE;\r\n  IF NOT FOUND THEN RAISE EXCEPTION 'VEHICLE_NOT_FOUND'; END IF;\r\n  IF NOT v.active_flag THEN RAISE EXCEPTION 'VEHICLE_DEACTIVATED'; END IF;\r\n  IF p_expected_version IS NULL OR v.vehicle_version<>p_expected_version THEN RAISE EXCEPTION 'VEHICLE_VERSION_CONFLICT'; END IF;\r\n  PERFORM fleet_private.check_values(p_label,p_vehicle_type,p_capacity_kg,p_fixed_cost_rm,p_distance_cost_rm_per_km,p_max_route_duration_min);\r\n  UPDATE public.vehicles SET vehicle_label=btrim(p_label),vehicle_type=btrim(p_vehicle_type),payload_capacity_kg=p_capacity_kg,\r\n    fixed_cost_rm=p_fixed_cost_rm,distance_cost_rm_per_km=p_distance_cost_rm_per_km,max_route_duration_min=p_max_route_duration_min\r\n    WHERE vehicle_id=v.vehicle_id RETURNING * INTO v;\r\n  RETURN to_jsonb(v)-'registration_payload';\r\nEND $function$\n"
+    }
+  ],
+  "installation_seal": "geolock-stage8-c1-v2:364bdf2b0f4e413ce0f43d10c56684dc",
+  "ngo_identity_inventory": {
+    "total": 2,
+    "active": 2,
+    "inactive": 0,
+    "active_without_verified_location": 0,
+    "active_verified_operational_depot": 2,
+    "active_matching_authenticated_profiles": 2
+  },
+  "authenticated_calls_executed": false,
+  "database_writes_executed": false
+}

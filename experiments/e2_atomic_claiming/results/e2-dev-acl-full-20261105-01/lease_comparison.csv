@@ -1,0 +1,7 @@
+﻿method,case,scenarios,replacement_success,old_holder_still_active,incorrect_active_releases,errors,evidence_run
+protected_claim_without_lease_recovery,lease expired,100,0,100,,0,e2-20261105-v33-actual-01
+protected_claim_without_lease_recovery,lease still running,25,0,25,0,0,e2-20261105-v33-actual-01
+original_proposed,lease expired,100,100,0,,0,e2-20261105-v33-actual-01
+original_proposed,lease still running,25,0,25,0,0,e2-20261105-v33-actual-01
+corrected_proposed,lease expired,100,100,0,,0,e2-dev-acl-full-20261105-01
+corrected_proposed,lease still running,25,0,25,0,0,e2-dev-acl-full-20261105-01

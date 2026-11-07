@@ -1,0 +1,252 @@
+{
+  "indexes": [
+    {
+      "indexname": "listings_pkey",
+      "indexdef": "CREATE UNIQUE INDEX listings_pkey ON public.listings USING btree (listing_id)"
+    },
+    {
+      "indexname": "ux_batch_listing",
+      "indexdef": "CREATE UNIQUE INDEX ux_batch_listing ON public.listings USING btree (batch_id) WHERE (source_type = 'HUB_BATCH'::text)"
+    },
+    {
+      "indexname": "ux_direct_listing",
+      "indexdef": "CREATE UNIQUE INDEX ux_direct_listing ON public.listings USING btree (donation_id) WHERE (source_type = 'DIRECT_DONATION'::text)"
+    }
+  ],
+  "foreign_keys": [
+    {
+      "conname": "claim_reconciliation_cases_listing_id_fkey",
+      "relation": "claim_reconciliation_cases",
+      "definition": "FOREIGN KEY (listing_id) REFERENCES listings(listing_id)"
+    },
+    {
+      "conname": "claim_requests_listing_id_fkey",
+      "relation": "claim_requests",
+      "definition": "FOREIGN KEY (listing_id) REFERENCES listings(listing_id)"
+    },
+    {
+      "conname": "donation_claims_listing_id_fkey",
+      "relation": "donation_claims",
+      "definition": "FOREIGN KEY (listing_id) REFERENCES listings(listing_id)"
+    }
+  ],
+  "triggers": [
+    {
+      "relation": "audit_events",
+      "tgname": "RI_ConstraintTrigger_c_16886",
+      "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_c_16886\" AFTER INSERT ON public.audit_events FROM auth.users NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_check_ins\"()"
+    },
+    {
+      "relation": "audit_events",
+      "tgname": "RI_ConstraintTrigger_c_16887",
+      "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_c_16887\" AFTER UPDATE ON public.audit_events FROM auth.users NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_check_upd\"()"
+    },
+    {
+      "relation": "audit_events",
+      "tgname": "resolution_audit_provenance",
+      "definition": "CREATE TRIGGER resolution_audit_provenance BEFORE INSERT ON public.audit_events FOR EACH ROW EXECUTE FUNCTION resolution_private.audit_provenance()"
+    },
+    {
+      "relation": "audit_events",
+      "tgname": "trg_audit_append_only",
+      "definition": "CREATE TRIGGER trg_audit_append_only BEFORE DELETE OR UPDATE ON public.audit_events FOR EACH ROW EXECUTE FUNCTION prevent_audit_mutation()"
+    },
+    {
+      "relation": "claim_leases",
+      "tgname": "RI_ConstraintTrigger_c_16891",
+      "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_c_16891\" AFTER INSERT ON public.claim_leases FROM donation_claims NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_check_ins\"()"
+    },
+    {
+      "relation": "claim_leases",
+      "tgname": "RI_ConstraintTrigger_c_16892",
+      "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_c_16892\" AFTER UPDATE ON public.claim_leases FROM donation_claims NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_check_upd\"()"
+    },
+    {
+      "relation": "donation_claims",
+      "tgname": "RI_ConstraintTrigger_a_16889",
+      "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_16889\" AFTER DELETE ON public.donation_claims FROM claim_leases NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_del\"()"
+    },
+    {
+      "relation": "donation_claims",
+      "tgname": "RI_ConstraintTrigger_a_16890",
+      "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_16890\" AFTER UPDATE ON public.donation_claims FROM claim_leases NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_upd\"()"
+    },
+    {
+      "relation": "donation_claims",
+      "tgname": "RI_ConstraintTrigger_a_16964",
+      "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_16964\" AFTER DELETE ON public.donation_claims FROM claim_requests NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_del\"()"
+    },
+    {
+      "relation": "donation_claims",
+      "tgname": "RI_ConstraintTrigger_a_16965",
+      "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_16965\" AFTER UPDATE ON public.donation_claims FROM claim_requests NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_upd\"()"
+    },
+    {
+      "relation": "donation_claims",
+      "tgname": "RI_ConstraintTrigger_a_17079",
+      "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_17079\" AFTER DELETE ON public.donation_claims FROM pickup_tasks NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_del\"()"
+    },
+    {
+      "relation": "donation_claims",
+      "tgname": "RI_ConstraintTrigger_a_17080",
+      "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_17080\" AFTER UPDATE ON public.donation_claims FROM pickup_tasks NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_upd\"()"
+    },
+    {
+      "relation": "donation_claims",
+      "tgname": "RI_ConstraintTrigger_a_17148",
+      "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_17148\" AFTER DELETE ON public.donation_claims FROM claim_cancellation_requests NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_del\"()"
+    },
+    {
+      "relation": "donation_claims",
+      "tgname": "RI_ConstraintTrigger_a_17149",
+      "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_17149\" AFTER UPDATE ON public.donation_claims FROM claim_cancellation_requests NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_upd\"()"
+    },
+    {
+      "relation": "donation_claims",
+      "tgname": "RI_ConstraintTrigger_a_17167",
+      "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_17167\" AFTER DELETE ON public.donation_claims FROM claim_reconciliation_cases NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_del\"()"
+    },
+    {
+      "relation": "donation_claims",
+      "tgname": "RI_ConstraintTrigger_a_17168",
+      "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_17168\" AFTER UPDATE ON public.donation_claims FROM claim_reconciliation_cases NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_upd\"()"
+    },
+    {
+      "relation": "donation_claims",
+      "tgname": "RI_ConstraintTrigger_a_17603",
+      "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_17603\" AFTER DELETE ON public.donation_claims FROM resolution_private.items NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_del\"()"
+    },
+    {
+      "relation": "donation_claims",
+      "tgname": "RI_ConstraintTrigger_a_17604",
+      "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_17604\" AFTER UPDATE ON public.donation_claims FROM resolution_private.items NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_upd\"()"
+    },
+    {
+      "relation": "donation_claims",
+      "tgname": "RI_ConstraintTrigger_a_17804",
+      "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_17804\" AFTER DELETE ON public.donation_claims FROM routing_private.deferred_stops NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_del\"()"
+    },
+    {
+      "relation": "donation_claims",
+      "tgname": "RI_ConstraintTrigger_a_17805",
+      "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_17805\" AFTER UPDATE ON public.donation_claims FROM routing_private.deferred_stops NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_upd\"()"
+    },
+    {
+      "relation": "donation_claims",
+      "tgname": "RI_ConstraintTrigger_c_16911",
+      "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_c_16911\" AFTER INSERT ON public.donation_claims FROM listings NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_check_ins\"()"
+    },
+    {
+      "relation": "donation_claims",
+      "tgname": "RI_ConstraintTrigger_c_16912",
+      "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_c_16912\" AFTER UPDATE ON public.donation_claims FROM listings NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_check_upd\"()"
+    },
+    {
+      "relation": "donation_claims",
+      "tgname": "RI_ConstraintTrigger_c_16916",
+      "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_c_16916\" AFTER INSERT ON public.donation_claims FROM ngo_profiles NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_check_ins\"()"
+    },
+    {
+      "relation": "donation_claims",
+      "tgname": "RI_ConstraintTrigger_c_16917",
+      "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_c_16917\" AFTER UPDATE ON public.donation_claims FROM ngo_profiles NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_check_upd\"()"
+    },
+    {
+      "relation": "donation_claims",
+      "tgname": "RI_ConstraintTrigger_c_16921",
+      "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_c_16921\" AFTER INSERT ON public.donation_claims FROM claim_requests NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_check_ins\"()"
+    },
+    {
+      "relation": "donation_claims",
+      "tgname": "RI_ConstraintTrigger_c_16922",
+      "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_c_16922\" AFTER UPDATE ON public.donation_claims FROM claim_requests NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_check_upd\"()"
+    },
+    {
+      "relation": "listings",
+      "tgname": "RI_ConstraintTrigger_a_16894",
+      "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_16894\" AFTER DELETE ON public.listings FROM claim_requests NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_del\"()"
+    },
+    {
+      "relation": "listings",
+      "tgname": "RI_ConstraintTrigger_a_16895",
+      "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_16895\" AFTER UPDATE ON public.listings FROM claim_requests NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_upd\"()"
+    },
+    {
+      "relation": "listings",
+      "tgname": "RI_ConstraintTrigger_a_16909",
+      "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_16909\" AFTER DELETE ON public.listings FROM donation_claims NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_del\"()"
+    },
+    {
+      "relation": "listings",
+      "tgname": "RI_ConstraintTrigger_a_16910",
+      "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_16910\" AFTER UPDATE ON public.listings FROM donation_claims NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_upd\"()"
+    },
+    {
+      "relation": "listings",
+      "tgname": "RI_ConstraintTrigger_a_17172",
+      "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_17172\" AFTER DELETE ON public.listings FROM claim_reconciliation_cases NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_del\"()"
+    },
+    {
+      "relation": "listings",
+      "tgname": "RI_ConstraintTrigger_a_17173",
+      "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_a_17173\" AFTER UPDATE ON public.listings FROM claim_reconciliation_cases NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_noaction_upd\"()"
+    },
+    {
+      "relation": "listings",
+      "tgname": "RI_ConstraintTrigger_c_17046",
+      "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_c_17046\" AFTER INSERT ON public.listings FROM hub_batches NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_check_ins\"()"
+    },
+    {
+      "relation": "listings",
+      "tgname": "RI_ConstraintTrigger_c_17047",
+      "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_c_17047\" AFTER UPDATE ON public.listings FROM hub_batches NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_check_upd\"()"
+    },
+    {
+      "relation": "listings",
+      "tgname": "RI_ConstraintTrigger_c_17051",
+      "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_c_17051\" AFTER INSERT ON public.listings FROM donations NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_check_ins\"()"
+    },
+    {
+      "relation": "listings",
+      "tgname": "RI_ConstraintTrigger_c_17052",
+      "definition": "CREATE CONSTRAINT TRIGGER \"RI_ConstraintTrigger_c_17052\" AFTER UPDATE ON public.listings FROM donations NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION \"RI_FKey_check_upd\"()"
+    },
+    {
+      "relation": "listings",
+      "tgname": "trg_listing_transition",
+      "definition": "CREATE TRIGGER trg_listing_transition BEFORE UPDATE ON public.listings FOR EACH ROW EXECUTE FUNCTION enforce_listing_transition()"
+    }
+  ],
+  "functions": [
+    {
+      "signature": "cancel_claim(uuid,uuid)",
+      "hash": "f24c46b0c39e945df6d2e2bfb3862573",
+      "owner": "postgres",
+      "prosecdef": true,
+      "proacl": "{postgres=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+      "proconfig": [
+        "search_path=pg_catalog, public, pg_temp"
+      ]
+    },
+    {
+      "signature": "claim_listing(uuid,uuid)",
+      "hash": "c8d324772b12c843fba231e7ea733914",
+      "owner": "postgres",
+      "prosecdef": true,
+      "proacl": "{postgres=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+      "proconfig": [
+        "search_path=pg_catalog, public, extensions, pg_temp"
+      ]
+    },
+    {
+      "signature": "recover_expired_claims(integer)",
+      "hash": "05fe46d8b76085f71c87fcc5f6520775",
+      "owner": "postgres",
+      "prosecdef": true,
+      "proacl": "{postgres=X/postgres,service_role=X/postgres}",
+      "proconfig": [
+        "search_path=pg_catalog, public, extensions, pg_temp"
+      ]
+    }
+  ]
+}

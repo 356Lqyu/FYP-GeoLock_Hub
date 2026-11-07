@@ -1,0 +1,50 @@
+#0 building with "desktop-linux" instance using docker driver
+
+#1 [internal] load build definition from planner.Dockerfile
+#1 transferring dockerfile: 1.71kB done
+#1 DONE 0.0s
+
+#2 [auth] library/python:pull token for registry-1.docker.io
+#2 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/library/python:3.12-slim-bookworm
+#3 DONE 1.5s
+
+#4 [1/8] FROM docker.io/library/python:3.12-slim-bookworm@sha256:935c3c5b12357a7e10caa9c1e6ca5692344d97cf229832ef584be2cec9fc03df
+#4 resolve docker.io/library/python:3.12-slim-bookworm@sha256:935c3c5b12357a7e10caa9c1e6ca5692344d97cf229832ef584be2cec9fc03df 0.0s done
+#4 DONE 0.0s
+
+#5 [internal] load build context
+#5 transferring context: 9.72kB 0.0s done
+#5 DONE 0.0s
+
+#6 [2/8] WORKDIR /app
+#6 CACHED
+
+#7 [4/8] COPY backend/routing/worker_service/requirements.txt backend/routing/worker_service/requirements.txt
+#7 CACHED
+
+#8 [3/8] COPY backend/routing/phase_b/requirements-lock.txt backend/routing/phase_b/requirements-lock.txt
+#8 CACHED
+
+#9 [5/8] RUN pip install --no-cache-dir -r backend/routing/worker_service/requirements.txt && pip check
+#9 CACHED
+
+#10 [6/8] COPY backend/__init__.py backend/__init__.py
+#10 CACHED
+
+#11 [7/8] COPY backend/routing/ backend/routing/
+#11 DONE 0.1s
+
+#12 [8/8] RUN groupadd --gid 10001 routing && useradd --uid 10001 --gid routing --no-create-home routing     && mkdir -p /var/data && chown routing:routing /var/data
+#12 DONE 0.4s
+
+#13 exporting to image
+#13 exporting layers 0.1s done
+#13 exporting manifest sha256:106bad32e00500a49a0ae9e9cb9b3dcd3bfd73003371c0af400772f4f4364e2c 0.0s done
+#13 exporting config sha256:9e123275ada1c6c4baeb83c4366427f1cc84421b960e51fb9c1b71d31b49e372 0.0s done
+#13 exporting attestation manifest sha256:804ac189e1d379c15654a563693e5c51dc410799d48bf5a8518c0f166ce33ce7 0.0s done
+#13 exporting manifest list sha256:9dad7a112d031c65cd92c83880c9ce876b0ce79de36c1220b787c0b19e186173 0.0s done
+#13 naming to docker.io/library/geolock-planner:validation-fixed-20261107 done
+#13 unpacking to docker.io/library/geolock-planner:validation-fixed-20261107 0.1s done
+#13 DONE 0.3s

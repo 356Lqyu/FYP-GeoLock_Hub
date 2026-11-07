@@ -1,0 +1,10 @@
+{
+  "public.claim_listing(uuid,uuid)": {
+    "before": "2c1f60c876797c61b44b3cb43591bab8",
+    "after": "c8d324772b12c843fba231e7ea733914"
+  },
+  "public.geolock_lock_listing_donations(uuid,text[])": {
+    "before": "90816e7c6db3606dc8b6451a899d8036",
+    "after": "e97a3fd80673a827465f3eaa79b65903"
+  }
+}

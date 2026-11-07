@@ -1,0 +1,68 @@
+{
+  "status": "READONLY ADMISSION VERIFIED / PLANNING AND AUTHORIZATION NOT YET APPROVED",
+  "request_id": "f4b11fd8-c8b3-4092-beb2-6da8d12be38e",
+  "scope": {
+    "ngo_id": "8e50bc66-7a8d-4791-bc6b-640682daa496",
+    "vehicle_id": "604d6303-ff33-4cdb-a37a-4442f5005f8f",
+    "policy_id": "80db858b-93e8-4a0a-94e2-dbe14940f0a1",
+    "graph_id": "eab1f7ee-a8e0-4bed-a0e1-2c4bff024936",
+    "task_ids": [
+      "403430ba-6a5a-4377-a0f7-0a0c5ed5de6a",
+      "6581c6a1-4c94-4299-bb60-14ab04f732dc",
+      "74d8a748-7424-4c81-8c31-3aea7fc2b1d3"
+    ],
+    "horizon_minutes": 240,
+    "dispatch_margin_minutes": 15
+  },
+  "donations": [
+    {
+      "title": "test",
+      "weight_kg": 60,
+      "donation_id": "0c8f21b4-2e87-466c-bc29-dc15c78f4a04",
+      "listing_id": "16e5b6a1-475d-4c5a-9460-d4834dd5640f",
+      "claim_id": "e59648b8-551e-405f-a6f9-dfc90ff7135c",
+      "task_id": "403430ba-6a5a-4377-a0f7-0a0c5ed5de6a",
+      "pickup_road_node_id": "2308277369",
+      "latitude": 3.2163744,
+      "longitude": 101.6166429,
+      "lease_expires_at": "2026-10-30T17:31:24.149776+00:00",
+      "lease_expires_myt": "2026-10-31T01:31:24.149776+08:00",
+      "remaining_minutes_at_capture": 358.7,
+      "strict_admission_deadline_myt": "2026-10-30T21:16:24.149776+08:00"
+    },
+    {
+      "title": "Book",
+      "weight_kg": 96,
+      "donation_id": "d338aea6-b991-4f80-ba36-39f5e144a4e9",
+      "listing_id": "a1bd0737-1d06-4106-8a60-efa6ae3f5306",
+      "claim_id": "72f244d9-d786-4aad-b5a4-a5b2684555e9",
+      "task_id": "74d8a748-7424-4c81-8c31-3aea7fc2b1d3",
+      "pickup_road_node_id": "1587013485",
+      "latitude": 3.22307074871492,
+      "longitude": 101.624438725412,
+      "lease_expires_at": "2026-10-30T17:30:06.924964+00:00",
+      "lease_expires_myt": "2026-10-31T01:30:06.924964+08:00",
+      "remaining_minutes_at_capture": 357.41,
+      "strict_admission_deadline_myt": "2026-10-30T21:15:06.924964+08:00"
+    },
+    {
+      "title": "Can",
+      "weight_kg": 22,
+      "donation_id": "b02fd75c-d980-452a-8670-7d7a012fc958",
+      "listing_id": "b4f0abac-ce19-4aaa-a0dc-3f5a33b7d556",
+      "claim_id": "bc10188e-74b3-4e70-bdce-6bd5b90a3cee",
+      "task_id": "6581c6a1-4c94-4299-bb60-14ab04f732dc",
+      "pickup_road_node_id": "1800299711",
+      "latitude": 3.22163435351996,
+      "longitude": 101.620460003614,
+      "lease_expires_at": "2026-10-30T17:30:03.158409+00:00",
+      "lease_expires_myt": "2026-10-31T01:30:03.158409+08:00",
+      "remaining_minutes_at_capture": 357.35,
+      "strict_admission_deadline_myt": "2026-10-30T21:15:03.158409+08:00"
+    }
+  ],
+  "warning": "Only test 60kg, Book 96kg, Can 22kg. Fresh protected preflight required at planning and authorization; no partial route. No execution approved. Retain request ID; no journal clearing or uncertain retries.",
+  "total_weight_kg": 178,
+  "evidence_directory": "C:\\Users\\User\\Downloads\\FYP-GeoLock_Hub\\results\\existing-v3-donations\\20261030T113253Z-05a3bc",
+  "verified_server_time": "2026-10-30T11:32:41.633237+00:00"
+}

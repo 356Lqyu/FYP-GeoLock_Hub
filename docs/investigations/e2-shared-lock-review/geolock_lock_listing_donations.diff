@@ -1,0 +1,11 @@
+--- geolock_lock_listing_donations.original.sql
++++ geolock_lock_listing_donations.coordinated.sql
+@@ -6,7 +6,7 @@
+ declare v_l public.listings%rowtype; v_b public.hub_batches%rowtype;
+   v_id uuid; v_count integer:=0; v_ok boolean:=true; v_d public.donations%rowtype;
+ begin
+-  select * into v_l from public.listings where listing_id=p_listing for update;
++  select * into v_l from public.listings where listing_id=p_listing for no key update;
+   if not found then return false; end if;
+   if v_l.source_type='DIRECT_DONATION' then
+     select * into v_d from public.donations where donation_id=v_l.donation_id for update;

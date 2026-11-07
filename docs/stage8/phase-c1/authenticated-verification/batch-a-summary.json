@@ -1,0 +1,51 @@
+{
+  "project_ref": "rcgyuwiidqvrgbxswhqj",
+  "batch_a_result": "PASS",
+  "catalog_checks": 32,
+  "protected_fingerprints": 712,
+  "protected_fingerprints_exact_match": true,
+  "installation_seal_matches": true,
+  "managed_function_bodies_match": 14,
+  "migration_sha256": "f50af9705de117bdd12581f2515605c8e5c548e0fee7ae01d7ea33ecfbb0cb05",
+  "counts": {
+    "vehicles": 0,
+    "routes": 0,
+    "stops": 0,
+    "assignments": 0
+  },
+  "offline_tests": {
+    "routing": 117,
+    "package": 12,
+    "harness_and_captured_catalog": 23,
+    "isolated_postgresql": 44,
+    "total": 196
+  },
+  "isolated_run": {
+    "exit_code": 0,
+    "tests": 44,
+    "elapsed_seconds": 57.253,
+    "provenance": "Observed exec session 12594; new disposable loopback PostgreSQL; no existing DSN accepted",
+    "initial_sandbox_startup_failure_resolved": true
+  },
+  "synthetic_reports_revalidated": 252,
+  "reproducible_groups": 84,
+  "actual_live_anonymous_read_only_probes": 2,
+  "live_http_groups_partially_automated": 36,
+  "live_authenticated_groups_executed": 0,
+  "groups_partially_executed_anonymously": 1,
+  "isolated_groups_with_partial_behavior_mapping": 38,
+  "batch_b_authorized": false,
+  "batch_b_executed": false,
+  "accounts_created": 0,
+  "dev_database_writes": 0,
+  "production_code_modified": false,
+  "migration_modified": false,
+  "phase_c2_started": false,
+  "limitations": [
+    "No complete live authenticated group passed",
+    "36 groups have partial live automation; remaining variants are explicit in coverage.json",
+    "18 groups lack a live driver",
+    "Unresolved-source route fixtures and complete operational route closure/release remain unavailable",
+    "Trusted credentials and post-C1 recovery readiness are prerequisites"
+  ]
+}

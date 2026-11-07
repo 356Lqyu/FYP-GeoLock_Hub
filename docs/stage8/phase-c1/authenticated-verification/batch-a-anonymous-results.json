@@ -1,0 +1,20 @@
+{
+  "project_ref": "rcgyuwiidqvrgbxswhqj",
+  "evidence_kind": "LIVE_ANONYMOUS_READ_ONLY",
+  "group": "F16",
+  "coverage": "PARTIAL: list RPC only; no expired token or mutation RPC attempted",
+  "results": [
+    {
+      "mode": "anonymous",
+      "status": 401,
+      "error_code": "42501",
+      "result": "PASS"
+    },
+    {
+      "mode": "invalid_bearer",
+      "status": 401,
+      "error_code": "PGRST301",
+      "result": "PASS"
+    }
+  ]
+}

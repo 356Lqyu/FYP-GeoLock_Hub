@@ -1,0 +1,115 @@
+{
+  "status": "PROPOSED ONLY / NO LIVE ACTION APPROVED",
+  "environment": "DEV",
+  "project_ref": "rcgyuwiidqvrgbxswhqj",
+  "ngo": {
+    "user_id": "8e50bc66-7a8d-4791-bc6b-640682daa496",
+    "previously_verified_email": "testerq356@gmail.com",
+    "current_authenticated_identity_requires_protected_check": true
+  },
+  "donor": {
+    "user_id": null,
+    "email": null,
+    "requirement": "Existing approved DEV test donor; user must name identity before fixture creation"
+  },
+  "vehicle": {
+    "vehicle_id": "604d6303-ff33-4cdb-a37a-4442f5005f8f",
+    "label": "V3",
+    "capacity_kg": 600,
+    "max_route_duration_min": 240,
+    "current_availability_requires_fresh_check": true
+  },
+  "total_load_kg": 45,
+  "donations": [
+    {
+      "fixture": "A",
+      "title": "SYNTHETIC DEV V3 FRESH A - 15 kg",
+      "weight_kg": 15,
+      "quantity": 1,
+      "unit_weight_kg": 15,
+      "donation_id": null,
+      "listing_id": null,
+      "claim_id": null,
+      "task_id": null,
+      "pickup": {
+        "latitude": 3.22035930421103,
+        "longitude": 101.620739288628,
+        "previously_observed_road_node": "5735535080",
+        "current_node_and_20km_directed_road_eligibility": "NOT VERIFIED; choose location in normal picker; server resolves node; protected discovery and claim must pass",
+        "stored_address": "Normal confirmed location-picker address; do not overwrite or fabricate address details"
+      }
+    },
+    {
+      "fixture": "B",
+      "title": "SYNTHETIC DEV V3 FRESH B - 15 kg",
+      "weight_kg": 15,
+      "quantity": 1,
+      "unit_weight_kg": 15,
+      "donation_id": null,
+      "listing_id": null,
+      "claim_id": null,
+      "task_id": null,
+      "pickup": {
+        "latitude": 3.22284613426561,
+        "longitude": 101.620313487947,
+        "previously_observed_road_node": "2308277456",
+        "current_node_and_20km_directed_road_eligibility": "NOT VERIFIED; choose location in normal picker; server resolves node; protected discovery and claim must pass",
+        "stored_address": "Normal confirmed location-picker address; do not overwrite or fabricate address details"
+      }
+    },
+    {
+      "fixture": "C",
+      "title": "SYNTHETIC DEV V3 FRESH C - 15 kg",
+      "weight_kg": 15,
+      "quantity": 1,
+      "unit_weight_kg": 15,
+      "donation_id": null,
+      "listing_id": null,
+      "claim_id": null,
+      "task_id": null,
+      "pickup": {
+        "latitude": 3.2192633429883,
+        "longitude": 101.623157635331,
+        "previously_observed_road_node": "1800280419",
+        "current_node_and_20km_directed_road_eligibility": "NOT VERIFIED; choose location in normal picker; server resolves node; protected discovery and claim must pass",
+        "stored_address": "Normal confirmed location-picker address; do not overwrite or fabricate address details"
+      }
+    }
+  ],
+  "required_inputs": {
+    "category": "Choose an existing valid category in the donor form; do not invent category IDs",
+    "photos": "1-3 approved clearly synthetic test images per donation via normal Storage upload",
+    "description": "SYNTHETIC DEV routing lifecycle fixture. No real food offered; collection/return may only be simulated after explicit approval.",
+    "availability": "Use UI-supported/default source/listing windows only. Verify protected admission and service-completion windows; do not edit DB timestamps or promise unsupported UI controls."
+  },
+  "simulation": {
+    "represents_real_food": false,
+    "handover_approval_required": true,
+    "depot_return_simulation_approval_required": true,
+    "ordinary_rpc_audits_record_normal_success_not_native_simulation_flag": true,
+    "server_derived_synthetic_registry_available": false,
+    "labeling": "Keep fixture titles, approved manifest and test record explicitly synthetic; do not describe normal success audit as evidence of physical food collection"
+  },
+  "execution": {
+    "services_ready_before_claims": true,
+    "claim_all_three_just_before_planning": true,
+    "recommended_start_generation_within_minutes_of_claims": 10,
+    "strict_remaining_lease_minutes": 255,
+    "claim_lease_minutes": 360,
+    "snapshot_freshness_seconds": 300,
+    "target_supervised_session_minutes": 60,
+    "stage_plan_and_authorize_separately": true,
+    "update_exact_scope_after_verified_new_task_ids": "Explicit local repinning and review required. Never reuse old task IDs or replace operation IDs automatically."
+  },
+  "visibility": "Synthetic labels do not enforce discovery isolation. Approve a controlled DEV test window; existing eligibility rules remain unchanged. Stop if private-only discovery is required.",
+  "preservation": {
+    "old_route": "db1b455e-92d0-4d58-9fa1-5de07d7ab0f9",
+    "vehicle": "V2",
+    "all_existing_claims_cases_assignments": "UNTOUCHED"
+  },
+  "approvals_required": [
+    "Controlled planner-only restart, read-only readiness checks and approved in-memory NGO session use",
+    "Exact donor/NGO/fixture/location/photo plan, creation/publication, claims, new exact task manifest and one staged planning/authorization attempt",
+    "New route-specific pickup execution including automatic next-stop start, each completion and depot return; explicitly designate simulated handover/return if no physical events occur"
+  ]
+}

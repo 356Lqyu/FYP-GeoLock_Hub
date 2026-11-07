@@ -1,0 +1,31 @@
+{
+  "observed_at": "2026-10-24T12:16:07.041752+00:00",
+  "evidence_kind": "OFFLINE_AND_CAPTURED_CATALOG_CHECKS",
+  "results": [
+    {
+      "name": "routing_regressions_and_local_c2",
+      "exit_code": 0,
+      "output": "----------------------------------------------------------------------\nRan 141 tests in 3.825s\n\nOK\n"
+    },
+    {
+      "name": "package_12",
+      "exit_code": 0,
+      "output": "----------------------------------------------------------------------\nRan 12 tests in 0.058s\n\nOK\n"
+    },
+    {
+      "name": "harness_23",
+      "exit_code": 0,
+      "output": "----------------------------------------------------------------------\nRan 23 tests in 0.080s\n\nOK\n"
+    },
+    {
+      "name": "fixture_recovery_32",
+      "exit_code": 0,
+      "output": "----------------------------------------------------------------------\nRan 32 tests in 0.400s\n\nOK\n"
+    },
+    {
+      "name": "saved_synthetic_reports",
+      "exit_code": 0,
+      "output": "{\n  \"phase_a_files_preserved\": 17,\n  \"source_manifest_verified\": true,\n  \"non_timing_results_sha256\": \"3591b206c3375792008f17e7d90fd641779c3efba742636a992bddf68ee2cc0a\",\n  \"records_revalidated\": 252,\n  \"reproducible_groups\": 84,\n  \"gap_records\": {\n    \"not_available\": 192,\n    \"supported_numeric_gap\": 60\n  },\n  \"dominance\": {\n    \"fcfs\": {\n      \"feasible_pairs\": 10,\n      \"coverage_equal\": 9,\n      \"lexicographic_equal\": 6,\n      \"same_coverage_cost_equal\": 6,\n      \"not_a_feasible_pair\": 11,\n      \"lexicographic_better\": 4,\n      \"same_coverage_cost_better\": 3,\n      \"coverage_better\": 1\n    },\n    \"nearest_neighbour\": {\n      \"feasible_pairs\": 10,\n      \"coverage_equal\": 9,\n      \"lexicographic_equal\": 6,\n      \"same_coverage_cost_equal\": 6,\n      \"not_a_feasible_pair\": 11,\n      \"lexicographic_better\": 4,\n      \"same_coverage_cost_better\": 3,\n      \"coverage_better\": 1\n    },\n    \"distance_only\": {\n      \"feasible_pairs\": 10,\n      \"coverage_equal\": 10,\n      \"lexicographic_equal\": 8,\n      \"same_coverage_cost_equal\": 8,\n      \"not_a_feasible_pair\": 11,\n      \"lexicographic_better\": 2,\n      \"same_coverage_cost_better\": 2\n    }\n  },\n  \"runtime\": {\n    \"fcfs\": {\n      \"calls\": 63,\n      \"median_method_ms\": 0.6812999999965541,\n      \"p95_method_ms_nearest_rank\": 1.2865999997302424,\n      \"max_method_ms\": 1.5953999991324963,\n      \"solver_calls\": 0,\n      \"median_solver_ms\": null,\n      \"max_solver_ms\": null,\n      \"timeout_count\": 0\n    },\n    \"nearest_neighbour\": {\n      \"calls\": 63,\n      \"median_method_ms\": 0.6831999999121763,\n      \"p95_method_ms_nearest_rank\": 1.036999999996624,\n      \"max_method_ms\": 1.7331999988527969,\n      \"solver_calls\": 0,\n      \"median_solver_ms\": null,\n      \"max_solver_ms\": null,\n      \"timeout_count\": 0\n    },\n    \"distance_only\": {\n      \"calls\": 63,\n      \"median_method_ms\": 2.8806999998778338,\n      \"p95_method_ms_nearest_rank\": 15.19209999969462,\n      \"max_method_ms\": 15.727699999843026,\n      \"solver_calls\": 45,\n      \"median_solver_ms\": 4.216,\n      \"max_solver_ms\": 12.9703,\n      \"timeout_count\": 0\n    },\n    \"proposed\": {\n      \"calls\": 63,\n      \"median_method_ms\": 2.1641000003000954,\n      \"p95_method_ms_nearest_rank\": 15.45819999955711,\n      \"max_method_ms\": 20.617499998479616,\n      \"solver_calls\": 45,\n      \"median_solver_ms\": 4.3432,\n      \"max_solver_ms\": 16.9632,\n      \"timeout_count\": 0\n    }\n  },\n  \"comparison_status_counts\": {\n    \"COMPLETE\": 34,\n    \"NO_VALID_TASKS\": 12,\n    \"ROUTE_UNAVAILABLE\": 8,\n    \"NO_FEASIBLE_PLAN\": 4,\n    \"PARTIAL\": 6,\n    \"INFEASIBLE\": 20\n  },\n  \"comparison_feasible\": 40,\n  \"maximum_admitted_tasks\": 2,\n  \"maximum_vehicles\": 3,\n  \"maximum_matrix_nodes\": 3\n}\n"
+    }
+  ]
+}

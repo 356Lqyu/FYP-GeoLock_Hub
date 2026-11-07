@@ -1,0 +1,19 @@
+{
+  "status": "ISOLATED_VALIDATION_PASS_DEV_EXECUTION_NOT_AUTHORIZED",
+  "postgresql": "17.11",
+  "postgresql_tests_passed": 14,
+  "static_tests_passed": 9,
+  "transport_tests_passed": 15,
+  "evidence": "results/stage8-exact-two-recovery-isolated/revised-attempt-02",
+  "original_sha256": "b0318954cbfd00480243d999852aa78d348bf44dded956f636d10c6725296b41",
+  "files": {
+    "exact_two_recovery_transaction_proposal.sql": "c30877aba385c6054e7e744cea5246cad65ac0d982689d1706118ba9c18ec303",
+    "exact_two_recovery_postflight_readonly.sql": "117f80fcb43ccdc917c6c478543fc8138ffc341d8b709d241d7ff777a4e3fe20"
+  },
+  "supabase_connections": 0,
+  "disposable_clusters_removed": true,
+  "remaining_limitations": [
+    "Reduced schema and synthetic auth; cron metadata fixture, not live pg_cron",
+    "Fresh DEV preflight and separate execution approval still required"
+  ]
+}

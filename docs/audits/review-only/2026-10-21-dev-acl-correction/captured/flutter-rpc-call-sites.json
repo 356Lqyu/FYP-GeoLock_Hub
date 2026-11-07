@@ -1,0 +1,135 @@
+{
+  "get_my_profile": [
+    "frontend/geolock_hub_app/lib/auth/auth_controller.dart:29",
+    "frontend/geolock_hub_app/lib/dashboard_pages.dart:242",
+    "frontend/geolock_hub_app/lib/dashboard_pages.dart:627",
+    "frontend/geolock_hub_app/lib/dashboard_pages.dart:1230"
+  ],
+  "geolock_app_capabilities": [
+    "frontend/geolock_hub_app/lib/auth/auth_controller.dart:77",
+    "frontend/geolock_hub_app/lib/dashboard_pages.dart:656",
+    "frontend/geolock_hub_app/lib/donation_pages.dart:88"
+  ],
+  "register_role_profile": [
+    "frontend/geolock_hub_app/lib/auth/auth_controller.dart:86"
+  ],
+  "get_my_donation_dashboard_v2": [
+    "frontend/geolock_hub_app/lib/dashboard_pages.dart:217",
+    "frontend/geolock_hub_app/lib/dashboard_pages.dart:435",
+    "frontend/geolock_hub_app/lib/dashboard_pages.dart:1143",
+    "frontend/geolock_hub_app/lib/donation_pages.dart:2567",
+    "frontend/geolock_hub_app/lib/donation_pages.dart:2809"
+  ],
+  "discover_eligible_listing_cards": [
+    "frontend/geolock_hub_app/lib/dashboard_pages.dart:635",
+    "frontend/geolock_hub_app/lib/donation_pages.dart:96"
+  ],
+  "get_my_claims": [
+    "frontend/geolock_hub_app/lib/dashboard_pages.dart:645"
+  ],
+  "get_my_hubs": [
+    "frontend/geolock_hub_app/lib/dashboard_pages.dart:834",
+    "frontend/geolock_hub_app/lib/dashboard_pages.dart:1093",
+    "frontend/geolock_hub_app/lib/dashboard_pages.dart:1241"
+  ],
+  "get_hub_dashboard": [
+    "frontend/geolock_hub_app/lib/dashboard_pages.dart:1054",
+    "frontend/geolock_hub_app/lib/dashboard_pages.dart:1254"
+  ],
+  "claim_listing": [
+    "frontend/geolock_hub_app/lib/donation_pages.dart:113"
+  ],
+  "register_community_hub": [
+    "frontend/geolock_hub_app/lib/donation_pages.dart:332"
+  ],
+  "get_my_hub_reservations": [
+    "frontend/geolock_hub_app/lib/donation_pages.dart:418",
+    "frontend/geolock_hub_app/lib/donation_pages.dart:3943"
+  ],
+  "get_my_hub_inventory": [
+    "frontend/geolock_hub_app/lib/donation_pages.dart:422",
+    "frontend/geolock_hub_app/lib/donation_pages.dart:3942"
+  ],
+  "get_my_hub_batches_dashboard": [
+    "frontend/geolock_hub_app/lib/donation_pages.dart:423",
+    "frontend/geolock_hub_app/lib/donation_pages.dart:4113"
+  ],
+  "get_hub_donation_covers": [
+    "frontend/geolock_hub_app/lib/donation_pages.dart:427"
+  ],
+  "confirm_hub_receipt": [
+    "frontend/geolock_hub_app/lib/donation_pages.dart:494"
+  ],
+  "publish_whole_donation_batch": [
+    "frontend/geolock_hub_app/lib/donation_pages.dart:615"
+  ],
+  "get_authorized_audit_events": [
+    "frontend/geolock_hub_app/lib/donation_pages.dart:639",
+    "frontend/geolock_hub_app/lib/donation_pages.dart:1223",
+    "frontend/geolock_hub_app/lib/donation_pages.dart:1610",
+    "frontend/geolock_hub_app/lib/donation_pages.dart:2759",
+    "frontend/geolock_hub_app/lib/donation_pages.dart:3965"
+  ],
+  "add_hub_batch_image": [
+    "frontend/geolock_hub_app/lib/donation_pages.dart:706"
+  ],
+  "get_my_reconciliation_cases": [
+    "frontend/geolock_hub_app/lib/donation_pages.dart:947"
+  ],
+  "submit_claim_reconciliation": [
+    "frontend/geolock_hub_app/lib/donation_pages.dart:966",
+    "frontend/geolock_hub_app/lib/donation_pages.dart:1638"
+  ],
+  "get_my_claim_cards": [
+    "frontend/geolock_hub_app/lib/donation_pages.dart:1105",
+    "frontend/geolock_hub_app/lib/donation_pages.dart:1597"
+  ],
+  "start_pickup": [
+    "frontend/geolock_hub_app/lib/donation_pages.dart:1118"
+  ],
+  "complete_pickup": [
+    "frontend/geolock_hub_app/lib/donation_pages.dart:1120"
+  ],
+  "cancel_claim": [
+    "frontend/geolock_hub_app/lib/donation_pages.dart:1171"
+  ],
+  "get_eligible_listing_constituents": [
+    "frontend/geolock_hub_app/lib/donation_pages.dart:1434"
+  ],
+  "get_claimed_listing_detail": [
+    "frontend/geolock_hub_app/lib/donation_pages.dart:1564"
+  ],
+  "get_claimed_listing_constituents": [
+    "frontend/geolock_hub_app/lib/donation_pages.dart:1572"
+  ],
+  "get_donation_images": [
+    "frontend/geolock_hub_app/lib/donation_pages.dart:1589",
+    "frontend/geolock_hub_app/lib/donation_pages.dart:2777",
+    "frontend/geolock_hub_app/lib/donation_pages.dart:3872"
+  ],
+  "get_active_donation_categories": [
+    "frontend/geolock_hub_app/lib/donation_pages.dart:2065"
+  ],
+  "create_donation_with_images": [
+    "frontend/geolock_hub_app/lib/donation_pages.dart:2168"
+  ],
+  "get_my_donation_detail": [
+    "frontend/geolock_hub_app/lib/donation_pages.dart:2194",
+    "frontend/geolock_hub_app/lib/donation_pages.dart:2748"
+  ],
+  "get_eligible_hubs": [
+    "frontend/geolock_hub_app/lib/donation_pages.dart:2842"
+  ],
+  "reserve_hub_capacity": [
+    "frontend/geolock_hub_app/lib/donation_pages.dart:2883"
+  ],
+  "cancel_donation": [
+    "frontend/geolock_hub_app/lib/donation_pages.dart:2944"
+  ],
+  "get_hub_batch_details": [
+    "frontend/geolock_hub_app/lib/donation_pages.dart:4109"
+  ],
+  "preview_location_routing": [
+    "frontend/geolock_hub_app/lib/location/road_routing.dart:45"
+  ]
+}

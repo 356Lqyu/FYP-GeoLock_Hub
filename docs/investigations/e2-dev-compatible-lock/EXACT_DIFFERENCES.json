@@ -1,0 +1,50 @@
+{
+  "proposed_migration.sql": {
+    "sha256": "655976ab697031c3025e78ad967db4e7f6a755e091a21031de2d3a8e441fee8c",
+    "only_changed_fields": [
+      {
+        "signature": "public.cancel_claim(uuid,uuid)",
+        "field": "acl",
+        "before": "{postgres=X/postgres,authenticated=X/postgres}",
+        "after": "{postgres=X/postgres,authenticated=X/postgres,service_role=X/postgres}"
+      },
+      {
+        "signature": "public.claim_listing(uuid,uuid)",
+        "field": "acl",
+        "before": "{=X/postgres,postgres=X/postgres,authenticated=X/postgres}",
+        "after": "{postgres=X/postgres,authenticated=X/postgres,service_role=X/postgres}"
+      },
+      {
+        "signature": "public.submit_claim_reconciliation(uuid,boolean,uuid)",
+        "field": "acl",
+        "before": "{postgres=X/postgres,authenticated=X/postgres}",
+        "after": "{postgres=X/postgres,authenticated=X/postgres,service_role=X/postgres}"
+      }
+    ],
+    "all_guards_and_function_patches_identical": true
+  },
+  "rollback_patch.sql": {
+    "sha256": "3209f20240bc19bda4cac7e3cc656179247fd76640ce979d643b15ba38604cd6",
+    "only_changed_fields": [
+      {
+        "signature": "public.cancel_claim(uuid,uuid)",
+        "field": "acl",
+        "before": "{postgres=X/postgres,authenticated=X/postgres}",
+        "after": "{postgres=X/postgres,authenticated=X/postgres,service_role=X/postgres}"
+      },
+      {
+        "signature": "public.claim_listing(uuid,uuid)",
+        "field": "acl",
+        "before": "{=X/postgres,postgres=X/postgres,authenticated=X/postgres}",
+        "after": "{postgres=X/postgres,authenticated=X/postgres,service_role=X/postgres}"
+      },
+      {
+        "signature": "public.submit_claim_reconciliation(uuid,boolean,uuid)",
+        "field": "acl",
+        "before": "{postgres=X/postgres,authenticated=X/postgres}",
+        "after": "{postgres=X/postgres,authenticated=X/postgres,service_role=X/postgres}"
+      }
+    ],
+    "all_guards_and_function_patches_identical": true
+  }
+}

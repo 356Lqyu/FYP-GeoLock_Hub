@@ -1,0 +1,17 @@
+{
+  "source": "Latest user-reported fresh DEV operational-status result; not independently queried by MCP",
+  "project_ref": "rcgyuwiidqvrgbxswhqj",
+  "server_checked_at": "not provided",
+  "job3_active": false,
+  "eligibility_jobs_active_and_healthy": true,
+  "recovery_body_md5": "5ff6d8719db9681aae6f444b89dfbaee",
+  "overdue_count": 0,
+  "oldest_candidate": null,
+  "unresolved_cases": 0,
+  "unfinished_recovery_runs": 0,
+  "stranded_listings": 0,
+  "integrity_alarms": 0,
+  "reported_worker_failures": 0,
+  "latest_recovery_run_status": "succeeded",
+  "note": "Execution repeats source/security/permissions/job/history/candidate guards under locks. No fixed old run-count or external readiness deadline."
+}

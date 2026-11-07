@@ -1,0 +1,4 @@
+{"profile": "512mb-0.1cpu", "exit_code": 0, "oom": false}
+{"profile": "2gb-1cpu", "exit_code": 0, "oom": false}
+{"profile": "4gb-2cpu", "exit_code": 0, "oom": false}
+{"profile": "8gb-2cpu", "exit_code": 0, "oom": false}

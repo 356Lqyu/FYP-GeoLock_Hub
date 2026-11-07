@@ -1,0 +1,141 @@
+{
+  "manifest_version": 1,
+  "manifest_id": "GEOLOCK-DEV-SYNTHETIC-PILOT-02",
+  "status": "PROPOSED_NOT_APPROVED_NOT_EXECUTION_READY",
+  "environment": "DEV",
+  "project_ref": "rcgyuwiidqvrgbxswhqj",
+  "simulation": {
+    "synthetic_only": true,
+    "represents_real_food": false,
+    "physical_handover_claimed": false,
+    "simulated_handover_approval": "REQUIRED",
+    "simulated_depot_return_approval": "REQUIRED",
+    "normal_rpc_audit_semantics_acknowledgment": "REQUIRED",
+    "evidence_label": "SYNTHETIC DEV LIFECYCLE TEST - NOT PHYSICAL COLLECTION"
+  },
+  "preserved_route_id": "db1b455e-92d0-4d58-9fa1-5de07d7ab0f9",
+  "prohibited_reuse": ["V2", "Test 10", "test c", "Test 42", "their existing claims, leases, assignments and saved operation"],
+  "ngo": {
+    "display_name": "FYP DEV NGO Pilot 02 - SYNTHETIC",
+    "user_id": null,
+    "login_email": null,
+    "role": "NGO",
+    "independent_of_preserved_route_owner": true,
+    "active_verified_profile_required": true,
+    "no_pending_operation_or_vehicle_hold_required": true,
+    "proposed_depot": {
+      "latitude": 3.2175514451822,
+      "longitude": 101.623839922249,
+      "expected_road_node_id": "1755847853",
+      "address_text": null,
+      "node_assignment": "SERVER_RESOLVED_FROM_APPROVED_COORDINATES_NOT_CLIENT_FORCED"
+    }
+  },
+  "donor": {
+    "display_name": "FYP DEV Donor Pilot 02 - SYNTHETIC",
+    "user_id": null,
+    "login_email": null,
+    "role": "DONOR",
+    "distinct_from_ngo": true
+  },
+  "vehicle": {
+    "vehicle_id": null,
+    "vehicle_label": "FYP DEV Pilot 02",
+    "vehicle_type": "VAN",
+    "payload_capacity_kg": 500,
+    "max_route_duration_min": 60,
+    "fixed_cost_rm": 2,
+    "distance_cost_rm_per_km": 2,
+    "available_for_planning": true,
+    "synthetic_registration_approval": "REQUIRED",
+    "owner": "MANIFEST_NGO_ONLY",
+    "depot": "MANIFEST_NGO_SERVER_VERIFIED_DEPOT"
+  },
+  "donations": [
+    {
+      "fixture_key": "A",
+      "donation_id": null,
+      "listing_id": null,
+      "claim_id": null,
+      "title": "SYNTHETIC DEV Pilot 02 A - 10 kg",
+      "description": "Synthetic DEV routing fixture only. No real food is offered. Any approved handover and depot return are simulation, not physical collection.",
+      "source_path": "DIRECT_DONATION_VIA_NORMAL_PROTECTED_PUBLICATION",
+      "item_label": "Synthetic rice fixture",
+      "quantity": 1,
+      "unit": "bag",
+      "unit_weight_kg": 10,
+      "total_weight_kg": 10,
+      "category_id": null,
+      "photo_object_path": null,
+      "approved_synthetic_photo_sha256": null,
+      "pickup": {
+        "latitude": 3.22048550370189,
+        "longitude": 101.624845080078,
+        "expected_road_node_id": "1755847924",
+        "address_text": null
+      }
+    },
+    {
+      "fixture_key": "B",
+      "donation_id": null,
+      "listing_id": null,
+      "claim_id": null,
+      "title": "SYNTHETIC DEV Pilot 02 B - 10 kg",
+      "description": "Synthetic DEV routing fixture only. No real food is offered. Any approved handover and depot return are simulation, not physical collection.",
+      "source_path": "DIRECT_DONATION_VIA_NORMAL_PROTECTED_PUBLICATION",
+      "item_label": "Synthetic rice fixture",
+      "quantity": 1,
+      "unit": "bag",
+      "unit_weight_kg": 10,
+      "total_weight_kg": 10,
+      "category_id": null,
+      "photo_object_path": null,
+      "approved_synthetic_photo_sha256": null,
+      "pickup": {
+        "latitude": 3.22329871057177,
+        "longitude": 101.624895036221,
+        "expected_road_node_id": "1587013500",
+        "address_text": null
+      }
+    }
+  ],
+  "routing": {
+    "policy_id": "80db858b-93e8-4a0a-94e2-dbe14940f0a1",
+    "graph_id": "eab1f7ee-a8e0-4bed-a0e1-2c4bff024936",
+    "graph_digest": "5e06dab0fb4d2b97ac53fd9a1178dc46aa6b98811aefbaef96528c604a04012a",
+    "snapshot": "OSM-OPS-20261018",
+    "algorithm": "EXISTING_PROPOSED_UNCHANGED",
+    "total_load_kg": 20,
+    "required_served_fixtures": ["A", "B"],
+    "maximum_accepted_planned_duration_minutes": 30,
+    "planned_duration_includes": ["travel", "service", "waiting", "depot return"],
+    "pickup_order": "ACTUAL_ATTESTED_AUTHORIZED_PLAN_NOT_PREASSIGNED",
+    "minimum_claim_lease_at_snapshot": "STRICTLY_GREATER_THAN_255_MINUTES",
+    "claim_lease_policy_minutes": 360,
+    "lease_extension_allowed": false,
+    "force_graph_nodes_or_fixture_states": false
+  },
+  "execution": {
+    "operations_approved": [],
+    "automatic_retries": false,
+    "one_generation_attempt_requires_separate_approval": true,
+    "each_start_and_completion_requires_separate_approval": true,
+    "depot_return_and_closure_require_separate_approval": true,
+    "vehicle_budget_minutes": 60,
+    "target_execution_and_model_allowance_minutes": 30,
+    "maximum_planned_inspection_allowance_minutes": 15,
+    "reserved_contingency_minutes": 15,
+    "real_server_clock_only": true,
+    "stop_on_uncertain_response_or_contract_failure": true
+  },
+  "unresolved_bindings": [
+    "Approve isolated test NGO and donor identities and account-creation method",
+    "Approve synthetic vehicle and donation metadata",
+    "Bind current active category, nonpersonal synthetic photo hash and protected publication inputs",
+    "Verify location/address resolution, approved graph membership and operational coverage",
+    "Approve availability and listing windows that cover the supervised test",
+    "After approved creation, record actual issued record IDs without changing fixture scope",
+    "Approve explicit simulated handover/depot-return interpretation and provenance",
+    "Pin a new reviewed manifest hash after any approved value change"
+  ]
+}

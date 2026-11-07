@@ -1,0 +1,20 @@
+{
+  "status": "TEMPLATE_ONLY_NOT_A_DEPLOYMENT_RECEIPT",
+  "project_ref": "rcgyuwiidqvrgbxswhqj",
+  "version": "20261104130000",
+  "file": "supabase/migrations/20261104130000_unstarted_released_route_cancellation.sql",
+  "approved_sha256": null,
+  "operator_identity": null,
+  "approval_reference": null,
+  "prior_manual_history_review_reference": null,
+  "backup_and_restore_verification_reference": null,
+  "preflight_reference": null,
+  "started_at_utc": null,
+  "completed_at_utc": null,
+  "psql_exit_code": null,
+  "commit_outcome": "NOT_ATTEMPTED",
+  "installation_log_sha256": null,
+  "postflight_catalog_and_grants_reference": null,
+  "flutter_artifact_sha256": null,
+  "notes": "Complete only after separately approved execution. COMMITTED_VERIFIED requires catalog verification; disconnect means UNKNOWN until inspected. Preserve failed/reverted receipts. Do not create a DEV migration ledger under this template."
+}

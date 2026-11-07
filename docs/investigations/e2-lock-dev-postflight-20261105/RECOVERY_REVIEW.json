@@ -1,0 +1,17 @@
+{
+  "available_verification_metadata": [
+    {
+      "path": "backups\\stage-a003\\20261026T123006Z-fb09b6\\verification.json",
+      "verified_at": "2026-10-26T12:33:43.2647839Z",
+      "restore_validation": "NOT VERIFIED"
+    },
+    {
+      "path": "backups\\stage-a003\\pre-freeze\\20261026T194729Z-843e8c\\verification.json",
+      "verified_at": "2026-10-26T19:50:53.2268777Z",
+      "restore_validation": "NOT VERIFIED"
+    }
+  ],
+  "documented_current_backup_and_verified_restore": false,
+  "basis": "Accessible verification records remain historical and restore NOT VERIFIED; no new execution/restore receipt found in reviewed workspace. External operator/provider backups not independently established.",
+  "backup_restore_operations": 0
+}

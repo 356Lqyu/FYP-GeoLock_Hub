@@ -1,0 +1,16 @@
+{
+  "project_ref": "rcgyuwiidqvrgbxswhqj",
+  "mode": "SELECT_ONLY",
+  "baseline_count": 712,
+  "current_count": 712,
+  "differences": [],
+  "all_match": true,
+  "c1_seal_valid": true,
+  "counts": {
+    "vehicles": 0,
+    "routes": 0,
+    "stops": 0,
+    "assignments": 0
+  },
+  "integration_undeployed": true
+}

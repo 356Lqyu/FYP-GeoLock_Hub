@@ -1,0 +1,24 @@
+{
+  "label": "ANALYTICAL ESTIMATE ONLY; not measured compact implementation",
+  "nodes": 926414,
+  "edges": 2145828,
+  "csr_bytes": {
+    "node_ids_u64": 7411312,
+    "row_offsets_u64": 7411320,
+    "targets_u32": 8583312,
+    "edge_ids_u64": 17166624,
+    "road_micro_km_u64": 17166624,
+    "travel_micro_minutes_u64": 17166624
+  },
+  "csr_total_bytes": 74905816,
+  "all_pairs_two_u64_bytes": 13731886390336,
+  "one_100_node_two_u64_matrix_bytes": 160000,
+  "excluded": [
+    "ID lookup index",
+    "shortest-path heap/path labels",
+    "CP-SAT/native allocations",
+    "OS/runtime/server",
+    "journal and TLS buffers",
+    "artifact verification/conversion peak"
+  ]
+}

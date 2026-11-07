@@ -1,0 +1,155 @@
+{
+  "manifest_version": 1,
+  "manifest_id": "GEOLOCK-DEV-MINIMAL-DIRECT-PILOT-03",
+  "status": "LOCAL_PROPOSAL_ONLY_NOT_APPROVED_NOT_EXECUTION_READY",
+  "environment": "DEV",
+  "project_ref": "rcgyuwiidqvrgbxswhqj",
+  "simulation": {
+    "synthetic_only": true,
+    "represents_real_food": false,
+    "physical_handover_claimed": false,
+    "simulated_handover_approval": "REQUIRED",
+    "simulated_depot_return_approval": "REQUIRED",
+    "normal_rpc_audit_semantics_acknowledgment": "REQUIRED",
+    "evidence_label": "SYNTHETIC DEV LIFECYCLE TEST - NOT PHYSICAL COLLECTION",
+    "server_derived_provenance": "NOT_AVAILABLE_FROM_UNDEPLOYED_ROUTE_RESOLUTION_REGISTRY",
+    "approval_gate": "Existing ordinary completion/return RPCs record normal lifecycle success, not a native simulation flag. Explicitly approve truthful synthetic semantics and evidence labeling. If server-derived synthetic provenance is mandatory, STOP for a separate decision; this manifest is not equivalent to that support."
+  },
+  "preserved_route_id": "db1b455e-92d0-4d58-9fa1-5de07d7ab0f9",
+  "prohibited_reuse": [
+    "V2",
+    "Test 10",
+    "test c",
+    "Test 42",
+    "their existing claims, leases, assignments and saved operation"
+  ],
+  "ngo": {
+    "display_name": "FYP DEV NGO Pilot 03 - SYNTHETIC",
+    "user_id": null,
+    "login_email": null,
+    "role": "NGO",
+    "independent_of_preserved_route_owner": true,
+    "active_verified_profile_required": true,
+    "no_pending_operation_or_vehicle_hold_required": true,
+    "proposed_depot": {
+      "latitude": 3.2175514451822,
+      "longitude": 101.623839922249,
+      "expected_road_node_id": "1755847853",
+      "address_text": null,
+      "node_assignment": "SERVER_RESOLVED_FROM_APPROVED_COORDINATES_NOT_CLIENT_FORCED"
+    }
+  },
+  "donor": {
+    "display_name": "FYP DEV Donor Pilot 03 - SYNTHETIC",
+    "user_id": null,
+    "login_email": null,
+    "role": "DONOR",
+    "distinct_from_ngo": true
+  },
+  "vehicle": {
+    "vehicle_id": null,
+    "vehicle_label": "FYP DEV Pilot 03",
+    "vehicle_type": "VAN",
+    "payload_capacity_kg": 500,
+    "max_route_duration_min": 60,
+    "fixed_cost_rm": 2,
+    "distance_cost_rm_per_km": 2,
+    "available_for_planning": true,
+    "synthetic_registration_approval": "REQUIRED",
+    "owner": "MANIFEST_NGO_ONLY",
+    "depot": "MANIFEST_NGO_SERVER_VERIFIED_DEPOT"
+  },
+  "donations": [
+    {
+      "fixture_key": "A",
+      "donation_id": null,
+      "listing_id": null,
+      "claim_id": null,
+      "title": "SYNTHETIC DEV Pilot 03 A - 10 kg",
+      "description": "Synthetic DEV routing fixture only. No real food is offered. Any approved handover and depot return are simulation, not physical collection.",
+      "source_path": "DIRECT_DONATION_VIA_NORMAL_PROTECTED_PUBLICATION",
+      "item_label": "Synthetic rice fixture",
+      "quantity": 1,
+      "unit": "bag",
+      "unit_weight_kg": 10,
+      "total_weight_kg": 10,
+      "category_id": null,
+      "photo_object_path": null,
+      "approved_synthetic_photo_sha256": null,
+      "pickup": {
+        "latitude": 3.22048550370189,
+        "longitude": 101.624845080078,
+        "expected_road_node_id": "1755847924",
+        "address_text": null
+      },
+      "availability_and_listing_window": "UNBOUND; must cover approved supervised session using server-accepted inputs"
+    }
+  ],
+  "routing": {
+    "policy_id": "80db858b-93e8-4a0a-94e2-dbe14940f0a1",
+    "graph_id": "eab1f7ee-a8e0-4bed-a0e1-2c4bff024936",
+    "graph_digest": "5e06dab0fb4d2b97ac53fd9a1178dc46aa6b98811aefbaef96528c604a04012a",
+    "snapshot": "OSM-OPS-20261018",
+    "algorithm": "EXISTING_PROPOSED_UNCHANGED",
+    "total_load_kg": 10,
+    "required_served_fixtures": [
+      "A"
+    ],
+    "maximum_accepted_planned_duration_minutes": 25,
+    "planned_duration_includes": [
+      "travel",
+      "service",
+      "waiting",
+      "depot return"
+    ],
+    "pickup_order": "ACTUAL_ATTESTED_AUTHORIZED_PLAN_NOT_PREASSIGNED",
+    "minimum_claim_lease_at_snapshot": "STRICTLY_GREATER_THAN_255_MINUTES",
+    "claim_lease_policy_minutes": 360,
+    "lease_extension_allowed": false,
+    "force_graph_nodes_or_fixture_states": false,
+    "direct_pickup_required": "Confirm server selected DIRECT_PICKUP; 10kg matches current local preview, not a client override",
+    "required_snapshot_scope": "Only the approved fresh claim; no other eligible tasks for this NGO"
+  },
+  "execution": {
+    "operations_approved": [],
+    "automatic_retries": false,
+    "one_generation_attempt_requires_separate_approval": true,
+    "each_start_and_completion_requires_separate_approval": true,
+    "depot_return_and_closure_require_separate_approval": true,
+    "vehicle_budget_minutes": 60,
+    "target_execution_and_model_allowance_minutes": 25,
+    "maximum_planned_inspection_allowance_minutes": 15,
+    "reserved_contingency_minutes": 20,
+    "real_server_clock_only": true,
+    "stop_on_uncertain_response_or_contract_failure": true,
+    "target_wall_clock_after_first_start_minutes": 15,
+    "timing_note": "Targets only; every RPC must pass current protected feasibility and custody checks. Do not backdate, waive modeled service/return time or retry uncertainty."
+  },
+  "unresolved_bindings": [
+    "Approve isolated test NGO and donor identities and account-creation method",
+    "Approve synthetic vehicle and donation metadata",
+    "Bind current active category, nonpersonal synthetic photo hash and protected publication inputs",
+    "Verify location/address resolution, approved graph membership and operational coverage",
+    "Approve availability and listing windows that cover the supervised test",
+    "After approved creation, record actual issued record IDs without changing fixture scope",
+    "Approve explicit simulated handover/depot-return interpretation and provenance",
+    "Pin a new reviewed manifest hash after any approved value change",
+    "Verify actual discovery visibility and allowed viewer scope before publication",
+    "Decide whether existing normal lifecycle audit semantics suffice for this explicitly synthetic demonstration; no invented server-derived provenance",
+    "Bind one approved NGO independent of testerq356/preserved-route owner and one approved donor; no eligible identity is asserted offline"
+  ],
+  "supersedes_for_minimum_demo": "GEOLOCK-DEV-SYNTHETIC-PILOT-02; original two-stop proposal retained unchanged",
+  "discovery_isolation": {
+    "status": "BLOCKED_PENDING_READONLY_VERIFICATION_AND_BUSINESS_APPROVAL",
+    "independent_identity_is_not_listing_privacy": true,
+    "required_evidence": "Actual protected discovery/eligibility and approved viewer scope before publication; no claim that a SYNTHETIC label restricts access",
+    "unrelated_real_users_must_not_be_misled": true,
+    "no_rls_or_eligibility_bypass": true,
+    "if_not_supported": "STOP; obtain separate decision on permitted DEV visibility or use a separately approved disposable local demonstration. No automatic schema change."
+  },
+  "route_resolution": {
+    "enabled": false,
+    "deployment_required_for_normal_happy_path": false,
+    "failure_policy": "Preserve any uncertain/unfinished new operation and stop. No interruption/finalization, cleanup, force release or reuse of V2."
+  }
+}

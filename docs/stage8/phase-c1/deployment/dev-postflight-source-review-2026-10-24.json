@@ -1,0 +1,227 @@
+{
+  "function_bodies": [
+    {
+      "function": "fleet_private.audit_vehicle",
+      "matches_reviewed_source": true,
+      "body_sha256": "f72291839e6626fb2b9010785e143c6c5ee95fa13924465884ea709833ae491f",
+      "normalized_header_matches": true,
+      "expected_volatility": "v",
+      "actual_volatility": "v"
+    },
+    {
+      "function": "fleet_private.check_values",
+      "matches_reviewed_source": true,
+      "body_sha256": "214173b60bdf79ee1059e482a72c75827f40222c3c25d5e433f08856113c2d4f",
+      "normalized_header_matches": true,
+      "expected_volatility": "v",
+      "actual_volatility": "v"
+    },
+    {
+      "function": "fleet_private.installation_fingerprint",
+      "matches_reviewed_source": true,
+      "body_sha256": "4e53b2abe9de4350bcd014e9811dd2fe467d0715e4f9ae4be09856b380251658",
+      "normalized_header_matches": true,
+      "expected_volatility": "s",
+      "actual_volatility": "s"
+    },
+    {
+      "function": "fleet_private.require_depot",
+      "matches_reviewed_source": true,
+      "body_sha256": "a60f09047bb88c0fbaf05ffc0ce1982aa8a91a38c68230fcd10d58656a918dfe",
+      "normalized_header_matches": true,
+      "expected_volatility": "v",
+      "actual_volatility": "v"
+    },
+    {
+      "function": "fleet_private.require_ngo",
+      "matches_reviewed_source": true,
+      "body_sha256": "7eb48c57ca23b43cde348ae9ae321ce0017b8102e9b54527eae189fb269c6b94",
+      "normalized_header_matches": true,
+      "expected_volatility": "v",
+      "actual_volatility": "v"
+    },
+    {
+      "function": "fleet_private.road_node_key",
+      "matches_reviewed_source": true,
+      "body_sha256": "0a3327a8bd17bba11e398b887642506a9a8c6fcb3ec9355814cec6139f4b496a",
+      "normalized_header_matches": true,
+      "expected_volatility": "i",
+      "actual_volatility": "i"
+    },
+    {
+      "function": "fleet_private.route_vehicle_guard",
+      "matches_reviewed_source": true,
+      "body_sha256": "cac54229dd1da54195fa8fa3f7b6e2129db33dfb575d76cbd1fc8036139e94c2",
+      "normalized_header_matches": true,
+      "expected_volatility": "v",
+      "actual_volatility": "v"
+    },
+    {
+      "function": "fleet_private.vehicle_guard",
+      "matches_reviewed_source": true,
+      "body_sha256": "b83e6fcc1b80136d61c713ac8b048644dd9b0b9386435b372ea7cafc35231232",
+      "normalized_header_matches": true,
+      "expected_volatility": "v",
+      "actual_volatility": "v"
+    },
+    {
+      "function": "fleet_private.vehicle_has_hold",
+      "matches_reviewed_source": true,
+      "body_sha256": "315c2d8bbfa225e4520c2b336195d879a22e7b44e0e09d48a27a4f86c7705c5f",
+      "normalized_header_matches": true,
+      "expected_volatility": "v",
+      "actual_volatility": "v"
+    },
+    {
+      "function": "public.deactivate_my_vehicle",
+      "matches_reviewed_source": true,
+      "body_sha256": "b19565ea67d3fecf358c5c21886403b5b31473b09e4842ffae19b96ef44b2c2b",
+      "normalized_header_matches": true,
+      "expected_volatility": "v",
+      "actual_volatility": "v"
+    },
+    {
+      "function": "public.list_my_vehicles",
+      "matches_reviewed_source": true,
+      "body_sha256": "8f9e55c11ebc4bcb49c2870864cd25eb0ef3ac830cc365a1ada86208c8ed9c1a",
+      "normalized_header_matches": true,
+      "expected_volatility": "v",
+      "actual_volatility": "v"
+    },
+    {
+      "function": "public.register_my_vehicle",
+      "matches_reviewed_source": true,
+      "body_sha256": "f12a7fe744ee493c0f53905fb17baadbcd4de11752f8bc5f95c1c058158b07c7",
+      "normalized_header_matches": true,
+      "expected_volatility": "v",
+      "actual_volatility": "v"
+    },
+    {
+      "function": "public.set_my_vehicle_availability",
+      "matches_reviewed_source": true,
+      "body_sha256": "9807e137d88a181e2ff969ffbcceaf832f98e85d993b0a2762a158902fecb773",
+      "normalized_header_matches": true,
+      "expected_volatility": "v",
+      "actual_volatility": "v"
+    },
+    {
+      "function": "public.update_my_vehicle",
+      "matches_reviewed_source": true,
+      "body_sha256": "b9179c97ef73c34cb598b04302184aa6d724f504326da2d44418dd55aaeef9dd",
+      "normalized_header_matches": true,
+      "expected_volatility": "v",
+      "actual_volatility": "v"
+    }
+  ],
+  "removed_dependencies": [],
+  "added_dependency_count": 40,
+  "added_dependent_objects": [
+    "constraint vehicles_c1_available_complete on table vehicles",
+    "constraint vehicles_c1_fields on table vehicles",
+    "default value for column available_for_planning of table vehicles",
+    "default value for column updated_at of table vehicles",
+    "default value for column vehicle_version of table vehicles",
+    "index pickup_routes_c1_vehicle_busy",
+    "index vehicles_c1_owner_active",
+    "index vehicles_c1_registration_request",
+    "trigger c1_route_vehicle_guard on table pickup_routes",
+    "trigger c1_vehicle_audit on table vehicles",
+    "trigger zz_c1_vehicle_guard on table vehicles"
+  ],
+  "new_constraint_definitions": [
+    {
+      "conname": "vehicles_c1_available_complete",
+      "contype": "c",
+      "definition": "CHECK (((NOT available_for_planning) OR (active_flag AND (vehicle_type IS NOT NULL) AND (fixed_cost_rm IS NOT NULL) AND (distance_cost_rm_per_km IS NOT NULL) AND (max_route_duration_min IS NOT NULL) AND (depot_road_node_id IS NOT NULL))))",
+      "table_name": "vehicles",
+      "convalidated": true
+    },
+    {
+      "conname": "vehicles_c1_fields",
+      "contype": "c",
+      "definition": "CHECK ((((vehicle_type IS NULL) OR ((length(btrim(vehicle_type)) >= 1) AND (length(btrim(vehicle_type)) <= 80))) AND (payload_capacity_kg <> ALL (ARRAY['NaN'::numeric, 'Infinity'::numeric, '-Infinity'::numeric])) AND ((fixed_cost_rm IS NULL) OR ((fixed_cost_rm >= (0)::numeric) AND (fixed_cost_rm < 'Infinity'::numeric) AND (scale(fixed_cost_rm) <= 2))) AND ((distance_cost_rm_per_km IS NULL) OR ((distance_cost_rm_per_km >= (0)::numeric) AND (distance_cost_rm_per_km < 'Infinity'::numeric) AND (scale(distance_cost_rm_per_km) <= 4))) AND ((max_route_duration_min IS NULL) OR ((max_route_duration_min > (0)::numeric) AND (max_route_duration_min < 'Infinity'::numeric) AND (scale(max_route_duration_min) <= 3))) AND (vehicle_version > 0)))",
+      "table_name": "vehicles",
+      "convalidated": true
+    }
+  ],
+  "new_indexes": [
+    {
+      "kind": "index",
+      "name": "pickup_routes_c1_vehicle_busy",
+      "enabled": "true",
+      "definition": "CREATE INDEX pickup_routes_c1_vehicle_busy ON public.pickup_routes USING btree (vehicle_id) WHERE (route_status = ANY (ARRAY['DRAFT'::text, 'VALIDATED'::text, 'AUTHORISED'::text, 'IN_PROGRESS'::text]))",
+      "table_name": "pickup_routes"
+    },
+    {
+      "kind": "index",
+      "name": "vehicles_c1_owner_active",
+      "enabled": "true",
+      "definition": "CREATE INDEX vehicles_c1_owner_active ON public.vehicles USING btree (ngo_user_id, active_flag, vehicle_id)",
+      "table_name": "vehicles"
+    },
+    {
+      "kind": "index",
+      "name": "vehicles_c1_registration_request",
+      "enabled": "true",
+      "definition": "CREATE UNIQUE INDEX vehicles_c1_registration_request ON public.vehicles USING btree (ngo_user_id, registration_request_id) WHERE (registration_request_id IS NOT NULL)",
+      "table_name": "vehicles"
+    }
+  ],
+  "new_column_defaults": [
+    {
+      "attname": "vehicle_type",
+      "data_type": "text",
+      "attnotnull": false,
+      "default_expression": null
+    },
+    {
+      "attname": "fixed_cost_rm",
+      "data_type": "numeric",
+      "attnotnull": false,
+      "default_expression": null
+    },
+    {
+      "attname": "distance_cost_rm_per_km",
+      "data_type": "numeric",
+      "attnotnull": false,
+      "default_expression": null
+    },
+    {
+      "attname": "max_route_duration_min",
+      "data_type": "numeric",
+      "attnotnull": false,
+      "default_expression": null
+    },
+    {
+      "attname": "available_for_planning",
+      "data_type": "boolean",
+      "attnotnull": true,
+      "default_expression": "false"
+    },
+    {
+      "attname": "vehicle_version",
+      "data_type": "bigint",
+      "attnotnull": true,
+      "default_expression": "1"
+    },
+    {
+      "attname": "updated_at",
+      "data_type": "timestamp with time zone",
+      "attnotnull": true,
+      "default_expression": "clock_timestamp()"
+    },
+    {
+      "attname": "registration_request_id",
+      "data_type": "uuid",
+      "attnotnull": false,
+      "default_expression": null
+    },
+    {
+      "attname": "registration_payload",
+      "data_type": "jsonb",
+      "attnotnull": false,
+      "default_expression": null
+    }
+  ],
+  "formatting_note": "pg_get_functiondef omits explicit default VOLATILE; deployed provolatile=v matches the reviewed declaration. Whitespace/newline formatting normalized; search_path is separately asserted."
+}

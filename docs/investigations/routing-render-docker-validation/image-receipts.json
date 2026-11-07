@@ -1,0 +1,42 @@
+{
+  "planner": {
+    "Id": "sha256:9dad7a112d031c65cd92c83880c9ce876b0ce79de36c1220b787c0b19e186173",
+    "RepoTags": [
+      "geolock-planner:validation-fixed-20261107"
+    ],
+    "Created": "2026-11-06T16:55:59.01095718Z",
+    "Architecture": "amd64",
+    "Os": "linux",
+    "Size": 539597339,
+    "user": "10001:10001",
+    "env_names": [
+      "PATH",
+      "LANG",
+      "GPG_KEY",
+      "PYTHON_VERSION",
+      "PYTHON_SHA256",
+      "PYTHONDONTWRITEBYTECODE",
+      "PYTHONUNBUFFERED"
+    ]
+  },
+  "validator": {
+    "Id": "sha256:73141a58d0e949a11a794e344ee19ed4ca0d46f88bb9699e8ebb3ddff0179371",
+    "RepoTags": [
+      "geolock-validator:validation-fixed-20261107"
+    ],
+    "Created": "2026-11-06T16:56:01.523387972Z",
+    "Architecture": "amd64",
+    "Os": "linux",
+    "Size": 539589038,
+    "user": "10001:10001",
+    "env_names": [
+      "PATH",
+      "LANG",
+      "GPG_KEY",
+      "PYTHON_VERSION",
+      "PYTHON_SHA256",
+      "PYTHONDONTWRITEBYTECODE",
+      "PYTHONUNBUFFERED"
+    ]
+  }
+}

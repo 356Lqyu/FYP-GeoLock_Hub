@@ -1,0 +1,34 @@
+test_01_legacy_preservation_and_idempotency (__main__.FleetTests.test_01_legacy_preservation_and_idempotency) ... ok
+test_all_nonterminal_routes_protect_operational_fields (__main__.FleetTests.test_all_nonterminal_routes_protect_operational_fields) ... ok
+test_anonymous_donor_inactive_and_missing_identity (__main__.FleetTests.test_anonymous_donor_inactive_and_missing_identity) ... ok
+test_audit_is_atomic_and_idempotent_noop (__main__.FleetTests.test_audit_is_atomic_and_idempotent_noop) ... ok
+test_database_constraints_reject_nonfinite_and_negative_cost (__main__.FleetTests.test_database_constraints_reject_nonfinite_and_negative_cost) ... ok
+test_deactivate_preserves_identity_and_history (__main__.FleetTests.test_deactivate_preserves_identity_and_history) ... ok
+test_depot_client_value_is_not_authority (__main__.FleetTests.test_depot_client_value_is_not_authority) ... ok
+test_direct_writes_reads_helpers_and_service_denied (__main__.FleetTests.test_direct_writes_reads_helpers_and_service_denied) ... ok
+test_failed_audit_rolls_back_registration (__main__.FleetTests.test_failed_audit_rolls_back_registration) ... ok
+test_identity_and_owner_immutable (__main__.FleetTests.test_identity_and_owner_immutable) ... ok
+test_idle_depot_revocation_disables_planning (__main__.FleetTests.test_idle_depot_revocation_disables_planning) ... ok
+test_invalid_update_and_incomplete_legacy_availability (__main__.FleetTests.test_invalid_update_and_incomplete_legacy_availability) ... ok
+test_invalid_values (__main__.FleetTests.test_invalid_values) ... ok
+test_label_edit_also_preserves_reserved_vehicle_version (__main__.FleetTests.test_label_edit_also_preserves_reserved_vehicle_version) ... ok
+test_location_refresh_preserved_and_reserved_refresh_rejected (__main__.FleetTests.test_location_refresh_preserved_and_reserved_refresh_rejected) ... ok
+test_owner_isolation_all_mutations_and_list (__main__.FleetTests.test_owner_isolation_all_mutations_and_list) ... ok
+test_private_search_path_and_execute_acls (__main__.FleetTests.test_private_search_path_and_execute_acls) ... ok
+test_race_deactivation_first_blocks_route (__main__.FleetTests.test_race_deactivation_first_blocks_route) ... ok
+test_race_route_first_blocks_deactivation (__main__.FleetTests.test_race_route_first_blocks_deactivation) ... ok
+test_registration_retry_and_conflict (__main__.FleetTests.test_registration_retry_and_conflict) ... ok
+test_route_binding_rejects_unavailable_foreign_and_active_delete (__main__.FleetTests.test_route_binding_rejects_unavailable_foreign_and_active_delete) ... ok
+test_stronger_isolation_rejected (__main__.FleetTests.test_stronger_isolation_rejected) ... ok
+test_terminal_route_releases_protection (__main__.FleetTests.test_terminal_route_releases_protection) ... ok
+test_unreviewed_policy_aborts_migration (__main__.FleetTests.test_unreviewed_policy_aborts_migration) ... ok
+test_unverified_after_registration_not_plannable (__main__.FleetTests.test_unverified_after_registration_not_plannable) ... ok
+test_unverified_invalid_inactive_wrong_snapshot_depots (__main__.FleetTests.test_unverified_invalid_inactive_wrong_snapshot_depots) ... ok
+test_update_version_and_availability (__main__.FleetTests.test_update_version_and_availability) ... ok
+test_zero_and_multiple_vehicles (__main__.FleetTests.test_zero_and_multiple_vehicles) ... ok
+test_zero_costs_are_explicit_and_valid (__main__.FleetTests.test_zero_costs_are_explicit_and_valid) ... ok
+
+----------------------------------------------------------------------
+Ran 29 tests in 33.230s
+
+OK

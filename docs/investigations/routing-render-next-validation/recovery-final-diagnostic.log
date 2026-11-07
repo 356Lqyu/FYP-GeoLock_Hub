@@ -1,0 +1,22 @@
+{"synthetic_crash_reopen": "FAIL", "sqlite_version": "3.53.1", "sqlite_errorcode": 1546, "sqlite_errorname": "SQLITE_IOERR_TRUNCATE"}
+test_abrupt_process_exit_releases_lock_and_preserves_committed_steps_then_restore (backend.routing.hosted.tests.test_recovery_rehearsal.RecoveryRehearsalTests.test_abrupt_process_exit_releases_lock_and_preserves_committed_steps_then_restore) ... ERROR
+test_backup_refuses_overwrite_and_corrupt_restore_is_rejected (backend.routing.hosted.tests.test_recovery_rehearsal.RecoveryRehearsalTests.test_backup_refuses_overwrite_and_corrupt_restore_is_rejected) ... ok
+test_older_journal_cannot_undo_committed_mock_database_receipt (backend.routing.hosted.tests.test_recovery_rehearsal.RecoveryRehearsalTests.test_older_journal_cannot_undo_committed_mock_database_receipt) ... ok
+test_restored_bindings_and_append_only_payload_reject_changes (backend.routing.hosted.tests.test_recovery_rehearsal.RecoveryRehearsalTests.test_restored_bindings_and_append_only_payload_reject_changes) ... ok
+test_restored_journal_and_original_uuid_recover_without_second_authorization (backend.routing.hosted.tests.test_recovery_rehearsal.RecoveryRehearsalTests.test_restored_journal_and_original_uuid_recover_without_second_authorization) ... ok
+
+======================================================================
+ERROR: test_abrupt_process_exit_releases_lock_and_preserves_committed_steps_then_restore (backend.routing.hosted.tests.test_recovery_rehearsal.RecoveryRehearsalTests.test_abrupt_process_exit_releases_lock_and_preserves_committed_steps_then_restore)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\User\Downloads\FYP-GeoLock_Hub\backend\routing\hosted\tests\test_recovery_rehearsal.py", line 65, in test_abrupt_process_exit_releases_lock_and_preserves_committed_steps_then_restore
+    journal=Journal(state)  # Fresh bootstrap opens/recover-checks WAL.
+            ^^^^^^^^^^^^^^
+  File "C:\Users\User\Downloads\FYP-GeoLock_Hub\backend\routing\worker_service\journal.py", line 19, in __init__
+    db.execute('PRAGMA journal_mode=WAL')
+sqlite3.OperationalError: disk I/O error
+
+----------------------------------------------------------------------
+Ran 5 tests in 4.481s
+
+FAILED (errors=1)

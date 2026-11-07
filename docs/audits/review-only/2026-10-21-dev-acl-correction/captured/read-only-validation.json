@@ -1,0 +1,70 @@
+{
+  "scope": {
+    "project_ref": "rcgyuwiidqvrgbxswhqj",
+    "read_only": true,
+    "features": [
+      "database",
+      "docs"
+    ],
+    "project_identity_limit": "Configured endpoint verified; database project_ref setting is null."
+  },
+  "preflight_sections": [
+    {
+      "section": "column_acls",
+      "matches_expected": true
+    },
+    {
+      "section": "default_acls",
+      "matches_expected": true
+    },
+    {
+      "section": "effective_role_paths",
+      "matches_expected": true
+    },
+    {
+      "section": "functions",
+      "matches_expected": true
+    },
+    {
+      "section": "policies",
+      "matches_expected": true
+    },
+    {
+      "section": "relations",
+      "matches_expected": true
+    },
+    {
+      "section": "role_memberships",
+      "matches_expected": true
+    },
+    {
+      "section": "roles",
+      "matches_expected": true
+    },
+    {
+      "section": "schemas",
+      "matches_expected": true
+    },
+    {
+      "section": "storage_relations",
+      "matches_expected": true
+    },
+    {
+      "section": "storage_trigger_functions",
+      "matches_expected": true
+    },
+    {
+      "section": "triggers",
+      "matches_expected": true
+    }
+  ],
+  "execution_role_capability": [
+    {
+      "current_user": "supabase_read_only_user",
+      "session_user": "supabase_read_only_user",
+      "postgres_member_of_supabase_admin": false,
+      "postgres_can_set_supabase_admin": false
+    }
+  ],
+  "executed": "SELECT-only snapshot/capability/manifest queries. No forward, rollback, DO, GRANT, REVOKE, or ALTER statement submitted."
+}

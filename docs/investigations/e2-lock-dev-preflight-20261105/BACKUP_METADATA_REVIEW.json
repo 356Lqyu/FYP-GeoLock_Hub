@@ -1,0 +1,112 @@
+[
+  {
+    "path": "backups\\stage-a003\\20261026T123006Z-fb09b6\\verification.json",
+    "accessible": true,
+    "metadata": {
+      "target_project": "rcgyuwiidqvrgbxswhqj",
+      "verified_at_utc": "2026-10-26T12:33:43.2647839Z",
+      "restore_validation": "NOT VERIFIED",
+      "supabase_external_service_recovery": "NOT VERIFIED",
+      "archive_toc": "PASS",
+      "full_payload_decode": "PASS",
+      "checksum_comparison": "PASS for available capture baseline; SHA-256 is not a restore test"
+    }
+  },
+  {
+    "path": "backups\\stage-a003\\pre-automatic-departure\\20261027T173207Z-21301e\\backup-status.json",
+    "accessible": true,
+    "metadata": {
+      "status": "VERIFIED LOGICAL EXPORT / RESTORABILITY NOT VERIFIED",
+      "phase": "complete"
+    }
+  },
+  {
+    "path": "backups\\stage-a003\\pre-automatic-departure\\20261027T173207Z-21301e\\verification.json",
+    "accessible": true,
+    "metadata": {
+      "target_project": "rcgyuwiidqvrgbxswhqj",
+      "verified_at_utc": "2026-10-27T17:45:23.9510222Z",
+      "restore_validation": "NOT VERIFIED",
+      "supabase_external_service_recovery": "NOT VERIFIED",
+      "archive_toc": "PASS",
+      "full_payload_decode": "PASS",
+      "checksum_comparison": "PASS for available capture baseline; SHA-256 is not a restore test"
+    }
+  },
+  {
+    "path": "backups\\stage-a003\\pre-freeze\\20261026T194729Z-843e8c\\backup-status.json",
+    "accessible": true,
+    "metadata": {
+      "status": "VERIFIED LOGICAL EXPORT / RESTORABILITY NOT VERIFIED",
+      "phase": "complete"
+    }
+  },
+  {
+    "path": "backups\\stage-a003\\pre-freeze\\20261026T194729Z-843e8c\\verification.json",
+    "accessible": true,
+    "metadata": {
+      "target_project": "rcgyuwiidqvrgbxswhqj",
+      "verified_at_utc": "2026-10-26T19:50:53.2268777Z",
+      "restore_validation": "NOT VERIFIED",
+      "supabase_external_service_recovery": "NOT VERIFIED",
+      "archive_toc": "PASS",
+      "full_payload_decode": "PASS",
+      "checksum_comparison": "PASS for available capture baseline; SHA-256 is not a restore test"
+    }
+  },
+  {
+    "path": "backups\\stage-a003\\pre-route-resolution\\20261029T124943Z-b031c5\\backup-status.json",
+    "accessible": true,
+    "metadata": {
+      "status": "VERIFIED LOGICAL EXPORT / RESTORABILITY NOT VERIFIED",
+      "phase": "complete"
+    }
+  },
+  {
+    "path": "backups\\stage-a003\\pre-route-resolution\\20261029T124943Z-b031c5\\verification.json",
+    "accessible": true,
+    "metadata": {
+      "target_project": "rcgyuwiidqvrgbxswhqj",
+      "verified_at_utc": "2026-10-29T12:53:04.8275524Z",
+      "restore_validation": "NOT VERIFIED",
+      "supabase_external_service_recovery": "NOT VERIFIED",
+      "archive_toc": "PASS",
+      "full_payload_decode": "PASS",
+      "checksum_comparison": "PASS for available capture baseline; SHA-256 is not a restore test"
+    }
+  },
+  {
+    "path": "backups\\stage-a003\\pre-route-resolution\\20261101T092626Z-958d13\\backup-status.json",
+    "accessible": true,
+    "metadata": {
+      "status": "INCOMPLETE / NOT A VERIFIED BACKUP",
+      "phase": "inventory"
+    }
+  },
+  {
+    "path": "backups\\stage-a003\\pre-route-resolution\\20261101T093857Z-421937\\backup-status.json",
+    "accessible": true,
+    "metadata": {
+      "status": "FAILED / NOT A VERIFIED BACKUP",
+      "phase": "inventory"
+    }
+  },
+  {
+    "path": "backups\\stage-a003\\pre-route-resolution\\20261101T094446Z-ecdbde\\backup-status.json",
+    "accessible": true,
+    "metadata": {
+      "status": "FAILED / NOT A VERIFIED BACKUP",
+      "phase": "inventory"
+    }
+  },
+  {
+    "path": "results\\route-resolution-backup-review\\20261029T124943Z-b031c5\\review.json",
+    "accessible": true,
+    "metadata": {}
+  },
+  {
+    "path": "results\\manual-pre-reconciliation-backup-review-20261031\\review.json",
+    "accessible": true,
+    "metadata": {}
+  }
+]

@@ -1,0 +1,142 @@
+[
+  {
+    "checked_at": "2026-10-23 13:50:54.300171+00",
+    "current_user": "supabase_read_only_user",
+    "transaction_read_only": "on",
+    "jobs": [
+      {
+        "jobid": 1,
+        "active": true,
+        "command": "set statement_timeout = '10min'; select public.process_ngo_eligibility_refresh_jobs();",
+        "jobname": "geolock-ngo-eligibility-refresh",
+        "database": "postgres",
+        "nodename": "localhost",
+        "nodeport": 5432,
+        "schedule": "* * * * *",
+        "username": "postgres"
+      },
+      {
+        "jobid": 2,
+        "active": true,
+        "command": "set statement_timeout = '10min'; select public.process_listing_eligibility_refresh_jobs();",
+        "jobname": "geolock-listing-eligibility-refresh",
+        "database": "postgres",
+        "nodename": "localhost",
+        "nodeport": 5432,
+        "schedule": "* * * * *",
+        "username": "postgres"
+      },
+      {
+        "jobid": 3,
+        "active": false,
+        "command": "set lock_timeout = '5s'; set statement_timeout = '50s'; select public.recover_expired_claims(1); -- STAGE3I_ONE_USE_8b4a48ed-97e4-41a9-aa1f-b588ae850b4f",
+        "jobname": "geolock-expired-claim-recovery",
+        "database": "postgres",
+        "nodename": "localhost",
+        "nodeport": 5432,
+        "schedule": "* * * * *",
+        "username": "postgres"
+      }
+    ],
+    "scheduler": [
+      {
+        "runs": 60,
+        "jobid": 1,
+        "status": "succeeded",
+        "latest_end": "2026-10-23T13:50:00.087059+00:00"
+      },
+      {
+        "runs": 60,
+        "jobid": 2,
+        "status": "succeeded",
+        "latest_end": "2026-10-23T13:50:00.084135+00:00"
+      },
+      {
+        "runs": 17,
+        "jobid": 3,
+        "status": "succeeded",
+        "latest_end": "2026-10-23T13:00:00.089637+00:00"
+      }
+    ],
+    "unfinished_runs": 0,
+    "overdue_active_pairs": 0,
+    "unresolved_cases": 0,
+    "active_ngos": 2,
+    "technically_routable_ngos": 1,
+    "unfinished_requests": 0,
+    "functions": [
+      {
+        "acl": "{postgres=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+        "owner": "postgres",
+        "config": [
+          "search_path=pg_catalog, public, pg_temp"
+        ],
+        "return": "jsonb",
+        "body_md5": "5c94a13f00460fdfb8228864d3eaf75e",
+        "identity": "cancel_claim(uuid,uuid)",
+        "arguments": "p_claim uuid, p_request uuid",
+        "security_definer": true
+      },
+      {
+        "acl": "{postgres=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+        "owner": "postgres",
+        "config": [
+          "search_path=public, extensions, pg_temp"
+        ],
+        "return": "jsonb",
+        "body_md5": "a883341a6dd72ccb08991a7f89dffa9a",
+        "identity": "claim_listing(uuid,uuid)",
+        "arguments": "p_listing uuid, p_request uuid",
+        "security_definer": true
+      },
+      {
+        "acl": "{postgres=X/postgres,anon=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+        "owner": "postgres",
+        "config": [
+          "search_path=public, extensions, pg_temp"
+        ],
+        "return": "void",
+        "body_md5": "13b97b3cf16e6b8750b8289a22acfcb3",
+        "identity": "complete_pickup(uuid,boolean)",
+        "arguments": "p_claim uuid, p_handover_confirmed boolean",
+        "security_definer": true
+      },
+      {
+        "acl": "{postgres=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+        "owner": "postgres",
+        "config": [
+          "search_path=pg_catalog, public, pg_temp"
+        ],
+        "return": "TABLE(claim_id uuid, listing_id uuid, claim_status text, claimed_at timestamp with time zone, lease_id uuid, lease_status text, lease_expires_at timestamp with time zone, task_status text, source_type text, listing_weight_kg numeric, title text, primary_image_path text, server_now timestamp with time zone, lease_is_expired boolean, lease_recovery_pending boolean)",
+        "body_md5": "44da3209586085a93e76204e37288f13",
+        "identity": "get_my_claim_cards_v2()",
+        "arguments": "",
+        "security_definer": true
+      },
+      {
+        "acl": "{postgres=X/postgres,service_role=X/postgres}",
+        "owner": "postgres",
+        "config": [
+          "search_path=pg_catalog, public, extensions, pg_temp"
+        ],
+        "return": "integer",
+        "body_md5": "5ff6d8719db9681aae6f444b89dfbaee",
+        "identity": "recover_expired_claims(integer)",
+        "arguments": "p_limit integer DEFAULT 100",
+        "security_definer": true
+      },
+      {
+        "acl": "{postgres=X/postgres,anon=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+        "owner": "postgres",
+        "config": [
+          "search_path=public, extensions, pg_temp"
+        ],
+        "return": "void",
+        "body_md5": "d374a029251fd2ba3786d6c5f6a03ca6",
+        "identity": "start_pickup(uuid)",
+        "arguments": "p_claim uuid",
+        "security_definer": true
+      }
+    ]
+  }
+]

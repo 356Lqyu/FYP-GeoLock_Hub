@@ -1,0 +1,26 @@
+{
+  "catalog_decision": "PASS",
+  "overall_decision": "PARTIAL",
+  "project_ref": "rcgyuwiidqvrgbxswhqj",
+  "dev_writes": 0,
+  "migrations_executed": 0,
+  "test_claims_created": 0,
+  "live_concurrency_tests": 0,
+  "backup_restore_operations": 0,
+  "raw_source_changes_exactly_two_listing_lock_replacements": [
+    "claim_listing(uuid,uuid)",
+    "geolock_lock_listing_donations(uuid,text[])"
+  ],
+  "historical_artifact_seals_unchanged": true,
+  "sha256": {
+    "docs/investigations/e2-lock-dev-postflight-20261105/COMPARISON.json": "2dbae53d6ea0293dd4d09dd2bacd464a9cb942dc3feed8f8defc957dcff13cae",
+    "docs/investigations/e2-lock-dev-postflight-20261105/DEPENDENCIES.json": "bfecadd234bd7986f9097044a081931de00608cff9115aaa65a34bfb44068ba4",
+    "docs/investigations/e2-lock-dev-postflight-20261105/FUNCTION_CATALOG.json": "aed4088a247609bcf15c262aaa835607e22af05102aed5bc8cfaed3aa0a27bf5",
+    "docs/investigations/e2-lock-dev-postflight-20261105/IDENTITY_HISTORY.json": "5b8d0dff89b71a12a16437d3c1e50a9d0cc63d9bd55de4f427905e5fc1334c13",
+    "docs/investigations/e2-lock-dev-postflight-20261105/PRIVILEGES.json": "6a3ae6573783ec8a1959fe631739c447210fb397d3b28ee7fa6b7b1df7b56ba1",
+    "docs/investigations/e2-lock-dev-postflight-20261105/READ_ONLY_QUERIES.sql": "0ae4b83e63ac62eeeea37b31f513d36f7fdf35cba521969b079e6df7fabd030d",
+    "docs/investigations/e2-lock-dev-postflight-20261105/RECOVERY_REVIEW.json": "420a57e4e0340ab332f2386a06edd6269faf69ecd2c4cb30e85434d9f97cddf8",
+    "docs/investigations/e2-lock-dev-postflight-20261105/SCHEMA_CATALOG.json": "10b34bce70fc1d35e79c389798c11e9b55b7b03a9b37f573728ff7705c077cb8",
+    "docs/investigations/E2_LOCK_CORRECTION_DEV_POSTFLIGHT.md": "fbd4d57c6c89e810f7e8cd8b1d1730231f9b2d7fd580883928054e1798d91473"
+  }
+}

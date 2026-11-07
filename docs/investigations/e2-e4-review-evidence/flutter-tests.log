@@ -1,0 +1,124 @@
+00:00 +0: loading C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/claim_conflict_ui_test.dart
+00:00 +0: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/claim_conflict_ui_test.dart: successful claim keeps confirmation and clears terminal request
+00:00 +1: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/claim_conflict_ui_test.dart: successful claim keeps confirmation and clears terminal request
+00:00 +2: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/claim_conflict_ui_test.dart: successful claim keeps confirmation and clears terminal request
+00:00 +3: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/claim_conflict_ui_test.dart: successful claim keeps confirmation and clears terminal request
+00:00 +4: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/claim_conflict_ui_test.dart: successful claim keeps confirmation and clears terminal request
+00:00 +5: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/claim_conflict_ui_test.dart: successful claim keeps confirmation and clears terminal request
+00:00 +6: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/claim_conflict_ui_test.dart: successful claim keeps confirmation and clears terminal request
+00:02 +7: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/claim_conflict_ui_test.dart: successful claim keeps confirmation and clears terminal request
+00:02 +8: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/claim_conflict_ui_test.dart: successful claim keeps confirmation and clears terminal request
+00:02 +9: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/claim_conflict_ui_test.dart: successful claim keeps confirmation and clears terminal request
+00:02 +10: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/claim_conflict_ui_test.dart: successful claim keeps confirmation and clears terminal request
+00:02 +11: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/claim_conflict_ui_test.dart: successful claim keeps confirmation and clears terminal request
+00:02 +12: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/claim_conflict_ui_test.dart: successful claim keeps confirmation and clears terminal request
+00:02 +13: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/claim_conflict_ui_test.dart: successful claim keeps confirmation and clears terminal request
+00:03 +14: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/claim_history_ui_test.dart: four donor claims show latest and collapse earlier history
+00:03 +15: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/claim_card_test.dart: every tab uses badges and expired actions are disabled
+00:03 +15: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/claim_conflict_ui_test.dart: competing NGO conflict does not invent ownership explanation
+Claim rejected: CONFLICT / CLAIM_CONFLICT / e53413e1-535d-4298-8e48-06701d910f2a
+00:03 +16: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/claim_card_test.dart: every tab uses badges and expired actions are disabled
+00:03 +17: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/claim_card_test.dart: every tab uses badges and expired actions are disabled
+00:04 +17: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/claim_conflict_ui_test.dart: definite rejection disables stale page while refresh is pending
+Claim rejected: CONFLICT / CLAIM_CONFLICT / dd9ebb8b-4128-446b-bb26-cc912d171b7d
+00:04 +18: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/claim_card_test.dart: every tab uses badges and expired actions are disabled
+00:04 +19: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/claim_card_test.dart: every tab uses badges and expired actions are disabled
+00:04 +20: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/claim_card_test.dart: every tab uses badges and expired actions are disabled
+00:04 +20: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/claim_conflict_ui_test.dart: trusted refresh confirms unavailable and clears terminal UUID
+Claim rejected: CONFLICT / CLAIM_CONFLICT / b3991bfc-5d89-478f-8580-b34ba74006e9
+00:04 +21: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/claim_card_test.dart: every tab uses badges and expired actions are disabled
+00:05 +22: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/claim_card_test.dart: every tab uses badges and expired actions are disabled
+00:05 +23: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/claim_card_test.dart: every tab uses badges and expired actions are disabled
+00:05 +24: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/claim_card_test.dart: every tab uses badges and expired actions are disabled
+00:05 +24: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/claim_conflict_ui_test.dart: later trusted availability allows a fresh deliberate attempt
+Claim rejected: CONFLICT / CLAIM_CONFLICT / bde17952-9414-44b6-a1bb-0393eefa9641
+00:05 +25: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/claim_card_test.dart: every tab uses badges and expired actions are disabled
+00:06 +26: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/claim_card_test.dart: every tab uses badges and expired actions are disabled
+00:06 +26: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/claim_conflict_ui_test.dart: refresh failure removes eligible display and stays disabled
+Claim rejected: CONFLICT / CLAIM_CONFLICT / c1f58465-e735-4b5d-b93e-35c254a5e3de
+00:06 +27: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/claim_card_test.dart: every tab uses badges and expired actions are disabled
+00:06 +28: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/claim_card_test.dart: every tab uses badges and expired actions are disabled
+00:06 +29: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/claim_card_test.dart: every tab uses badges and expired actions are disabled
+00:06 +29: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/claim_conflict_ui_test.dart: uncertain network error reuses UUID only on manual retry
+Claim transport/preparation error: TimeoutException
+00:06 +30: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/claim_card_test.dart: every tab uses badges and expired actions are disabled
+00:07 +31: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/claim_card_test.dart: every tab uses badges and expired actions are disabled
+00:07 +32: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/claim_conflict_ui_test.dart: rapid taps send one pending request
+00:07 +33: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/road_routing_test.dart: authenticated NGO location setup requires server road preview
+00:07 +34: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/road_routing_test.dart: authenticated NGO location setup requires server road preview
+00:07 +35: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/claim_card_test.dart: live claim actions open managed routing and refresh claims on return
+00:07 +36: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/claim_card_test.dart: live claim actions open managed routing and refresh claims on return
+00:07 +37: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/road_routing_test.dart: Hub Admin signup offers self-registration without hub details
+00:08 +38: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/claim_conflict_ui_test.dart: back action returns to discovery and allows list refresh
+00:08 +39: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/claim_conflict_ui_test.dart: back action returns to discovery and allows list refresh
+00:08 +40: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/claim_conflict_ui_test.dart: back action returns to discovery and allows list refresh
+00:08 +41: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/claim_conflict_ui_test.dart: back action returns to discovery and allows list refresh
+00:08 +42: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/claim_conflict_ui_test.dart: back action returns to discovery and allows list refresh
+00:08 +43: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/claim_conflict_ui_test.dart: back action returns to discovery and allows list refresh
+00:08 +44: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/claim_conflict_ui_test.dart: back action returns to discovery and allows list refresh
+00:08 +45: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/claim_conflict_ui_test.dart: back action returns to discovery and allows list refresh
+00:08 +46: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/claim_conflict_ui_test.dart: back action returns to discovery and allows list refresh
+00:08 +47: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/claim_conflict_ui_test.dart: back action returns to discovery and allows list refresh
+00:08 +48: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/claim_conflict_ui_test.dart: back action returns to discovery and allows list refresh
+00:08 +49: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/claim_card_test.dart: refresh, resume, errors and deadline reads preserve selected tab
+00:08 +50: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/claim_card_test.dart: refresh, resume, errors and deadline reads preserve selected tab
+00:08 +51: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/claim_conflict_ui_test.dart: initial read failure keeps claim disabled
+00:08 +52: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/road_routing_test.dart: discovery card shows the routing reason when status is not READY
+00:08 +53: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/claim_card_test.dart: successful and rejected pickup actions refresh server evidence
+00:08 +54: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/claim_card_test.dart: successful and rejected pickup actions refresh server evidence
+00:08 +55: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/claim_card_test.dart: successful and rejected pickup actions refresh server evidence
+00:09 +56: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/claim_card_test.dart: successful and rejected pickup actions refresh server evidence
+00:09 +56: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/claim_conflict_ui_test.dart: actual discovery page refreshes after rejected details return
+Claim rejected: CONFLICT / CLAIM_CONFLICT / 11d63116-9fac-48c9-932a-4b5c233130e4
+00:09 +57: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/claim_card_test.dart: successful and rejected pickup actions refresh server evidence
+00:09 +58: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/claim_card_test.dart: cancellation retains request-id workflow and refreshes rejected result
+00:09 +59: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/claim_card_test.dart: failed authorization read removes previously authorized photo data
+00:10 +60: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/claim_card_test.dart: uncertain cancellation retries reuse the same request id
+00:10 +61: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/dashboard_test.dart: donor navigation has four donor-only destinations and selects
+00:11 +62: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/dashboard_test.dart: donor navigation has four donor-only destinations and selects
+00:11 +63: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/dashboard_test.dart: donor navigation has four donor-only destinations and selects
+00:12 +64: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/dashboard_test.dart: donor navigation has four donor-only destinations and selects
+00:12 +65: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/dashboard_test.dart: donor navigation has four donor-only destinations and selects
+00:12 +66: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/dashboard_test.dart: each role receives its own five-tab labels
+00:12 +67: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/dashboard_test.dart: donation state labels reflect the simplified lifecycle
+00:12 +68: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/dashboard_test.dart: dashboard statistics render live values and labels
+00:13 +69: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/dashboard_test.dart: NGO home listing preview opens details with image fallback
+00:13 +70: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/dashboard_test.dart: Claim → My Claims → Dashboard → My Claims reloads backend data
+00:15 +71: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/dashboard_test.dart: Claim → My Claims → Home refresh removes claimed recommendation
+00:16 +72: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/dashboard_test.dart: Home → Discover refreshes eligible listings
+00:17 +73: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/dashboard_test.dart: Discover → My Claims refreshes claims
+00:17 +74: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/dashboard_test.dart: rapid tab switching serializes reads and shows latest data
+00:18 +75: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/dashboard_test.dart: donation summary uses neutral image placeholder and real fields
+00:18 +76: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/dashboard_test.dart: donation photo carousel has a graceful no-photo state
+00:18 +77: C:/Users/User/Downloads/FYP-GeoLock_Hub/frontend/geolock_hub_app/test/dashboard_test.dart: donation photo carousel changes photo and counter
+[GeoLock photo] DonationPhotoCarousel image #1 image request failed: HTTP request failed, statusCode: 400, [URL redacted]
+#0      NetworkImage._loadAsync (package:flutter/src/painting/_network_image_io.dart:131:9)
+<asynchronous suspension>
+#1      MultiFrameImageStreamCompleter._handleCodecReady (package:flutter/src/painting/image_stream.dart:1021:3)
+<asynchronous suspension>
+
+[GeoLock photo] DonationPhotoCarousel image #1 image request failed: HTTP request failed, statusCode: 400, [URL redacted]
+#0      NetworkImage._loadAsync (package:flutter/src/painting/_network_image_io.dart:131:9)
+<asynchronous suspension>
+#1      MultiFrameImageStreamCompleter._handleCodecReady (package:flutter/src/painting/image_stream.dart:1021:3)
+<asynchronous suspension>
+
+[GeoLock photo] DonationPhotoCarousel image #2 image request failed: HTTP request failed, statusCode: 400, [URL redacted]
+#0      NetworkImage._loadAsync (package:flutter/src/painting/_network_image_io.dart:131:9)
+<asynchronous suspension>
+#1      MultiFrameImageStreamCompleter._handleCodecReady (package:flutter/src/painting/image_stream.dart:1021:3)
+<asynchronous suspension>
+
+[GeoLock photo] DonationPhotoCarousel image #2 image request failed: HTTP request failed, statusCode: 400, [URL redacted]
+#0      NetworkImage._loadAsync (package:flutter/src/painting/_network_image_io.dart:131:9)
+<asynchronous suspension>
+#1      MultiFrameImageStreamCompleter._handleCodecReady (package:flutter/src/painting/image_stream.dart:1021:3)
+<asynchronous suspension>
+
+[GeoLock photo] DonationPhotoCarousel image #1 image request failed: HTTP request failed, statusCode: 400, [URL redacted]
+#0      NetworkImage._loadAsync (package:flutter/src/painting/_network_image_io.dart:131:9)
+<asynchronous suspension>
+#1      MultiFrameImageStreamCompleter._handleCodecReady (package:flutter/src/painting/image_stream.dart:1021:3)
+<asynchronous suspension>
+
+00:19 +78: All tests passed!

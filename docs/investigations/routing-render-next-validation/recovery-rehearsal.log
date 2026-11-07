@@ -1,0 +1,82 @@
+test_abrupt_process_exit_releases_lock_and_preserves_committed_steps_then_restore (backend.routing.hosted.tests.test_recovery_rehearsal.RecoveryRehearsalTests.test_abrupt_process_exit_releases_lock_and_preserves_committed_steps_then_restore) ... ERROR
+test_backup_refuses_overwrite_and_corrupt_restore_is_rejected (backend.routing.hosted.tests.test_recovery_rehearsal.RecoveryRehearsalTests.test_backup_refuses_overwrite_and_corrupt_restore_is_rejected) ... ok
+test_older_journal_cannot_undo_committed_mock_database_receipt (backend.routing.hosted.tests.test_recovery_rehearsal.RecoveryRehearsalTests.test_older_journal_cannot_undo_committed_mock_database_receipt) ... FAIL
+test_restored_bindings_and_append_only_payload_reject_changes (backend.routing.hosted.tests.test_recovery_rehearsal.RecoveryRehearsalTests.test_restored_bindings_and_append_only_payload_reject_changes) ... ok
+test_restored_journal_and_original_uuid_recover_without_second_authorization (backend.routing.hosted.tests.test_recovery_rehearsal.RecoveryRehearsalTests.test_restored_journal_and_original_uuid_recover_without_second_authorization) ... FAIL
+
+======================================================================
+ERROR: test_abrupt_process_exit_releases_lock_and_preserves_committed_steps_then_restore (backend.routing.hosted.tests.test_recovery_rehearsal.RecoveryRehearsalTests.test_abrupt_process_exit_releases_lock_and_preserves_committed_steps_then_restore)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\User\Downloads\FYP-GeoLock_Hub\backend\routing\hosted\tests\test_recovery_rehearsal.py", line 64, in test_abrupt_process_exit_releases_lock_and_preserves_committed_steps_then_restore
+    with journal.claim(SID,OWNER,REQ):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\contextlib.py", line 137, in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+  File "C:\Users\User\Downloads\FYP-GeoLock_Hub\backend\routing\worker_service\journal.py", line 72, in claim
+    db.execute('INSERT OR IGNORE INTO jobs VALUES(?,?,?)',(snapshot,owner,request))
+sqlite3.OperationalError: disk I/O error
+
+======================================================================
+FAIL: test_older_journal_cannot_undo_committed_mock_database_receipt (backend.routing.hosted.tests.test_recovery_rehearsal.RecoveryRehearsalTests.test_older_journal_cannot_undo_committed_mock_database_receipt)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\User\Downloads\FYP-GeoLock_Hub\backend\routing\hosted\tests\test_recovery_rehearsal.py", line 104, in test_older_journal_cannot_undo_committed_mock_database_receipt
+    self._receipt_restore(stale=True)
+  File "C:\Users\User\Downloads\FYP-GeoLock_Hub\backend\routing\hosted\tests\test_recovery_rehearsal.py", line 120, in _receipt_restore
+    self.assertEqual(db.calls,before)
+AssertionError: Lists differ: ['rea[194 chars]', 'attest_routing_candidate', 'read_pending_routing_snapshot'] != ['rea[194 chars]', 'attest_routing_candidate']
+
+First list contains 1 additional elements.
+First extra element 8:
+'read_pending_routing_snapshot'
+
+  ['read_pending_routing_snapshot',
+   'read_pending_routing_snapshot',
+   'store_routing_matrix',
+   'seal_routing_snapshot',
+   'read_routing_snapshot_bundle',
+   'submit_routing_candidate',
+   'read_routing_work_item',
+-  'attest_routing_candidate',
+?                            ^
+
++  'attest_routing_candidate']
+?                            ^
+
+-  'read_pending_routing_snapshot']
+
+======================================================================
+FAIL: test_restored_journal_and_original_uuid_recover_without_second_authorization (backend.routing.hosted.tests.test_recovery_rehearsal.RecoveryRehearsalTests.test_restored_journal_and_original_uuid_recover_without_second_authorization)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\User\Downloads\FYP-GeoLock_Hub\backend\routing\hosted\tests\test_recovery_rehearsal.py", line 101, in test_restored_journal_and_original_uuid_recover_without_second_authorization
+    self._receipt_restore(stale=False)
+  File "C:\Users\User\Downloads\FYP-GeoLock_Hub\backend\routing\hosted\tests\test_recovery_rehearsal.py", line 120, in _receipt_restore
+    self.assertEqual(db.calls,before)
+AssertionError: Lists differ: ['rea[194 chars]', 'attest_routing_candidate', 'read_pending_routing_snapshot'] != ['rea[194 chars]', 'attest_routing_candidate']
+
+First list contains 1 additional elements.
+First extra element 8:
+'read_pending_routing_snapshot'
+
+  ['read_pending_routing_snapshot',
+   'read_pending_routing_snapshot',
+   'store_routing_matrix',
+   'seal_routing_snapshot',
+   'read_routing_snapshot_bundle',
+   'submit_routing_candidate',
+   'read_routing_work_item',
+-  'attest_routing_candidate',
+?                            ^
+
++  'attest_routing_candidate']
+?                            ^
+
+-  'read_pending_routing_snapshot']
+
+----------------------------------------------------------------------
+Ran 5 tests in 2.597s
+
+FAILED (failures=2, errors=1)

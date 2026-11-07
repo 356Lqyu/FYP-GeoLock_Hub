@@ -1,0 +1,22 @@
+{
+  "backend/routing/hosted/artifact.py": "e2b4b4b5abb7b60da52b79b5e4a5148571c89a8ac8bbc7b12db868d6a17b57db",
+  "backend/routing/hosted/benchmark.py": "0f1e564ed0b6fb792929bfb29dcdaed87350a28a0760ec92982a96560c4030d9",
+  "backend/routing/hosted/compact_graph.py": "b2e02f401c948917f642c0d89b506e61143112085bf9ae620e43dceafc17ff5d",
+  "backend/routing/hosted/config.py": "3905bb7d7339e5c7633bceefd9509761bb07f823612f6334e9908dc92604d66c",
+  "backend/routing/hosted/frozen_benchmark.py": "b75ac3f4d8a9893fb12ccf4c3e5c3aecb97ece93b3b3d170224485c6e0a4db52",
+  "backend/routing/hosted/render.review.yaml": "8ff9934fe2e1fea9b4ca5e0630f13674a0462b99531bde6ed14e7a94b562caa3",
+  "backend/routing/hosted/runtime.py": "ab7ad84a99aa82ec6d114165aba40e73120df6a2198dd5b7f505b64783eb0d8b",
+  "backend/routing/hosted/run_resource_profiles.py": "94c73c89658c6ac589bdc1a6817a596d4506d90729654e6ca8e39f20cd19cb2b",
+  "backend/routing/hosted/__init__.py": "1479bda9a02788f1cebad3d4275dc777bf7cba3fa4bb4b958bc00af09d3e8a0a",
+  "backend/routing/hosted/__main__.py": "e4be41dc8ed2d1a6bc0b6ec1f0faf0f65ebf66ace0ff287b06de30ba59d9e061",
+  "backend/routing/hosted/docker/planner.Dockerfile": "3d49353921536c59b78a49f9f911a6aff7abe38a464d72334e09c34b36051b3d",
+  "backend/routing/hosted/docker/planner.Dockerfile.dockerignore": "2b61d026b7596f9586a0e7d8aad8ba57baf0211b732f3dc6b4b75c8c7d0aab74",
+  "backend/routing/hosted/docker/validator.Dockerfile": "ec4d0c023523435ad3364623b7c54f64ecf020bb68070e5f707251fc786bd6a8",
+  "backend/routing/hosted/docker/validator.Dockerfile.dockerignore": "459674fa23e7689db71cb9eb9b2e584db5836acc64337b35c5af58ddc9be35e6",
+  "backend/routing/hosted/tests/test_artifact_packaging.py": "7c3f75fb9ea798b5f72b0d5fdb85555b437f77b8b2273714dbab180b00710233",
+  "backend/routing/hosted/tests/test_compact.py": "6920550bdeb1d411fd419051c3eb93e4e4ff4ba8aa5e38df67c4ef98dedfdcbc",
+  "backend/routing/hosted/tests/test_hosting.py": "9f848f8cd02af0ee7b62e50b6cccd63371cabf9c88a4d3f6d13d6c924a88db98",
+  "backend/routing/hosted/tests/__init__.py": "cdc961dc2a3c35e7669645956b4bed0282bcaabfa13c929e313f0fc12d41c37f",
+  "docs/investigations/ROUTING_RENDER_IMPLEMENTATION_READINESS.md": "443d636feab540ec7eeea41a9411039a2f673acbd5495578c506c07c96e1f140",
+  "docs/investigations/ROUTING_RENDER_DEPLOYMENT_GUIDE.md": "7a5eb065ecdabd503786a67b89b2755fd01c719d3849e8c1ca2987264d2a0acd"
+}

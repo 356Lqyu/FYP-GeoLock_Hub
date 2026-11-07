@@ -1,0 +1,691 @@
+{
+  "baseline": {
+    "routing_private.hash(jsonb)": {
+      "signature": "routing_private.hash(jsonb)",
+      "md5": "9baadd9fb14fce159d94e4e0bd983c22",
+      "result": "text",
+      "security_definer": false,
+      "volatility": "i",
+      "config": [
+        "search_path=pg_catalog, pg_temp",
+        "TimeZone=UTC",
+        "extra_float_digits=0"
+      ],
+      "grantees": [
+        "postgres"
+      ]
+    },
+    "routing_private.worker(text)": {
+      "signature": "routing_private.worker(text)",
+      "md5": "9fce37c17364e88eb1e2101be042a822",
+      "result": "void",
+      "security_definer": true,
+      "volatility": "v",
+      "config": [
+        "search_path=pg_catalog, pg_temp",
+        "TimeZone=UTC",
+        "extra_float_digits=0"
+      ],
+      "grantees": [
+        "postgres"
+      ]
+    },
+    "routing_private.append_only()": {
+      "signature": "routing_private.append_only()",
+      "md5": "bf4e4f93b210de23118f16eb3b5b6f33",
+      "result": "trigger",
+      "security_definer": true,
+      "volatility": "v",
+      "config": [
+        "search_path=pg_catalog, pg_temp",
+        "TimeZone=UTC",
+        "extra_float_digits=0"
+      ],
+      "grantees": [
+        "postgres"
+      ]
+    },
+    "routing_private.snapshot_guard()": {
+      "signature": "routing_private.snapshot_guard()",
+      "md5": "fd7b479db124345977509f8401b2dab6",
+      "result": "trigger",
+      "security_definer": true,
+      "volatility": "v",
+      "config": [
+        "search_path=pg_catalog, pg_temp",
+        "TimeZone=UTC",
+        "extra_float_digits=0"
+      ],
+      "grantees": [
+        "postgres"
+      ]
+    },
+    "routing_private.freeze_network()": {
+      "signature": "routing_private.freeze_network()",
+      "md5": "55f50fab862e381f21ed355a93c2bcea",
+      "result": "trigger",
+      "security_definer": true,
+      "volatility": "v",
+      "config": [
+        "search_path=pg_catalog, pg_temp",
+        "TimeZone=UTC",
+        "extra_float_digits=0"
+      ],
+      "grantees": [
+        "postgres"
+      ]
+    },
+    "public.install_routing_policy(uuid,jsonb)": {
+      "signature": "public.install_routing_policy(uuid,jsonb)",
+      "md5": "7b3549f82b239d6c6abbd4a5fee58b4e",
+      "result": "uuid",
+      "security_definer": true,
+      "volatility": "v",
+      "config": [
+        "search_path=pg_catalog, pg_temp",
+        "TimeZone=UTC",
+        "extra_float_digits=0"
+      ],
+      "grantees": [
+        "geolock_graph_worker",
+        "postgres"
+      ]
+    },
+    "routing_private.network_digest(text,text)": {
+      "signature": "routing_private.network_digest(text,text)",
+      "md5": "26aceaa8835e3db8bba3a73879024212",
+      "result": "jsonb",
+      "security_definer": true,
+      "volatility": "v",
+      "config": [
+        "search_path=pg_catalog, pg_temp",
+        "TimeZone=UTC",
+        "extra_float_digits=0"
+      ],
+      "grantees": [
+        "postgres"
+      ]
+    },
+    "public.freeze_routing_graph(uuid,text,text,text)": {
+      "signature": "public.freeze_routing_graph(uuid,text,text,text)",
+      "md5": "8e1434ea2727e30f898ddff289ac2df3",
+      "result": "uuid",
+      "security_definer": true,
+      "volatility": "v",
+      "config": [
+        "search_path=pg_catalog, pg_temp",
+        "TimeZone=UTC",
+        "extra_float_digits=0"
+      ],
+      "grantees": [
+        "geolock_graph_worker",
+        "postgres"
+      ]
+    },
+    "public.store_routing_matrix(uuid,uuid,jsonb)": {
+      "signature": "public.store_routing_matrix(uuid,uuid,jsonb)",
+      "md5": "bccccc76068912ae1d3cbff42a18964f",
+      "result": "uuid",
+      "security_definer": true,
+      "volatility": "v",
+      "config": [
+        "search_path=pg_catalog, pg_temp",
+        "TimeZone=UTC",
+        "extra_float_digits=0"
+      ],
+      "grantees": [
+        "geolock_graph_worker",
+        "postgres"
+      ]
+    },
+    "routing_private.observe_task(uuid)": {
+      "signature": "routing_private.observe_task(uuid)",
+      "md5": "53f058161125f26980f65303d45dccc1",
+      "result": "jsonb",
+      "security_definer": true,
+      "volatility": "s",
+      "config": [
+        "search_path=pg_catalog, pg_temp",
+        "TimeZone=UTC",
+        "extra_float_digits=0"
+      ],
+      "grantees": [
+        "postgres"
+      ]
+    },
+    "routing_private.task_digest(jsonb)": {
+      "signature": "routing_private.task_digest(jsonb)",
+      "md5": "e28f2dba4773bbbe8e32a700047e6f6e",
+      "result": "text",
+      "security_definer": false,
+      "volatility": "i",
+      "config": [
+        "search_path=pg_catalog, pg_temp",
+        "TimeZone=UTC",
+        "extra_float_digits=0"
+      ],
+      "grantees": [
+        "postgres"
+      ]
+    },
+    "routing_private.ngo_observation(uuid)": {
+      "signature": "routing_private.ngo_observation(uuid)",
+      "md5": "6da6cd58224e4d6e58c732b734a081cb",
+      "result": "jsonb",
+      "security_definer": true,
+      "volatility": "s",
+      "config": [
+        "search_path=pg_catalog, pg_temp",
+        "TimeZone=UTC",
+        "extra_float_digits=0"
+      ],
+      "grantees": [
+        "postgres"
+      ]
+    },
+    "public.begin_my_routing_snapshot(uuid,uuid,uuid[])": {
+      "signature": "public.begin_my_routing_snapshot(uuid,uuid,uuid[])",
+      "md5": "dca3ee04e8fbf991c4ef0993930ec185",
+      "result": "jsonb",
+      "security_definer": true,
+      "volatility": "v",
+      "config": [
+        "search_path=pg_catalog, pg_temp",
+        "TimeZone=UTC",
+        "extra_float_digits=0"
+      ],
+      "grantees": [
+        "authenticated",
+        "postgres"
+      ]
+    },
+    "public.seal_routing_snapshot(uuid,uuid)": {
+      "signature": "public.seal_routing_snapshot(uuid,uuid)",
+      "md5": "21440a57a37758997fcffcd89cf416a0",
+      "result": "jsonb",
+      "security_definer": true,
+      "volatility": "v",
+      "config": [
+        "search_path=pg_catalog, pg_temp",
+        "TimeZone=UTC",
+        "extra_float_digits=0"
+      ],
+      "grantees": [
+        "geolock_planner",
+        "postgres"
+      ]
+    },
+    "public.submit_routing_candidate(uuid,uuid,jsonb)": {
+      "signature": "public.submit_routing_candidate(uuid,uuid,jsonb)",
+      "md5": "85ff82ee813722c69a98e8d197bd5323",
+      "result": "jsonb",
+      "security_definer": true,
+      "volatility": "v",
+      "config": [
+        "search_path=pg_catalog, pg_temp",
+        "TimeZone=UTC",
+        "extra_float_digits=0"
+      ],
+      "grantees": [
+        "geolock_planner",
+        "postgres"
+      ]
+    },
+    "public.read_routing_work_item(uuid)": {
+      "signature": "public.read_routing_work_item(uuid)",
+      "md5": "1ee7721aca6bc5d8fd490898e0fcf6d9",
+      "result": "jsonb",
+      "security_definer": true,
+      "volatility": "v",
+      "config": [
+        "search_path=pg_catalog, pg_temp",
+        "TimeZone=UTC",
+        "extra_float_digits=0"
+      ],
+      "grantees": [
+        "geolock_validator",
+        "postgres"
+      ]
+    },
+    "public.attest_routing_candidate(uuid,text,jsonb)": {
+      "signature": "public.attest_routing_candidate(uuid,text,jsonb)",
+      "md5": "99789f22097aabb066595f44a7cfdb48",
+      "result": "void",
+      "security_definer": true,
+      "volatility": "v",
+      "config": [
+        "search_path=pg_catalog, pg_temp",
+        "TimeZone=UTC",
+        "extra_float_digits=0"
+      ],
+      "grantees": [
+        "geolock_validator",
+        "postgres"
+      ]
+    },
+    "public.read_frozen_routing_graph(uuid,bigint,integer)": {
+      "signature": "public.read_frozen_routing_graph(uuid,bigint,integer)",
+      "md5": "f3f732a1224fa0290077197f473026b6",
+      "result": "jsonb",
+      "security_definer": true,
+      "volatility": "v",
+      "config": [
+        "search_path=pg_catalog, pg_temp",
+        "TimeZone=UTC",
+        "extra_float_digits=0"
+      ],
+      "grantees": [
+        "geolock_graph_worker",
+        "postgres"
+      ]
+    },
+    "public.read_routing_snapshot_bundle(uuid)": {
+      "signature": "public.read_routing_snapshot_bundle(uuid)",
+      "md5": "443812854b91b1bf9f93d6fecbd48ced",
+      "result": "jsonb",
+      "security_definer": true,
+      "volatility": "v",
+      "config": [
+        "search_path=pg_catalog, pg_temp",
+        "TimeZone=UTC",
+        "extra_float_digits=0"
+      ],
+      "grantees": [
+        "geolock_planner",
+        "postgres"
+      ]
+    },
+    "public.read_pending_routing_snapshot(uuid)": {
+      "signature": "public.read_pending_routing_snapshot(uuid)",
+      "md5": "5125c4a3cce5f4c0bf9aebdf83f73847",
+      "result": "jsonb",
+      "security_definer": true,
+      "volatility": "v",
+      "config": [
+        "search_path=pg_catalog, pg_temp",
+        "TimeZone=UTC",
+        "extra_float_digits=0"
+      ],
+      "grantees": [
+        "geolock_planner",
+        "postgres"
+      ]
+    },
+    "routing_private.actor_lock(uuid,boolean)": {
+      "signature": "routing_private.actor_lock(uuid,boolean)",
+      "md5": "b7de071f2da83c77809f4d505b2cc3b2",
+      "result": "void",
+      "security_definer": true,
+      "volatility": "v",
+      "config": [
+        "search_path=pg_catalog, pg_temp",
+        "TimeZone=UTC",
+        "extra_float_digits=0"
+      ],
+      "grantees": [
+        "postgres"
+      ]
+    },
+    "routing_private.lock_sources(uuid[])": {
+      "signature": "routing_private.lock_sources(uuid[])",
+      "md5": "52dc6262f3f85bd3c67a787401cf71aa",
+      "result": "void",
+      "security_definer": true,
+      "volatility": "v",
+      "config": [
+        "search_path=pg_catalog, pg_temp",
+        "TimeZone=UTC",
+        "extra_float_digits=0"
+      ],
+      "grantees": [
+        "postgres"
+      ]
+    },
+    "routing_private.task_window(jsonb,timestamptz,jsonb)": {
+      "signature": "routing_private.task_window(jsonb,timestamptz,jsonb)",
+      "md5": "82362da140f544be5d5ca5c622183fbb",
+      "result": "jsonb",
+      "security_definer": false,
+      "volatility": "i",
+      "config": [
+        "search_path=pg_catalog, pg_temp",
+        "TimeZone=UTC",
+        "extra_float_digits=0"
+      ],
+      "grantees": [
+        "postgres"
+      ]
+    },
+    "routing_private.admissible(jsonb,uuid,timestamptz,jsonb)": {
+      "signature": "routing_private.admissible(jsonb,uuid,timestamptz,jsonb)",
+      "md5": "86cdbf87fcaef3f3ac0e36cda4824418",
+      "result": "boolean",
+      "security_definer": false,
+      "volatility": "s",
+      "config": [
+        "search_path=pg_catalog, pg_temp",
+        "TimeZone=UTC",
+        "extra_float_digits=0"
+      ],
+      "grantees": [
+        "postgres"
+      ]
+    },
+    "routing_private.arc(jsonb,text,text)": {
+      "signature": "routing_private.arc(jsonb,text,text)",
+      "md5": "ceb33e05e1bf4b7d8238daee42c13974",
+      "result": "jsonb",
+      "security_definer": false,
+      "volatility": "i",
+      "config": [
+        "search_path=pg_catalog, pg_temp",
+        "TimeZone=UTC",
+        "extra_float_digits=0"
+      ],
+      "grantees": [
+        "postgres"
+      ]
+    },
+    "routing_private.snapshot_task(jsonb,uuid)": {
+      "signature": "routing_private.snapshot_task(jsonb,uuid)",
+      "md5": "61704ef635b841fe02fff0118a196aef",
+      "result": "jsonb",
+      "security_definer": false,
+      "volatility": "i",
+      "config": [
+        "search_path=pg_catalog, pg_temp",
+        "TimeZone=UTC",
+        "extra_float_digits=0"
+      ],
+      "grantees": [
+        "postgres"
+      ]
+    },
+    "public.authorize_my_routing_candidate(uuid,uuid,timestamptz)": {
+      "signature": "public.authorize_my_routing_candidate(uuid,uuid,timestamptz)",
+      "md5": "1c3c880e27da261a9a95a95730640196",
+      "result": "jsonb",
+      "security_definer": true,
+      "volatility": "v",
+      "config": [
+        "search_path=pg_catalog, pg_temp",
+        "TimeZone=UTC",
+        "extra_float_digits=0"
+      ],
+      "grantees": [
+        "authenticated",
+        "postgres"
+      ]
+    },
+    "public.assign_task_to_route(uuid,uuid,integer)": {
+      "signature": "public.assign_task_to_route(uuid,uuid,integer)",
+      "md5": "047f2b5d6a4483b8cef8e3b91c9dc299",
+      "result": "void",
+      "security_definer": true,
+      "volatility": "v",
+      "config": [
+        "search_path=pg_catalog, pg_temp",
+        "TimeZone=UTC",
+        "extra_float_digits=0"
+      ],
+      "grantees": [
+        "postgres"
+      ]
+    }
+  },
+  "post003": {
+    "routing_private.lock_route(uuid,boolean)": {
+      "signature": "routing_private.lock_route(uuid,boolean)",
+      "md5": "ebc10b61666e492afd7bbbd23f0e7448",
+      "result": "routing_private.bindings",
+      "security_definer": true,
+      "volatility": "v",
+      "config": [
+        "search_path=pg_catalog, pg_temp",
+        "TimeZone=UTC",
+        "extra_float_digits=0"
+      ],
+      "grantees": [
+        "postgres"
+      ]
+    },
+    "routing_private.close_collected(uuid)": {
+      "signature": "routing_private.close_collected(uuid)",
+      "md5": "e06bac2a616cc49f91e32042e592a24a",
+      "result": "void",
+      "security_definer": true,
+      "volatility": "v",
+      "config": [
+        "search_path=pg_catalog, pg_temp",
+        "TimeZone=UTC",
+        "extra_float_digits=0"
+      ],
+      "grantees": [
+        "postgres"
+      ]
+    },
+    "public.close_my_collected_route(uuid,boolean)": {
+      "signature": "public.close_my_collected_route(uuid,boolean)",
+      "md5": "5f83aea95b8c8971ea3bfcbcb8b3c18a",
+      "result": "void",
+      "security_definer": true,
+      "volatility": "v",
+      "config": [
+        "search_path=pg_catalog, pg_temp",
+        "TimeZone=UTC",
+        "extra_float_digits=0"
+      ],
+      "grantees": [
+        "authenticated",
+        "postgres"
+      ]
+    },
+    "public.cancel_my_unstarted_route(uuid)": {
+      "signature": "public.cancel_my_unstarted_route(uuid)",
+      "md5": "25d5d50b727abd9cf94fd0b9c479e612",
+      "result": "void",
+      "security_definer": true,
+      "volatility": "v",
+      "config": [
+        "search_path=pg_catalog, pg_temp",
+        "TimeZone=UTC",
+        "extra_float_digits=0"
+      ],
+      "grantees": [
+        "authenticated",
+        "postgres"
+      ]
+    },
+    "routing_private.task_guard()": {
+      "signature": "routing_private.task_guard()",
+      "md5": "ab3101347fdbd148116c634e6c6132ad",
+      "result": "trigger",
+      "security_definer": true,
+      "volatility": "v",
+      "config": [
+        "search_path=pg_catalog, pg_temp",
+        "TimeZone=UTC",
+        "extra_float_digits=0"
+      ],
+      "grantees": [
+        "postgres"
+      ]
+    },
+    "routing_private.check_remaining(uuid,uuid,timestamptz)": {
+      "signature": "routing_private.check_remaining(uuid,uuid,timestamptz)",
+      "md5": "5dfaad95bb36f33dde8f0ce11c9af439",
+      "result": "void",
+      "security_definer": true,
+      "volatility": "v",
+      "config": [
+        "search_path=pg_catalog, pg_temp",
+        "TimeZone=UTC",
+        "extra_float_digits=0"
+      ],
+      "grantees": [
+        "postgres"
+      ]
+    },
+    "public.start_pickup(uuid)": {
+      "signature": "public.start_pickup(uuid)",
+      "md5": "cb306433867538804b67aa1a242867b4",
+      "result": "void",
+      "security_definer": true,
+      "volatility": "v",
+      "config": [
+        "search_path=pg_catalog, pg_temp",
+        "TimeZone=UTC",
+        "extra_float_digits=0"
+      ],
+      "grantees": [
+        "authenticated",
+        "postgres"
+      ]
+    },
+    "public.complete_pickup(uuid,boolean)": {
+      "signature": "public.complete_pickup(uuid,boolean)",
+      "md5": "26f0cd8cebe783c65b45e05649693860",
+      "result": "void",
+      "security_definer": true,
+      "volatility": "v",
+      "config": [
+        "search_path=pg_catalog, pg_temp",
+        "TimeZone=UTC",
+        "extra_float_digits=0"
+      ],
+      "grantees": [
+        "authenticated",
+        "postgres"
+      ]
+    },
+    "public.get_my_routing_overview()": {
+      "signature": "public.get_my_routing_overview()",
+      "md5": "aae6de57397515712518dcdc6c72b762",
+      "result": "jsonb",
+      "security_definer": true,
+      "volatility": "v",
+      "config": [
+        "search_path=pg_catalog, pg_temp",
+        "TimeZone=UTC",
+        "extra_float_digits=0"
+      ],
+      "grantees": [
+        "authenticated",
+        "postgres"
+      ]
+    },
+    "public.get_my_authorized_route(uuid)": {
+      "signature": "public.get_my_authorized_route(uuid)",
+      "md5": "5e6583e6092daf191eeca066f0b06ebe",
+      "result": "jsonb",
+      "security_definer": true,
+      "volatility": "v",
+      "config": [
+        "search_path=pg_catalog, pg_temp",
+        "TimeZone=UTC",
+        "extra_float_digits=0"
+      ],
+      "grantees": [
+        "authenticated",
+        "postgres"
+      ]
+    },
+    "routing_private.legacy_start_pickup(uuid)": {
+      "signature": "routing_private.legacy_start_pickup(uuid)",
+      "md5": "e89b650c83713b04e8310f4c372f10f4",
+      "result": "void",
+      "security_definer": true,
+      "volatility": "v",
+      "config": [
+        "search_path=pg_catalog, pg_temp",
+        "TimeZone=UTC",
+        "extra_float_digits=0"
+      ],
+      "grantees": [
+        "postgres"
+      ]
+    },
+    "routing_private.legacy_complete_pickup(uuid,boolean)": {
+      "signature": "routing_private.legacy_complete_pickup(uuid,boolean)",
+      "md5": "ae1b885377292281da17951cb18afd55",
+      "result": "void",
+      "security_definer": true,
+      "volatility": "v",
+      "config": [
+        "search_path=pg_catalog, pg_temp",
+        "TimeZone=UTC",
+        "extra_float_digits=0"
+      ],
+      "grantees": [
+        "postgres"
+      ]
+    },
+    "routing_private.reconciliation_participant(uuid)": {
+      "signature": "routing_private.reconciliation_participant(uuid)",
+      "md5": "12ccab6a7919008674e2ff340aab9100",
+      "result": "boolean",
+      "security_definer": true,
+      "volatility": "s",
+      "config": [
+        "search_path=pg_catalog, pg_temp"
+      ],
+      "grantees": [
+        "postgres"
+      ]
+    },
+    "routing_private.lock_reconciliation_scope(uuid)": {
+      "signature": "routing_private.lock_reconciliation_scope(uuid)",
+      "md5": "618ea50c0c300e98098cfa62333a8608",
+      "result": "void",
+      "security_definer": true,
+      "volatility": "v",
+      "config": [
+        "search_path=pg_catalog, pg_temp"
+      ],
+      "grantees": [
+        "postgres"
+      ]
+    },
+    "routing_private.permit_reconciled_collection(uuid)": {
+      "signature": "routing_private.permit_reconciled_collection(uuid)",
+      "md5": "c5bbed4368a64f83ed837d6195b02050",
+      "result": "void",
+      "security_definer": true,
+      "volatility": "v",
+      "config": [
+        "search_path=pg_catalog, pg_temp"
+      ],
+      "grantees": [
+        "postgres"
+      ]
+    },
+    "routing_private.finish_reconciled_collection(uuid)": {
+      "signature": "routing_private.finish_reconciled_collection(uuid)",
+      "md5": "088e94184198f3e680c6fc5d779dba8e",
+      "result": "void",
+      "security_definer": true,
+      "volatility": "v",
+      "config": [
+        "search_path=pg_catalog, pg_temp"
+      ],
+      "grantees": [
+        "postgres"
+      ]
+    },
+    "public.submit_claim_reconciliation(uuid,boolean,uuid)": {
+      "signature": "public.submit_claim_reconciliation(uuid,boolean,uuid)",
+      "md5": "8cd1c3c183bb1af41bebc9094556a905",
+      "result": "jsonb",
+      "security_definer": true,
+      "volatility": "v",
+      "config": [
+        "search_path=pg_catalog, public, pg_temp"
+      ],
+      "grantees": [
+        "authenticated",
+        "postgres",
+        "service_role"
+      ]
+    }
+  }
+}

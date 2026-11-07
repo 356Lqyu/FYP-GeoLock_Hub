@@ -1,0 +1,705 @@
+{
+  "phase": "Stage 3I Phase 1 COMPLETE",
+  "project": "rcgyuwiidqvrgbxswhqj",
+  "authorization": "User-created Flutter fixture only. Phase 2/recovery/cron/cleanup NOT authorized.",
+  "baseline": {
+    "observed_at": "2026-10-22 20:33:50.214027+00",
+    "donation": {
+      "title": "STAGE3I-E2E-30bc928b-2843-4b9c-a5d4-298b76a8c514",
+      "latitude": 3.22284613426561,
+      "longitude": 101.620313487947,
+      "created_at": "2026-10-22T20:31:37.833764+00:00",
+      "updated_at": "2026-10-22T20:33:13.458167+00:00",
+      "description": "Disposable DEV fixture for supervised automatic claim recovery testing.",
+      "donation_id": "3a012ba4-25cc-4054-897e-008e11da3e9e",
+      "donor_user_id": "21d373a7-6551-4469-81d1-280198d4317e",
+      "pickup_address": "1294, 1294, Jalan E 4/9, Taman Ehsan, 52100 Kuala Lumpur, Selangor, Malaysia, Taman Ehsan, Kuala Lumpur, Selangor, 52100, Malaysia",
+      "collection_path": "DIRECT_PICKUP",
+      "donation_status": "CLAIMED",
+      "total_weight_kg": 20,
+      "availability_end": null,
+      "availability_start": null,
+      "pickup_road_node_id": "2308277456"
+    },
+    "listing": {
+      "batch_id": null,
+      "created_at": "2026-10-22T20:31:37.833764+00:00",
+      "listing_id": "95d6cd51-866b-4eec-8a36-36dc24296aec",
+      "donation_id": "3a012ba4-25cc-4054-897e-008e11da3e9e",
+      "source_type": "DIRECT_DONATION",
+      "listing_status": "CLAIMED",
+      "listing_version": 2,
+      "pickup_latitude": 3.22284613426561,
+      "pickup_longitude": 101.620313487947,
+      "listing_weight_kg": 20,
+      "listing_expires_at": null,
+      "pickup_road_node_id": "2308277456",
+      "eligibility_generation": 1
+    },
+    "claim": {
+      "claim_id": "8161392c-e1e1-4723-a954-c80b6b61a8c7",
+      "closed_at": null,
+      "claimed_at": "2026-10-22T20:33:13.265845+00:00",
+      "listing_id": "95d6cd51-866b-4eec-8a36-36dc24296aec",
+      "request_id": "38aba660-edee-4cab-b1eb-ee75692607c4",
+      "ngo_user_id": "743cf8c1-12db-4c7d-8768-e584bae29c0e",
+      "claim_status": "ACTIVE",
+      "close_reason": null
+    },
+    "lease": {
+      "claim_id": "8161392c-e1e1-4723-a954-c80b6b61a8c7",
+      "lease_id": "11b7d48e-a459-4b47-b1db-b43f98d0d474",
+      "closed_at": null,
+      "issued_at": "2026-10-22T20:33:13.441725+00:00",
+      "expires_at": "2026-10-23T02:33:13.441725+00:00",
+      "lease_status": "ACTIVE",
+      "release_reason": null
+    },
+    "task": {
+      "load_kg": 20,
+      "task_id": "270caa8b-5a6d-481c-b199-c9a47156dda2",
+      "claim_id": "8161392c-e1e1-4723-a954-c80b6b61a8c7",
+      "created_at": "2026-10-22T20:33:13.265845+00:00",
+      "listing_id": "95d6cd51-866b-4eec-8a36-36dc24296aec",
+      "ngo_user_id": "743cf8c1-12db-4c7d-8768-e584bae29c0e",
+      "task_status": "CONFIRMED",
+      "pickup_road_node_id": "2308277456"
+    },
+    "items": [
+      {
+        "item_id": "d61171ba-998f-4805-863a-f091f5505647",
+        "quantity": 1,
+        "item_name": "Rice",
+        "created_at": "2026-10-22T20:31:37.833764+00:00",
+        "unit_label": "piece",
+        "category_id": "977fbf03-c3ae-4864-8307-ef2c98f7e7be",
+        "description": null,
+        "donation_id": "3a012ba4-25cc-4054-897e-008e11da3e9e",
+        "item_condition": "GOOD",
+        "unit_weight_kg": 20
+      }
+    ],
+    "photos": [
+      {
+        "image_id": "802e898f-65e2-4a95-ae80-2b73cd5794f0",
+        "created_at": "2026-10-22T20:31:37.972953+00:00",
+        "is_primary": true,
+        "size_bytes": 122987,
+        "content_type": "image/webp",
+        "display_order": 1,
+        "owner_user_id": "21d373a7-6551-4469-81d1-280198d4317e"
+      }
+    ],
+    "refresh": [
+      {
+        "job_id": 10,
+        "job_status": "COMPLETED",
+        "listing_id": "95d6cd51-866b-4eec-8a36-36dc24296aec",
+        "started_at": "2026-10-22T20:32:00.322821+00:00",
+        "completed_at": "2026-10-22T20:32:13.416868+00:00",
+        "requested_at": "2026-10-22T20:31:37.964845+00:00",
+        "attempt_count": 1,
+        "last_error_code": null,
+        "expected_snapshot_id": "OSM-OPS-20261018",
+        "expected_road_node_id": "2308277456",
+        "eligibility_generation": 1
+      }
+    ],
+    "audits": [
+      {
+        "details": {
+          "weight_kg": 20,
+          "threshold_kg": 10,
+          "collection_path": "DIRECT_PICKUP",
+          "validation_passed": true
+        },
+        "outcome": "SUCCESS",
+        "claim_id": null,
+        "event_id": "721f6d06-1250-455c-b873-91f79078316e",
+        "lease_id": null,
+        "entity_id": "3a012ba4-25cc-4054-897e-008e11da3e9e",
+        "actor_role": "DONOR",
+        "event_type": "CREATE_DONATION",
+        "request_id": null,
+        "entity_type": "DONATION",
+        "occurred_at": "2026-10-22T20:31:37.967097+00:00",
+        "reason_code": null,
+        "actor_user_id": "21d373a7-6551-4469-81d1-280198d4317e",
+        "correlation_id": null,
+        "previous_state": null,
+        "requested_state": "AVAILABLE",
+        "resulting_state": "AVAILABLE",
+        "software_version": null,
+        "configuration_version": "v2.0"
+      },
+      {
+        "details": {
+          "request_id": "83c7a7ff-eb24-48a1-803e-94e1cd0c706f",
+          "photo_count": 1
+        },
+        "outcome": "SUCCESS",
+        "claim_id": null,
+        "event_id": "089ccb7f-2fce-4921-b7e8-9380a13f7d9a",
+        "lease_id": null,
+        "entity_id": "3a012ba4-25cc-4054-897e-008e11da3e9e",
+        "actor_role": "DONOR",
+        "event_type": "DONATION_PHOTOS_ATTACHED",
+        "request_id": null,
+        "entity_type": "DONATION",
+        "occurred_at": "2026-10-22T20:31:37.976882+00:00",
+        "reason_code": null,
+        "actor_user_id": "21d373a7-6551-4469-81d1-280198d4317e",
+        "correlation_id": null,
+        "previous_state": null,
+        "requested_state": "ONE_TO_THREE_PHOTOS",
+        "resulting_state": "ONE_TO_THREE_PHOTOS",
+        "software_version": null,
+        "configuration_version": "v2.0"
+      },
+      {
+        "details": {
+          "listing_id": "95d6cd51-866b-4eec-8a36-36dc24296aec"
+        },
+        "outcome": "SUCCESS",
+        "claim_id": "8161392c-e1e1-4723-a954-c80b6b61a8c7",
+        "event_id": "10e73c1c-9d88-4247-a4a0-049499038380",
+        "lease_id": "11b7d48e-a459-4b47-b1db-b43f98d0d474",
+        "entity_id": "3a012ba4-25cc-4054-897e-008e11da3e9e",
+        "actor_role": "NGO",
+        "event_type": "DONATION_STATUS_CHANGED",
+        "request_id": null,
+        "entity_type": "DONATION",
+        "occurred_at": "2026-10-22T20:33:13.458984+00:00",
+        "reason_code": null,
+        "actor_user_id": "743cf8c1-12db-4c7d-8768-e584bae29c0e",
+        "correlation_id": null,
+        "previous_state": "AVAILABLE",
+        "requested_state": "CLAIMED",
+        "resulting_state": "CLAIMED",
+        "software_version": null,
+        "configuration_version": null
+      },
+      {
+        "details": {
+          "ngo_id": "743cf8c1-12db-4c7d-8768-e584bae29c0e"
+        },
+        "outcome": "SUCCESS",
+        "claim_id": "8161392c-e1e1-4723-a954-c80b6b61a8c7",
+        "event_id": "11f33058-1753-4879-af19-6696831e9a7a",
+        "lease_id": "11b7d48e-a459-4b47-b1db-b43f98d0d474",
+        "entity_id": "95d6cd51-866b-4eec-8a36-36dc24296aec",
+        "actor_role": "NGO",
+        "event_type": "CLAIM_ATTEMPT",
+        "request_id": "38aba660-edee-4cab-b1eb-ee75692607c4",
+        "entity_type": "LISTING",
+        "occurred_at": "2026-10-22T20:33:13.464518+00:00",
+        "reason_code": null,
+        "actor_user_id": "743cf8c1-12db-4c7d-8768-e584bae29c0e",
+        "correlation_id": null,
+        "previous_state": "AVAILABLE",
+        "requested_state": "CLAIMED",
+        "resulting_state": "CLAIMED",
+        "software_version": null,
+        "configuration_version": "v2.0"
+      }
+    ],
+    "cases": [],
+    "assignments": [],
+    "stops": [],
+    "inventory": [],
+    "batch_members": [],
+    "cron": [
+      {
+        "jobid": 1,
+        "active": true,
+        "command": "set statement_timeout = '10min'; select public.process_ngo_eligibility_refresh_jobs();",
+        "jobname": "geolock-ngo-eligibility-refresh",
+        "database": "postgres",
+        "nodename": "localhost",
+        "nodeport": 5432,
+        "schedule": "* * * * *",
+        "username": "postgres"
+      },
+      {
+        "jobid": 2,
+        "active": true,
+        "command": "set statement_timeout = '10min'; select public.process_listing_eligibility_refresh_jobs();",
+        "jobname": "geolock-listing-eligibility-refresh",
+        "database": "postgres",
+        "nodename": "localhost",
+        "nodeport": 5432,
+        "schedule": "* * * * *",
+        "username": "postgres"
+      },
+      {
+        "jobid": 3,
+        "active": false,
+        "command": "set lock_timeout = '5s'; set statement_timeout = '50s'; select public.recover_expired_claims(1);",
+        "jobname": "geolock-expired-claim-recovery",
+        "database": "postgres",
+        "nodename": "localhost",
+        "nodeport": 5432,
+        "schedule": "* * * * *",
+        "username": "postgres"
+      }
+    ],
+    "job3_runs": 12,
+    "lease_duration_seconds": "21600.000000",
+    "lease_not_expired": true
+  },
+  "postclaim_preflight": {
+    "observed_at": "2026-10-22 20:34:24.670408+00",
+    "current_database": "postgres",
+    "current_user": "supabase_read_only_user",
+    "read_only": "on",
+    "timezone": "UTC",
+    "claim": {
+      "claim_id": "8161392c-e1e1-4723-a954-c80b6b61a8c7",
+      "closed_at": null,
+      "claimed_at": "2026-10-22T20:33:13.265845+00:00",
+      "listing_id": "95d6cd51-866b-4eec-8a36-36dc24296aec",
+      "request_id": "38aba660-edee-4cab-b1eb-ee75692607c4",
+      "ngo_user_id": "743cf8c1-12db-4c7d-8768-e584bae29c0e",
+      "claim_status": "ACTIVE",
+      "close_reason": null
+    },
+    "lease": {
+      "claim_id": "8161392c-e1e1-4723-a954-c80b6b61a8c7",
+      "lease_id": "11b7d48e-a459-4b47-b1db-b43f98d0d474",
+      "closed_at": null,
+      "issued_at": "2026-10-22T20:33:13.441725+00:00",
+      "expires_at": "2026-10-23T02:33:13.441725+00:00",
+      "lease_status": "ACTIVE",
+      "release_reason": null
+    },
+    "task": {
+      "load_kg": 20,
+      "task_id": "270caa8b-5a6d-481c-b199-c9a47156dda2",
+      "claim_id": "8161392c-e1e1-4723-a954-c80b6b61a8c7",
+      "created_at": "2026-10-22T20:33:13.265845+00:00",
+      "listing_id": "95d6cd51-866b-4eec-8a36-36dc24296aec",
+      "ngo_user_id": "743cf8c1-12db-4c7d-8768-e584bae29c0e",
+      "task_status": "CONFIRMED",
+      "pickup_road_node_id": "2308277456"
+    },
+    "listing": {
+      "batch_id": null,
+      "created_at": "2026-10-22T20:31:37.833764+00:00",
+      "listing_id": "95d6cd51-866b-4eec-8a36-36dc24296aec",
+      "donation_id": "3a012ba4-25cc-4054-897e-008e11da3e9e",
+      "source_type": "DIRECT_DONATION",
+      "listing_status": "CLAIMED",
+      "listing_version": 2,
+      "pickup_latitude": 3.22284613426561,
+      "pickup_longitude": 101.620313487947,
+      "listing_weight_kg": 20,
+      "listing_expires_at": null,
+      "pickup_road_node_id": "2308277456",
+      "eligibility_generation": 1
+    },
+    "donation": {
+      "title": "STAGE3I-E2E-30bc928b-2843-4b9c-a5d4-298b76a8c514",
+      "latitude": 3.22284613426561,
+      "longitude": 101.620313487947,
+      "created_at": "2026-10-22T20:31:37.833764+00:00",
+      "updated_at": "2026-10-22T20:33:13.458167+00:00",
+      "description": "Disposable DEV fixture for supervised automatic claim recovery testing.",
+      "donation_id": "3a012ba4-25cc-4054-897e-008e11da3e9e",
+      "donor_user_id": "21d373a7-6551-4469-81d1-280198d4317e",
+      "pickup_address": "1294, 1294, Jalan E 4/9, Taman Ehsan, 52100 Kuala Lumpur, Selangor, Malaysia, Taman Ehsan, Kuala Lumpur, Selangor, 52100, Malaysia",
+      "collection_path": "DIRECT_PICKUP",
+      "donation_status": "CLAIMED",
+      "total_weight_kg": 20,
+      "availability_end": null,
+      "availability_start": null,
+      "pickup_road_node_id": "2308277456"
+    },
+    "audits": [
+      {
+        "details": {
+          "weight_kg": 20,
+          "threshold_kg": 10,
+          "collection_path": "DIRECT_PICKUP",
+          "validation_passed": true
+        },
+        "outcome": "SUCCESS",
+        "claim_id": null,
+        "event_id": "721f6d06-1250-455c-b873-91f79078316e",
+        "lease_id": null,
+        "entity_id": "3a012ba4-25cc-4054-897e-008e11da3e9e",
+        "actor_role": "DONOR",
+        "event_type": "CREATE_DONATION",
+        "request_id": null,
+        "entity_type": "DONATION",
+        "occurred_at": "2026-10-22T20:31:37.967097+00:00",
+        "reason_code": null,
+        "actor_user_id": "21d373a7-6551-4469-81d1-280198d4317e",
+        "correlation_id": null,
+        "previous_state": null,
+        "requested_state": "AVAILABLE",
+        "resulting_state": "AVAILABLE",
+        "software_version": null,
+        "configuration_version": "v2.0"
+      },
+      {
+        "details": {
+          "request_id": "83c7a7ff-eb24-48a1-803e-94e1cd0c706f",
+          "photo_count": 1
+        },
+        "outcome": "SUCCESS",
+        "claim_id": null,
+        "event_id": "089ccb7f-2fce-4921-b7e8-9380a13f7d9a",
+        "lease_id": null,
+        "entity_id": "3a012ba4-25cc-4054-897e-008e11da3e9e",
+        "actor_role": "DONOR",
+        "event_type": "DONATION_PHOTOS_ATTACHED",
+        "request_id": null,
+        "entity_type": "DONATION",
+        "occurred_at": "2026-10-22T20:31:37.976882+00:00",
+        "reason_code": null,
+        "actor_user_id": "21d373a7-6551-4469-81d1-280198d4317e",
+        "correlation_id": null,
+        "previous_state": null,
+        "requested_state": "ONE_TO_THREE_PHOTOS",
+        "resulting_state": "ONE_TO_THREE_PHOTOS",
+        "software_version": null,
+        "configuration_version": "v2.0"
+      },
+      {
+        "details": {
+          "listing_id": "95d6cd51-866b-4eec-8a36-36dc24296aec"
+        },
+        "outcome": "SUCCESS",
+        "claim_id": "8161392c-e1e1-4723-a954-c80b6b61a8c7",
+        "event_id": "10e73c1c-9d88-4247-a4a0-049499038380",
+        "lease_id": "11b7d48e-a459-4b47-b1db-b43f98d0d474",
+        "entity_id": "3a012ba4-25cc-4054-897e-008e11da3e9e",
+        "actor_role": "NGO",
+        "event_type": "DONATION_STATUS_CHANGED",
+        "request_id": null,
+        "entity_type": "DONATION",
+        "occurred_at": "2026-10-22T20:33:13.458984+00:00",
+        "reason_code": null,
+        "actor_user_id": "743cf8c1-12db-4c7d-8768-e584bae29c0e",
+        "correlation_id": null,
+        "previous_state": "AVAILABLE",
+        "requested_state": "CLAIMED",
+        "resulting_state": "CLAIMED",
+        "software_version": null,
+        "configuration_version": null
+      },
+      {
+        "details": {
+          "ngo_id": "743cf8c1-12db-4c7d-8768-e584bae29c0e"
+        },
+        "outcome": "SUCCESS",
+        "claim_id": "8161392c-e1e1-4723-a954-c80b6b61a8c7",
+        "event_id": "11f33058-1753-4879-af19-6696831e9a7a",
+        "lease_id": "11b7d48e-a459-4b47-b1db-b43f98d0d474",
+        "entity_id": "95d6cd51-866b-4eec-8a36-36dc24296aec",
+        "actor_role": "NGO",
+        "event_type": "CLAIM_ATTEMPT",
+        "request_id": "38aba660-edee-4cab-b1eb-ee75692607c4",
+        "entity_type": "LISTING",
+        "occurred_at": "2026-10-22T20:33:13.464518+00:00",
+        "reason_code": null,
+        "actor_user_id": "743cf8c1-12db-4c7d-8768-e584bae29c0e",
+        "correlation_id": null,
+        "previous_state": "AVAILABLE",
+        "requested_state": "CLAIMED",
+        "resulting_state": "CLAIMED",
+        "software_version": null,
+        "configuration_version": "v2.0"
+      }
+    ],
+    "refresh": [
+      {
+        "job_id": 10,
+        "job_status": "COMPLETED",
+        "listing_id": "95d6cd51-866b-4eec-8a36-36dc24296aec",
+        "started_at": "2026-10-22T20:32:00.322821+00:00",
+        "completed_at": "2026-10-22T20:32:13.416868+00:00",
+        "requested_at": "2026-10-22T20:31:37.964845+00:00",
+        "attempt_count": 1,
+        "last_error_code": null,
+        "expected_snapshot_id": "OSM-OPS-20261018",
+        "expected_road_node_id": "2308277456",
+        "eligibility_generation": 1
+      }
+    ],
+    "other_business_md5": "070bb28ff5737477d6d91ec9e36feb02",
+    "target_is_overdue": false,
+    "configured_lease_minutes": 360,
+    "nonterminal_claims": 1,
+    "all_overdue": null,
+    "unresolved_cases": null,
+    "assignments": null,
+    "stops": null,
+    "cron": [
+      {
+        "jobid": 1,
+        "active": true,
+        "command": "set statement_timeout = '10min'; select public.process_ngo_eligibility_refresh_jobs();",
+        "jobname": "geolock-ngo-eligibility-refresh",
+        "database": "postgres",
+        "nodename": "localhost",
+        "nodeport": 5432,
+        "schedule": "* * * * *",
+        "username": "postgres"
+      },
+      {
+        "jobid": 2,
+        "active": true,
+        "command": "set statement_timeout = '10min'; select public.process_listing_eligibility_refresh_jobs();",
+        "jobname": "geolock-listing-eligibility-refresh",
+        "database": "postgres",
+        "nodename": "localhost",
+        "nodeport": 5432,
+        "schedule": "* * * * *",
+        "username": "postgres"
+      },
+      {
+        "jobid": 3,
+        "active": false,
+        "command": "set lock_timeout = '5s'; set statement_timeout = '50s'; select public.recover_expired_claims(1);",
+        "jobname": "geolock-expired-claim-recovery",
+        "database": "postgres",
+        "nodename": "localhost",
+        "nodeport": 5432,
+        "schedule": "* * * * *",
+        "username": "postgres"
+      }
+    ],
+    "job3_history": [
+      {
+        "jobid": 3,
+        "runid": 3104,
+        "status": "succeeded",
+        "command": "set lock_timeout = '5s'; set statement_timeout = '50s'; select public.recover_expired_claims(1);",
+        "job_pid": 457169,
+        "database": "postgres",
+        "end_time": "2026-10-22T19:44:00.087517+00:00",
+        "username": "postgres",
+        "start_time": "2026-10-22T19:44:00.07456+00:00",
+        "return_message": "1 row"
+      },
+      {
+        "jobid": 3,
+        "runid": 3107,
+        "status": "succeeded",
+        "command": "set lock_timeout = '5s'; set statement_timeout = '50s'; select public.recover_expired_claims(1);",
+        "job_pid": 457185,
+        "database": "postgres",
+        "end_time": "2026-10-22T19:45:00.074819+00:00",
+        "username": "postgres",
+        "start_time": "2026-10-22T19:45:00.063527+00:00",
+        "return_message": "1 row"
+      },
+      {
+        "jobid": 3,
+        "runid": 3110,
+        "status": "succeeded",
+        "command": "set lock_timeout = '5s'; set statement_timeout = '50s'; select public.recover_expired_claims(1);",
+        "job_pid": 457232,
+        "database": "postgres",
+        "end_time": "2026-10-22T19:46:00.091835+00:00",
+        "username": "postgres",
+        "start_time": "2026-10-22T19:46:00.078907+00:00",
+        "return_message": "1 row"
+      },
+      {
+        "jobid": 3,
+        "runid": 3113,
+        "status": "succeeded",
+        "command": "set lock_timeout = '5s'; set statement_timeout = '50s'; select public.recover_expired_claims(1);",
+        "job_pid": 457242,
+        "database": "postgres",
+        "end_time": "2026-10-22T19:47:00.092409+00:00",
+        "username": "postgres",
+        "start_time": "2026-10-22T19:47:00.086522+00:00",
+        "return_message": "1 row"
+      },
+      {
+        "jobid": 3,
+        "runid": 3116,
+        "status": "succeeded",
+        "command": "set lock_timeout = '5s'; set statement_timeout = '50s'; select public.recover_expired_claims(1);",
+        "job_pid": 457274,
+        "database": "postgres",
+        "end_time": "2026-10-22T19:48:00.075359+00:00",
+        "username": "postgres",
+        "start_time": "2026-10-22T19:48:00.059926+00:00",
+        "return_message": "1 row"
+      },
+      {
+        "jobid": 3,
+        "runid": 3119,
+        "status": "succeeded",
+        "command": "set lock_timeout = '5s'; set statement_timeout = '50s'; select public.recover_expired_claims(1);",
+        "job_pid": 457284,
+        "database": "postgres",
+        "end_time": "2026-10-22T19:49:00.088459+00:00",
+        "username": "postgres",
+        "start_time": "2026-10-22T19:49:00.078538+00:00",
+        "return_message": "1 row"
+      },
+      {
+        "jobid": 3,
+        "runid": 3122,
+        "status": "succeeded",
+        "command": "set lock_timeout = '5s'; set statement_timeout = '50s'; select public.recover_expired_claims(1);",
+        "job_pid": 457309,
+        "database": "postgres",
+        "end_time": "2026-10-22T19:50:00.151424+00:00",
+        "username": "postgres",
+        "start_time": "2026-10-22T19:50:00.128997+00:00",
+        "return_message": "1 row"
+      },
+      {
+        "jobid": 3,
+        "runid": 3125,
+        "status": "succeeded",
+        "command": "set lock_timeout = '5s'; set statement_timeout = '50s'; select public.recover_expired_claims(1);",
+        "job_pid": 457325,
+        "database": "postgres",
+        "end_time": "2026-10-22T19:51:00.079626+00:00",
+        "username": "postgres",
+        "start_time": "2026-10-22T19:51:00.07163+00:00",
+        "return_message": "1 row"
+      },
+      {
+        "jobid": 3,
+        "runid": 3128,
+        "status": "succeeded",
+        "command": "set lock_timeout = '5s'; set statement_timeout = '50s'; select public.recover_expired_claims(1);",
+        "job_pid": 457351,
+        "database": "postgres",
+        "end_time": "2026-10-22T19:52:00.081998+00:00",
+        "username": "postgres",
+        "start_time": "2026-10-22T19:52:00.072158+00:00",
+        "return_message": "1 row"
+      },
+      {
+        "jobid": 3,
+        "runid": 3131,
+        "status": "succeeded",
+        "command": "set lock_timeout = '5s'; set statement_timeout = '50s'; select public.recover_expired_claims(1);",
+        "job_pid": 457367,
+        "database": "postgres",
+        "end_time": "2026-10-22T19:53:00.098045+00:00",
+        "username": "postgres",
+        "start_time": "2026-10-22T19:53:00.08442+00:00",
+        "return_message": "1 row"
+      },
+      {
+        "jobid": 3,
+        "runid": 3134,
+        "status": "succeeded",
+        "command": "set lock_timeout = '5s'; set statement_timeout = '50s'; select public.recover_expired_claims(1);",
+        "job_pid": 457394,
+        "database": "postgres",
+        "end_time": "2026-10-22T19:54:00.086286+00:00",
+        "username": "postgres",
+        "start_time": "2026-10-22T19:54:00.075632+00:00",
+        "return_message": "1 row"
+      },
+      {
+        "jobid": 3,
+        "runid": 3137,
+        "status": "succeeded",
+        "command": "set lock_timeout = '5s'; set statement_timeout = '50s'; select public.recover_expired_claims(1);",
+        "job_pid": 458010,
+        "database": "postgres",
+        "end_time": "2026-10-22T19:55:00.369905+00:00",
+        "username": "postgres",
+        "start_time": "2026-10-22T19:55:00.343714+00:00",
+        "return_message": "1 row"
+      }
+    ],
+    "unfinished": null,
+    "recovery_body_md5": "5ff6d8719db9681aae6f444b89dfbaee",
+    "proposed_manifest": {
+      "phase": "STAGE3I_PHASE1_ONLY",
+      "stop_at": null,
+      "task_id": "270caa8b-5a6d-481c-b199-c9a47156dda2",
+      "claim_id": "8161392c-e1e1-4723-a954-c80b6b61a8c7",
+      "lease_id": "11b7d48e-a459-4b47-b1db-b43f98d0d474",
+      "operator": null,
+      "timezone": "UTC",
+      "expires_at": "2026-10-23T02:33:13.441725+00:00",
+      "listing_id": "95d6cd51-866b-4eec-8a36-36dc24296aec",
+      "baseline_at": "2026-10-22T20:34:24.670408+00:00",
+      "donation_id": "3a012ba4-25cc-4054-897e-008e11da3e9e",
+      "ngo_user_id": "743cf8c1-12db-4c7d-8768-e584bae29c0e",
+      "approval_ref": "Phase 1 fixture creation only; Phase 2 NOT approved",
+      "donor_user_id": "21d373a7-6551-4469-81d1-280198d4317e",
+      "fixture_title": "STAGE3I-E2E-30bc928b-2843-4b9c-a5d4-298b76a8c514",
+      "expected_version": 2,
+      "other_business_md5": "070bb28ff5737477d6d91ec9e36feb02",
+      "expected_generation": 1,
+      "maintenance_confirmed": false
+    }
+  },
+  "eligibility_and_final": {
+    "cron3": {
+      "jobid": 3,
+      "active": false,
+      "command": "set lock_timeout = '5s'; set statement_timeout = '50s'; select public.recover_expired_claims(1);",
+      "jobname": "geolock-expired-claim-recovery",
+      "database": "postgres",
+      "nodename": "localhost",
+      "nodeport": 5432,
+      "schedule": "* * * * *",
+      "username": "postgres"
+    },
+    "eligibility": [
+      {
+        "outcome": "ELIGIBLE",
+        "listing_id": "95d6cd51-866b-4eec-8a36-36dc24296aec",
+        "computed_at": "2026-10-22T20:32:13.383745+00:00",
+        "ngo_user_id": "743cf8c1-12db-4c7d-8768-e584bae29c0e",
+        "ngo_road_node_id": "2308277451",
+        "road_distance_km": 0.154229998588562,
+        "geofence_radius_m": 20000,
+        "network_snapshot_id": "OSM-OPS-20261018",
+        "listing_road_node_id": "2308277456"
+      }
+    ],
+    "function_md5": "5ff6d8719db9681aae6f444b89dfbaee",
+    "other_claims": [
+      {
+        "claim_id": "e1e0d0f5-007f-4857-b232-06d9c861b102",
+        "task_status": "STALE",
+        "claim_status": "RELEASED",
+        "lease_status": "RELEASED"
+      },
+      {
+        "claim_id": "323ca3b3-7d7f-438e-8ed7-415f61b3a567",
+        "task_status": "STALE",
+        "claim_status": "RELEASED",
+        "lease_status": "RELEASED"
+      },
+      {
+        "claim_id": "aa3cd6d2-e5b3-4369-a41f-ec9a0eaae716",
+        "task_status": "STALE",
+        "claim_status": "RELEASED",
+        "lease_status": "RELEASED"
+      },
+      {
+        "claim_id": "9a2ab42b-52c6-4c3a-99fb-b5c95d41e63f",
+        "task_status": "STALE",
+        "claim_status": "RELEASED",
+        "lease_status": "RELEASED"
+      }
+    ],
+    "pickup_or_handover_audits": 0
+  },
+  "snapshot_scope_comparison": {
+    "precreation_empty_manifest_hash": "1a635cad67b4c3f1f1790599b475796e",
+    "postclaim_populated_manifest_hash": "070bb28ff5737477d6d91ec9e36feb02",
+    "aligned_empty_manifest_audit_scope_hash": "1a635cad67b4c3f1f1790599b475796e",
+    "aligned_scope_matches": true,
+    "explanation": "Empty-manifest null claim/entity exclusions select a narrower audit set than the populated manifest. Comparing the same scope restores the original hash; use the populated-manifest hash only for future comparisons with identical target IDs."
+  },
+  "claim_generation": "No separate claim_generation column exists in donation_claims or claim_leases; listing_version and eligibility_generation recorded separately."
+}
