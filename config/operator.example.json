@@ -6,7 +6,7 @@
   "approvedDatabasePort": "<administrator-approved port>",
   "tlsMode": "verify-full",
   "caCertificatePath": "<operator-local CA file>",
-  "approvedCaSha256": "<administrator-provided certificate SHA256>",
+  "approvedCaSha256": "<administrator-verified full CA file SHA256, pinned through source review; no local override>",
   "approvedFrozenGraphId": "<administrator-approved graph UUID>",
   "roles": [
     "graph",

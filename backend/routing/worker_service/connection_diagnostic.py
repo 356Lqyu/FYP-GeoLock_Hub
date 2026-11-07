@@ -11,7 +11,7 @@ from uuid import uuid4
 
 from .errors import check
 from .probe_diagnostics import safe_failure
-from .transport import RoleRpc
+from .native_service_connection import approved_dsn, connect_native
 
 GRAPH='eab1f7ee-a8e0-4bed-a0e1-2c4bff024936'
 DIGEST='5e06dab0fb4d2b97ac53fd9a1178dc46aa6b98811aefbaef96528c604a04012a'
@@ -49,21 +49,18 @@ def diagnose(dsn, report, save=lambda:None, *, connect=None):
         report.update(status='FAILED / NO CONNECTION PASS',failure=safe_failure(error,operation))
     try:
         phase('connection_configuration')
-        RoleRpc.validate_dsn(dsn)
-        from psycopg.conninfo import conninfo_to_dict
         import psycopg
+        settings = approved_dsn(dsn, 'geolock_graph_worker')
         report['client']=dict(psycopg=psycopg.__version__,implementation=psycopg.pq.__impl__,libpq_version=psycopg.pq.version())
-        params=conninfo_to_dict(dsn)
-        check(params['host']=='aws-0-ap-northeast-2.pooler.supabase.com'
-              and params['user']=='geolock_graph_login.rcgyuwiidqvrgbxswhqj'
-              and params.get('port')=='5432' and params.get('dbname')=='postgres'
-              and params.get('sslrootcert')=='C:/Users/User/Downloads/prod-ca-2021.crt',
-              'APPROVED_GRAPH_CONNECTION_REQUIRED',503)
         report['tls_client_mode']='verify-full'
-        report['connection_settings']={k:params[k] for k in ('host','port','dbname','user','sslmode','sslrootcert')}
         phase('connect')
-        # Same connection implementation as the real worker; no automatic retry.
-        conn=connect() if connect else RoleRpc(dsn,'geolock_graph_worker')._connection()
+        if connect is not None:
+            conn = connect()
+        else:
+            from .password_transport_check import read_native_console_password
+            password = read_native_console_password(b'Graph worker password (native console; hidden): ')
+            conn = connect_native(password, role='geolock_graph_worker', read_only=True,
+                                  ca_path=settings['sslrootcert'])
         report['connection_established']=True
         phase('begin_read_only')
         conn.autocommit=True
@@ -170,4 +167,5 @@ def main(*, child_module=None, connection_factory=None, dsn_override=None, passw
 
 
 if __name__=='__main__':
-    raise SystemExit(main())
+    from .connection_diagnostic_native17 import main as native_main
+    raise SystemExit(native_main())

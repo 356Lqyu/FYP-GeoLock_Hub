@@ -34,6 +34,7 @@ backend/routing/worker_service/probe_diagnostics.py
 backend/routing/worker_service/requirements.txt
 backend/routing/worker_service/server.py
 backend/routing/worker_service/staged.py
+backend/routing/worker_service/tests/test_ca_portability.py
 backend/routing/worker_service/transport.py
 backend/routing/worker_service/validator.py
 backend/routing/worker_service/windows/Save-WorkerConfig.ps1

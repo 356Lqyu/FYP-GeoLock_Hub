@@ -21,20 +21,14 @@ class NativeRpcFactory:
 
     def __call__(self,dsn,role):
         from .transport import RoleRpc
-        from .native_service_connection import approved_profile
-        from psycopg.conninfo import conninfo_to_dict
-        settings=approved_profile();values=conninfo_to_dict(dsn)
-        logins={'geolock_graph_worker':'geolock_graph_login','geolock_planner':'geolock_planner_login','geolock_validator':'geolock_validator_login'}
-        if role not in logins or self.closed:raise ValueError('NATIVE_RUNTIME_ROLE_REJECTED')
-        expected={k:settings[k] for k in ('host','port','dbname','sslmode')}
-        expected['user']=logins[role]+'.rcgyuwiidqvrgbxswhqj'
-        if set(values)!=set(expected)|{'sslrootcert'} or any(values.get(k)!=v for k,v in expected.items()) or Path(values['sslrootcert']).resolve()!=Path(settings['sslrootcert']).resolve():
-            raise ValueError('NATIVE_RUNTIME_CONFIG_MISMATCH')
-        RoleRpc.validate_dsn(dsn)
+        from .native_service_connection import ROLE_LOGINS, approved_dsn
+        if role not in ROLE_LOGINS or self.closed:
+            raise ValueError('NATIVE_RUNTIME_ROLE_REJECTED')
+        settings = approved_dsn(dsn, role)
         # Collect once BEFORE the HTTP server starts, never on an NGO request
         # thread. No database connection is made by constructing the factory.
         if role not in self.passwords:
-            password=self.reader((logins[role]+' password (native console; hidden): ').encode('ascii'))
+            password=self.reader((ROLE_LOGINS[role]+' password (native console; hidden): ').encode('ascii'))
             if not isinstance(password,bytearray) or not password or b'\0' in password:
                 if isinstance(password,bytearray):password[:]=b'\0'*len(password)
                 raise ValueError('NATIVE_PASSWORD_BYTES_REQUIRED')
@@ -43,7 +37,8 @@ class NativeRpcFactory:
             if self.closed:raise RuntimeError('NATIVE_RUNTIME_CLOSED')
             # Normal RoleRpc owns each connection's commit/rollback/close. Never
             # reuse the diagnostic Borrowed wrapper (which always rolls back).
-            return self.connector(bytearray(self.passwords[role]),role=role,read_only=self.read_only)
+            return self.connector(bytearray(self.passwords[role]),role=role,read_only=self.read_only,
+                                  ca_path=settings['sslrootcert'])
         return RoleRpc(dsn,role,connect=connect)
 
     def close(self):

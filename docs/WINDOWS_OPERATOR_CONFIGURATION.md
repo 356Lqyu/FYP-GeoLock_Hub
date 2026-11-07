@@ -1,13 +1,24 @@
 # Windows operator configuration
 
-Ask the DEV administrator for the approved host, project, frozen graph, scoped login access, pinned PostgreSQL service profile and public CA. Each operator obtains credentials through the authorized channel and enters them locally. Flutter users only need their own app accounts. Keep worker passwords, the private validator token, DPAPI profiles and journals local.
+The administrator supplies the exact approved PostgreSQL service profile bytes, the public CA file or bundle and an independently verified SHA-256 for that entire CA file. The digest must be reviewed and pinned in `APPROVED_CA_SHA256` in the team source before deployment. The approved DEV CA file digest is pinned in source. An unset pin fails closed. There is no operator checksum override.
 
-The current Windows native bootstrap requires libpq 17.11. The profile is read at `docs/stage8/stage-a/deployment-preparation/routing-initialization/pg_service.proposed.conf` and checked against a SHA256 pin. Install the administrator-provided bytes at that exact checkout-relative path. Preserve the original line endings. Place the administrator-verified CA at the absolute path contained in that profile. If the path cannot be provisioned under the operator laptop's policy, stop before live startup. Editing the profile, disabling TLS checks or swapping out the pinned client would break the reviewed setup.
+## Prepare and validate offline
 
-The administrator provisions the existing graph, planner and validator login scopes separately. They should confirm the current role grants, eligibility data, approved graph and session authorization before any live use. The current launcher expects fixed role-specific login names. Separately revocable per-operator LOGIN names need an approved provisioning and launcher change.
+1. Install Python 3.12 and the approved libpq 17.11 client as described in the README.
+2. Place the administrator's exact profile at `%LOCALAPPDATA%\GeoLockHubRoutingDev\pg_service.proposed.conf` in a directory protected from other users. Preserve its bytes and line endings. It establishes the approved endpoint and role policy. Its legacy CA path is replaced at runtime by the independently verified local CA path.
+3. Store the administrator-approved public CA file in a protected local folder of your choice. Use an absolute local path. Spaces are supported. Keep both files outside Git.
+4. From the checkout root, set `$ca` to the absolute CA path and `$dbHost` to the exact approved session-pooler hostname, then run:
 
-## Proposed portable follow-up
+```powershell
+.\backend\routing\worker_service\windows\Test-LocalRoutingSetup.ps1 -ValidateOnly -CaPath $ca -DbHost $dbHost
+```
 
-Move profile and CA selection to an operator-controlled configuration directory and keep a reviewed allowlist of approved project, host, port and role mapping. Verify the CA fingerprint supplied through an independent approved channel. Treat the operator-local CA path as a locator, with separate verification of the certificate contents. Retain libpq version pinning, TLS `verify-full`, separate roles, hidden native password prompts, private validator authentication and explicit activation. Validate mismatched hosts, roles and CA fingerprints offline before proposing a live check. This requires runtime review and approval before implementation.
+`Save-WorkerConfig.ps1 -ValidateOnly -CaPath $ca -DbHost $dbHost` runs the same offline check. Neither validation command connects, starts a worker, prompts for passwords or writes operator settings. The full disabled startup check can also take `-CaPath` and `-DbHost`. Local validation establishes byte identity and PEM parsing. Server certificate verification takes place during a separately approved connection with TLS `verify-full`.
 
-Use [the credential-free checklist](../config/operator.example.json) to gather the administrator's inputs. Keep any completed operator configuration outside this repository.
+## Save settings and obtain authorization
+
+After validation passes, run `Save-WorkerConfig.ps1 -CaPath $ca -DbHost $dbHost`. It saves local Windows settings and generates a private token for the paired planner and validator. Existing profiles are preserved. If migrating an existing operator, arrange an approved local backup and reconfiguration before replacing profiles. The wizard leaves database password entry to the native hidden prompts at worker startup.
+
+The administrator must provision separate graph, planner and validator scopes, the approved graph UUID and live session approval. The current login names are fixed. If separately revocable operator credentials require different database LOGIN names, obtain a separate approved mapping and provisioning change. Do not share personal database passwords. Flutter users sign in with their own authorized accounts. Follow the README for separately approved activation.
+
+[Credential-free checklist](../config/operator.example.json)

@@ -15,7 +15,7 @@ py -3.12 -m venv .venv-stage8
 .\backend\routing\worker_service\windows\Test-LocalRoutingSetup.ps1
 ```
 
-The setup checker runs the planner and validator in DISABLED mode on temporary loopback ports and checks their health. Without the administrator's pinned profile and CA, the profile check fails and the overall exit code is nonzero. The individual DISABLED health results can still pass. Do not use `-CheckConnection` during offline setup, since it connects to DEV.
+The setup checker runs the planner and validator in DISABLED mode on temporary loopback ports and checks their health. Without the reviewed CA digest, exact administrator profile and local CA file, the profile check fails and the overall exit code is nonzero. The individual DISABLED health results can still pass. Do not use `-CheckConnection` during offline setup, since it connects to DEV.
 
 ## Android emulator, USB phone and APK
 
@@ -35,12 +35,12 @@ The debug APK is generated under `build/app/outputs/flutter-apk/`. Maps renderin
 
 The Flutter client uses the existing DEV project and its publishable client configuration. Each app user signs in with their own authorized account. A backend operator needs administrator-provisioned credentials for the separate graph, planner and validator logins, and an approved frozen graph and policy. A fresh Supabase project needs separately provisioned schema, RPCs, grants, graph and operational data.
 
-Follow [Windows operator configuration](docs/WINDOWS_OPERATOR_CONFIGURATION.md) before proceeding. The supplied configuration example is a checklist. The current launcher only accepts the administrator's exact byte-pinned profile and matching CA path. Obtain those separately through the approved channel.
+Follow [Windows operator configuration](docs/WINDOWS_OPERATOR_CONFIGURATION.md) before proceeding. The supplied configuration example is a checklist. The launcher checks the administrator's exact profile bytes and the approved CA file digest. The operator chooses the local CA path. The administrator-approved CA digest is pinned in source. Each operator still needs the exact profile, matching CA file and approved local credentials.
 
 Once the administrator has provisioned access and approved the session, run the wizard from the root:
 
 ```powershell
-.\backend\routing\worker_service\windows\Save-WorkerConfig.ps1
+.\backend\routing\worker_service\windows\Save-WorkerConfig.ps1 -CaPath $ca -DbHost $dbHost
 ```
 
 Start the validator in the first terminal:

@@ -1,8 +1,17 @@
 # Local configuration only. No database connections, SQL or worker activation.
 # Windows DPAPI encrypts SecureString fields for this Windows user on this PC.
 [CmdletBinding()]
-param()
+param(
+    [switch]$ValidateOnly,
+    [string]$CaPath,
+    [string]$DbHost
+)
 $ErrorActionPreference = 'Stop'
+$checker = Join-Path $PSScriptRoot 'Test-LocalRoutingSetup.ps1'
+if ($ValidateOnly) {
+    & $checker -ValidateOnly -CaPath $CaPath -DbHost $DbHost
+    return
+}
 $project = 'rcgyuwiidqvrgbxswhqj'
 $directory = Join-Path $env:LOCALAPPDATA 'GeoLockHubRoutingDev'
 $plannerFile = Join-Path $directory 'planner.clixml'
@@ -10,6 +19,12 @@ $validatorFile = Join-Path $directory 'validator.clixml'
 if ((Test-Path -LiteralPath $plannerFile) -or (Test-Path -LiteralPath $validatorFile)) {
     throw 'Encrypted profiles already exist. Keep them; this setup will not overwrite credentials.'
 }
+if (-not $CaPath) { $CaPath = (Read-Host 'Approved local public CA certificate full path').Trim() }
+if (-not $DbHost) { $DbHost = (Read-Host 'Exact administrator-approved DEV Session pooler host').Trim() }
+if (-not $CaPath -or -not $DbHost) { throw 'Approved CA path and database host are required.' }
+& $checker -ValidateOnly -CaPath $CaPath -DbHost $DbHost
+$ca = (Resolve-Path -LiteralPath $CaPath).Path
+
 [void](New-Item -ItemType Directory -Path $directory -Force)
 $sid = [System.Security.Principal.WindowsIdentity]::GetCurrent().User
 $acl = New-Object System.Security.AccessControl.DirectorySecurity
@@ -20,20 +35,6 @@ $rule = New-Object System.Security.AccessControl.FileSystemAccessRule(
 $acl.AddAccessRule($rule)
 Set-Acl -LiteralPath $directory -AclObject $acl
 
-$pooled = (Read-Host 'Use DEV Session pooler on port 5432? [Y/n]') -notmatch '^[Nn]$'
-$dbHost = 'db.' + $project + '.supabase.co'
-if ($pooled) {
-    $dbHost = (Read-Host 'Paste ONLY the host from DEV Connect > Session pooler').Trim()
-    if ([Uri]::CheckHostName($dbHost) -ne [UriHostNameType]::Dns -or
-        -not $dbHost.EndsWith('.pooler.supabase.com')) { throw 'Invalid Supabase session-pooler host.' }
-}
-$ca = (Read-Host 'DEV database CA certificate full path, or Enter for system trust').Trim()
-if (-not $ca) { $ca = 'system' }
-elseif (-not (Test-Path -LiteralPath $ca -PathType Leaf)) { throw 'CA certificate file not found.' }
-else { $ca = (Resolve-Path -LiteralPath $ca).Path }
-$graph = Read-Host -AsSecureString 'Password set with password geolock_graph_login'
-$planner = Read-Host -AsSecureString 'Password set with password geolock_planner_login'
-$validator = Read-Host -AsSecureString 'Password set with password geolock_validator_login'
 $publishable = Read-Host -AsSecureString 'DEV sb_publishable_ key (masked; NOT a service-role key)'
 $graphId = (Read-Host 'Existing approved frozen graph UUID, or Enter if not initialized').Trim()
 if ($graphId) {
@@ -51,12 +52,11 @@ $plainToken = $null
 [Array]::Clear($bytes, 0, $bytes.Length)
 
 [pscustomobject]@{
-    Project = $project; DbHost = $dbHost; Pooled = $pooled; Ca = $ca
-    GraphPassword = $graph; PlannerPassword = $planner
+    Project = $project; DbHost = $DbHost; Pooled = $true; Ca = $ca
     ValidatorToken = $token; PublishableKey = $publishable; GraphId = $graphId
 } | Export-Clixml -LiteralPath $plannerFile
 [pscustomobject]@{
-    Project = $project; DbHost = $dbHost; Pooled = $pooled; Ca = $ca
-    ValidatorPassword = $validator; ValidatorToken = $token
+    Project = $project; DbHost = $DbHost; Pooled = $true; Ca = $ca
+    ValidatorToken = $token
 } | Export-Clixml -LiteralPath $validatorFile
 Write-Host 'Saved encrypted planner/validator profiles outside Git. No database calls or activation occurred.'

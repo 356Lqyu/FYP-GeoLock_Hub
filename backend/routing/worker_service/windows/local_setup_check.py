@@ -2,6 +2,7 @@
 
 Production worker configuration and live ports/journals are never read or used.
 """
+import argparse
 import json
 import os
 from pathlib import Path
@@ -15,6 +16,11 @@ ROOT = Path(__file__).resolve().parents[4]
 
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--validate-only', action='store_true')
+    parser.add_argument('--ca-path')
+    parser.add_argument('--db-host')
+    args = parser.parse_args()
     # Child processes cannot inherit activation, credentials or libpq overrides.
     env = {k: v for k, v in os.environ.items()
            if not k.upper().startswith(('GEOLOCK_', 'PG', 'PSYCOPG_'))}
@@ -28,6 +34,14 @@ def main():
                             output=process.stdout.strip(), error=process.stderr.strip()))
         return process.returncode == 0
 
+    validation = ['-m', 'backend.routing.worker_service.native_service_connection']
+    if args.ca_path:
+        validation.extend(['--ca-path', args.ca_path])
+    if args.db_host:
+        validation.extend(['--db-host', args.db_host])
+    if args.validate_only:
+        return subprocess.run([sys.executable, '-B', *validation], cwd=ROOT, env=env).returncode
+
     ok = child('dependency_versions', ['-c',
         "import json,sys,sqlite3,ortools,psycopg; "
         "print(json.dumps(dict(python=sys.version.split()[0],sqlite=sqlite3.sqlite_version,"
@@ -36,9 +50,7 @@ def main():
         "assert psycopg.__version__=='3.3.6'"])
     ok = child('native_libpq_no_connection', ['-m',
         'backend.routing.worker_service.connection_diagnostic_native17', '--check-local']) and ok
-    ok = child('pinned_profile_and_ca_no_connection', ['-c',
-        "from backend.routing.worker_service.native_service_connection import approved_profile; "
-        "approved_profile(); print('PINNED_PROFILE_AND_CA_PRESENT / NOT CONNECTED')"]) and ok
+    ok = child('pinned_profile_and_ca_no_connection', validation) and ok
     for mode in ('validator', 'planner'):
         ok = child(mode+'_native_disabled_configuration', ['-m',
             'backend.routing.worker_service.native_worker', '--mode', mode, '--check-config']) and ok
