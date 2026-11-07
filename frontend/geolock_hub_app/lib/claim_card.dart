@@ -92,10 +92,7 @@ class ClaimCard {
     _ => ClaimTab.active,
   };
   bool get isValidActive => displayStatus == ClaimDisplayStatus.active;
-  bool get canStart =>
-      isValidActive && const {'CONFIRMED', 'PLANNED'}.contains(taskStatus);
   bool get canCancel => isValidActive && taskStatus == 'CONFIRMED';
-  bool get canComplete => isValidActive && taskStatus == 'DISPATCHED';
   String get badge => switch (displayStatus) {
     ClaimDisplayStatus.active => 'Active',
     ClaimDisplayStatus.expiredPending => 'Expired — Recovery Pending',

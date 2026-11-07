@@ -1,0 +1,10 @@
+# Render blueprint: New + > Blueprint > pick this repository.
+services:
+  - type: web
+    name: geolock-hub-ranking
+    runtime: docker
+    plan: free
+    region: singapore
+    dockerfilePath: ./ai hub ranking/api/Dockerfile
+    dockerContext: .
+    healthCheckPath: /health
