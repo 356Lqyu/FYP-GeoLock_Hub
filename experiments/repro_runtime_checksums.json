@@ -1,0 +1,8 @@
+{
+  ".tmp\\geolock-spatial-runtime-safe-cancel\\pgsql\\bin\\postgres.exe": "f5dbfd059f8088b9511a02fc014e659369996fc7d3e88e47658b1cfa2fbb02d2",
+  ".tmp\\geolock-spatial-runtime-safe-cancel\\pgsql\\bin\\pg_ctl.exe": "9885ac53af9d67c76c1ddde87c19e6b15539d7c482bca70cd5ead5dad0b7ce3c",
+  ".tmp\\geolock-spatial-runtime-safe-cancel\\pgsql\\bin\\initdb.exe": "d385519a50d2cd5e143e86c2c10acfe0d44d3039d714c8211b804011bca2409f",
+  ".tmp\\geolock-spatial-runtime-safe-cancel\\pgsql\\bin\\psql.exe": "c290c7f0a3335f290f8c18011a1e5afa03ee3cdd628697a5f3e767e5f1d3d10d",
+  ".tmp\\geolock-spatial-runtime-safe-cancel\\pgsql\\share\\extension\\postgis.control": "2802c2bb571cf648daafb834a452a7dc884ef359116a1b17ab4c4acd6155e699",
+  ".tmp\\geolock-spatial-runtime-safe-cancel\\pgsql\\lib\\postgis-3.dll": "d594e475ad094b0dd7e314e5188c87ff4ea9b5b01c9e130da42cdba29a8f23f1"
+}

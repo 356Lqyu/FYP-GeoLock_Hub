@@ -1,0 +1,92 @@
+{
+  "scope": "MODELED_OFFLINE_CAPACITY_ONLY_NO_DB_ENVELOPES_OR_RECEIPTS",
+  "cases": [
+    {
+      "name": "small",
+      "pickups": 3,
+      "vehicles": 2,
+      "required_nodes": 4,
+      "provisional": true,
+      "observed_real_world_demand": false,
+      "operational_approval": null,
+      "snapshot_sha256": "c04595789830de52f6c0a6fd3d179d59e27e273398fb3789b8688049a79bf5f9",
+      "matrix_sha256": "d3e1b8dd049e7f6fcc0aea6cfad9eeab776f6269e3e45cbea1c9afc4bf3dfb88",
+      "raw_graph_matrix_sha256": "ee50adfe52f7b8a2d23ae6ef1511661d6f9316394492e60bb09b4ce7e0bdb4bd"
+    },
+    {
+      "name": "typical-provisional",
+      "pickups": 10,
+      "vehicles": 2,
+      "required_nodes": 11,
+      "provisional": true,
+      "observed_real_world_demand": false,
+      "operational_approval": null,
+      "snapshot_sha256": "4eeb08827dcc5425b77b4816dd0f985542bb3266fc8cc94e51f4c70670f9021c",
+      "matrix_sha256": "9e153e77898e66ec0f3df212883f4f4d28437d703d195a4f4bd153264560841b",
+      "raw_graph_matrix_sha256": "846214085e23d470cf37fe889ff9ae067541fdbdde1336ff7245fd9b50de5b95"
+    },
+    {
+      "name": "large-provisional",
+      "pickups": 25,
+      "vehicles": 5,
+      "required_nodes": 26,
+      "provisional": true,
+      "observed_real_world_demand": false,
+      "operational_approval": null,
+      "snapshot_sha256": "fb16b81bcd2d6bf49711d30a56cff93c3abef77087106e106c4135d9c0da7eed",
+      "matrix_sha256": "63501a1845feb4bb296bca4a34a2ac78cfeb0bd63434b5308d2365f1438d8bb7",
+      "raw_graph_matrix_sha256": "992993cb64e22e37b8aad78b4a602fc16a47530d0203bc9b84fd35ba5c236c2f"
+    },
+    {
+      "name": "source-boundary-stress",
+      "pickups": 100,
+      "vehicles": 10,
+      "required_nodes": 100,
+      "provisional": true,
+      "observed_real_world_demand": false,
+      "operational_approval": null,
+      "snapshot_sha256": "041a4af98c6496a2ba52324f8aa1defe8685f532e8362c5c130b0901d0d03142",
+      "matrix_sha256": "45284d92038697a0606d3873583cedfadd01a127e725fc6b08ae1a53e0880db3",
+      "raw_graph_matrix_sha256": "955331c5a7b64401fcb8d38f40f5c3412da02c5ab45680ae65767c2f216dcfad"
+    }
+  ],
+  "source_frozen_fixture_sha256": "e9b8e722f15c3b72df33b11829d09f7515379ea05f5db791816d41105208d17f",
+  "source_road_nodes_sha256": "a8905fb29f95b6ba02c099fd60a188f98ae92f01c7586995295b096b673df6ea",
+  "graph_file_sha256": "a525f79eada8fc65ce0568fd0cdba66237f1e5e6e3009bb4fa0e7482fc70accb",
+  "artifact_sha256": "7958972d08ea412c7515a47521640588528daa206440a198db2ad47507b8bd01",
+  "graph_nodes": 926414,
+  "graph_edges": 2145828,
+  "mutually_reachable_candidates": 223,
+  "modeled_radius_km": 17,
+  "largest_selected_straight_line_km": 16.950248281495245,
+  "node_selection": "99 distance-quantile public benchmark nodes mutually reachable with selected benchmark depot; full graph retained for every shortest path",
+  "selected_base_scenario": "SCN-ROUTE_PLANNING-0045",
+  "depot_selection_evidence": [
+    {
+      "scenario": "SCN-ROUTE_PLANNING-0016",
+      "status": "DEPOT_NOT_IN_GRAPH"
+    },
+    {
+      "scenario": "SCN-ROUTE_PLANNING-0045",
+      "matching_nodes_in_radius": 223,
+      "mutually_reachable": 223
+    },
+    {
+      "scenario": "SCN-ROUTE_PLANNING-0100",
+      "matching_nodes_in_radius": 77,
+      "mutually_reachable": 77
+    }
+  ],
+  "largest_required_nodes": 100,
+  "legacy_csr_parity": true,
+  "csr_matrix_seconds": 64.82608520699978,
+  "legacy_matrix_seconds": 180.00286630499977,
+  "assumptions": [
+    "Provisional 3/10/25/100 pickups and 2/2/5/10 vehicles authorized by current user request, not empirical NGO distributions",
+    "Distinct pickup nodes use only known mutually reachable benchmark coordinates, capped at 99 plus depot; co-location is explicit",
+    "Direct-only modeled pickups; no new hub batch/inventory facts",
+    "Original synthetic E4 cutoff/windows/leases, 10min service, optional pickups, 240min horizon, 100kg/500kg fleet templates retained",
+    "Original 30s solver wall budget, one worker, seed42; ExecutionConfig deterministic 0.25s/pass unchanged",
+    "Local state tokens and canonical input hashes describe synthetic modeled facts; no DB digests, approvals or receipts minted"
+  ]
+}

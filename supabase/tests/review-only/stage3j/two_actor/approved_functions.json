@@ -1,0 +1,112 @@
+[
+  {
+    "identity": "cancel_claim(uuid,uuid)",
+    "owner": "postgres",
+    "security_definer": true,
+    "config": [
+      "search_path=pg_catalog, public, pg_temp"
+    ],
+    "body_md5": "f24c46b0c39e945df6d2e2bfb3862573",
+    "arguments": "p_claim uuid, p_request uuid",
+    "return": "jsonb"
+  },
+  {
+    "identity": "claim_listing(uuid,uuid)",
+    "owner": "postgres",
+    "security_definer": true,
+    "config": [
+      "search_path=pg_catalog, public, extensions, pg_temp"
+    ],
+    "body_md5": "2c1f60c876797c61b44b3cb43591bab8",
+    "arguments": "p_listing uuid, p_request uuid",
+    "return": "jsonb"
+  },
+  {
+    "identity": "complete_pickup(uuid,boolean)",
+    "owner": "postgres",
+    "security_definer": true,
+    "config": [
+      "search_path=public, extensions, pg_temp"
+    ],
+    "body_md5": "ae1b885377292281da17951cb18afd55",
+    "arguments": "p_claim uuid, p_handover_confirmed boolean",
+    "return": "void"
+  },
+  {
+    "identity": "geolock_transition_listing_donations(uuid,text,text)",
+    "owner": "postgres",
+    "security_definer": false,
+    "config": [
+      "search_path=pg_catalog, public, pg_temp"
+    ],
+    "body_md5": "8a050031901f6796ed74210e4d5cbfec",
+    "arguments": "p_listing uuid, p_from text, p_to text",
+    "return": "void"
+  },
+  {
+    "identity": "geolock_transition_listing_donations(uuid,text,text,uuid,uuid,text)",
+    "owner": "postgres",
+    "security_definer": false,
+    "config": [
+      "search_path=pg_catalog, public, pg_temp"
+    ],
+    "body_md5": "67f27a85fb9129c9017bb0e9178f8ba1",
+    "arguments": "p_listing uuid, p_from text, p_to text, p_claim uuid, p_request uuid, p_reason text",
+    "return": "void"
+  },
+  {
+    "identity": "get_authorized_audit_events(text,uuid)",
+    "owner": "postgres",
+    "security_definer": true,
+    "config": [
+      "search_path=pg_catalog, public, pg_temp"
+    ],
+    "body_md5": "3a32a7747d6a8c781bced44992e90741",
+    "arguments": "p_entity_type text, p_entity_id uuid",
+    "return": "SETOF public.audit_events"
+  },
+  {
+    "owner": "postgres",
+    "config": [
+      "search_path=pg_catalog, public, pg_temp"
+    ],
+    "return": "TABLE(claim_id uuid, listing_id uuid, claim_status text, claimed_at timestamp with time zone, lease_id uuid, lease_status text, lease_expires_at timestamp with time zone, task_status text, source_type text, listing_weight_kg numeric, title text, primary_image_path text, server_now timestamp with time zone, lease_is_expired boolean, lease_recovery_pending boolean)",
+    "body_md5": "44da3209586085a93e76204e37288f13",
+    "identity": "get_my_claim_cards_v2()",
+    "arguments": "",
+    "security_definer": true
+  },
+  {
+    "identity": "recover_expired_claims(integer)",
+    "owner": "postgres",
+    "security_definer": true,
+    "config": [
+      "search_path=pg_catalog, public, extensions, pg_temp"
+    ],
+    "body_md5": "89e01f42d5ec23bfcbcdc47c1f4fd4e5",
+    "arguments": "p_limit integer DEFAULT 100",
+    "return": "integer"
+  },
+  {
+    "identity": "start_pickup(uuid)",
+    "owner": "postgres",
+    "security_definer": true,
+    "config": [
+      "search_path=public, extensions, pg_temp"
+    ],
+    "body_md5": "e89b650c83713b04e8310f4c372f10f4",
+    "arguments": "p_claim uuid",
+    "return": "void"
+  },
+  {
+    "identity": "submit_claim_reconciliation(uuid,boolean,uuid)",
+    "owner": "postgres",
+    "security_definer": true,
+    "config": [
+      "search_path=pg_catalog, public, pg_temp"
+    ],
+    "body_md5": "246a33d552da2ac4e229fa79c357d194",
+    "arguments": "p_claim uuid, p_handover_confirmed boolean, p_request uuid",
+    "return": "jsonb"
+  }
+]

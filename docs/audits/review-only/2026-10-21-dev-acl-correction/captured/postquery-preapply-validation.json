@@ -1,0 +1,91 @@
+{
+  "note": "Read-only query syntax/behavior validation BEFORE applying any change. Expected relations/default ACL mismatches and current broad grants are NOT post-deployment results.",
+  "queries": [
+    {
+      "query_index": 0,
+      "syntax_and_read_execution": "success",
+      "summary": {
+        "sections": [
+          {
+            "section": "column_acls",
+            "matches_expected": true
+          },
+          {
+            "section": "default_acls",
+            "matches_expected": false
+          },
+          {
+            "section": "effective_role_paths",
+            "matches_expected": true
+          },
+          {
+            "section": "functions",
+            "matches_expected": true
+          },
+          {
+            "section": "policies",
+            "matches_expected": true
+          },
+          {
+            "section": "relations",
+            "matches_expected": false
+          },
+          {
+            "section": "role_memberships",
+            "matches_expected": true
+          },
+          {
+            "section": "roles",
+            "matches_expected": true
+          },
+          {
+            "section": "schemas",
+            "matches_expected": true
+          },
+          {
+            "section": "storage_relations",
+            "matches_expected": true
+          },
+          {
+            "section": "storage_trigger_functions",
+            "matches_expected": true
+          },
+          {
+            "section": "triggers",
+            "matches_expected": true
+          }
+        ]
+      }
+    },
+    {
+      "query_index": 1,
+      "syntax_and_read_execution": "success",
+      "summary": {
+        "row_count": 873,
+        "currently_allowed_client_privileges": 470,
+        "service_denials": 0
+      }
+    },
+    {
+      "query_index": 2,
+      "syntax_and_read_execution": "success",
+      "summary": {
+        "currently_excessive_default_grant_rows": 44
+      }
+    },
+    {
+      "query_index": 3,
+      "syntax_and_read_execution": "success",
+      "summary": {
+        "row_count": 0
+      }
+    },
+    {
+      "query_index": 4,
+      "syntax_and_read_execution": "success",
+      "summary": {
+        "row_count": 2
+      }
+    }
+  ]
+}

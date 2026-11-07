@@ -176,7 +176,53 @@ Map<String, dynamic> _testClaim() => {
 };
 
 void main() {
-  testWidgets('donor navigation has five donor-only destinations and selects', (
+  for (final ready in [true, false]) {
+    testWidgets(
+      'dashboard hides positive capability notice and retains unavailable warning: $ready',
+      (tester) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: NgoHomePage(
+                listingsLoader: () async => [],
+                claimsLoader: () async => [],
+                routingLoader: () async => ready,
+                ngoNameLoader: () async => 'NGO',
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+        expect(find.text('Trusted route validation configured'), findsNothing);
+        expect(
+          find.text('The server remains authoritative for every claim.'),
+          findsNothing,
+        );
+        expect(
+          find.text('Claiming is unavailable'),
+          ready ? findsNothing : findsOneWidget,
+        );
+        await tester.pumpWidget(const SizedBox());
+      },
+    );
+  }
+  testWidgets('My Claims removes only the redundant app bar route icon', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(home: MyClaimsPage(claimsLoader: () async => [])),
+    );
+    await tester.pumpAndSettle();
+    final bar = find.byType(AppBar);
+    expect(
+      find.descendant(of: bar, matching: find.byTooltip('Pickup routes')),
+      findsNothing,
+    );
+    expect(find.text('My Claims'), findsOneWidget);
+    await tester.pumpWidget(const SizedBox());
+  });
+
+  testWidgets('donor navigation has four donor-only destinations and selects', (
     tester,
   ) async {
     var selected = -1;
@@ -194,15 +240,22 @@ void main() {
 
     expect(RoleNavigationBar.labelsForRole('DONOR'), [
       'Home',
-      'Map',
       'Donations',
       'Impact',
       'Profile',
     ]);
+    expect(RoleNavigationBar.iconsForRole('DONOR'), [
+      Icons.home_outlined,
+      Icons.volunteer_activism_outlined,
+      Icons.insights_outlined,
+      Icons.person_outline,
+    ]);
+    expect(find.text('Map'), findsNothing);
+    expect(find.text('Donation Map'), findsNothing);
     expect(find.text('Discover'), findsNothing);
     expect(find.text('Inventory'), findsNothing);
     await tester.tap(find.text('Donations'));
-    expect(selected, 2);
+    expect(selected, 1);
   });
 
   test('each role receives its own five-tab labels', () {

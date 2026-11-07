@@ -1,0 +1,103 @@
+test_digest_tamper_fails (backend.routing.phase_c2.tests.test_local.MatrixTests.test_digest_tamper_fails) ... ok
+test_directed_no_reverse_invention (backend.routing.phase_c2.tests.test_local.MatrixTests.test_directed_no_reverse_invention) ... ok
+test_distance_and_time_same_path (backend.routing.phase_c2.tests.test_local.MatrixTests.test_distance_and_time_same_path) ... ok
+test_incomplete_search_is_missing (backend.routing.phase_c2.tests.test_local.MatrixTests.test_incomplete_search_is_missing) ... ok
+test_negative_nonfinite_and_precision_rejected (backend.routing.phase_c2.tests.test_local.MatrixTests.test_negative_nonfinite_and_precision_rejected) ... ok
+test_reproducible_hash_and_immutable_copy (backend.routing.phase_c2.tests.test_local.MatrixTests.test_reproducible_hash_and_immutable_copy) ... ok
+test_shared_project_rejected (backend.routing.phase_c2.tests.test_local.MatrixTests.test_shared_project_rejected) ... ok
+test_unknown_edge_endpoint (backend.routing.phase_c2.tests.test_local.MatrixTests.test_unknown_edge_endpoint) ... ok
+test_zero_cycles_terminate (backend.routing.phase_c2.tests.test_local.MatrixTests.test_zero_cycles_terminate) ... ok
+test_zero_diagonal_only_known_node (backend.routing.phase_c2.tests.test_local.MatrixTests.test_zero_diagonal_only_known_node) ... ok
+test_all_four_identical_frozen_inputs_and_independent_validity (backend.routing.phase_c2.tests.test_local.OrchestrationTests.test_all_four_identical_frozen_inputs_and_independent_validity) ... ok
+test_c1_projection_and_version_binding (backend.routing.phase_c2.tests.test_local.OrchestrationTests.test_c1_projection_and_version_binding) ... ok
+test_capacity_infeasible_no_candidate (backend.routing.phase_c2.tests.test_local.OrchestrationTests.test_capacity_infeasible_no_candidate) ... ok
+test_complete_synthetic_graph_projection_comparison_pipeline (backend.routing.phase_c2.tests.test_local.OrchestrationTests.test_complete_synthetic_graph_projection_comparison_pipeline) ... ok
+test_foreign_fleet_rejected (backend.routing.phase_c2.tests.test_local.OrchestrationTests.test_foreign_fleet_rejected) ... ok
+test_held_unavailable_deactivated_and_incomplete_excluded (backend.routing.phase_c2.tests.test_local.OrchestrationTests.test_held_unavailable_deactivated_and_incomplete_excluded) ... ok
+test_hub_location_not_replaceable (backend.routing.phase_c2.tests.test_local.OrchestrationTests.test_hub_location_not_replaceable) ... ok
+test_invalid_vehicle_fields (backend.routing.phase_c2.tests.test_local.OrchestrationTests.test_invalid_vehicle_fields) ... ok
+test_missing_hold_facts_fail_closed (backend.routing.phase_c2.tests.test_local.OrchestrationTests.test_missing_hold_facts_fail_closed) ... ok
+test_missing_roads_fail_closed (backend.routing.phase_c2.tests.test_local.OrchestrationTests.test_missing_roads_fail_closed) ... ok
+test_no_eligible_tasks (backend.routing.phase_c2.tests.test_local.OrchestrationTests.test_no_eligible_tasks) ... ok
+test_rpc_ineligible_flag_cannot_be_overridden (backend.routing.phase_c2.tests.test_local.OrchestrationTests.test_rpc_ineligible_flag_cannot_be_overridden) ... ok
+test_tampered_solver_output_rejected (backend.routing.phase_c2.tests.test_local.OrchestrationTests.test_tampered_solver_output_rejected) ... ok
+test_zero_fleet_no_defaults (backend.routing.phase_c2.tests.test_local.OrchestrationTests.test_zero_fleet_no_defaults) ... ok
+test_duplicate_rows_rejected (backend.routing.integration.tests.test_worker.GraphWorkerTests.test_duplicate_rows_rejected) ... ok
+test_inactive_pickup_not_invented (backend.routing.integration.tests.test_worker.GraphWorkerTests.test_inactive_pickup_not_invented) ... ok
+test_reuses_directed_same_path_matrix (backend.routing.integration.tests.test_worker.GraphWorkerTests.test_reuses_directed_same_path_matrix) ... ok
+test_truncated_export_rejected (backend.routing.integration.tests.test_worker.GraphWorkerTests.test_truncated_export_rejected) ... ok
+test_empty_fleet_no_default (backend.routing.integration.tests.test_worker.WorkerTests.test_empty_fleet_no_default) ... ok
+test_empty_tasks_no_dispatch_candidate (backend.routing.integration.tests.test_worker.WorkerTests.test_empty_tasks_no_dispatch_candidate) ... ok
+test_expired_lease_and_existing_assignment_excluded (backend.routing.integration.tests.test_worker.WorkerTests.test_expired_lease_and_existing_assignment_excluded) ... ok
+test_expired_service_window_explicitly_excluded_without_hiding_valid_task (backend.routing.integration.tests.test_worker.WorkerTests.test_expired_service_window_explicitly_excluded_without_hiding_valid_task) ... ok
+test_foreign_ownership_denied (backend.routing.integration.tests.test_worker.WorkerTests.test_foreign_ownership_denied) ... ok
+test_four_methods_and_no_authority (backend.routing.integration.tests.test_worker.WorkerTests.test_four_methods_and_no_authority) ... ok
+test_frozen_export_not_mutated (backend.routing.integration.tests.test_worker.WorkerTests.test_frozen_export_not_mutated) ... ok
+test_missing_arc_fails_closed (backend.routing.integration.tests.test_worker.WorkerTests.test_missing_arc_fails_closed) ... ok
+test_separate_validation_binds_both_hash_domains (backend.routing.integration.tests.test_worker.WorkerTests.test_separate_validation_binds_both_hash_domains) ... ok
+test_unsealed_and_wrong_matrix_denied (backend.routing.integration.tests.test_worker.WorkerTests.test_unsealed_and_wrong_matrix_denied) ... ok
+test_unverified_depot_denied (backend.routing.integration.tests.test_worker.WorkerTests.test_unverified_depot_denied) ... ok
+test_validator_rebuilds_source_and_rejects_changed_cost (backend.routing.integration.tests.test_worker.WorkerTests.test_validator_rebuilds_source_and_rejects_changed_cost) ... ok
+test_validator_rejects_authority_claim (backend.routing.integration.tests.test_worker.WorkerTests.test_validator_rejects_authority_claim) ... ok
+test_validator_rejects_duplicate_task (backend.routing.integration.tests.test_worker.WorkerTests.test_validator_rejects_duplicate_task) ... ok
+test_wrong_hub_node_denied (backend.routing.integration.tests.test_worker.WorkerTests.test_wrong_hub_node_denied) ... ok
+test_wrong_inventory_member_denied (backend.routing.integration.tests.test_worker.WorkerTests.test_wrong_inventory_member_denied) ... ok
+test_actual_four_methods_and_independent_attestation_never_reserve (backend.routing.worker_service.tests.test_worker_flow.FlowTests.test_actual_four_methods_and_independent_attestation_never_reserve) ... ok
+test_authorization_uses_caller_session_not_worker_role (backend.routing.worker_service.tests.test_worker_flow.FlowTests.test_authorization_uses_caller_session_not_worker_role) ... ok
+test_committed_attestation_lost_ack_can_be_retried (backend.routing.worker_service.tests.test_worker_flow.FlowTests.test_committed_attestation_lost_ack_can_be_retried) ... ok
+test_completed_retry_returns_same_advisory_result (backend.routing.worker_service.tests.test_worker_flow.FlowTests.test_completed_retry_returns_same_advisory_result) ... ok
+test_cross_ngo_is_rejected_before_any_mutating_rpc (backend.routing.worker_service.tests.test_worker_flow.FlowTests.test_cross_ngo_is_rejected_before_any_mutating_rpc) ... ok
+test_duplicate_local_job_is_busy_and_lock_is_released (backend.routing.worker_service.tests.test_worker_flow.FlowTests.test_duplicate_local_job_is_busy_and_lock_is_released) ... ok
+test_failed_reservation_is_not_repaired_or_converted_to_success (backend.routing.worker_service.tests.test_worker_flow.FlowTests.test_failed_reservation_is_not_repaired_or_converted_to_success) ... ok
+test_independent_validator_rebuilds_and_rejects_tamper (backend.routing.worker_service.tests.test_worker_flow.FlowTests.test_independent_validator_rebuilds_and_rejects_tamper) ... ok
+test_infeasible_vehicles_never_create_a_candidate (backend.routing.worker_service.tests.test_worker_flow.FlowTests.test_infeasible_vehicles_never_create_a_candidate) ... ok
+test_journal_is_restart_safe_and_never_overwrites_changed_payload (backend.routing.worker_service.tests.test_worker_flow.FlowTests.test_journal_is_restart_safe_and_never_overwrites_changed_payload) ... ok
+test_lost_submit_ack_resumes_exact_payload_without_resolving (backend.routing.worker_service.tests.test_worker_flow.FlowTests.test_lost_submit_ack_resumes_exact_payload_without_resolving) ... ok
+test_request_is_bound_to_snapshot_request_key (backend.routing.worker_service.tests.test_worker_flow.FlowTests.test_request_is_bound_to_snapshot_request_key) ... ok
+test_saved_result_denies_foreign_owner_and_wrong_request_before_database_read (backend.routing.worker_service.tests.test_worker_flow.FlowTests.test_saved_result_denies_foreign_owner_and_wrong_request_before_database_read) ... ok
+test_saved_result_read_preserves_historical_receipt_without_replanning (backend.routing.worker_service.tests.test_worker_flow.FlowTests.test_saved_result_read_preserves_historical_receipt_without_replanning) ... ok
+test_stale_snapshot_has_no_mutating_rpc (backend.routing.worker_service.tests.test_worker_flow.FlowTests.test_stale_snapshot_has_no_mutating_rpc) ... ok
+test_unreachable_roads_are_not_stored_or_published (backend.routing.worker_service.tests.test_worker_flow.FlowTests.test_unreachable_roads_are_not_stored_or_published) ... ok
+test_validation_failure_never_claims_attested_success (backend.routing.worker_service.tests.test_worker_flow.FlowTests.test_validation_failure_never_claims_attested_success) ... ok
+test_zero_vehicles_is_explicit_without_default (backend.routing.worker_service.tests.test_worker_flow.FlowTests.test_zero_vehicles_is_explicit_without_default) ... ok
+test_auth_rejection_never_invokes_worker (backend.routing.worker_service.tests.test_worker_flow.SecurityTests.test_auth_rejection_never_invokes_worker) ... {"at":"2026-11-06T16:59:30.578792+00:00","event":"routing_request","request_id":"00000000-0000-0000-0000-000000000003","snapshot_id":"00000000-0000-0000-0000-000000000001","stage":"verify_ngo_jwt"}
+ok
+test_auth_verification_is_server_side_and_ngo_rpc_uses_same_token (backend.routing.worker_service.tests.test_worker_flow.SecurityTests.test_auth_verification_is_server_side_and_ngo_rpc_uses_same_token) ... ok
+test_database_target_overrides_ambient_pg_connection_settings (backend.routing.worker_service.tests.test_worker_flow.SecurityTests.test_database_target_overrides_ambient_pg_connection_settings) ... ok
+test_default_startup_disabled_without_network (backend.routing.worker_service.tests.test_worker_flow.SecurityTests.test_default_startup_disabled_without_network) ... ok
+test_duplicate_json_fields_rejected (backend.routing.worker_service.tests.test_worker_flow.SecurityTests.test_duplicate_json_fields_rejected) ... ok
+test_raw_database_errors_are_not_exposed (backend.routing.worker_service.tests.test_worker_flow.SecurityTests.test_raw_database_errors_are_not_exposed) ... ok
+test_validator_does_not_accept_a_user_jwt_or_success_boolean (backend.routing.worker_service.tests.test_worker_flow.SecurityTests.test_validator_does_not_accept_a_user_jwt_or_success_boolean) ... ok
+test_validator_unknown_commit_outcome_preserves_retry_signal (backend.routing.worker_service.tests.test_worker_flow.SecurityTests.test_validator_unknown_commit_outcome_preserves_retry_signal) ... ok
+test_whitelist_rejects_lifecycle_or_validator_calls_before_connection (backend.routing.worker_service.tests.test_worker_flow.SecurityTests.test_whitelist_rejects_lifecycle_or_validator_calls_before_connection) ... ok
+test_wrong_project_dsn_and_superuser_login_rejected (backend.routing.worker_service.tests.test_worker_flow.SecurityTests.test_wrong_project_dsn_and_superuser_login_rejected) ... ok
+test_combined_attests_then_authorizes_once_with_null_departure (backend.routing.worker_service.tests.test_combined_workflow.CombinedTests.test_combined_attests_then_authorizes_once_with_null_departure) ... ok
+test_combined_endpoint_requires_explicit_intent_and_verified_session (backend.routing.worker_service.tests.test_combined_workflow.CombinedTests.test_combined_endpoint_requires_explicit_intent_and_verified_session) ... {"at":"2026-11-06T16:59:30.726833+00:00","event":"routing_request","request_id":"00000000-0000-0000-0000-000000000003","snapshot_id":"00000000-0000-0000-0000-000000000001","stage":"verify_ngo_jwt"}
+{"at":"2026-11-06T16:59:30.726996+00:00","event":"routing_request","request_id":"00000000-0000-0000-0000-000000000003","snapshot_id":"00000000-0000-0000-0000-000000000001","stage":"ngo_authenticated"}
+{"at":"2026-11-06T16:59:30.727120+00:00","event":"routing_request","request_id":"00000000-0000-0000-0000-000000000003","snapshot_id":"00000000-0000-0000-0000-000000000001","stage":"verify_ngo_jwt"}
+{"at":"2026-11-06T16:59:30.727325+00:00","event":"routing_request","request_id":"00000000-0000-0000-0000-000000000003","snapshot_id":"00000000-0000-0000-0000-000000000001","stage":"ngo_authenticated"}
+ok
+test_concurrent_duplicate_is_busy_then_replays_same_receipt (backend.routing.worker_service.tests.test_combined_workflow.CombinedTests.test_concurrent_duplicate_is_busy_then_replays_same_receipt) ... ok
+test_default_gate_and_rejected_jwt_never_call_planner (backend.routing.worker_service.tests.test_combined_workflow.CombinedTests.test_default_gate_and_rejected_jwt_never_call_planner) ... {"at":"2026-11-06T16:59:30.784214+00:00","event":"routing_request","request_id":"00000000-0000-0000-0000-000000000003","snapshot_id":"00000000-0000-0000-0000-000000000001","stage":"verify_ngo_jwt"}
+{"at":"2026-11-06T16:59:30.784457+00:00","event":"routing_request","request_id":"00000000-0000-0000-0000-000000000003","snapshot_id":"00000000-0000-0000-0000-000000000001","stage":"ngo_authenticated"}
+{"at":"2026-11-06T16:59:30.784690+00:00","event":"routing_request","request_id":"00000000-0000-0000-0000-000000000003","snapshot_id":"00000000-0000-0000-0000-000000000001","stage":"verify_ngo_jwt"}
+ok
+test_definitive_authorization_rejection_is_terminal_and_never_resubmitted (backend.routing.worker_service.tests.test_combined_workflow.CombinedTests.test_definitive_authorization_rejection_is_terminal_and_never_resubmitted) ... ok
+test_existing_saved_advisory_is_never_automatically_authorized (backend.routing.worker_service.tests.test_combined_workflow.CombinedTests.test_existing_saved_advisory_is_never_automatically_authorized) ... ok
+test_lost_response_reconciles_read_only_and_replay_never_replans (backend.routing.worker_service.tests.test_combined_workflow.CombinedTests.test_lost_response_reconciles_read_only_and_replay_never_replans) ... ok
+test_missing_migration_fails_before_any_planner_write (backend.routing.worker_service.tests.test_combined_workflow.CombinedTests.test_missing_migration_fails_before_any_planner_write) ... ok
+test_no_receipt_read_does_not_plan_authorize_or_create_journal_steps (backend.routing.worker_service.tests.test_combined_workflow.CombinedTests.test_no_receipt_read_does_not_plan_authorize_or_create_journal_steps) ... ok
+test_cache_tampering_fails_closed (backend.routing.worker_service.tests.test_graph_http.GraphTests.test_cache_tampering_fails_closed) ... ok
+test_complete_paging_reuses_c2_directed_distances_and_times (backend.routing.worker_service.tests.test_graph_http.GraphTests.test_complete_paging_reuses_c2_directed_distances_and_times) ... ok
+test_disk_cache_is_reusable_after_process_restart (backend.routing.worker_service.tests.test_graph_http.GraphTests.test_disk_cache_is_reusable_after_process_restart) ... ok
+test_incomplete_export_is_not_declared_reachable (backend.routing.worker_service.tests.test_graph_http.GraphTests.test_incomplete_export_is_not_declared_reachable) ... ok
+test_missing_reverse_arc_is_not_invented (backend.routing.worker_service.tests.test_graph_http.GraphTests.test_missing_reverse_arc_is_not_invented) ... ok
+test_disabled_health_is_not_a_live_success_claim (backend.routing.worker_service.tests.test_graph_http.HttpTests.test_disabled_health_is_not_a_live_success_claim) ... ok
+test_disabled_http_request_cannot_trigger_worker_or_dev_writes (backend.routing.worker_service.tests.test_graph_http.HttpTests.test_disabled_http_request_cannot_trigger_worker_or_dev_writes) ... {"at":"2026-11-06T16:59:31.501238+00:00","event":"routing_request","stage":"http_received"}
+{"at":"2026-11-06T16:59:31.501384+00:00","error_code":"WORKER_NOT_ACTIVATED","event":"routing_request","http_status":503,"stage":"http_rejected"}
+ok
+
+----------------------------------------------------------------------
+Ran 88 tests in 3.310s
+
+OK

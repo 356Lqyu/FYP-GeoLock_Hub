@@ -1,0 +1,181 @@
+hub_id,hub_name,latitude,longitude,road_node_id,hub_capacity_kg,hub_load_kg,hub_reserved_kg,hub_active_flag,operating_start,operating_end,accepted_categories,building_type,has_food_safe_storage,has_fragile_shelving,has_lockable_storeroom,has_vehicle_access
+HUB0001,Dewan Serbaguna Lengkok Kanan,3.7920482,103.3004902,2685053146,214,17.74,8.83,1,08:00,12:00,appliances|books|clothing|electronics|food|furniture,hall,1,1,0,1
+HUB0002,Dewan Serbaguna,3.79895,103.30451,5331410326,153,16.01,13.71,0,18:00,22:00,appliances|books|clothing|electronics|food|furniture,hall,0,0,1,1
+HUB0003,Pejabat Penghulu Mukim Gurun,5.8020916,100.4799029,7118932329,79,41.03,4.41,1,09:00,17:00,appliances|books|clothing|food,office,0,0,0,0
+HUB0004,Pusat Internet 1 Malaysia,5.8574953,100.4552877,12794415066,92,22.35,3.75,1,08:00,22:00,appliances|books|clothing|electronics,office,0,1,1,0
+HUB0005,Teratak Pak Jol,5.6553044,100.5085803,2171667721,78,19.3,2.32,0,09:00,17:00,appliances|books|clothing|electronics|food,hall,1,0,0,1
+HUB0006,College Heights Golden Resorts,2.8419093,101.8519489,5778207437,135,22.57,15.0,1,08:00,22:00,appliances|books|clothing|food|furniture,hall,1,0,0,1
+HUB0007,Community Hall,3.204048,101.7357161,475484825,207,27.64,21.14,1,09:00,17:00,appliances|books|clothing|electronics|food|furniture,hall,0,1,1,1
+HUB0008,Pesuruhjaya Sumpah Seri Kembangan,3.0303661,101.6930225,5785895225,154,90.68,23.5,1,09:00,17:00,appliances|books|electronics|food|furniture,hall,1,0,1,0
+HUB0009,Tenaga Nasional berhad Kemaman,4.2327315,103.4247499,7645427389,64,40.03,1.29,1,08:00,22:00,appliances|books|electronics|food,hall,0,0,0,0
+HUB0010,Unnamed community centre (OSM node 6565323909),1.507149,103.7562972,2789662806,246,184.4,47.33,1,09:00,17:00,appliances|clothing|electronics|food|furniture,office,0,1,1,1
+HUB0011,Dewan Sivik Gong Limau,4.240982,103.4142534,7621874328,247,108.78,21.44,1,18:00,22:00,appliances|books|clothing|electronics|food|furniture,hall,0,1,1,1
+HUB0012,Majlis Daerah Yan,5.7946925,100.3718672,7211126508,83,20.54,10.03,1,09:00,17:00,appliances|books|clothing|electronics|food,office,0,0,0,1
+HUB0013,RUANG by Think City,3.1467854,101.6960552,11626344397,96,7.72,4.41,1,18:00,22:00,appliances|clothing|electronics|food,hall,1,1,1,1
+HUB0014,M.R.O - Refugees Community,3.1377674,101.712479,9060326840,222,88.7,40.74,0,09:00,17:00,books|clothing|electronics|food|furniture,hall,0,1,1,1
+HUB0015,Kompleks Perdanasiswa,3.120421,101.6557278,9296913428,194,5.64,24.32,0,08:00,22:00,appliances|books|clothing|electronics|food|furniture,hall,1,1,0,1
+HUB0016,Balai Raya Kampung Jaya Gading,3.7511118,103.211014,12231176958,98,60.06,11.0,1,09:00,17:00,appliances|books|clothing|electronics|food,hall,1,0,0,1
+HUB0017,Warung Makan Sahabat,3.1659231,101.695746,4945904209,217,49.41,20.68,1,08:00,22:00,appliances|books|clothing|electronics|food|furniture,hall,1,1,1,1
+HUB0018,Gardens Ville Multipurpose Hall,5.3364613,100.2710248,5562155376,135,106.84,12.04,1,09:00,17:00,appliances|clothing|electronics|food|furniture,hall,1,1,1,1
+HUB0019,ATM Global,3.1707031,101.6955022,566626764,106,1.55,15.6,1,09:00,17:00,appliances|books|clothing|electronics|food|furniture,hall,1,0,0,1
+HUB0020,Dewan Serbaguna Seremban Putra,2.7500838,101.9705362,5726981977,201,141.38,30.52,1,08:00,12:00,appliances|books|clothing|electronics|food|furniture,hall,1,1,0,1
+HUB0021,Dewan Orang Ramai Pedas,2.6273599,102.0610442,6138462280,100,74.01,16.0,1,08:00,12:00,appliances|books|electronics|food|furniture,hall,0,1,1,1
+HUB0022,China Cultural Centre,3.1562827,101.7052141,13354680083,192,25.63,31.38,1,09:00,17:00,appliances|books|clothing|electronics|food,office,0,1,1,0
+HUB0023,Balai Rakyat Taman Tun Sardon,5.3693912,100.3056391,6073256118,119,94.72,13.19,1,08:00,22:00,appliances|books|clothing|electronics|furniture,hall,0,0,1,1
+HUB0024,Pusat Rukun Tetangga Chan Sow Lin,3.1224996,101.7131202,12830004983,244,194.55,18.29,1,08:00,12:00,appliances|books|clothing|electronics|food|furniture,office,1,1,1,1
+HUB0025,Persatuan Hexiang Zhuang Qigong Kedah Tengah,5.7264001,100.508275,7649006628,73,49.08,10.12,1,09:00,17:00,appliances|books|clothing|electronics|food,office,1,0,1,0
+HUB0026,Kereta Sewa Smart Rawang,3.3348107,101.5189798,4907666524,200,47.76,27.71,1,08:00,22:00,appliances|books|clothing|electronics|food|furniture,hall,1,1,1,1
+HUB0027,Glass House,3.0517444,101.8510669,13245555829,101,38.99,0.0,1,09:00,17:00,appliances|books|clothing|electronics|food|furniture,hall,1,1,0,1
+HUB0028,The Pocket,3.1269194,101.7107338,7259446768,114,35.0,15.12,1,08:00,22:00,appliances|books|clothing|electronics|food|furniture,hall,0,1,0,1
+HUB0029,王政道礼堂,2.7283453,101.9408387,5742790916,108,80.31,1.86,1,08:00,12:00,appliances|books|clothing|electronics|food,hall,1,1,0,1
+HUB0030,拿督林水明大礼堂,3.1990312,101.7050446,5772134508,116,10.37,15.44,1,08:00,22:00,appliances|books|clothing|electronics|food|furniture,hall,1,0,0,1
+HUB0031,陈锦龙礼堂,3.1287637,101.7336933,7212728100,76,55.71,8.65,1,09:00,17:00,appliances|books|clothing|electronics|food,hall,0,0,0,1
+HUB0032,Pusat Maklumat Dan Pembelajaran Sepanjang Hayat,3.1452575,101.7099625,13758435515,184,84.79,19.31,1,18:00,22:00,appliances|books|clothing|food|furniture,office,1,0,1,0
+HUB0033,Tan Yew Sing Auditorium,3.0744342,101.5909593,5762621810,185,37.14,9.3,1,09:00,17:00,appliances|books|clothing|electronics|food|furniture,hall,0,0,0,1
+HUB0034,Rumah Api,3.1303919,101.7536016,478551651,107,39.47,3.59,1,09:00,17:00,appliances|books|clothing|electronics|food|furniture,hall,0,0,1,0
+HUB0035,Majlis Bandaraya Shah Alam,3.073349,101.5194862,8634065355,168,88.2,15.48,1,09:00,17:00,appliances|books|clothing|electronics|furniture,office,0,1,0,0
+HUB0036,Dewan Sivik,3.0967614,101.6453363,5767268225,186,23.32,35.28,1,09:00,17:00,appliances|books|clothing|electronics|furniture,hall,0,1,0,1
+HUB0037,Dewan Komuniti Jalan SS7/28,3.1046291,101.5940476,5742447590,64,20.4,2.27,1,09:00,17:00,appliances|books|clothing|electronics,hall,0,0,0,1
+HUB0038,Dewan Serbaguna MBSJ Seri Kembangan,3.0222195,101.7053823,2890618730,188,119.94,32.1,1,08:00,12:00,appliances|books|clothing|electronics|food|furniture,hall,1,0,1,1
+HUB0039,Dewan Serbaguna Kampung Kopok Baru,1.5137304,103.9248153,8524711137,190,43.46,25.72,1,08:00,22:00,appliances|books|clothing|electronics|food|furniture,hall,1,1,1,1
+HUB0040,Majlis Bandaraya Johor Bahru,1.456056,103.7608886,6093415409,158,122.89,28.34,1,09:00,17:00,appliances|books|clothing|electronics|food|furniture,office,0,1,1,1
+HUB0041,Dewan MPKK Kampung Herriot,5.4271122,100.3175352,1899609747,81,48.18,2.14,0,18:00,22:00,appliances|books|clothing|electronics|food,hall,0,1,0,1
+HUB0042,Dewan Sungai Gelugor,5.3661212,100.3110668,1727277536,153,52.13,19.5,1,08:00,12:00,appliances|books|clothing|electronics|food|furniture,hall,1,1,1,1
+HUB0043,Life Hope Center,5.4013874,100.3035843,7331907955,172,28.23,13.41,1,18:00,22:00,appliances|clothing|electronics|food|furniture,office,1,1,1,0
+HUB0044,Persatuan Penduduk Taman Free School,5.4030471,100.3103837,7814256986,226,141.77,28.83,1,09:00,17:00,appliances|books|clothing|electronics|food,office,1,1,1,0
+HUB0045,Pejabat Majlis Bandaraya Iskandar Puteri,1.5374414,103.6623224,2407023524,247,172.92,30.76,1,18:00,22:00,appliances|books|clothing|electronics|food,office,1,0,1,0
+HUB0046,Majlis Bandaraya Ipoh,4.5988634,101.0899872,7142422218,220,53.47,24.51,1,09:00,17:00,appliances|books|electronics|food|furniture,office,0,1,1,1
+HUB0047,Persatuan Penduduk-Penduduk Taman Desa,3.1013937,101.6832181,3302927801,130,56.12,21.57,1,09:00,17:00,appliances|books|clothing|electronics|furniture,office,0,0,1,1
+HUB0048,Dewan Sri Tebrau,1.4877805,103.7708566,6029658890,250,74.93,40.04,1,09:00,17:00,books|clothing|electronics|food|furniture,hall,1,1,0,0
+HUB0049,Balai Raya Kg. Setanggi,1.5030113,103.767298,3006896714,200,11.94,21.23,1,08:00,22:00,appliances|books|clothing|electronics|food|furniture,hall,1,0,1,1
+HUB0050,Dewan Masjid Sultan Abdul Halim,5.651264,100.5209634,7644908246,179,33.63,1.11,0,09:00,17:00,appliances|books|clothing|electronics|furniture,hall,1,1,1,1
+HUB0051,Balai Raya Kg.Ubi Baru,1.5196091,103.7590133,7251666949,207,55.02,2.47,1,09:00,17:00,appliances|books|clothing|electronics|food|furniture,hall,1,1,1,1
+HUB0052,Dewan Orang Ramai Taman Bayu Mutiara,5.346025,100.4355969,3222927513,221,77.1,4.95,1,08:00,22:00,appliances|books|clothing|electronics|food|furniture,hall,1,1,0,1
+HUB0053,Dewan Persatuan Penganut Fong Sun Si,3.7759035,103.2378367,7412623382,62,14.51,0.23,1,09:00,17:00,appliances|books|electronics|food,hall,1,1,0,0
+HUB0054,Dewan Besar Tanjung Seksyen 19,3.0494251,101.5323648,9844447383,111,65.81,8.56,1,08:00,22:00,appliances|books|clothing|electronics|food|furniture,hall,1,1,1,1
+HUB0055,Dewan Springhill,2.6131389,101.8718311,4872870414,138,50.69,11.83,1,08:00,12:00,appliances|books|electronics|food|furniture,hall,1,1,1,1
+HUB0056,Dewan Taman Kelab Tuanku,2.6503567,101.9043208,4874646460,144,53.62,22.76,1,09:00,17:00,appliances|books|clothing|electronics|food|furniture,hall,1,1,0,1
+HUB0057,Dewan Kampung Seri Mambau,2.6685781,101.9169486,4875053666,190,132.16,25.59,1,09:00,17:00,appliances|books|clothing|electronics|food|furniture,hall,1,1,1,1
+HUB0058,Dewan Masyarakat Taman Sri Manja,3.0744811,101.6421514,4703988996,222,70.07,25.05,1,08:00,12:00,appliances|books|clothing|electronics|food,hall,1,1,1,0
+HUB0059,Dewan Kampung Pasir,5.8530603,100.4584296,7120786633,184,113.57,25.3,1,09:00,17:00,appliances|books|clothing|electronics|food|furniture,hall,1,1,1,1
+HUB0060,Dewan Orang Ramai Kampung Titi Batu,5.863231,100.4348793,6642474582,245,96.62,26.02,1,08:00,22:00,appliances|books|clothing|electronics|food|furniture,hall,1,1,0,1
+HUB0061,Dewan Serbaguna Taman Impianku,3.8658349,103.250835,3891264520,173,96.61,27.65,1,08:00,22:00,appliances|books|clothing|electronics|food|furniture,hall,1,1,0,0
+HUB0062,Dewan Ng Yam Huat 黄炎发礼堂,5.3569931,100.4473892,6013443660,240,66.1,12.12,1,08:00,12:00,appliances|clothing|electronics|food|furniture,hall,1,1,1,1
+HUB0063,Dewan Orang Ramai Tronoh,4.4242595,100.9870161,5252635368,53,24.18,10.18,1,08:00,22:00,appliances|books|clothing|electronics,hall,0,0,0,1
+HUB0064,Pusat Komuniti Gombak,3.2270981,101.7031659,5778165794,220,91.45,2.63,1,18:00,22:00,appliances|books|clothing|electronics|food,office,1,1,1,0
+HUB0065,Unnamed community centre (OSM way 544118021),3.2308066,101.7026893,1725198796,198,126.97,25.04,1,09:00,17:00,appliances|books|clothing|electronics|food|furniture,office,1,1,1,0
+HUB0066,Majlis Bandaraya Seremban,2.7054558,101.9598951,7610456744,101,52.16,6.97,1,09:00,17:00,appliances|books|clothing|electronics|furniture,office,0,0,1,1
+HUB0067,Dewan Dato' Haji Maideen,2.7227322,101.9753597,5738225507,75,52.3,13.87,1,09:00,17:00,appliances|books|clothing|electronics|food,hall,1,0,1,1
+HUB0068,Dewan Orang Ramai Taman Bukit Mewah,2.9802854,101.8035883,1800178261,175,133.85,10.53,1,09:00,17:00,appliances|books|clothing|electronics|food|furniture,hall,1,0,1,1
+HUB0069,Dewan Masyarakat Kampung Baru Salak Selatan,3.0847639,101.7135559,4160904678,210,147.12,15.05,1,09:00,17:00,appliances|books|clothing|electronics|furniture,hall,0,0,1,1
+HUB0070,Dewan Indera Mahkota 2,3.8184867,103.291938,7591285512,209,122.18,19.25,1,18:00,22:00,appliances|books|clothing|electronics|food|furniture,hall,1,0,0,1
+HUB0071,Balai Raya Taman Marida,2.6968413,101.9798073,6202790980,230,85.54,6.73,0,09:00,17:00,books|clothing|electronics|food|furniture,hall,1,1,0,1
+HUB0072,Dewan Serbaguna Indera Mahkota,3.8313971,103.3057985,3986382683,75,13.61,6.22,1,09:00,17:00,appliances|books|clothing|electronics|food,hall,1,0,0,0
+HUB0073,Majlis Bandaraya Kuantan,3.7975262,103.3220408,9186847640,140,25.1,10.89,1,09:00,17:00,appliances|books|clothing|food|furniture,office,0,0,1,0
+HUB0074,Unnamed community centre (OSM way 577206007),2.7249319,101.9968441,5738045187,50,35.52,4.3,1,09:00,17:00,appliances|books|clothing|electronics|food,office,0,0,1,0
+HUB0075,Unnamed community centre (OSM way 579880368),3.7764374,103.2347065,5552629114,72,46.54,14.33,1,08:00,22:00,appliances|clothing|electronics|food,office,0,0,0,0
+HUB0076,Unnamed community centre (OSM way 579880369),3.7767163,103.2354635,5552629117,106,82.69,6.59,1,08:00,22:00,appliances|books|clothing|electronics|food|furniture,office,1,1,1,1
+HUB0077,Dewan Jenjarum MBSA,3.0767075,101.5293949,1722971764,243,181.6,1.09,1,18:00,22:00,appliances|books|clothing|electronics|food|furniture,hall,1,1,1,1
+HUB0078,Dewan Serbaguna Inderapura,3.7515954,103.2660451,2685053211,237,127.94,39.87,1,08:00,22:00,appliances|books|clothing|electronics|food|furniture,hall,1,1,1,1
+HUB0079,Balai Penghulu Mukim Labu,2.7552149,101.8241089,5739496896,118,32.8,14.05,0,09:00,17:00,appliances|books|clothing|electronics|food|furniture,hall,0,1,0,1
+HUB0080,Majlis Bandaraya Seberang Perai - Cawangan Seberang Perai Tengah,5.3557807,100.4510745,7045917990,239,77.39,19.97,1,09:00,17:00,appliances|books|electronics|food|furniture,office,1,1,1,1
+HUB0081,Dewan Taman Nusa Damai,1.5062962,103.9021013,13619685878,232,125.81,37.6,1,09:00,17:00,appliances|books|clothing|electronics|food|furniture,hall,1,1,1,1
+HUB0082,Kawasan Taman Baru JKKK Jalan Hussein Onn,5.396247,100.4073686,9129400394,122,23.53,2.29,1,09:00,17:00,appliances|books|clothing|electronics|food|furniture,hall,1,0,0,1
+HUB0083,Balai Raya Flat Senawang 1,2.690849,101.985091,4197229576,241,109.09,3.66,1,08:00,22:00,appliances|books|clothing|electronics|food|furniture,hall,1,1,1,1
+HUB0084,Unnamed community centre (OSM way 672317496),1.4684416,103.6602646,6041508648,83,20.7,16.45,1,18:00,22:00,books|clothing|electronics|food,office,0,1,0,0
+HUB0085,Dewan Serbaguna Ayer Panas,3.1895946,101.7172819,5778701273,168,104.66,32.33,1,18:00,22:00,appliances|books|clothing|electronics|food|furniture,hall,0,1,0,1
+HUB0086,Unnamed community centre (OSM way 683865661),5.6831084,100.4921615,7623632726,244,122.49,28.65,1,09:00,17:00,appliances|books|clothing|electronics|food|furniture,office,1,0,1,0
+HUB0087,Unnamed community centre (OSM way 683955045),5.6862042,100.3676645,7651300116,155,95.18,7.4,1,08:00,22:00,appliances|books|clothing|electronics|food|furniture,office,0,1,1,1
+HUB0088,Dewan Bankuasi Carsem,4.5739645,101.1037975,9113187280,164,28.79,8.02,1,08:00,22:00,appliances|books|clothing|electronics|food|furniture,hall,1,1,1,1
+HUB0089,Dewan Eria,2.9873956,101.5360258,4729009468,214,28.3,34.31,1,08:00,22:00,appliances|books|electronics|food|furniture,hall,1,0,1,0
+HUB0090,Kompleks Rakan Muda,4.2019029,103.4238393,7018537184,50,4.9,5.9,1,09:00,17:00,appliances|books|clothing|electronics|food,hall,1,1,1,1
+HUB0091,Dewan Sri Amar,4.2298528,103.4260126,7431097873,88,23.71,14.41,1,09:00,17:00,appliances|books|clothing|electronics|food,hall,0,0,1,1
+HUB0092,Persatuan Penduduk Rumah Pangsa P.D.C.,5.4064552,100.3331547,9099932701,70,12.58,5.72,1,08:00,22:00,appliances|books|clothing|electronics|food,office,1,0,0,0
+HUB0093,Dewan Orang Ramai Ampang Baru,4.587043,101.1316137,6114975392,104,41.66,3.81,1,09:00,17:00,appliances|books|clothing|food|furniture,hall,0,0,0,1
+HUB0094,Dewan The Grand,2.5786019,101.8411489,7579130932,70,1.13,4.69,1,08:00,22:00,appliances|books|clothing|electronics|food,hall,1,0,0,0
+HUB0095,Dewan Dato' Madi,5.7949007,100.3708019,9470332219,145,53.97,9.03,1,18:00,22:00,appliances|books|clothing|electronics|food|furniture,hall,0,1,1,1
+HUB0096,Kawasan Rukun Tetangga Rapat Setia Baru,4.5754852,101.1331171,9298331529,153,113.93,6.43,1,08:00,22:00,appliances|books|electronics|food|furniture,hall,1,1,0,1
+HUB0097,Dewan Serbaguna Taman Mawar,1.4726168,103.8956995,7011145071,209,118.39,10.55,1,09:00,17:00,appliances|books|clothing|electronics|food|furniture,hall,1,1,1,1
+HUB0098,Dewan Serbaguna Puchong Utama,2.9854669,101.6083328,7956184528,78,40.05,7.34,1,09:00,17:00,appliances|books|clothing|electronics|food,hall,1,0,1,1
+HUB0099,Unnamed community centre (OSM way 755885415),4.5260404,101.072321,3217077531,208,70.46,5.12,1,08:00,22:00,appliances|books|clothing|electronics|furniture,office,1,1,1,1
+HUB0100,Dewan Komuniti Taman Cempaka,4.5939542,101.1294379,7352228354,96,59.92,16.57,1,09:00,17:00,appliances|books|electronics|food,hall,0,1,0,0
+HUB0101,Dewan Tawas,4.648117,101.0999669,9215938397,205,5.75,15.86,0,09:00,17:00,appliances|books|clothing|food|furniture,hall,1,1,0,1
+HUB0102,Dewan Komuniti Kampung Batu 11 Cheras,3.0436262,101.773611,10650879472,230,128.22,30.02,1,09:00,17:00,appliances|books|clothing|electronics|food,hall,1,1,1,0
+HUB0103,Unnamed community centre (OSM way 787839622),3.2418047,101.639989,7234103914,209,94.58,19.22,1,08:00,22:00,appliances|books|clothing|electronics|furniture,office,0,0,1,1
+HUB0104,Dewan Orang Ramai Taman Batu Permai,3.2065409,101.6769726,13408641577,170,113.44,12.65,1,09:00,17:00,appliances|books|clothing|electronics|furniture,hall,0,1,0,1
+HUB0105,Dewan Taman Mastiara,3.2151674,101.6742733,2152075477,206,42.57,26.37,1,08:00,22:00,books|clothing|electronics|food|furniture,hall,1,0,0,0
+HUB0106,Dewan Serbaguna Seksyen 1 Wangsa Maju,3.2026709,101.729731,4964387254,228,12.16,41.04,1,09:00,17:00,appliances|books|clothing|electronics|food|furniture,hall,1,0,1,1
+HUB0107,Dewan Serbaguna Keramat Jaya 2,3.1678669,101.7228108,1802317769,159,40.06,1.62,1,08:00,22:00,appliances|books|clothing|electronics|food|furniture,hall,0,0,1,1
+HUB0108,Dewan Serbaguna Perumahan Awam Desa Rejang,3.1892274,101.7311786,13109462216,241,6.2,22.21,1,18:00,22:00,appliances|books|clothing|electronics|food,hall,0,1,1,0
+HUB0109,Persatuan Kebudayaan dan Sukan Fu Joh Seah Ipoh,4.5739198,101.0885365,2890740231,139,81.31,0.58,1,09:00,17:00,appliances|books|clothing|electronics|food|furniture,office,1,0,0,1
+HUB0110,Dewan Gerakan Masyarakat Kampung Tradisi Pekan Darat,5.459217,100.4005278,6065998650,72,12.59,9.71,1,18:00,22:00,appliances|books|clothing|food,hall,1,0,0,1
+HUB0111,Unnamed community centre (OSM way 815790193),3.2031648,101.5954607,1264570392,119,73.44,12.38,1,09:00,17:00,appliances|books|clothing|electronics|food,office,1,0,0,0
+HUB0112,Unnamed community centre (OSM way 816793118),5.4557061,100.4437109,6063717707,228,152.89,13.93,1,08:00,22:00,appliances|books|clothing|electronics|food|furniture,office,1,1,0,0
+HUB0113,Dewan Orang Ramai (2) Taman Seri Indah,5.5021002,100.4335588,7135846324,77,51.19,7.48,1,09:00,17:00,appliances|books|clothing|electronics|food,hall,0,1,0,0
+HUB0114,Dewan Masyarakat Taman Medan Idaman,3.2109695,101.7115279,5758065308,71,42.64,2.76,1,18:00,22:00,appliances|books|clothing|electronics|food,hall,0,1,0,1
+HUB0115,Balai Masyarakat PJS 7,3.0662004,101.6160839,11476361111,133,60.57,0.91,1,09:00,17:00,appliances|books|clothing|electronics|food|furniture,hall,0,1,1,1
+HUB0116,"Dewan KRT Suadamai, Bandar Tun Hussein Onn",3.0549069,101.7560264,5738372566,111,47.55,8.19,1,09:00,17:00,appliances|clothing|electronics|food|furniture,hall,0,1,0,1
+HUB0117,Unnamed community centre (OSM way 826493878),3.0913907,101.7527225,11523996694,186,40.83,3.23,1,09:00,17:00,appliances|clothing|electronics|food|furniture,office,1,1,1,1
+HUB0118,Persatuan Penduduk Taman Makok,5.363069,100.4471672,7728491347,130,18.97,3.31,1,09:00,17:00,appliances|books|clothing|electronics|food|furniture,office,0,1,0,1
+HUB0119,Dewan Serbaguna MBSJ,3.0375452,101.6419533,9662691806,74,7.05,8.48,1,09:00,17:00,appliances|books|clothing|electronics|food,hall,0,0,0,1
+HUB0120,Dewan Muafakat Johor,1.5499357,103.7438464,11002646534,87,13.87,0.45,1,09:00,17:00,books|clothing|electronics|food,hall,1,0,0,0
+HUB0121,Dewan Orang Ramai,4.5302459,101.126316,3218762953,63,25.61,6.92,1,09:00,17:00,appliances|clothing|electronics|food,hall,0,1,1,1
+HUB0122,Rukun Tetangga Taman Klebang Jaya,4.6769984,101.1164762,3008184954,61,39.65,5.14,1,08:00,12:00,appliances|books|electronics|food,hall,1,0,0,1
+HUB0123,Dewan Serbaguna PJS 4/19,3.0749458,101.6282033,8007922519,132,88.3,10.94,1,09:00,17:00,appliances|books|clothing|electronics|food|furniture,hall,1,0,0,1
+HUB0124,Dewan K.I.A,4.5970916,101.0692283,7276136839,196,83.75,31.71,1,08:00,22:00,appliances|books|clothing|electronics|food|furniture,hall,1,1,1,0
+HUB0125,Unnamed community centre (OSM way 888675034),2.7449389,101.9608274,9134187552,197,91.63,31.2,1,08:00,12:00,appliances|books|clothing|food|furniture,office,1,1,0,0
+HUB0126,Dewan Bandar Seri Alam,1.4964956,103.881277,8318536160,228,70.72,26.18,1,09:00,17:00,books|clothing|electronics|food|furniture,hall,0,0,0,0
+HUB0127,Dewan Pulai 27A,3.0092927,101.5666757,7965042907,245,176.69,8.89,1,08:00,22:00,appliances|books|clothing|electronics|food|furniture,hall,1,1,0,0
+HUB0128,Dewan Serbaguna MPK,3.8589266,103.3658708,7018537926,119,85.77,4.52,0,18:00,22:00,appliances|books|clothing|food|furniture,hall,0,0,0,1
+HUB0129,Dewan Serbaguna U16/1,3.1688224,101.5105772,7847401402,55,12.35,2.97,1,09:00,17:00,appliances|clothing|electronics|food,hall,1,0,0,1
+HUB0130,广圣岩礼堂,4.5298868,101.1231575,3218812449,145,100.23,10.64,1,09:00,17:00,appliances|books|electronics|food|furniture,hall,1,0,1,1
+HUB0131,Balai Raya Tanjung Lumpur,3.8027145,103.3408883,7087320841,160,43.2,25.64,1,09:00,17:00,appliances|books|clothing|electronics|food|furniture,hall,1,0,0,1
+HUB0132,Dewan Orang Ramai Buntong,4.5936639,101.0644759,2875623540,68,5.22,4.9,0,09:00,17:00,appliances|books|clothing|electronics|food,hall,0,0,0,1
+HUB0133,Persatuan Faedah Bersama Kg Baru Guntong,4.5939941,101.0642664,2888437908,116,58.08,22.15,1,08:00,12:00,appliances|clothing|electronics|food|furniture,office,0,1,1,1
+HUB0134,Unnamed community centre (OSM way 955908333),1.5798571,103.8037249,8524319228,216,125.87,38.21,1,08:00,22:00,appliances|books|clothing|electronics|food|furniture,office,0,1,1,1
+HUB0135,Unnamed community centre (OSM way 965674611),3.8427759,103.3357877,1745111550,179,73.55,33.3,1,08:00,22:00,appliances|books|electronics|food|furniture,office,1,1,1,1
+HUB0136,Unnamed community centre (OSM way 983512565),4.6490462,101.0690368,13617045247,50,2.61,3.49,1,09:00,17:00,appliances|books|clothing|electronics|food,office,1,0,1,1
+HUB0137,Dewan Kuala Garing,3.3175537,101.5704466,5733293008,86,31.32,2.73,1,08:00,12:00,appliances|books|clothing|electronics|food,hall,0,1,0,1
+HUB0138,Unnamed community centre (OSM way 1027284691),5.3458419,100.4313494,7029384735,197,156.27,32.0,1,09:00,17:00,appliances|books|clothing|electronics|food|furniture,office,1,0,1,0
+HUB0139,Pusat Komuniti Desa Singkir Laut,5.7291269,100.3659835,9473532699,233,153.99,13.13,1,18:00,22:00,appliances|books|clothing|electronics|food,office,0,1,1,0
+HUB0140,Dewan Orang Ramai Taman Mega Jaya,3.1112655,101.7632808,5750766074,223,24.63,35.58,1,08:00,22:00,appliances|books|clothing|electronics|furniture,hall,0,1,0,1
+HUB0141,Dewan Raya Kempas Baru,1.532251,103.714596,12799741160,108,57.63,16.65,1,09:00,17:00,appliances|books|clothing|electronics|food|furniture,hall,1,0,0,1
+HUB0142,Dewan Dato' Azrat Gull,3.2058418,101.6717245,13481015555,96,53.06,16.53,1,09:00,17:00,appliances|books|clothing|electronics|food,hall,1,0,0,0
+HUB0143,Unnamed community centre (OSM way 1059495591),2.9840208,101.660672,1431576643,153,118.64,11.81,1,08:00,12:00,appliances|books|clothing|electronics|food|furniture,office,1,1,1,0
+HUB0144,Dewan Desa KEDA Singkir Badong,5.72283,100.3902764,9805201286,221,38.83,0.56,1,09:00,17:00,books|clothing|electronics|food|furniture,hall,1,1,0,0
+HUB0145,Dewan Orang Ramai Taman Cheras Jaya,3.017533,101.7620968,1439326505,202,56.25,9.09,1,08:00,22:00,appliances|books|clothing|electronics|food|furniture,hall,1,1,1,1
+HUB0146,Pusat Komuniti Taman Ekoflora,1.5897546,103.7522581,9157755030,121,16.68,10.85,1,09:00,17:00,appliances|clothing|electronics|food|furniture,office,0,0,1,1
+HUB0147,Dewan Perbandaran MPAJ,3.1217453,101.7508732,8001041459,93,45.86,8.91,1,08:00,22:00,appliances|books|clothing|food,hall,1,0,0,1
+HUB0148,Balai Raya Kampung Baru Pajam,2.8457727,101.8458454,7570867559,120,94.22,19.33,1,08:00,22:00,appliances|books|clothing|electronics|food|furniture,hall,1,1,1,1
+HUB0149,Dewan Orang Ramai Taman Asoka Mantin,2.8152077,101.9074756,7596393813,63,49.21,10.32,1,09:00,17:00,appliances|books|clothing|food,hall,0,0,0,1
+HUB0150,Balai Raya Taman MBSB,3.8205389,103.2971668,5325496142,121,46.5,7.01,1,09:00,17:00,books|clothing|electronics|food|furniture,hall,1,0,0,1
+HUB0151,Unnamed community centre (OSM way 1126815142),3.0878221,101.5099892,5716394281,120,35.93,21.07,1,09:00,17:00,appliances|books|clothing|electronics|food|furniture,office,1,0,1,0
+HUB0152,Majlis Perbandaran Selayang Cawangan Rawang,3.3248087,101.5785039,5735272828,66,41.11,7.42,1,09:00,17:00,appliances|clothing|electronics|food,office,0,0,0,0
+HUB0153,Unnamed community centre (OSM way 1136710736),3.0203547,101.6995708,2831036127,242,142.65,38.27,1,09:00,17:00,appliances|books|clothing|electronics|furniture,office,0,1,1,1
+HUB0154,Pejabat JKP Zon 12,3.1390006,101.7728074,2113299876,217,0.86,34.85,1,09:00,17:00,appliances|books|clothing|electronics|food|furniture,office,1,1,1,1
+HUB0155,Pusat Penang2030 KADUN Air Putih,5.4104125,100.2998837,1723047395,147,88.6,27.69,1,08:00,12:00,appliances|books|clothing|food|furniture,office,1,0,1,1
+HUB0156,Dean MPAJ Kampung Ampang Indah,3.137759,101.784149,2387056092,203,22.5,20.25,1,09:00,17:00,appliances|books|clothing|electronics|food,hall,1,0,0,0
+HUB0157,Unnamed community centre (OSM way 1196371045),2.9630446,101.666787,4018115586,87,4.09,12.69,1,08:00,22:00,appliances|books|clothing|food,office,1,0,0,0
+HUB0158,Balai Masyarakat MBSJ Kampung Sri Aman,2.9849904,101.5876118,5785682538,73,47.05,1.17,1,09:00,17:00,books|clothing|electronics|food,hall,1,0,0,0
+HUB0159,Foresta Club House,1.5796129,103.7567138,7524508263,190,85.53,1.01,1,08:00,22:00,appliances|books|clothing|electronics|food|furniture,hall,1,1,1,1
+HUB0160,Dewan Serbaguna Kampung Malaysia Tambahan,3.0783293,101.7074337,478554061,240,87.05,32.9,1,08:00,22:00,appliances|books|clothing|electronics|food|furniture,hall,1,1,1,1
+HUB0161,Unnamed community centre (OSM way 1253417731),1.4764762,103.8724187,7427885567,211,54.32,24.65,1,09:00,17:00,books|clothing|electronics|food|furniture,office,1,1,1,1
+HUB0162,Balai & Kediaman Penghulu Mukim Sungai Buloh 1,3.2134472,101.5345977,8631792901,51,18.71,3.11,1,09:00,17:00,appliances|clothing|electronics|food,hall,0,1,0,1
+HUB0163,Unnamed community centre (OSM way 1279663027),3.1643742,101.710435,1802354083,207,8.21,1.54,1,08:00,12:00,appliances|books|clothing|electronics|furniture,office,0,1,1,1
+HUB0164,Dewan Komuniti Cina Kemaman,4.2247579,103.4223185,7430991680,127,72.53,2.71,1,08:00,22:00,appliances|books|clothing|food|furniture,hall,0,0,0,1
+HUB0165,Unnamed community centre (OSM way 1333679691),3.1255577,101.7688634,10883879907,193,64.81,27.3,1,18:00,22:00,appliances|books|clothing|electronics|food|furniture,office,1,1,1,1
+HUB0166,Unnamed community centre (OSM way 1363509920),3.1634263,101.8865206,9467524441,123,49.02,0.45,1,08:00,22:00,appliances|clothing|electronics|food|furniture,office,1,0,1,0
+HUB0167,Dewan Kampung Bemban,4.4559051,101.0111565,3221804912,238,14.49,26.99,1,09:00,17:00,appliances|books|clothing|electronics|food|furniture,hall,1,1,1,1
+HUB0168,Dewan Bandaran Gopeng,4.4695973,101.1652815,6271235053,52,3.13,2.43,1,09:00,17:00,appliances|books|electronics|food,hall,0,1,0,1
+HUB0169,Dewan Masyarakat Taman Gembira,3.0833287,101.6872577,5788909212,142,42.75,24.81,1,08:00,12:00,appliances|books|clothing|electronics|food|furniture,hall,0,0,1,1
+HUB0170,Persatuan Penduduk Penduduk Kampung Tasik Ampang,3.1325495,101.7815641,478893700,159,80.22,4.41,1,08:00,22:00,appliances|clothing|electronics|food|furniture,office,0,1,1,1
+HUB0171,Young Womens' Christian Association of Kuala Lumpur,3.1430169,101.7018545,12600757077,250,4.57,49.04,1,09:00,17:00,appliances|books|clothing|electronics|food|furniture,office,1,1,1,0
+HUB0172,Dewan Komuniti Taman Muda Fasa 1,3.1213642,101.7567755,790785608,111,86.46,3.57,0,08:00,22:00,books|clothing|electronics|food|furniture,hall,0,0,0,0
+HUB0173,Unnamed community centre (OSM way 1434319854),3.8012439,103.2676783,7083445847,182,122.43,4.92,1,09:00,17:00,appliances|books|clothing|electronics|furniture,office,0,1,1,1
+HUB0174,Persatuan Penduduk Taman Daya,3.222227,101.6364396,7233168258,119,61.37,7.68,1,09:00,17:00,appliances|books|clothing|electronics|furniture,office,1,1,0,0
+HUB0175,Dewan Kg Permatang Rawa,5.5641779,100.3649215,7362539670,194,143.53,13.86,1,09:00,17:00,appliances|clothing|electronics|food|furniture,hall,1,0,0,1
+HUB0176,Dewan Orang Ramai Balok,3.9358679,103.3699929,13483064384,109,23.39,18.9,1,08:00,22:00,appliances|books|clothing|electronics|food|furniture,hall,0,0,1,1
+HUB0177,Seri Budaya,3.1752449,101.5841959,7887902616,246,13.85,46.81,1,09:00,17:00,appliances|books|clothing|electronics|food|furniture,hall,1,1,1,1
+HUB0178,Pusat Sebaran Maklumat Nasional,3.9372532,103.3758629,7387333981,77,40.82,13.04,1,08:00,22:00,appliances|books|electronics|food,office,0,0,1,1
+HUB0179,Unnamed community centre (OSM way 1528969262),1.5262229,103.7161745,6057935052,219,65.15,39.13,1,08:00,12:00,appliances|books|clothing|electronics|food|furniture,office,1,1,1,0
+HUB0180,Balai Raya Kampung Sepri,2.6346356,102.0813277,6144148636,118,73.96,21.52,1,08:00,22:00,appliances|books|electronics|food|furniture,hall,1,0,0,1

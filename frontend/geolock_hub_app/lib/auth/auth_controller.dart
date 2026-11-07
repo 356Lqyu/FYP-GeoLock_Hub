@@ -77,9 +77,6 @@ class AuthController {
         'p_role': role,
         'p_phone': pending['phone'],
         'p_ngo_name': role == 'NGO' ? pending['ngo_name'] : null,
-        'p_registration_number': role == 'NGO'
-            ? pending['registration_number']
-            : null,
         // Location is configured after login through a protected RPC.
         'p_operating_address': null,
         'p_latitude': null,

@@ -1,0 +1,42 @@
+{
+  "project_ref": "rcgyuwiidqvrgbxswhqj",
+  "purpose": "two_actor",
+  "approval_ref": "<review-reference>",
+  "operator": "<operator>",
+  "fixture_label": "STAGE3J-2A-<unique-run>",
+  "actor_ids": [
+    "<NGO-A-UUID>",
+    "<NGO-B-UUID>"
+  ],
+  "fixtures": [
+    {
+      "listing_id": "<race-listing-UUID>",
+      "donation_id": "<race-donation-UUID>"
+    },
+    {
+      "listing_id": "<delayed-listing-UUID>",
+      "donation_id": "<delayed-donation-UUID>"
+    }
+  ],
+  "health_baseline": {
+    "migration_sha256": "<SHA256-of-current-migration-file-bytes>",
+    "other_functions_md5": "<reviewed-post-deployment-other-functions-md5>",
+    "function_acls": {
+      "cancel_claim(uuid,uuid)": "<reviewed-actual-ACL-string-or-JSON-null>",
+      "claim_listing(uuid,uuid)": "<reviewed-actual-ACL-string-or-JSON-null>",
+      "complete_pickup(uuid,boolean)": "<reviewed-actual-ACL-string-or-JSON-null>",
+      "geolock_transition_listing_donations(uuid,text,text)": "<reviewed-actual-ACL-string-or-JSON-null>",
+      "geolock_transition_listing_donations(uuid,text,text,uuid,uuid,text)": "<reviewed-actual-ACL-string-or-JSON-null>",
+      "get_authorized_audit_events(text,uuid)": "<reviewed-actual-ACL-string-or-JSON-null>",
+      "get_my_claim_cards_v2()": "<reviewed-actual-ACL-string-or-JSON-null>",
+      "recover_expired_claims(integer)": "<reviewed-actual-ACL-string-or-JSON-null>",
+      "start_pickup(uuid)": "<reviewed-actual-ACL-string-or-JSON-null>",
+      "submit_claim_reconciliation(uuid,boolean,uuid)": "<reviewed-actual-ACL-string-or-JSON-null>"
+    },
+    "recovery_history": {
+      "total": 0,
+      "failed": 0,
+      "unfinished": 0
+    }
+  }
+}

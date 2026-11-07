@@ -1,0 +1,14 @@
+{
+  "status": "PROPOSAL_ONLY_NO_SQL_EXECUTION",
+  "static_tests_passed": 11,
+  "isolated_cases_prepared": 17,
+  "isolated_cases_executed": 0,
+  "isolated_python_syntax": "PASS",
+  "existing_integration_manifest_matches": {
+    "docs\\stage8\\integration\\001_authority_proposal.sql": true,
+    "docs\\stage8\\integration\\002_publication_proposal.sql": true,
+    "docs\\stage8\\integration\\003_pickup_enforcement_proposal.sql": true
+  },
+  "database_connections": 0,
+  "sql_writes": 0
+}

@@ -1,0 +1,32 @@
+{
+  "status": "PASS_LOCAL_NOT_ACTIVATED",
+  "recorded_at": "2026-10-24T17:01:12.463849+00:00",
+  "project_ref": "rcgyuwiidqvrgbxswhqj",
+  "focused_python_tests_passed": 33,
+  "local_postgresql_rpc_tests_passed": 4,
+  "focused_flutter_tests_passed": 22,
+  "flutter_analysis": "PASS",
+  "dev_calls": 0,
+  "dev_writes": 0,
+  "dev_migrations_executed": 0,
+  "live_authenticated_tests": 0,
+  "phase_c1_full_signoff": false,
+  "evidence_scope": "Synthetic in-memory/loopback HTTP plus NEW disposable local PostgreSQL with real scoped LOGIN roles; NGO auth is a test double",
+  "migration_files_unchanged": true,
+  "migration_hashes": {
+    "docs\\stage8\\integration\\001_authority_proposal.sql": "ae4ad5fe603e6d169de42420dbee5f3c59908976a03f95526e46d50e3f0b86f9",
+    "docs\\stage8\\integration\\002_publication_proposal.sql": "f8e048d3ad7f53dd636250fa5620f41997d7b8126af74789a785c7c3d968f254",
+    "docs\\stage8\\integration\\003_pickup_enforcement_proposal.sql": "e968ca18e5d70b70c91467dcef567b45ce8cb24aa075b1a6340e1f0c529b5ab7"
+  },
+  "code_hashes": {
+    "errors.py": "70a8ea2499c7eac8f4e8fc7446d5d365f714453aeefbe2dc883ed67a9865ceac",
+    "graph_cache.py": "9e3fe998b3bc0fc3e28e22eb28d7e0c0db30da8a56827ca320de6c83967d0f0c",
+    "journal.py": "79e5c39d272a5ac60667b6172d5cd4031b25ab02d5cd5c1dbc925c3e8b0341ae",
+    "orchestrator.py": "47a5cd0131052bf77201288d764cd67cba16bb5c411696059540e5fe5442f39c",
+    "server.py": "9d10ed1fa6a6a1db8373ab33f7f39071c55560a747ef1f53e42518eff0d8788a",
+    "transport.py": "40a238d731ab1ace63fea23f3a1eb89f4cbb30294ed0058b4ea137355e43d086",
+    "validator.py": "1bbc49d021ff50f454abe9d906131a77ca5ce12e9ff9c8568060ca4422081535",
+    "__init__.py": "ad27fcf151eb3597fb720be5b628f9333d58cc5487b68e20c53434fea9353e74",
+    "__main__.py": "ddd60a1df996b2b744c45953165711e5afe2711f5f0249f4e98875e1342411df"
+  }
+}

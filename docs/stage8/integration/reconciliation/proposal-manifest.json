@@ -1,0 +1,13 @@
+{
+  "reconciliation_md5": "9e0cdc7d246309222f7ac88d54cb4b96",
+  "revised_reconciliation_md5": "ae348bb136954224e40a9361872a8eab",
+  "recovery_md5": "5ff6d8719db9681aae6f444b89dfbaee",
+  "guard_md5": "ab3101347fdbd148116c634e6c6132ad",
+  "status": "REVIEW_ONLY_NOT_AUTHORIZED",
+  "project_ref": "rcgyuwiidqvrgbxswhqj",
+  "source_pins_are": "Repository baselines; require actual DEV comparison before approval",
+  "files": {
+    "003_reconciliation_compatibility_proposal.sql": "90aa5457762c0ed6f85e3c2786e6f45c4fdec1a00295240d4c54c6bda69449c3",
+    "003_with_reconciliation_proposal.sql": "235b3fd6436f8e968d3a459767c6c930831bbf8f38935a96f8a68ac85471bf7d"
+  }
+}

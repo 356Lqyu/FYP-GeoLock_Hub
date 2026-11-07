@@ -1,0 +1,33 @@
+{
+  "project_ref": "rcgyuwiidqvrgbxswhqj",
+  "mode": "SELECT_ONLY",
+  "coverage": [
+    {
+      "network_snapshot_id": "OSM-OPS-20261018",
+      "dataset_kind": "OPERATIONAL",
+      "approved_at": "2026-10-20 11:03:49.311259+00",
+      "active_flag": true
+    }
+  ],
+  "precision": [
+    {
+      "float_output_setting": "0",
+      "edge_count": 2145828,
+      "serialized_costs_exceeding_six_decimals": 0
+    }
+  ],
+  "lifecycle_hashes": [
+    {
+      "name": "assign_task_to_route",
+      "sha256": "0341fd334439b319b0bc78b8910ce2de5e2f51b5803ab4a53d0e0e89b50e11cf"
+    },
+    {
+      "name": "complete_pickup",
+      "sha256": "de1f32f68ced1b9ffae70983cd7988c8e140509ef7aa9bf8c69a23dca512f4a0"
+    },
+    {
+      "name": "start_pickup",
+      "sha256": "a87e59bd4c790bc593f76da42bff47e8864c2f27affffc623d6f7161a63a84a7"
+    }
+  ]
+}

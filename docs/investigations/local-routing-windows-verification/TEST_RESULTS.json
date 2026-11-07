@@ -1,0 +1,45 @@
+{
+  "date_local": "2026-11-07 Asia/Kuala_Lumpur",
+  "scope": "OFFLINE ONLY; NO DEV OR DEVICE ACCESS",
+  "worker_suite": {
+    "command": ".venv-stage8/Scripts/python.exe -B -m unittest discover -s backend/routing/worker_service/tests -t . -q",
+    "passed": 153,
+    "seconds": 23.943,
+    "exit_code": 0
+  },
+  "journal_regression": {
+    "command": ".venv-stage8/Scripts/python.exe -B -m unittest backend.routing.hosted.tests.test_journal_initialization -q",
+    "passed": 4,
+    "seconds": 0.286,
+    "exit_code": 0
+  },
+  "flutter_routing_suite": {
+    "cwd": "frontend/geolock_hub_app",
+    "command": "flutter test --no-pub test/routing_worker_client_test.dart test/automatic_route_operation_test.dart test/routing_pending_request_test.dart test/routing_resume_ui_test.dart test/routing_feedback_test.dart",
+    "passed": 42,
+    "skipped": 1,
+    "skip_reason": "Disposable SQL capture path not provided; no SQL acceptance result claimed",
+    "exit_code": 0,
+    "note": "Initial sandboxed invocation stopped without a result; completed rerun used installed SDK cache access and suppressed analytics."
+  },
+  "dependency_check": {
+    "command": ".venv-stage8/Scripts/python.exe -m pip check",
+    "output": "No broken requirements found.",
+    "exit_code": 0
+  },
+  "offline_setup": {
+    "command": "backend/routing/worker_service/windows/Test-LocalRoutingSetup.ps1",
+    "status": "PASS",
+    "python": "3.12.14",
+    "ortools": "9.15.6755",
+    "psycopg": "3.3.6",
+    "sqlite": "3.53.1",
+    "libpq": 170011,
+    "planner_and_validator_native_config": "DISABLED",
+    "planner_and_validator_isolated_health": "PASS / DISABLED",
+    "temporary_children_stopped": true,
+    "saved_profiles_read": false,
+    "dev_access": false
+  },
+  "receipt_type": "Recorded observed local tool results; not a database receipt or deployment authorization"
+}

@@ -1,0 +1,272 @@
+{
+  "schema_version": "geolock.routing.scenario.v1",
+  "planning_run_id": "TOY-RUN-unreachable",
+  "scenario_id": "SYNTHETIC-unreachable",
+  "source": {
+    "kind": "SYNTHETIC_BENCHMARK",
+    "project_ref": null,
+    "provenance": "Hand-defined directed line graph; all entities fictional",
+    "evidence_ref": "backend/routing/README.md#synthetic-fixtures"
+  },
+  "ngo_id": "TOY-NGO",
+  "ngo_active": true,
+  "ngo_location_generation": 1,
+  "ngo_location_verified_at": "2026-10-23T00:00:00Z",
+  "cutoff": "2026-10-24T00:05:00Z",
+  "configuration": {
+    "version": "TOY-CONFIG-v1",
+    "currency": "SYNTHETIC_COST_UNIT",
+    "planning_horizon_minutes": 240,
+    "dispatch_margin_minutes": 10,
+    "objective": "MIN_UNSERVED_THEN_FIXED_PLUS_DISTANCE_COST",
+    "time_window_policy": "SERVICE_COMPLETION_WITHIN_WINDOW"
+  },
+  "depot": {
+    "location_id": "TOY-NGO-DEPOT",
+    "road_node_id": "TOY-DEPOT",
+    "network_snapshot_id": "SYNTHETIC-LINE-DISCONNECTED-v1",
+    "latitude": 3.0,
+    "longitude": 101.0,
+    "state_token": "0ef1b8044cd426eb5ae25bb43aecf852f2ee1ff8c06fe574d477b5fc90a8cd06"
+  },
+  "route_start_location_id": "TOY-NGO-DEPOT",
+  "route_end_location_id": "TOY-NGO-DEPOT",
+  "vehicles": [
+    {
+      "vehicle_id": "TOY-VEHICLE-1",
+      "ngo_id": "TOY-NGO",
+      "vehicle_type": "SYNTHETIC_VAN",
+      "capacity_kg": 40,
+      "active": true,
+      "available_for_planning": true,
+      "fixed_cost": 5,
+      "distance_cost_per_km": 1,
+      "max_route_minutes": 240,
+      "depot_location_id": "TOY-NGO-DEPOT",
+      "state_token": "b3d054fdf651a6759553ac2897afca59a5f7503fa5f8954d5c2e7943e5170f9d"
+    },
+    {
+      "vehicle_id": "TOY-VEHICLE-2",
+      "ngo_id": "TOY-NGO",
+      "vehicle_type": "SYNTHETIC_VAN",
+      "capacity_kg": 80,
+      "active": true,
+      "available_for_planning": true,
+      "fixed_cost": 8,
+      "distance_cost_per_km": 1.2,
+      "max_route_minutes": 240,
+      "depot_location_id": "TOY-NGO-DEPOT",
+      "state_token": "13edd06f9d05811f4721c3c71597aabca7d385ae499b0dd94d6121e8d9e2fa95"
+    }
+  ],
+  "tasks": [
+    {
+      "task_id": "TOY-DIRECT",
+      "ngo_id": "TOY-NGO",
+      "claim_id": "TOY-DIRECT-CLAIM",
+      "claim_ngo_id": "TOY-NGO",
+      "lease_id": "TOY-DIRECT-LEASE",
+      "listing_id": "TOY-DIRECT-LISTING",
+      "source_type": "DIRECT_DONATION",
+      "task_status": "CONFIRMED",
+      "claim_status": "ACTIVE",
+      "lease_status": "ACTIVE",
+      "listing_status": "CLAIMED",
+      "created_at": "2026-10-24T00:01:00Z",
+      "lease_issued_at": "2026-10-24T00:00:00Z",
+      "lease_expires_at": "2026-10-24T06:00:00Z",
+      "listing_expires_at": null,
+      "listing_version": 2,
+      "task_state_token": "a298c02aac34a8bec20d7ee2bc2488204b04681b92d12b2b93718affd04a22e5",
+      "claim_state_token": "063554b38dcde3470394c20e347f2ee545e702d800b2ff4370dd72fc802b5b66",
+      "lease_state_token": "e63e176c015d417e00f588647f0ce83773115016ad9900b637ed99c682e08056",
+      "pickup": {
+        "location_id": "TOY-DONOR-LOCATION",
+        "road_node_id": "TOY-DONOR",
+        "network_snapshot_id": "SYNTHETIC-LINE-DISCONNECTED-v1",
+        "latitude": 3.01,
+        "longitude": 101.01,
+        "state_token": "d62707477b30fae53a019de3e65dbb4d985539be01af40d4fb58fe1b77b95fbf"
+      },
+      "authorized_pickup": {
+        "location_id": "TOY-DONOR-LOCATION",
+        "road_node_id": "TOY-DONOR",
+        "network_snapshot_id": "SYNTHETIC-LINE-DISCONNECTED-v1",
+        "latitude": 3.01,
+        "longitude": 101.01,
+        "state_token": "d62707477b30fae53a019de3e65dbb4d985539be01af40d4fb58fe1b77b95fbf"
+      },
+      "weight_kg": 30,
+      "listing_weight_kg": 30,
+      "time_window": {
+        "start": "2026-10-24T00:00:00Z",
+        "end": "2026-10-24T05:00:00Z",
+        "provenance": "Synthetic fixture window; not an operational default"
+      },
+      "service_minutes": 10,
+      "mandatory": true,
+      "has_route_assignment": false,
+      "reconciliation_blocked": false,
+      "donations": [
+        {
+          "donation_id": "TOY-DIRECT-DONATION-0",
+          "donation_status": "CLAIMED",
+          "state_token": "8f6f0dc2e0d90d6752059424ba1274d96184bf8d61ff056a2614fbfb9469a0bd"
+        }
+      ],
+      "batch": null
+    },
+    {
+      "task_id": "TOY-HUB-TASK",
+      "ngo_id": "TOY-NGO",
+      "claim_id": "TOY-HUB-TASK-CLAIM",
+      "claim_ngo_id": "TOY-NGO",
+      "lease_id": "TOY-HUB-TASK-LEASE",
+      "listing_id": "TOY-HUB-TASK-LISTING",
+      "source_type": "HUB_BATCH",
+      "task_status": "CONFIRMED",
+      "claim_status": "ACTIVE",
+      "lease_status": "ACTIVE",
+      "listing_status": "CLAIMED",
+      "created_at": "2026-10-24T00:01:00Z",
+      "lease_issued_at": "2026-10-24T00:00:00Z",
+      "lease_expires_at": "2026-10-24T06:00:00Z",
+      "listing_expires_at": null,
+      "listing_version": 2,
+      "task_state_token": "09047a1b4a334b1e1e751fe2df9cb8cab2f06dff80ab3013d6738e9cc8e118b6",
+      "claim_state_token": "f9dd9b33d5536fb6d8d4e28422b3beea54274c88fb853cd4d2c3a13afe603fe9",
+      "lease_state_token": "3a1938cd9e37559417c1b517fba31ec5ecc5adb243710f9f4a994885e50a1013",
+      "pickup": {
+        "location_id": "TOY-HUB",
+        "road_node_id": "TOY-HUB",
+        "network_snapshot_id": "SYNTHETIC-LINE-DISCONNECTED-v1",
+        "latitude": 3.02,
+        "longitude": 101.02,
+        "state_token": "f9357c71c95aa591ebc4ea1ba8126f80d3a2e5b8213bb52684c6f1881adf864b"
+      },
+      "authorized_pickup": {
+        "location_id": "TOY-HUB",
+        "road_node_id": "TOY-HUB",
+        "network_snapshot_id": "SYNTHETIC-LINE-DISCONNECTED-v1",
+        "latitude": 3.02,
+        "longitude": 101.02,
+        "state_token": "f9357c71c95aa591ebc4ea1ba8126f80d3a2e5b8213bb52684c6f1881adf864b"
+      },
+      "weight_kg": 12,
+      "listing_weight_kg": 12,
+      "time_window": {
+        "start": "2026-10-24T00:00:00Z",
+        "end": "2026-10-24T05:00:00Z",
+        "provenance": "Synthetic fixture window; not an operational default"
+      },
+      "service_minutes": 10,
+      "mandatory": true,
+      "has_route_assignment": false,
+      "reconciliation_blocked": false,
+      "donations": [
+        {
+          "donation_id": "TOY-HUB-TASK-DONATION-0",
+          "donation_status": "CLAIMED",
+          "state_token": "cc2dfc1478b38b34c0ea3b9e1ef7ddb1fa7b1643303456e6f3b667a28702cc6e"
+        },
+        {
+          "donation_id": "TOY-HUB-TASK-DONATION-1",
+          "donation_status": "CLAIMED",
+          "state_token": "3f546c948dd884636f34f25eb7c5bccd34c5687f237617ea4c07307de889c36c"
+        },
+        {
+          "donation_id": "TOY-HUB-TASK-DONATION-2",
+          "donation_status": "CLAIMED",
+          "state_token": "dffccd40a10ca7d5870fe18badd065a64f39e10cb76d6dfdb8d367769a39dced"
+        }
+      ],
+      "batch": {
+        "batch_id": "TOY-BATCH",
+        "hub_id": "TOY-HUB",
+        "batch_version": 1,
+        "batch_status": "PUBLISHED",
+        "inventory_status": "BATCHED",
+        "member_count": 3,
+        "state_token": "503df9b032eaa83cca5c93d696cc78d034eaad3871ab0dd9ccf6252aefe752be"
+      }
+    }
+  ],
+  "matrix": {
+    "matrix_id": "TOY-DISCONNECTED-v1",
+    "version": "1",
+    "network_snapshot_id": "SYNTHETIC-LINE-DISCONNECTED-v1",
+    "source_kind": "SYNTHETIC_BENCHMARK",
+    "provenance": "generate_examples.EDGES; unique directed line paths; remove edges (1,2) and (2,1); hub is isolated",
+    "method": "Sum km and minutes along the same unique directed edge sequence",
+    "edge_speed_profile": "Fixed edge pairs; forward/reverse modeled speeds are 30 km/h",
+    "path_policy": "DIRECTED_SHORTEST_DISTANCE_WITH_TIME_ON_SAME_PATH",
+    "unavailable_policy": "FAIL_SCENARIO",
+    "node_order": [
+      "TOY-DEPOT",
+      "TOY-DONOR",
+      "TOY-HUB"
+    ],
+    "distance_km": [
+      [
+        0,
+        2.0,
+        null
+      ],
+      [
+        2.5,
+        0,
+        null
+      ],
+      [
+        null,
+        null,
+        0
+      ]
+    ],
+    "travel_minutes": [
+      [
+        0,
+        4.0,
+        null
+      ],
+      [
+        5.0,
+        0,
+        null
+      ],
+      [
+        null,
+        null,
+        0
+      ]
+    ],
+    "arc_status": [
+      [
+        "AVAILABLE",
+        "AVAILABLE",
+        "UNREACHABLE"
+      ],
+      [
+        "AVAILABLE",
+        "AVAILABLE",
+        "UNREACHABLE"
+      ],
+      [
+        "UNREACHABLE",
+        "UNREACHABLE",
+        "AVAILABLE"
+      ]
+    ]
+  },
+  "solver": {
+    "engine": "OR_TOOLS",
+    "version": "NOT_INSTALLED_PHASE_A",
+    "time_limit_seconds": 30,
+    "workers": 1,
+    "seed": 42,
+    "first_solution": "PATH_CHEAPEST_ARC",
+    "local_search": "GUIDED_LOCAL_SEARCH",
+    "tie_break": "TASK_ID_THEN_VEHICLE_ID",
+    "timeout_policy": "VALIDATED_INCUMBENT_ONLY"
+  }
+}

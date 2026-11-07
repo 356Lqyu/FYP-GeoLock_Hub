@@ -1,0 +1,258 @@
+{
+  "phase": "Stage 3I Phase 1 precreation",
+  "project": "rcgyuwiidqvrgbxswhqj",
+  "scope": "SELECT-only; fixture pending user Flutter actions; no cron/recovery/cleanup authorization",
+  "fixture_title": "STAGE3I-E2E-30bc928b-2843-4b9c-a5d4-298b76a8c514",
+  "preflight": [
+    {
+      "observed_at": "2026-10-22 20:23:02.463469+00",
+      "current_database": "postgres",
+      "current_user": "supabase_read_only_user",
+      "read_only": "on",
+      "timezone": "UTC",
+      "claim": null,
+      "lease": null,
+      "task": null,
+      "listing": null,
+      "donation": null,
+      "audits": null,
+      "refresh": null,
+      "other_business_md5": "1a635cad67b4c3f1f1790599b475796e",
+      "target_is_overdue": false,
+      "configured_lease_minutes": 360,
+      "nonterminal_claims": 0,
+      "all_overdue": null,
+      "unresolved_cases": null,
+      "assignments": null,
+      "stops": null,
+      "cron": [
+        {
+          "jobid": 1,
+          "active": true,
+          "command": "set statement_timeout = '10min'; select public.process_ngo_eligibility_refresh_jobs();",
+          "jobname": "geolock-ngo-eligibility-refresh",
+          "database": "postgres",
+          "nodename": "localhost",
+          "nodeport": 5432,
+          "schedule": "* * * * *",
+          "username": "postgres"
+        },
+        {
+          "jobid": 2,
+          "active": true,
+          "command": "set statement_timeout = '10min'; select public.process_listing_eligibility_refresh_jobs();",
+          "jobname": "geolock-listing-eligibility-refresh",
+          "database": "postgres",
+          "nodename": "localhost",
+          "nodeport": 5432,
+          "schedule": "* * * * *",
+          "username": "postgres"
+        },
+        {
+          "jobid": 3,
+          "active": false,
+          "command": "set lock_timeout = '5s'; set statement_timeout = '50s'; select public.recover_expired_claims(1);",
+          "jobname": "geolock-expired-claim-recovery",
+          "database": "postgres",
+          "nodename": "localhost",
+          "nodeport": 5432,
+          "schedule": "* * * * *",
+          "username": "postgres"
+        }
+      ],
+      "job3_history": [
+        {
+          "jobid": 3,
+          "runid": 3104,
+          "status": "succeeded",
+          "command": "set lock_timeout = '5s'; set statement_timeout = '50s'; select public.recover_expired_claims(1);",
+          "job_pid": 457169,
+          "database": "postgres",
+          "end_time": "2026-10-22T19:44:00.087517+00:00",
+          "username": "postgres",
+          "start_time": "2026-10-22T19:44:00.07456+00:00",
+          "return_message": "1 row"
+        },
+        {
+          "jobid": 3,
+          "runid": 3107,
+          "status": "succeeded",
+          "command": "set lock_timeout = '5s'; set statement_timeout = '50s'; select public.recover_expired_claims(1);",
+          "job_pid": 457185,
+          "database": "postgres",
+          "end_time": "2026-10-22T19:45:00.074819+00:00",
+          "username": "postgres",
+          "start_time": "2026-10-22T19:45:00.063527+00:00",
+          "return_message": "1 row"
+        },
+        {
+          "jobid": 3,
+          "runid": 3110,
+          "status": "succeeded",
+          "command": "set lock_timeout = '5s'; set statement_timeout = '50s'; select public.recover_expired_claims(1);",
+          "job_pid": 457232,
+          "database": "postgres",
+          "end_time": "2026-10-22T19:46:00.091835+00:00",
+          "username": "postgres",
+          "start_time": "2026-10-22T19:46:00.078907+00:00",
+          "return_message": "1 row"
+        },
+        {
+          "jobid": 3,
+          "runid": 3113,
+          "status": "succeeded",
+          "command": "set lock_timeout = '5s'; set statement_timeout = '50s'; select public.recover_expired_claims(1);",
+          "job_pid": 457242,
+          "database": "postgres",
+          "end_time": "2026-10-22T19:47:00.092409+00:00",
+          "username": "postgres",
+          "start_time": "2026-10-22T19:47:00.086522+00:00",
+          "return_message": "1 row"
+        },
+        {
+          "jobid": 3,
+          "runid": 3116,
+          "status": "succeeded",
+          "command": "set lock_timeout = '5s'; set statement_timeout = '50s'; select public.recover_expired_claims(1);",
+          "job_pid": 457274,
+          "database": "postgres",
+          "end_time": "2026-10-22T19:48:00.075359+00:00",
+          "username": "postgres",
+          "start_time": "2026-10-22T19:48:00.059926+00:00",
+          "return_message": "1 row"
+        },
+        {
+          "jobid": 3,
+          "runid": 3119,
+          "status": "succeeded",
+          "command": "set lock_timeout = '5s'; set statement_timeout = '50s'; select public.recover_expired_claims(1);",
+          "job_pid": 457284,
+          "database": "postgres",
+          "end_time": "2026-10-22T19:49:00.088459+00:00",
+          "username": "postgres",
+          "start_time": "2026-10-22T19:49:00.078538+00:00",
+          "return_message": "1 row"
+        },
+        {
+          "jobid": 3,
+          "runid": 3122,
+          "status": "succeeded",
+          "command": "set lock_timeout = '5s'; set statement_timeout = '50s'; select public.recover_expired_claims(1);",
+          "job_pid": 457309,
+          "database": "postgres",
+          "end_time": "2026-10-22T19:50:00.151424+00:00",
+          "username": "postgres",
+          "start_time": "2026-10-22T19:50:00.128997+00:00",
+          "return_message": "1 row"
+        },
+        {
+          "jobid": 3,
+          "runid": 3125,
+          "status": "succeeded",
+          "command": "set lock_timeout = '5s'; set statement_timeout = '50s'; select public.recover_expired_claims(1);",
+          "job_pid": 457325,
+          "database": "postgres",
+          "end_time": "2026-10-22T19:51:00.079626+00:00",
+          "username": "postgres",
+          "start_time": "2026-10-22T19:51:00.07163+00:00",
+          "return_message": "1 row"
+        },
+        {
+          "jobid": 3,
+          "runid": 3128,
+          "status": "succeeded",
+          "command": "set lock_timeout = '5s'; set statement_timeout = '50s'; select public.recover_expired_claims(1);",
+          "job_pid": 457351,
+          "database": "postgres",
+          "end_time": "2026-10-22T19:52:00.081998+00:00",
+          "username": "postgres",
+          "start_time": "2026-10-22T19:52:00.072158+00:00",
+          "return_message": "1 row"
+        },
+        {
+          "jobid": 3,
+          "runid": 3131,
+          "status": "succeeded",
+          "command": "set lock_timeout = '5s'; set statement_timeout = '50s'; select public.recover_expired_claims(1);",
+          "job_pid": 457367,
+          "database": "postgres",
+          "end_time": "2026-10-22T19:53:00.098045+00:00",
+          "username": "postgres",
+          "start_time": "2026-10-22T19:53:00.08442+00:00",
+          "return_message": "1 row"
+        },
+        {
+          "jobid": 3,
+          "runid": 3134,
+          "status": "succeeded",
+          "command": "set lock_timeout = '5s'; set statement_timeout = '50s'; select public.recover_expired_claims(1);",
+          "job_pid": 457394,
+          "database": "postgres",
+          "end_time": "2026-10-22T19:54:00.086286+00:00",
+          "username": "postgres",
+          "start_time": "2026-10-22T19:54:00.075632+00:00",
+          "return_message": "1 row"
+        },
+        {
+          "jobid": 3,
+          "runid": 3137,
+          "status": "succeeded",
+          "command": "set lock_timeout = '5s'; set statement_timeout = '50s'; select public.recover_expired_claims(1);",
+          "job_pid": 458010,
+          "database": "postgres",
+          "end_time": "2026-10-22T19:55:00.369905+00:00",
+          "username": "postgres",
+          "start_time": "2026-10-22T19:55:00.343714+00:00",
+          "return_message": "1 row"
+        }
+      ],
+      "unfinished": null,
+      "recovery_body_md5": "5ff6d8719db9681aae6f444b89dfbaee",
+      "proposed_manifest": {
+        "timezone": "UTC",
+        "expires_at": null,
+        "baseline_at": "2026-10-22T20:23:02.463469+00:00",
+        "expected_version": null,
+        "other_business_md5": "1a635cad67b4c3f1f1790599b475796e",
+        "expected_generation": null
+      }
+    }
+  ],
+  "security_and_readiness": [
+    {
+      "evidence": {
+        "config": {
+          "direct_min_kg": 10,
+          "lease_minutes": 360
+        },
+        "source": {
+          "acl": "{postgres=X/postgres,service_role=X/postgres}",
+          "args": "p_limit integer DEFAULT 100",
+          "owner": "postgres",
+          "config": [
+            "search_path=pg_catalog, public, extensions, pg_temp"
+          ],
+          "result": "integer",
+          "body_md5": "5ff6d8719db9681aae6f444b89dfbaee",
+          "anon_execute": false,
+          "service_execute": true,
+          "security_definer": true,
+          "authenticated_execute": false
+        },
+        "observed_at": "2026-10-22T20:23:07.752362+00:00",
+        "open_transactions": [],
+        "generation_columns": [
+          {
+            "table": "listings",
+            "column": "listing_version"
+          },
+          {
+            "table": "listings",
+            "column": "eligibility_generation"
+          }
+        ],
+        "existing_test_donations": []
+      }
+    }
+  ]
+}

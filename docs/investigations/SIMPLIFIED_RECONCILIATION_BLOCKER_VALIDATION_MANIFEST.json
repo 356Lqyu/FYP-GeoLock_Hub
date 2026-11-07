@@ -1,0 +1,76 @@
+{
+  "status": "LOCAL_VALIDATION_ONLY_NOT_DEPLOYED",
+  "project_ref": "rcgyuwiidqvrgbxswhqj",
+  "files": [
+    {
+      "file": "supabase/migrations/20261104130000_unstarted_released_route_cancellation.sql",
+      "sha256": "7e77ede1b832d619dd3e3b9848e0501d5725bf57b1ad270c8b4c6e001d7430f1"
+    },
+    {
+      "file": "supabase/tests/coordination_deployment_blockers_isolated_test.py",
+      "sha256": "07100d18def129cb5cdde39e0ac7865aff8092a9ccc79227edb50ec9219f3bf2"
+    },
+    {
+      "file": "docs/stage8/stage-a/deployment-preparation/backup_pre003.ps1",
+      "sha256": "6c2ca5561b73fd89134094c09148be4f893bbff4d457d6d5711064279b1ab241"
+    },
+    {
+      "file": "docs/stage8/stage-a/deployment-preparation/backup_simplified_reconciliation.ps1",
+      "sha256": "1b05a8c61dffd6447b774c25361e1d262ce2cf2a7a8dfa589ce3b30798ea2216"
+    },
+    {
+      "file": "docs/stage8/stage-a/deployment-preparation/simplified_reconciliation_backup_baseline.json",
+      "sha256": "bf759f284734d4b2204c65006e44723d3970e9ca21647b9b4e52bc6c7e488925"
+    },
+    {
+      "file": "docs/stage8/stage-a/deployment-preparation/backup_current_verify.py",
+      "sha256": "320276285971e66810ba972360b06438cfc5c38c698a989e3fdf5b148f266d05"
+    },
+    {
+      "file": "docs/stage8/stage-a/deployment-preparation/test_backup_current.py",
+      "sha256": "939e8127a82d96d7c25b8a2ec3f77b29703621dfbcf2d53494c7752f633acd82"
+    },
+    {
+      "file": "docs/stage8/stage-a/deployment-preparation/test_simplified_backup_guards.ps1",
+      "sha256": "162682d228704887b9296fec9037b4fd27ca572f22acaf7d7b8234b67326664f"
+    },
+    {
+      "file": "docs/stage8/stage-a/deployment-preparation/SIMPLIFIED_RECONCILIATION_RECOVERY_PREPARATION.md",
+      "sha256": "efee91f29c60f3ceb41a5ad414b5bc14061352ead9af111c5603935ddd95f6af"
+    },
+    {
+      "file": "docs/stage8/stage-a/deployment-preparation/simplified_reconciliation_deployment_receipt.template.json",
+      "sha256": "c2a091d2bf0792a758202cea680b7b1b35f20e724926398913f50f68f3b9be0e"
+    },
+    {
+      "file": "docs/investigations/SIMPLIFIED_RECONCILIATION_DEPLOYMENT_BLOCKERS_RESOLVED.md",
+      "sha256": "e8e8677cc0607bfed7d48dd26eb1e6e770527332e4cca1ce761387470f45a2d8"
+    }
+  ],
+  "postgresql": {
+    "result": {
+      "tests": 9,
+      "failures": 0,
+      "errors": 0,
+      "passed": true,
+      "dev_connections": 0
+    },
+    "evidence": "results/automatic-routing-local/20261104T144537Z-ba2523",
+    "cluster_stop": {
+      "stopped": true,
+      "remote_connections": 0
+    }
+  },
+  "source_contract_checks": 6,
+  "offline_backup_python_tests": 16,
+  "offline_backup_negative_checks": 14,
+  "flutter_rerun": false,
+  "backup_executed": false,
+  "restore_executed": false,
+  "dev_writes": 0,
+  "logs": [
+    ".tmp/deployment-blockers-pg.log",
+    ".tmp/deployment-blockers-contract.log",
+    ".tmp/deployment-blockers-backup-python.log"
+  ]
+}

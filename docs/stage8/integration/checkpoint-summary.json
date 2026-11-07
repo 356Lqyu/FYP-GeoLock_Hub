@@ -1,0 +1,27 @@
+{
+  "status": "PASS_LOCAL_REVIEW_PACKAGE_NOT_DEPLOYED",
+  "recorded_at": "2026-10-24T13:23:13.331611+00:00",
+  "project_ref": "rcgyuwiidqvrgbxswhqj",
+  "offline_tests": 232,
+  "existing_c1_isolated_tests": 44,
+  "new_integration_isolated_tests": 20,
+  "total_distinct_tests": 296,
+  "preserved_original_routing_tests": 117,
+  "new_worker_and_package_tests": 24,
+  "new_sql_race_cases": 4,
+  "protected_fingerprints_unchanged": 712,
+  "c1_seal_valid": true,
+  "synthetic_reports_revalidated": 252,
+  "dev_writes": 0,
+  "live_authenticated_tests": 0,
+  "phase_c1_full_signoff": false,
+  "live_dispatch": false,
+  "remaining_approval": [
+    "Reviewed migration deployment",
+    "Dedicated backend role provisioning",
+    "Graph freeze and cost-profile approval",
+    "Explicit service/window/mandatory and solver policy approval",
+    "C1 authenticated prerequisites and controlled test fixtures",
+    "Live security, recovery and concurrency verification"
+  ]
+}

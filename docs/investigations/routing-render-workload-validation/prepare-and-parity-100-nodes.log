@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/workload.py", line 177, in <module>
+    if a.mode=='prepare':prepare()
+                         ^^^^^^^^^
+  File "/workload.py", line 76, in prepare
+    candidates.sort(key=lambda r:(r['km'],r['node']));assert len(candidates)>=99
+                                                             ^^^^^^^^^^^^^^^^^^^
+AssertionError

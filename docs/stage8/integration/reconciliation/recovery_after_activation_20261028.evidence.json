@@ -1,0 +1,325 @@
+{
+  "project_ref": "rcgyuwiidqvrgbxswhqj",
+  "read_only": true,
+  "evidence": [
+    {
+      "evidence": {
+        "at": "2026-10-28T05:56:44.139966+00:00",
+        "jobs": [
+          {
+            "jobid": 3,
+            "active": true,
+            "command": "set lock_timeout = '5s'; set statement_timeout = '50s'; select public.recover_expired_claims(1); -- STAGE3I_ONE_USE_8b4a48ed-97e4-41a9-aa1f-b588ae850b4f",
+            "jobname": "geolock-expired-claim-recovery",
+            "database": "postgres",
+            "nodename": "localhost",
+            "nodeport": 5432,
+            "schedule": "* * * * *",
+            "username": "postgres"
+          }
+        ],
+        "runs": [
+          {
+            "jobid": 3,
+            "runid": 18755,
+            "status": "succeeded",
+            "end_time": "2026-10-28T05:56:00.428563+00:00",
+            "start_time": "2026-10-28T05:56:00.094847+00:00",
+            "return_message": "1 row"
+          },
+          {
+            "jobid": 3,
+            "runid": 18752,
+            "status": "succeeded",
+            "end_time": "2026-10-28T05:55:00.697541+00:00",
+            "start_time": "2026-10-28T05:55:00.264235+00:00",
+            "return_message": "1 row"
+          },
+          {
+            "jobid": 3,
+            "runid": 18749,
+            "status": "succeeded",
+            "end_time": "2026-10-28T05:54:00.869996+00:00",
+            "start_time": "2026-10-28T05:54:00.313893+00:00",
+            "return_message": "1 row"
+          },
+          {
+            "jobid": 3,
+            "runid": 18746,
+            "status": "succeeded",
+            "end_time": "2026-10-28T05:53:00.445556+00:00",
+            "start_time": "2026-10-28T05:53:00.139104+00:00",
+            "return_message": "1 row"
+          },
+          {
+            "jobid": 3,
+            "runid": 18743,
+            "status": "succeeded",
+            "end_time": "2026-10-28T05:52:00.401963+00:00",
+            "start_time": "2026-10-28T05:52:00.09263+00:00",
+            "return_message": "1 row"
+          },
+          {
+            "jobid": 3,
+            "runid": 18740,
+            "status": "succeeded",
+            "end_time": "2026-10-28T05:51:00.343096+00:00",
+            "start_time": "2026-10-28T05:51:00.086941+00:00",
+            "return_message": "1 row"
+          },
+          {
+            "jobid": 3,
+            "runid": 5825,
+            "status": "succeeded",
+            "end_time": "2026-10-23T18:14:00.098413+00:00",
+            "start_time": "2026-10-23T18:14:00.088124+00:00",
+            "return_message": "1 row"
+          },
+          {
+            "jobid": 3,
+            "runid": 5822,
+            "status": "succeeded",
+            "end_time": "2026-10-23T18:13:00.089816+00:00",
+            "start_time": "2026-10-23T18:13:00.078318+00:00",
+            "return_message": "1 row"
+          },
+          {
+            "jobid": 3,
+            "runid": 5819,
+            "status": "succeeded",
+            "end_time": "2026-10-23T18:12:00.138805+00:00",
+            "start_time": "2026-10-23T18:12:00.119904+00:00",
+            "return_message": "1 row"
+          },
+          {
+            "jobid": 3,
+            "runid": 5816,
+            "status": "succeeded",
+            "end_time": "2026-10-23T18:11:00.353571+00:00",
+            "start_time": "2026-10-23T18:11:00.316498+00:00",
+            "return_message": "1 row"
+          },
+          {
+            "jobid": 3,
+            "runid": 5813,
+            "status": "succeeded",
+            "end_time": "2026-10-23T18:10:00.103573+00:00",
+            "start_time": "2026-10-23T18:10:00.088681+00:00",
+            "return_message": "1 row"
+          },
+          {
+            "jobid": 3,
+            "runid": 5192,
+            "status": "succeeded",
+            "end_time": "2026-10-23T13:00:00.089637+00:00",
+            "start_time": "2026-10-23T13:00:00.081383+00:00",
+            "return_message": "1 row"
+          },
+          {
+            "jobid": 3,
+            "runid": 5189,
+            "status": "succeeded",
+            "end_time": "2026-10-23T12:59:00.132357+00:00",
+            "start_time": "2026-10-23T12:59:00.12553+00:00",
+            "return_message": "1 row"
+          },
+          {
+            "jobid": 3,
+            "runid": 5186,
+            "status": "succeeded",
+            "end_time": "2026-10-23T12:58:00.151371+00:00",
+            "start_time": "2026-10-23T12:58:00.14255+00:00",
+            "return_message": "1 row"
+          },
+          {
+            "jobid": 3,
+            "runid": 5183,
+            "status": "succeeded",
+            "end_time": "2026-10-23T12:57:00.096267+00:00",
+            "start_time": "2026-10-23T12:57:00.085016+00:00",
+            "return_message": "1 row"
+          }
+        ],
+        "backlog": null,
+        "targets": [
+          {
+            "task": {
+              "load_kg": 12,
+              "task_id": "8ad61585-d5c2-41bf-829a-7f2cd13990e8",
+              "claim_id": "26265510-e487-4587-9557-f1a8bee6cc19",
+              "created_at": "2026-10-27T18:34:51.2303+00:00",
+              "listing_id": "267369c2-d638-46be-9389-fa6347ed24dd",
+              "ngo_user_id": "8e50bc66-7a8d-4791-bc6b-640682daa496",
+              "task_status": "STALE",
+              "pickup_road_node_id": "1587013500"
+            },
+            "cases": null,
+            "claim": {
+              "claim_id": "26265510-e487-4587-9557-f1a8bee6cc19",
+              "closed_at": "2026-10-28T05:55:00.326894+00:00",
+              "claimed_at": "2026-10-27T18:34:51.2303+00:00",
+              "listing_id": "267369c2-d638-46be-9389-fa6347ed24dd",
+              "request_id": "dfc39772-ddd0-4755-8f0b-99d6275033bb",
+              "ngo_user_id": "8e50bc66-7a8d-4791-bc6b-640682daa496",
+              "claim_status": "RELEASED",
+              "close_reason": "EXPIRED_SAFE_RELEASE"
+            },
+            "items": null,
+            "lease": {
+              "claim_id": "26265510-e487-4587-9557-f1a8bee6cc19",
+              "lease_id": "e46dd829-005d-4537-8dab-400fdef2c28f",
+              "closed_at": "2026-10-28T05:55:00.325298+00:00",
+              "issued_at": "2026-10-27T18:34:51.41453+00:00",
+              "expires_at": "2026-10-28T00:34:51.414531+00:00",
+              "lease_status": "RELEASED",
+              "release_reason": "EXPIRED_SAFE_RELEASE"
+            },
+            "stops": null,
+            "audits": [
+              {
+                "at": "2026-10-27T18:34:51.430285+00:00",
+                "id": "f6c22c59-fc99-4a58-acef-ae47d3a1d724",
+                "event": "DONATION_STATUS_CHANGED",
+                "state": "CLAIMED",
+                "reason": "CLAIM_ACCEPTED",
+                "outcome": "SUCCESS"
+              },
+              {
+                "at": "2026-10-28T05:55:00.666969+00:00",
+                "id": "b0dd513b-e488-473e-8d28-fd87ba6fa450",
+                "event": "DONATION_STATUS_CHANGED",
+                "state": "AVAILABLE",
+                "reason": "EXPIRED_SAFE_RELEASE",
+                "outcome": "SUCCESS"
+              },
+              {
+                "at": "2026-10-28T05:55:00.687403+00:00",
+                "id": "ef546198-8d76-4b79-a203-b10d7792de8c",
+                "event": "LEASE_RECOVERY",
+                "state": "RELEASED",
+                "reason": "EXPIRED_SAFE_RELEASE",
+                "outcome": "SUCCESS"
+              }
+            ],
+            "listing": {
+              "batch_id": null,
+              "created_at": "2026-10-27T18:28:49.675647+00:00",
+              "listing_id": "267369c2-d638-46be-9389-fa6347ed24dd",
+              "donation_id": "a09b3502-4113-4f5b-b74d-2eb7b01b6649",
+              "source_type": "DIRECT_DONATION",
+              "listing_status": "AVAILABLE",
+              "listing_version": 5,
+              "pickup_latitude": 3.22329871057177,
+              "pickup_longitude": 101.624895036221,
+              "listing_weight_kg": 12,
+              "listing_expires_at": null,
+              "pickup_road_node_id": "1587013500",
+              "eligibility_generation": 3
+            },
+            "donation": {
+              "id": "a09b3502-4113-4f5b-b74d-2eb7b01b6649",
+              "path": "DIRECT_PICKUP",
+              "title": "test c",
+              "status": "AVAILABLE"
+            },
+            "snapshots": null,
+            "assignments": null
+          },
+          {
+            "task": {
+              "load_kg": 15,
+              "task_id": "d7cdf0d8-72b5-41d0-b75d-f20fe8bae3f4",
+              "claim_id": "84879ced-16b5-441e-9e3b-308283edf7be",
+              "created_at": "2026-10-27T18:34:55.628711+00:00",
+              "listing_id": "71d2e224-6fa8-487b-9b12-2eb8cbc29ad3",
+              "ngo_user_id": "8e50bc66-7a8d-4791-bc6b-640682daa496",
+              "task_status": "STALE",
+              "pickup_road_node_id": "1755847924"
+            },
+            "cases": null,
+            "claim": {
+              "claim_id": "84879ced-16b5-441e-9e3b-308283edf7be",
+              "closed_at": "2026-10-28T05:56:00.114103+00:00",
+              "claimed_at": "2026-10-27T18:34:55.628711+00:00",
+              "listing_id": "71d2e224-6fa8-487b-9b12-2eb8cbc29ad3",
+              "request_id": "fd9d812d-5dfd-4e4f-a51e-4f0aed24620f",
+              "ngo_user_id": "8e50bc66-7a8d-4791-bc6b-640682daa496",
+              "claim_status": "RELEASED",
+              "close_reason": "EXPIRED_SAFE_RELEASE"
+            },
+            "items": null,
+            "lease": {
+              "claim_id": "84879ced-16b5-441e-9e3b-308283edf7be",
+              "lease_id": "6fd552cc-4032-4300-9f93-a1c16b8fb07d",
+              "closed_at": "2026-10-28T05:56:00.113685+00:00",
+              "issued_at": "2026-10-27T18:34:55.644636+00:00",
+              "expires_at": "2026-10-28T00:34:55.644637+00:00",
+              "lease_status": "RELEASED",
+              "release_reason": "EXPIRED_SAFE_RELEASE"
+            },
+            "stops": null,
+            "audits": [
+              {
+                "at": "2026-10-27T18:34:55.646077+00:00",
+                "id": "cd6e617c-0f04-4c96-9569-17eae8612548",
+                "event": "DONATION_STATUS_CHANGED",
+                "state": "CLAIMED",
+                "reason": "CLAIM_ACCEPTED",
+                "outcome": "SUCCESS"
+              },
+              {
+                "at": "2026-10-28T05:56:00.418834+00:00",
+                "id": "d6e87fa0-96d3-4d08-aab0-68915282c2e0",
+                "event": "DONATION_STATUS_CHANGED",
+                "state": "AVAILABLE",
+                "reason": "EXPIRED_SAFE_RELEASE",
+                "outcome": "SUCCESS"
+              },
+              {
+                "at": "2026-10-28T05:56:00.420086+00:00",
+                "id": "2bd796e6-cc19-43ce-9eb0-0ba3cb3f3c9e",
+                "event": "LEASE_RECOVERY",
+                "state": "RELEASED",
+                "reason": "EXPIRED_SAFE_RELEASE",
+                "outcome": "SUCCESS"
+              }
+            ],
+            "listing": {
+              "batch_id": null,
+              "created_at": "2026-10-27T18:26:56.638667+00:00",
+              "listing_id": "71d2e224-6fa8-487b-9b12-2eb8cbc29ad3",
+              "donation_id": "9505c1ad-2116-42cf-961f-8b883cf1aa62",
+              "source_type": "DIRECT_DONATION",
+              "listing_status": "AVAILABLE",
+              "listing_version": 5,
+              "pickup_latitude": 3.22048550370189,
+              "pickup_longitude": 101.624845080078,
+              "listing_weight_kg": 15,
+              "listing_expires_at": null,
+              "pickup_road_node_id": "1755847924",
+              "eligibility_generation": 3
+            },
+            "donation": {
+              "id": "9505c1ad-2116-42cf-961f-8b883cf1aa62",
+              "path": "DIRECT_PICKUP",
+              "title": "Test 10",
+              "status": "AVAILABLE"
+            },
+            "snapshots": null,
+            "assignments": null
+          }
+        ],
+        "function": {
+          "acl": "{postgres=X/postgres,service_role=X/postgres}",
+          "md5": "89e01f42d5ec23bfcbcdc47c1f4fd4e5",
+          "definition": "CREATE OR REPLACE FUNCTION public.recover_expired_claims(p_limit integer DEFAULT 100)\n RETURNS integer\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'pg_catalog', 'public', 'extensions', 'pg_temp'\nAS $function$\r\ndeclare\r\n  v_rec record; v_c public.donation_claims%rowtype; v_le public.claim_leases%rowtype;\r\n  v_l public.listings%rowtype; v_t public.pickup_tasks%rowtype;\r\n  v_uncertain boolean; v_count integer:=0; v_did uuid; v_cfg text;\r\nbegin\r\n  if auth.role() is distinct from 'service_role' and session_user <> 'postgres' then\r\n    raise exception 'TRUSTED_SCHEDULER_ONLY';\r\n  end if;\r\n  for v_rec in\r\n    select c.claim_id,cl.lease_id,cl.expires_at from public.donation_claims c\r\n    join public.claim_leases cl using(claim_id)\r\n    where c.claim_status='ACTIVE' and cl.lease_status='ACTIVE' and cl.expires_at<=clock_timestamp()\r\n    order by cl.expires_at,c.claim_id\r\n    for update of c skip locked\r\n    limit greatest(1,least(coalesce(p_limit,100),1000))\r\n  loop\r\n    select c.* into v_c from public.donation_claims c where c.claim_id=v_rec.claim_id;\r\n    -- Current row lock was obtained on claim above; follow V3 writer order.\r\n    select le.* into v_le from public.claim_leases le where le.lease_id=v_rec.lease_id for update;\r\n    if v_c.claim_status<>'ACTIVE' or v_le.lease_status<>'ACTIVE'\r\n       or v_le.expires_at>clock_timestamp() then continue; end if;\r\n    select l.* into v_l from public.listings l where l.listing_id=v_c.listing_id for update;\r\n    select t.* into v_t from public.pickup_tasks t where t.claim_id=v_c.claim_id for update;\r\n\r\n    -- Unresolved custody evidence for this claim or listing fences reopening.\r\n    v_uncertain := exists(select 1 from public.claim_reconciliation_cases rc\r\n        where (rc.claim_id=v_c.claim_id or rc.listing_id=v_l.listing_id)\r\n          and rc.case_status in ('OPEN','MANUAL_REVIEW'))\r\n      or v_l.listing_id is null\r\n      or v_t.task_id is null\r\n      or v_l.listing_status<>'CLAIMED'\r\n      or v_t.task_status<>'CONFIRMED'\r\n      or exists(select 1 from public.active_task_route_assignments a where a.task_id=v_t.task_id)\r\n      or exists(select 1 from public.pickup_route_stops s\r\n        where s.task_id=v_t.task_id)\r\n      or (v_l.source_type='DIRECT_DONATION' and exists(select 1 from public.donations d\r\n        where d.donation_id=v_l.donation_id and d.donation_status in ('PICKUP_IN_PROGRESS','COLLECTED','DELIVERED')))\r\n      or (v_l.source_type='HUB_BATCH' and exists(select 1 from public.hub_batch_members m\r\n        join public.donations d using(donation_id) where m.batch_id=v_l.batch_id\r\n        and m.membership_status='ACTIVE' and d.donation_status in ('PICKUP_IN_PROGRESS','COLLECTED','DELIVERED')));\r\n    if v_l.source_type='DIRECT_DONATION' then\r\n      v_uncertain:=v_uncertain or not exists(select 1 from public.donations d\r\n        where d.donation_id=v_l.donation_id and d.donation_status='CLAIMED');\r\n    elsif v_l.source_type='HUB_BATCH' then\r\n      v_uncertain:=v_uncertain\r\n        or not exists(select 1 from public.hub_batch_members m\r\n          where m.batch_id=v_l.batch_id and m.membership_status='ACTIVE')\r\n        or exists(select 1 from public.hub_batch_members m join public.donations d using(donation_id)\r\n          where m.batch_id=v_l.batch_id and m.membership_status='ACTIVE'\r\n            and d.donation_status<>'CLAIMED')\r\n        or exists(select 1 from public.hub_batch_members m join public.hub_inventory hi using(donation_id)\r\n          where m.batch_id=v_l.batch_id and m.membership_status='ACTIVE'\r\n            and hi.inventory_status<>'BATCHED');\r\n    end if;\r\n    if v_l.listing_id is not null then\r\n      v_uncertain:=not public.geolock_lock_listing_donations(v_l.listing_id,array['CLAIMED']) or v_uncertain;\r\n    end if;\r\n    -- Decide listing expiry only after acquiring the donation/batch lock set.\r\n    -- An expired listing cannot be safely reopened; retain custody for reconciliation.\r\n    v_uncertain:=v_uncertain\r\n      or (v_l.listing_expires_at is not null and v_l.listing_expires_at<=clock_timestamp());\r\n    if v_uncertain then\r\n      update public.claim_leases set lease_status='RECONCILIATION_REQUIRED' where lease_id=v_le.lease_id;\r\n      update public.donation_claims set claim_status='RECONCILIATION_REQUIRED' where claim_id=v_c.claim_id;\r\n      if v_l.listing_id is not null then\r\n        insert into public.claim_reconciliation_cases(claim_id,listing_id,donation_id,source_type,case_status)\r\n          values(v_c.claim_id,v_l.listing_id,v_l.donation_id,v_l.source_type,'OPEN')\r\n          on conflict(claim_id) do nothing;\r\n      end if;\r\n    else\r\n      update public.claim_leases set lease_status='RELEASED',closed_at=clock_timestamp(),release_reason='EXPIRED_SAFE_RELEASE'\r\n        where lease_id=v_le.lease_id;\r\n      update public.donation_claims set claim_status='RELEASED',closed_at=clock_timestamp(),close_reason='EXPIRED_SAFE_RELEASE'\r\n        where claim_id=v_c.claim_id;\r\n      update public.pickup_tasks set task_status='STALE' where task_id=v_t.task_id;\r\n      if v_l.listing_status='CLAIMED' and (v_l.listing_expires_at is null or v_l.listing_expires_at>clock_timestamp()) then\r\n        update public.listings set listing_status='AVAILABLE',listing_version=listing_version+1\r\n          where listing_id=v_l.listing_id and listing_status='CLAIMED';\r\n        perform public.geolock_transition_listing_donations(v_l.listing_id,'CLAIMED',\r\n          case when v_l.source_type='DIRECT_DONATION' then 'AVAILABLE' else 'BATCHED' end,v_c.claim_id,NULL,'EXPIRED_SAFE_RELEASE');\r\n      else\r\n        raise exception 'RECOVERY_LISTING_REOPEN_PRECONDITION_CHANGED';\r\n      end if;\r\n    end if;\r\n    select c.config_version into v_cfg from public.coordination_config c where c.singleton;\r\n    insert into public.audit_events(actor_role,entity_type,entity_id,event_type,claim_id,lease_id,\r\n      correlation_id,previous_state,requested_state,resulting_state,reason_code,outcome,\r\n      software_version,configuration_version,details)\r\n    values('SYSTEM','CLAIM',v_c.claim_id,'LEASE_RECOVERY',v_c.claim_id,v_le.lease_id,\r\n      gen_random_uuid(),'ACTIVE',case when v_uncertain then 'RECONCILIATION_REQUIRED' else 'RELEASED' end,\r\n      case when v_uncertain then 'RECONCILIATION_REQUIRED' else 'RELEASED' end,\r\n      case when v_uncertain then 'HANDOVER_OR_ROUTE_ACTIVITY_UNCERTAIN' else 'EXPIRED_SAFE_RELEASE' end,\r\n      'SUCCESS','geolock-stage1-2026-10-19',v_cfg,\r\n      jsonb_build_object('donation_id',v_l.donation_id,\r\n        'listing_id',v_l.listing_id,'task_id',v_t.task_id));\r\n    v_count:=v_count+1;\r\n  end loop;\r\n  return v_count;\r\nend;\r\n$function$\n"
+        },
+        "identity": {
+          "session": "supabase_read_only_user",
+          "database": "postgres",
+          "read_only": "on"
+        }
+      }
+    }
+  ]
+}

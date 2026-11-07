@@ -1,0 +1,281 @@
+{
+  "project_ref": "rcgyuwiidqvrgbxswhqj",
+  "inspection_mode": "SELECT_ONLY",
+  "counts": {
+    "stops": 0,
+    "routes": 0,
+    "vehicles": 0,
+    "assignments": 0
+  },
+  "columns": [
+    {
+      "type": "uuid",
+      "table": "active_task_route_assignments",
+      "column": "task_id",
+      "nullable": "NO"
+    },
+    {
+      "type": "uuid",
+      "table": "active_task_route_assignments",
+      "column": "route_id",
+      "nullable": "NO"
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "active_task_route_assignments",
+      "column": "assigned_at",
+      "nullable": "NO"
+    },
+    {
+      "type": "uuid",
+      "table": "pickup_route_stops",
+      "column": "route_id",
+      "nullable": "NO"
+    },
+    {
+      "type": "uuid",
+      "table": "pickup_route_stops",
+      "column": "ngo_user_id",
+      "nullable": "NO"
+    },
+    {
+      "type": "integer",
+      "table": "pickup_route_stops",
+      "column": "stop_order",
+      "nullable": "NO"
+    },
+    {
+      "type": "uuid",
+      "table": "pickup_route_stops",
+      "column": "task_id",
+      "nullable": "NO"
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "pickup_route_stops",
+      "column": "planned_arrival",
+      "nullable": "YES"
+    },
+    {
+      "type": "uuid",
+      "table": "pickup_routes",
+      "column": "route_id",
+      "nullable": "NO"
+    },
+    {
+      "type": "uuid",
+      "table": "pickup_routes",
+      "column": "ngo_user_id",
+      "nullable": "NO"
+    },
+    {
+      "type": "uuid",
+      "table": "pickup_routes",
+      "column": "vehicle_id",
+      "nullable": "NO"
+    },
+    {
+      "type": "text",
+      "table": "pickup_routes",
+      "column": "route_status",
+      "nullable": "NO"
+    },
+    {
+      "type": "text",
+      "table": "pickup_routes",
+      "column": "matrix_id",
+      "nullable": "YES"
+    },
+    {
+      "type": "numeric",
+      "table": "pickup_routes",
+      "column": "total_distance_km",
+      "nullable": "YES"
+    },
+    {
+      "type": "numeric",
+      "table": "pickup_routes",
+      "column": "total_duration_min",
+      "nullable": "YES"
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "pickup_routes",
+      "column": "planned_at",
+      "nullable": "NO"
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "pickup_routes",
+      "column": "authorised_at",
+      "nullable": "YES"
+    },
+    {
+      "type": "text",
+      "table": "pickup_routes",
+      "column": "validation_reference",
+      "nullable": "YES"
+    },
+    {
+      "type": "uuid",
+      "table": "pickup_tasks",
+      "column": "task_id",
+      "nullable": "NO"
+    },
+    {
+      "type": "uuid",
+      "table": "pickup_tasks",
+      "column": "claim_id",
+      "nullable": "NO"
+    },
+    {
+      "type": "uuid",
+      "table": "pickup_tasks",
+      "column": "listing_id",
+      "nullable": "NO"
+    },
+    {
+      "type": "uuid",
+      "table": "pickup_tasks",
+      "column": "ngo_user_id",
+      "nullable": "NO"
+    },
+    {
+      "type": "text",
+      "table": "pickup_tasks",
+      "column": "pickup_road_node_id",
+      "nullable": "NO"
+    },
+    {
+      "type": "numeric",
+      "table": "pickup_tasks",
+      "column": "load_kg",
+      "nullable": "NO"
+    },
+    {
+      "type": "text",
+      "table": "pickup_tasks",
+      "column": "task_status",
+      "nullable": "NO"
+    },
+    {
+      "type": "timestamp with time zone",
+      "table": "pickup_tasks",
+      "column": "created_at",
+      "nullable": "NO"
+    },
+    {
+      "type": "integer",
+      "table": "road_network_edges",
+      "column": "edge_id",
+      "nullable": "NO"
+    },
+    {
+      "type": "bigint",
+      "table": "road_network_edges",
+      "column": "source_node",
+      "nullable": "NO"
+    },
+    {
+      "type": "bigint",
+      "table": "road_network_edges",
+      "column": "target_node",
+      "nullable": "NO"
+    },
+    {
+      "type": "real",
+      "table": "road_network_edges",
+      "column": "road_km",
+      "nullable": "NO"
+    },
+    {
+      "type": "real",
+      "table": "road_network_edges",
+      "column": "travel_minutes",
+      "nullable": "NO"
+    },
+    {
+      "type": "bigint",
+      "table": "road_network_nodes",
+      "column": "osm_node_id",
+      "nullable": "NO"
+    },
+    {
+      "type": "text",
+      "table": "road_network_nodes",
+      "column": "network_snapshot_id",
+      "nullable": "NO"
+    },
+    {
+      "type": "double precision",
+      "table": "road_network_nodes",
+      "column": "latitude",
+      "nullable": "NO"
+    },
+    {
+      "type": "double precision",
+      "table": "road_network_nodes",
+      "column": "longitude",
+      "nullable": "NO"
+    },
+    {
+      "type": "USER-DEFINED",
+      "table": "road_network_nodes",
+      "column": "geog",
+      "nullable": "YES"
+    },
+    {
+      "type": "integer",
+      "table": "road_network_nodes",
+      "column": "component_id",
+      "nullable": "NO"
+    },
+    {
+      "type": "boolean",
+      "table": "road_network_nodes",
+      "column": "active_flag",
+      "nullable": "NO"
+    }
+  ],
+  "triggers": [
+    {
+      "name": "c1_route_vehicle_guard",
+      "table": "pickup_routes",
+      "definition": "CREATE TRIGGER c1_route_vehicle_guard BEFORE INSERT OR DELETE OR UPDATE ON public.pickup_routes FOR EACH ROW EXECUTE FUNCTION fleet_private.route_vehicle_guard()"
+    }
+  ],
+  "functions": [
+    {
+      "name": "assign_task_to_route",
+      "signature": "assign_task_to_route(uuid,uuid,integer)",
+      "definition": "CREATE OR REPLACE FUNCTION public.assign_task_to_route(p_route uuid, p_task uuid, p_stop_order integer)\n RETURNS void\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public', 'extensions', 'pg_temp'\nAS $function$\r\ndeclare v_actor uuid:=auth.uid();v_r public.pickup_routes%rowtype;\r\n v_t public.pickup_tasks%rowtype;\r\nbegin\r\n select * into v_r from public.pickup_routes where route_id=p_route for update;\r\n if not found or v_r.ngo_user_id is distinct from v_actor or v_r.route_status<>'DRAFT'\r\n then raise exception 'ROUTE_NOT_EDITABLE_BY_NGO'; end if;\r\n select * into v_t from public.pickup_tasks where task_id=p_task for update;\r\n if not found or v_t.ngo_user_id<>v_actor or v_t.task_status not in ('CONFIRMED','PLANNED')\r\n then raise exception 'TASK_NOT_ASSIGNABLE'; end if;\r\n if not exists(select 1 from public.donation_claims c\r\n join public.claim_leases l on l.claim_id=c.claim_id\r\n where c.claim_id=v_t.claim_id and c.claim_status='ACTIVE'\r\n and l.lease_status='ACTIVE' and l.expires_at>clock_timestamp())\r\n then raise exception 'STALE_CLAIM'; end if;\r\n insert into public.active_task_route_assignments(task_id,route_id)\r\n values(p_task,p_route);\r\n insert into public.pickup_route_stops(route_id,ngo_user_id,stop_order,task_id)\r\n values(p_route,v_actor,p_stop_order,p_task);\r\n update public.pickup_tasks set task_status='PLANNED' where task_id=p_task;\r\n insert into public.audit_events(actor_user_id,actor_role,entity_type,entity_id,event_type,\r\n requested_state,resulting_state,outcome,details)\r\n values(v_actor,'NGO','TASK',p_task,'ASSIGN_ROUTE','PLANNED','PLANNED','SUCCESS',\r\n jsonb_build_object('route_id',p_route));\r\nend $function$\n"
+    },
+    {
+      "name": "claim_listing",
+      "signature": "claim_listing(uuid,uuid)",
+      "definition": "CREATE OR REPLACE FUNCTION public.claim_listing(p_listing uuid, p_request uuid)\n RETURNS jsonb\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public', 'extensions', 'pg_temp'\nAS $function$\r\ndeclare\r\n  v_actor uuid:=auth.uid(); v_ngo public.ngo_profiles%rowtype;\r\n  v_req public.claim_requests%rowtype; v_l public.listings%rowtype;\r\n  v_digest text; v_reason text; v_claim uuid; v_lease uuid; v_mins integer;\r\n  v_success boolean:=false; v_outcome text;\r\nbegin\r\n  if v_actor is null then raise exception 'UNAUTHENTICATED'; end if;\r\n  select * into v_ngo from public.ngo_profiles\r\n   where user_id=v_actor and active_flag for share;\r\n  if not found then raise exception 'ACTIVE_NGO_ONLY'; end if;\r\n  if p_request is null or p_listing is null then raise exception 'REQUEST_AND_LISTING_REQUIRED'; end if;\r\n\r\n  v_digest:=md5(p_listing::text||':'||v_actor::text);\r\n  insert into public.claim_requests(request_id,listing_id,ngo_user_id,request_digest)\r\n  values(p_request,p_listing,v_actor,v_digest) on conflict(request_id) do nothing;\r\n  select * into v_req from public.claim_requests where request_id=p_request for update;\r\n  if v_req.request_digest<>v_digest or v_req.listing_id<>p_listing or v_req.ngo_user_id<>v_actor then\r\n    raise exception 'IDEMPOTENCY_KEY_REUSED_WITH_DIFFERENT_PAYLOAD';\r\n  end if;\r\n  if v_req.outcome is not null then\r\n    return jsonb_build_object('outcome',v_req.outcome,'claim_id',v_req.result_claim_id,\r\n      'reason_code',v_req.reason_code,'replayed',true);\r\n  end if;\r\n  select * into v_l from public.listings where listing_id=p_listing for update;\r\n  if not found then v_reason:='LISTING_NOT_FOUND';\r\n  elsif v_l.listing_status<>'AVAILABLE' then v_reason:='CLAIM_CONFLICT';\r\n  elsif v_l.listing_expires_at is not null and v_l.listing_expires_at<=clock_timestamp() then v_reason:='LISTING_EXPIRED';\r\n  elsif v_ngo.location_verified_at is null or v_ngo.road_node_id is null then v_reason:='ELIGIBILITY_UNDETERMINED';\r\n  elsif public.geolock_ngo_listing_road_check(v_actor,p_listing)->>'outcome'<>'ELIGIBLE'\r\n    then v_reason:=public.geolock_ngo_listing_road_check(v_actor,p_listing)->>'outcome';\r\n  elsif v_l.source_type='DIRECT_DONATION' and not exists(\r\n    select 1 from public.donations d where d.donation_id=v_l.donation_id and d.donation_status='AVAILABLE')\r\n    then v_reason:='DONATION_NOT_READY';\r\n  elsif v_l.source_type='HUB_BATCH' and not exists(\r\n    select 1 from public.hub_batches b where b.batch_id=v_l.batch_id and b.batch_status='PUBLISHED')\r\n    then v_reason:='BATCH_NOT_PUBLISHED';\r\n  elsif not public.geolock_lock_listing_donations(p_listing,\r\n    array[case when v_l.source_type='DIRECT_DONATION' then 'AVAILABLE' else 'BATCHED' end])\r\n    then v_reason:='DONATION_SET_NOT_READY';\r\n  else\r\n    select claim_lease_minutes into v_mins from public.coordination_config where singleton;\r\n    if v_mins is null then raise exception 'CLAIM_LEASE_NOT_CONFIGURED'; end if;\r\n    insert into public.donation_claims(listing_id,ngo_user_id,request_id)\r\n      values(p_listing,v_actor,p_request) returning claim_id into v_claim;\r\n    insert into public.claim_leases(claim_id,expires_at)\r\n      values(v_claim,clock_timestamp()+make_interval(mins=>v_mins)) returning lease_id into v_lease;\r\n    update public.listings set listing_status='CLAIMED',listing_version=listing_version+1\r\n      where listing_id=p_listing;\r\n    insert into public.pickup_tasks(claim_id,listing_id,ngo_user_id,pickup_road_node_id,load_kg)\r\n      values(v_claim,p_listing,v_actor,v_l.pickup_road_node_id,v_l.listing_weight_kg);\r\n    perform public.geolock_transition_listing_donations(p_listing,\r\n      case when v_l.source_type='DIRECT_DONATION' then 'AVAILABLE' else 'BATCHED' end,'CLAIMED');\r\n    v_success:=true;\r\n  end if;\r\n  v_outcome:=case when v_success then 'SUCCESS'\r\n    when v_reason in ('OUTSIDE_GEOFENCE','ROUTE_UNAVAILABLE') then 'INELIGIBLE' else 'CONFLICT' end;\r\n  update public.claim_requests set outcome=v_outcome,result_claim_id=v_claim,\r\n    reason_code=v_reason,completed_at=clock_timestamp() where request_id=p_request;\r\n  insert into public.audit_events(actor_user_id,actor_role,entity_type,entity_id,event_type,\r\n    request_id,claim_id,lease_id,previous_state,requested_state,resulting_state,\r\n    reason_code,outcome,details,configuration_version)\r\n  select v_actor,'NGO','LISTING',p_listing,'CLAIM_ATTEMPT',p_request,v_claim,v_lease,\r\n    v_l.listing_status,'CLAIMED',case when v_success then 'CLAIMED' else v_l.listing_status end,\r\n    v_reason,case when v_success then 'SUCCESS' else 'REJECTED' end,\r\n    jsonb_build_object('ngo_id',v_actor),cfg.config_version\r\n    from public.coordination_config cfg where cfg.singleton;\r\n  return jsonb_build_object('outcome',v_outcome,'claim_id',v_claim,\r\n    'reason_code',v_reason,'replayed',false);\r\nend;\r\n$function$\n"
+    },
+    {
+      "name": "complete_pickup",
+      "signature": "complete_pickup(uuid,boolean)",
+      "definition": "CREATE OR REPLACE FUNCTION public.complete_pickup(p_claim uuid, p_handover_confirmed boolean)\n RETURNS void\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public', 'extensions', 'pg_temp'\nAS $function$\r\ndeclare v_actor uuid:=auth.uid();v_c public.donation_claims%rowtype;\r\n v_l public.listings%rowtype;v_lease public.claim_leases%rowtype;\r\nbegin\r\n select * into v_c from public.donation_claims where claim_id=p_claim for update;\r\n if not found or v_c.ngo_user_id is distinct from v_actor or v_c.claim_status<>'ACTIVE'\r\n then raise exception 'NOT_ACTIVE_CLAIM_HOLDER'; end if;\r\n select * into v_lease from public.claim_leases where claim_id=p_claim for update;\r\n if not found or v_lease.lease_status<>'ACTIVE' or v_lease.expires_at<=clock_timestamp()\r\n then raise exception 'STALE_OR_EXPIRED_LEASE'; end if;\r\n if p_handover_confirmed is distinct from true then raise exception 'HANDOVER_NOT_CONFIRMED'; end if;\r\n select * into v_l from public.listings where listing_id=v_c.listing_id for update;\r\n if v_l.listing_status<>'CLAIMED' then raise exception 'LISTING_NOT_CLAIMED'; end if;\r\n update public.pickup_tasks set task_status='COLLECTED'\r\n where claim_id=p_claim and task_status='DISPATCHED';\r\n if not found then raise exception 'PICKUP_NOT_STARTED'; end if;\r\n perform public.geolock_transition_listing_donations(v_l.listing_id,'PICKUP_IN_PROGRESS','COLLECTED');\r\n if v_l.source_type='HUB_BATCH' then\r\n  update public.hub_inventory set inventory_status='COLLECTED'\r\n  where donation_id in(select donation_id from public.hub_batch_members\r\n    where batch_id=v_l.batch_id and membership_status='ACTIVE');\r\n  update public.hub_batches set batch_status='COLLECTED' where batch_id=v_l.batch_id;\r\n end if;\r\n update public.listings set listing_status='CLOSED',listing_version=listing_version+1\r\n where listing_id=v_l.listing_id;\r\n update public.donation_claims set claim_status='COMPLETED',closed_at=clock_timestamp()\r\n where claim_id=p_claim;\r\n update public.claim_leases set lease_status='COMPLETED',closed_at=clock_timestamp()\r\n where claim_id=p_claim;\r\n insert into public.audit_events(actor_user_id,actor_role,entity_type,entity_id,event_type,\r\n claim_id,lease_id,requested_state,resulting_state,outcome)\r\n values(v_actor,'NGO','CLAIM',p_claim,'COMPLETE_PICKUP',p_claim,v_lease.lease_id,\r\n 'COLLECTED','COLLECTED','SUCCESS');\r\nend $function$\n"
+    },
+    {
+      "name": "geolock_resolve_road_node",
+      "signature": "geolock_resolve_road_node(double precision,double precision)",
+      "definition": "CREATE OR REPLACE FUNCTION public.geolock_resolve_road_node(p_latitude double precision, p_longitude double precision)\n RETURNS TABLE(node_id text, snap_distance_m double precision, snapshot_id text)\n LANGUAGE sql\n STABLE SECURITY DEFINER\n SET search_path TO 'public', 'extensions', 'pg_temp'\nAS $function$\r\n  with pt as (\r\n    select extensions.ST_SetSRID(extensions.ST_MakePoint(p_longitude, p_latitude), 4326) as g\r\n    where p_latitude between -90 and 90 and p_longitude between -180 and 180\r\n  )\r\n  select n.osm_node_id::text,\r\n         extensions.ST_Distance(n.geog, pt.g::extensions.geography),\r\n         n.network_snapshot_id\r\n  from pt\r\n  join public.road_network_coverage c\r\n    on c.active_flag and c.dataset_kind = 'OPERATIONAL' and c.approved_at is not null\r\n   and extensions.ST_Covers(c.coverage_area, pt.g)\r\n  join public.road_network_nodes n\r\n    on n.network_snapshot_id = c.network_snapshot_id and n.active_flag\r\n   and extensions.ST_DWithin(n.geog, pt.g::extensions.geography, c.max_snap_distance_m)\r\n  order by n.geog <-> pt.g::extensions.geography\r\n  limit 1\r\n$function$\n"
+    },
+    {
+      "name": "geolock_road_costs",
+      "signature": "geolock_road_costs(bigint[],bigint[],double precision,double precision,double precision)",
+      "definition": "CREATE OR REPLACE FUNCTION public.geolock_road_costs(p_sources bigint[], p_targets bigint[], p_center_lat double precision, p_center_lon double precision, p_radius_m double precision)\n RETURNS TABLE(source_node bigint, target_node bigint, road_km double precision)\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public', 'extensions', 'pg_temp'\nAS $function$\r\ndeclare v_snapshot text := public.geolock_active_road_snapshot(); v_sql text;\r\nbegin\r\n  if v_snapshot is null or coalesce(cardinality(p_sources), 0) = 0\r\n     or coalesce(cardinality(p_targets), 0) = 0 then\r\n    return;\r\n  end if;\r\n  v_sql := format(\r\n    'select e.edge_id as id, e.source_node as source, e.target_node as target,\r\n            e.road_km::float8 as cost, -1::float8 as reverse_cost\r\n       from public.road_network_nodes n\r\n       join public.road_network_edges e on e.source_node = n.osm_node_id\r\n      where n.network_snapshot_id = %L and n.active_flag\r\n        and extensions.ST_DWithin(n.geog,\r\n              extensions.ST_SetSRID(extensions.ST_MakePoint(%L::float8, %L::float8), 4326)::extensions.geography,\r\n              %L::float8)',\r\n    v_snapshot, p_center_lon, p_center_lat, p_radius_m);\r\n  return query\r\n    select s, s, 0::float8\r\n      from unnest(p_sources) s where s = any(p_targets)\r\n    union all\r\n    select c.start_vid, c.end_vid, c.agg_cost\r\n      from extensions.pgr_dijkstraCost(v_sql, p_sources, p_targets, true) c;\r\n  -- road_km is stored as real (float4); sums are exact to well under 1 m.\r\nend $function$\n"
+    },
+    {
+      "name": "start_pickup",
+      "signature": "start_pickup(uuid)",
+      "definition": "CREATE OR REPLACE FUNCTION public.start_pickup(p_claim uuid)\n RETURNS void\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public', 'extensions', 'pg_temp'\nAS $function$\r\ndeclare v_actor uuid:=auth.uid();v_c public.donation_claims%rowtype;\r\n v_l public.listings%rowtype;v_lease public.claim_leases%rowtype;\r\nbegin\r\n select * into v_c from public.donation_claims where claim_id=p_claim for update;\r\n if not found or v_c.ngo_user_id is distinct from v_actor or v_c.claim_status<>'ACTIVE'\r\n then raise exception 'NOT_ACTIVE_CLAIM_HOLDER'; end if;\r\n select * into v_lease from public.claim_leases where claim_id=p_claim for update;\r\n if not found or v_lease.lease_status<>'ACTIVE' or v_lease.expires_at<=clock_timestamp()\r\n then raise exception 'STALE_OR_EXPIRED_LEASE'; end if;\r\n select * into v_l from public.listings where listing_id=v_c.listing_id for update;\r\n if v_l.listing_status<>'CLAIMED' then raise exception 'LISTING_NOT_CLAIMED'; end if;\r\n update public.pickup_tasks set task_status='DISPATCHED'\r\n where claim_id=p_claim and task_status in ('CONFIRMED','PLANNED');\r\n if not found then raise exception 'PICKUP_TASK_NOT_DISPATCHABLE'; end if;\r\n perform public.geolock_transition_listing_donations(v_l.listing_id,'CLAIMED','PICKUP_IN_PROGRESS');\r\n insert into public.audit_events(actor_user_id,actor_role,entity_type,entity_id,event_type,\r\n claim_id,lease_id,requested_state,resulting_state,outcome)\r\n values(v_actor,'NGO','CLAIM',p_claim,'START_PICKUP',p_claim,v_lease.lease_id,\r\n 'PICKUP_IN_PROGRESS','PICKUP_IN_PROGRESS','SUCCESS');\r\nend $function$\n"
+    }
+  ],
+  "seal_valid": true,
+  "observed_at": "2026-10-24T11:41:11.025701+00:00"
+}

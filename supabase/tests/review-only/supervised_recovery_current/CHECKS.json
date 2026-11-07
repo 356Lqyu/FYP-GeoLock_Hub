@@ -1,0 +1,36 @@
+{
+  "scope": "19 isolated PostgreSQL activation/monitor/pause tests; no DEV connection or recovery calls; business tables empty",
+  "checks": {
+    "default_operator_confirmation_is_not_approved": true,
+    "business_locks_before_do_snapshot": true,
+    "no_unsupported_cron_lock": true,
+    "no_object_or_grant_changes": true,
+    "no_direct_recovery_call": true,
+    "only_two_supported_cron_calls": true,
+    "changes_only_active_flag": true,
+    "approval_before_api": true,
+    "approved_body_fingerprint": true,
+    "no_recovered_fixture_dependency": true,
+    "no_fixed_run_count": true,
+    "no_temp_relations": true,
+    "receipt_before_commit": true,
+    "five_minute_deadline": true,
+    "transaction_ends_at_commit": true,
+    "pause_reused_unchanged": true,
+    "protected_migration_unchanged": true
+  },
+  "postgresql_compilation": "VERIFIED in isolated PostgreSQL with managed-role/API behavior model",
+  "live_readiness": "Fresh PASS reported by user; guards repeat at manual execution",
+  "execution_approval": false,
+  "native_pg_cron_module_locally_tested": false,
+  "isolated_tests": {
+    "count": 19,
+    "result": "PASS",
+    "seconds": 28.735
+  },
+  "execution_copy_generated": true,
+  "operator_confirmation_filled_in_execution_copy": true,
+  "execution_copy_body_equals_tested_body": true,
+  "dev_activation_executed": false,
+  "execution_approval_note": "User authorized rendering an execution-ready file after validation; Codex has not executed activation. Human decides to run only with supervision and pause ready."
+}

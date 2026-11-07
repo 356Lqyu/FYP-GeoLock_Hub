@@ -1,0 +1,18 @@
+#0 building with "desktop-linux" instance using docker driver
+
+#1 [internal] load build definition from planner.Dockerfile
+#1 transferring dockerfile: 1.71kB 0.1s done
+#1 DONE 0.2s
+
+#2 [internal] load metadata for docker.io/library/python:3.12-slim-bookworm
+#2 ERROR: error getting credentials - err: exec: "docker-credential-desktop": executable file not found in %PATH%, out: ``
+------
+ > [internal] load metadata for docker.io/library/python:3.12-slim-bookworm:
+------
+planner.Dockerfile:1
+--------------------
+   1 | >>> FROM python:3.12-slim-bookworm
+   2 |     ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
+   3 |     WORKDIR /app
+--------------------
+ERROR: failed to build: failed to solve: error getting credentials - err: exec: "docker-credential-desktop": executable file not found in %PATH%, out: ``

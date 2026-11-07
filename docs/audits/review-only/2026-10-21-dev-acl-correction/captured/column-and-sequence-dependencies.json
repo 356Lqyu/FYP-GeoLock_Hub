@@ -1,0 +1,555 @@
+[
+  {
+    "dependencies": {
+      "column_defaults": [
+        {
+          "table": "active_task_route_assignments",
+          "column": "assigned_at",
+          "identity": "",
+          "expression": "now()"
+        },
+        {
+          "table": "audit_events",
+          "column": "event_id",
+          "identity": "",
+          "expression": "gen_random_uuid()"
+        },
+        {
+          "table": "audit_events",
+          "column": "details",
+          "identity": "",
+          "expression": "'{}'::jsonb"
+        },
+        {
+          "table": "audit_events",
+          "column": "occurred_at",
+          "identity": "",
+          "expression": "clock_timestamp()"
+        },
+        {
+          "table": "claim_cancellation_requests",
+          "column": "created_at",
+          "identity": "",
+          "expression": "clock_timestamp()"
+        },
+        {
+          "table": "claim_leases",
+          "column": "lease_id",
+          "identity": "",
+          "expression": "gen_random_uuid()"
+        },
+        {
+          "table": "claim_leases",
+          "column": "lease_status",
+          "identity": "",
+          "expression": "'ACTIVE'::text"
+        },
+        {
+          "table": "claim_leases",
+          "column": "issued_at",
+          "identity": "",
+          "expression": "clock_timestamp()"
+        },
+        {
+          "table": "claim_reconciliation_cases",
+          "column": "case_id",
+          "identity": "",
+          "expression": "gen_random_uuid()"
+        },
+        {
+          "table": "claim_reconciliation_cases",
+          "column": "case_status",
+          "identity": "",
+          "expression": "'OPEN'::text"
+        },
+        {
+          "table": "claim_reconciliation_cases",
+          "column": "opened_at",
+          "identity": "",
+          "expression": "clock_timestamp()"
+        },
+        {
+          "table": "claim_reconciliation_evidence",
+          "column": "submitted_at",
+          "identity": "",
+          "expression": "clock_timestamp()"
+        },
+        {
+          "table": "claim_requests",
+          "column": "created_at",
+          "identity": "",
+          "expression": "now()"
+        },
+        {
+          "table": "community_hubs",
+          "column": "hub_id",
+          "identity": "",
+          "expression": "gen_random_uuid()"
+        },
+        {
+          "table": "community_hubs",
+          "column": "active_flag",
+          "identity": "",
+          "expression": "true"
+        },
+        {
+          "table": "community_hubs",
+          "column": "operating_hours",
+          "identity": "",
+          "expression": "'{}'::jsonb"
+        },
+        {
+          "table": "community_hubs",
+          "column": "created_at",
+          "identity": "",
+          "expression": "now()"
+        },
+        {
+          "table": "coordination_config",
+          "column": "singleton",
+          "identity": "",
+          "expression": "true"
+        },
+        {
+          "table": "coordination_config",
+          "column": "geofence_radius_m",
+          "identity": "",
+          "expression": "20000"
+        },
+        {
+          "table": "coordination_config",
+          "column": "donation_direct_min_kg",
+          "identity": "",
+          "expression": "10.000"
+        },
+        {
+          "table": "coordination_config",
+          "column": "claim_lease_minutes",
+          "identity": "",
+          "expression": "360"
+        },
+        {
+          "table": "coordination_config",
+          "column": "hub_reservation_minutes",
+          "identity": "",
+          "expression": "120"
+        },
+        {
+          "table": "coordination_config",
+          "column": "batch_min_donations",
+          "identity": "",
+          "expression": "3"
+        },
+        {
+          "table": "coordination_config",
+          "column": "batch_max_donations",
+          "identity": "",
+          "expression": "5"
+        },
+        {
+          "table": "coordination_config",
+          "column": "batch_max_weight_kg",
+          "identity": "",
+          "expression": "30"
+        },
+        {
+          "table": "coordination_config",
+          "column": "config_version",
+          "identity": "",
+          "expression": "'v2.0'::text"
+        },
+        {
+          "table": "coordination_config",
+          "column": "updated_at",
+          "identity": "",
+          "expression": "now()"
+        },
+        {
+          "table": "donation_cancellation_requests",
+          "column": "created_at",
+          "identity": "",
+          "expression": "clock_timestamp()"
+        },
+        {
+          "table": "donation_categories",
+          "column": "category_id",
+          "identity": "",
+          "expression": "gen_random_uuid()"
+        },
+        {
+          "table": "donation_categories",
+          "column": "active_flag",
+          "identity": "",
+          "expression": "true"
+        },
+        {
+          "table": "donation_claims",
+          "column": "claim_id",
+          "identity": "",
+          "expression": "gen_random_uuid()"
+        },
+        {
+          "table": "donation_claims",
+          "column": "claim_status",
+          "identity": "",
+          "expression": "'ACTIVE'::text"
+        },
+        {
+          "table": "donation_claims",
+          "column": "claimed_at",
+          "identity": "",
+          "expression": "now()"
+        },
+        {
+          "table": "donation_create_requests",
+          "column": "created_at",
+          "identity": "",
+          "expression": "clock_timestamp()"
+        },
+        {
+          "table": "donation_images",
+          "column": "image_id",
+          "identity": "",
+          "expression": "gen_random_uuid()"
+        },
+        {
+          "table": "donation_images",
+          "column": "is_primary",
+          "identity": "",
+          "expression": "false"
+        },
+        {
+          "table": "donation_images",
+          "column": "created_at",
+          "identity": "",
+          "expression": "clock_timestamp()"
+        },
+        {
+          "table": "donation_items",
+          "column": "item_id",
+          "identity": "",
+          "expression": "gen_random_uuid()"
+        },
+        {
+          "table": "donation_items",
+          "column": "unit_label",
+          "identity": "",
+          "expression": "'piece'::text"
+        },
+        {
+          "table": "donation_items",
+          "column": "item_condition",
+          "identity": "",
+          "expression": "'GOOD'::text"
+        },
+        {
+          "table": "donation_items",
+          "column": "created_at",
+          "identity": "",
+          "expression": "now()"
+        },
+        {
+          "table": "donations",
+          "column": "donation_id",
+          "identity": "",
+          "expression": "gen_random_uuid()"
+        },
+        {
+          "table": "donations",
+          "column": "donation_status",
+          "identity": "",
+          "expression": "'SUBMITTED'::text"
+        },
+        {
+          "table": "donations",
+          "column": "created_at",
+          "identity": "",
+          "expression": "now()"
+        },
+        {
+          "table": "donations",
+          "column": "updated_at",
+          "identity": "",
+          "expression": "now()"
+        },
+        {
+          "table": "donor_profiles",
+          "column": "role",
+          "identity": "",
+          "expression": "'DONOR'::text"
+        },
+        {
+          "table": "hub_admin_profiles",
+          "column": "role",
+          "identity": "",
+          "expression": "'HUB_ADMIN'::text"
+        },
+        {
+          "table": "hub_batch_images",
+          "column": "image_id",
+          "identity": "",
+          "expression": "gen_random_uuid()"
+        },
+        {
+          "table": "hub_batch_images",
+          "column": "is_primary",
+          "identity": "",
+          "expression": "false"
+        },
+        {
+          "table": "hub_batch_images",
+          "column": "created_at",
+          "identity": "",
+          "expression": "clock_timestamp()"
+        },
+        {
+          "table": "hub_batch_members",
+          "column": "membership_status",
+          "identity": "",
+          "expression": "'ACTIVE'::text"
+        },
+        {
+          "table": "hub_batch_members",
+          "column": "added_at",
+          "identity": "",
+          "expression": "now()"
+        },
+        {
+          "table": "hub_batches",
+          "column": "batch_id",
+          "identity": "",
+          "expression": "gen_random_uuid()"
+        },
+        {
+          "table": "hub_batches",
+          "column": "batch_status",
+          "identity": "",
+          "expression": "'DRAFT'::text"
+        },
+        {
+          "table": "hub_batches",
+          "column": "batch_weight_kg",
+          "identity": "",
+          "expression": "0"
+        },
+        {
+          "table": "hub_batches",
+          "column": "batch_donation_count",
+          "identity": "",
+          "expression": "0"
+        },
+        {
+          "table": "hub_batches",
+          "column": "batch_version",
+          "identity": "",
+          "expression": "1"
+        },
+        {
+          "table": "hub_batches",
+          "column": "created_at",
+          "identity": "",
+          "expression": "now()"
+        },
+        {
+          "table": "hub_inventory",
+          "column": "inventory_status",
+          "identity": "",
+          "expression": "'STORED'::text"
+        },
+        {
+          "table": "hub_inventory",
+          "column": "recorded_at",
+          "identity": "",
+          "expression": "now()"
+        },
+        {
+          "table": "hub_receipts",
+          "column": "receipt_id",
+          "identity": "",
+          "expression": "gen_random_uuid()"
+        },
+        {
+          "table": "hub_receipts",
+          "column": "receipt_status",
+          "identity": "",
+          "expression": "'CONFIRMED'::text"
+        },
+        {
+          "table": "hub_receipts",
+          "column": "received_at",
+          "identity": "",
+          "expression": "now()"
+        },
+        {
+          "table": "hub_reservations",
+          "column": "reservation_id",
+          "identity": "",
+          "expression": "gen_random_uuid()"
+        },
+        {
+          "table": "hub_reservations",
+          "column": "reservation_status",
+          "identity": "",
+          "expression": "'ACTIVE'::text"
+        },
+        {
+          "table": "hub_reservations",
+          "column": "reserved_at",
+          "identity": "",
+          "expression": "now()"
+        },
+        {
+          "table": "listings",
+          "column": "listing_id",
+          "identity": "",
+          "expression": "gen_random_uuid()"
+        },
+        {
+          "table": "listings",
+          "column": "listing_status",
+          "identity": "",
+          "expression": "'AVAILABLE'::text"
+        },
+        {
+          "table": "listings",
+          "column": "listing_version",
+          "identity": "",
+          "expression": "1"
+        },
+        {
+          "table": "listings",
+          "column": "created_at",
+          "identity": "",
+          "expression": "now()"
+        },
+        {
+          "table": "ngo_listing_road_eligibility",
+          "column": "computed_at",
+          "identity": "",
+          "expression": "clock_timestamp()"
+        },
+        {
+          "table": "ngo_profiles",
+          "column": "role",
+          "identity": "",
+          "expression": "'NGO'::text"
+        },
+        {
+          "table": "ngo_profiles",
+          "column": "active_flag",
+          "identity": "",
+          "expression": "true"
+        },
+        {
+          "table": "pickup_routes",
+          "column": "route_id",
+          "identity": "",
+          "expression": "gen_random_uuid()"
+        },
+        {
+          "table": "pickup_routes",
+          "column": "route_status",
+          "identity": "",
+          "expression": "'DRAFT'::text"
+        },
+        {
+          "table": "pickup_routes",
+          "column": "planned_at",
+          "identity": "",
+          "expression": "now()"
+        },
+        {
+          "table": "pickup_tasks",
+          "column": "task_id",
+          "identity": "",
+          "expression": "gen_random_uuid()"
+        },
+        {
+          "table": "pickup_tasks",
+          "column": "task_status",
+          "identity": "",
+          "expression": "'CONFIRMED'::text"
+        },
+        {
+          "table": "pickup_tasks",
+          "column": "created_at",
+          "identity": "",
+          "expression": "now()"
+        },
+        {
+          "table": "road_network_coverage",
+          "column": "max_snap_distance_m",
+          "identity": "",
+          "expression": "500"
+        },
+        {
+          "table": "road_network_coverage",
+          "column": "dataset_kind",
+          "identity": "",
+          "expression": "'OPERATIONAL'::text"
+        },
+        {
+          "table": "road_network_coverage",
+          "column": "active_flag",
+          "identity": "",
+          "expression": "false"
+        },
+        {
+          "table": "road_network_coverage",
+          "column": "created_at",
+          "identity": "",
+          "expression": "clock_timestamp()"
+        },
+        {
+          "table": "road_network_edges",
+          "column": "edge_id",
+          "identity": "a",
+          "expression": null
+        },
+        {
+          "table": "road_network_nodes",
+          "column": "geog",
+          "identity": "",
+          "expression": "(extensions.st_setsrid(extensions.st_makepoint(longitude, latitude), 4326))::extensions.geography"
+        },
+        {
+          "table": "road_network_nodes",
+          "column": "active_flag",
+          "identity": "",
+          "expression": "true"
+        },
+        {
+          "table": "user_profiles",
+          "column": "created_at",
+          "identity": "",
+          "expression": "now()"
+        },
+        {
+          "table": "vehicles",
+          "column": "vehicle_id",
+          "identity": "",
+          "expression": "gen_random_uuid()"
+        },
+        {
+          "table": "vehicles",
+          "column": "active_flag",
+          "identity": "",
+          "expression": "true"
+        }
+      ],
+      "sequence_dependencies": [
+        {
+          "type": "n",
+          "dependent": "sequence road_network_edges_edge_id_seq",
+          "referenced": "schema public"
+        },
+        {
+          "type": "i",
+          "dependent": "sequence road_network_edges_edge_id_seq",
+          "referenced": "column edge_id of table road_network_edges"
+        }
+      ],
+      "other_public_relations": []
+    }
+  }
+]

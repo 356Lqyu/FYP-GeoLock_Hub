@@ -1,0 +1,19 @@
+{
+  "project": {
+    "url": "https://rcgyuwiidqvrgbxswhqj.supabase.co"
+  },
+  "identity": {
+    "transaction_read_only": "on",
+    "database": "postgres",
+    "current_user": "postgres",
+    "session_user": "postgres",
+    "postgresql_version": "PostgreSQL 17.11 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 15.2.0, 64-bit",
+    "inspected_at": "2026-11-05 03:21:17.084097+00",
+    "cluster_name": "main"
+  },
+  "history": {
+    "migrations": []
+  },
+  "app_migration_ledger": null,
+  "version_status": "No final version assigned in validated SQL; absent ledger cannot establish unused manual version"
+}

@@ -1,0 +1,4 @@
+﻿method,scenarios,valid_tasks,served_tasks,task_weighted_coverage_pct,mean_scenario_coverage_pct,distance_km,travel_min,route_duration_min,capacity_violations,window_violations,duration_violations,feasibility_pass,timeouts,median_planner_ms,p95_planner_ms
+nearest_next,100,483,437,90.476,90.75,3732.22677,4445.80953,8815.80953,0,0,0,100,0,0.2631,0.6956
+fcfs,100,483,437,90.476,90.75,4429.11178,5152.83116,9522.83116,0,0,0,100,0,0.2594,0.679
+proposed,100,483,439,90.89,91.15,3380.07299,4070.70276,8460.70276,0,0,0,100,0,107.1825,241.3605

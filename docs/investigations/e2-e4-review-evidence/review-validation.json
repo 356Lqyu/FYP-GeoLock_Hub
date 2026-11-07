@@ -1,0 +1,29 @@
+{
+  "part_a": "IMPLEMENTED",
+  "part_b_e2": "CONFIRMED_REPRODUCIBLE_MECHANISM_NOT_EVERY_HISTORIC_GRAPH",
+  "part_b_e4": "CONFIRMED",
+  "flutter_tests_passed": 78,
+  "new_widget_tests": 13,
+  "static_analysis": "No issues found",
+  "backend_changes": false,
+  "dev_connections": 0,
+  "original_sealed_files_unchanged": 471,
+  "files_sha256": {
+    "frontend/geolock_hub_app/lib/donation_pages.dart": "48a2ae24fcc174293c20232a509dbd50d558ad50ba47ac3c63d98984917d436e",
+    "frontend/geolock_hub_app/lib/dashboard_pages.dart": "6f743b38f07c4398115542555bcf1d6bea27a1c8c2b9e9f3f7730f513fae1f79",
+    "frontend/geolock_hub_app/test/claim_conflict_ui_test.dart": "73d892b78c72aea605d0243e6becfaea9f1a1b669e788192249a80ba763cbad8",
+    "experiments/diagnose_claim_deadlock.py": "dca42bc089c6d0de196d0284240d06e8766d47bfcdc339ee2f92016dfa685b48",
+    "docs/investigations/E2_DEADLOCK_E4_ADMISSION_REVIEW.md": "e531e6b5cb97adbebfd58b8c4b6f2a600802433b7e8745c1996f5d604c3f745c",
+    "docs/investigations/e2-e4-review-evidence/claim-source.json": "939d6b7f39c1cc407269d06297c43d079fcf0313e367205cdfb6760fced7b7d6",
+    "docs/investigations/e2-e4-review-evidence/cluster-stop.json": "902d628d005732a1aa299361c0b18fa0ea139fb08bf58a5af05eb956a2e5ef2b",
+    "docs/investigations/e2-e4-review-evidence/diagnostic.json": "9ede4764054c39e624e6ca4c931a743a01fe335cf5633740728e152be4cf8eb2",
+    "docs/investigations/e2-e4-review-evidence/e4-excluded-task-times.csv": "1c876d6adbff9a79dec8d426e43ba67c989bc89958b0094f3ef124cef135bed2",
+    "docs/investigations/e2-e4-review-evidence/flutter-analysis.log": "9a1a379bfd578e18a00ac5a9855f50adf45edf3e2a8384745142e71c752ba075",
+    "docs/investigations/e2-e4-review-evidence/flutter-tests.log": "c07cd55b538b71cb8fb58ff54ac9a62819efe94809f28fc7e315068371211346",
+    "docs/investigations/e2-e4-review-evidence/foreign-keys.json": "4fac7c94dfb292275038d9c26d95d374210713a0ca3ea8797efe132b8af33c32",
+    "docs/investigations/e2-e4-review-evidence/original-evidence-integrity.json": "7ff8f587c21ce18e07ea86a1f9d4fc8dd7ce046fb3034f07a0c43b80a7cc7795",
+    "docs/investigations/e2-e4-review-evidence/triggers.json": "ad2328742b11b5066fbe778d93bd508e71dd23a318acb38859eb015535281319",
+    "docs/investigations/e2-e4-review-evidence/wait-graph.json": "67aeda6acf585ce1b846b92b3dc07e32823302a2324cad72104be934decd203b",
+    "docs/investigations/e2-e4-review-evidence/waiting-locks.json": "9f6bf52708dd4f40a628b8fcb86f8e2d6eeec90fbbf7bc4b3573ef8bdc0585c2"
+  }
+}

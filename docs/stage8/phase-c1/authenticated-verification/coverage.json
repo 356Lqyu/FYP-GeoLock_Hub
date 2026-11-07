@@ -1,0 +1,441 @@
+{
+  "total_groups": 54,
+  "live_http_groups_partially_automated": 36,
+  "live_authenticated_groups_executed": 0,
+  "live_groups_partially_executed_anonymously": 1,
+  "isolated_groups_with_partial_behavior_mapping": 38,
+  "groups": [
+    {
+      "group": "F01",
+      "live_http_automation": "PARTIAL_VARIANTS_PREPARED",
+      "live_execution": "NOT_RUN",
+      "isolated_coverage": "PARTIAL_BEHAVIOR_PASS",
+      "isolated_test": "test_zero_and_multiple_vehicles",
+      "notes": "Prepared live assertions do not establish full group coverage; additional variants remain in original plan."
+    },
+    {
+      "group": "F02",
+      "live_http_automation": "PARTIAL_VARIANTS_PREPARED",
+      "live_execution": "NOT_RUN",
+      "isolated_coverage": "PARTIAL_BEHAVIOR_PASS",
+      "isolated_test": "test_registration_retry_and_conflict",
+      "notes": "Prepared live assertions do not establish full group coverage; additional variants remain in original plan."
+    },
+    {
+      "group": "F03",
+      "live_http_automation": "PARTIAL_VARIANTS_PREPARED",
+      "live_execution": "NOT_RUN",
+      "isolated_coverage": "PARTIAL_BEHAVIOR_PASS",
+      "isolated_test": "test_zero_and_multiple_vehicles",
+      "notes": "Prepared live assertions do not establish full group coverage; additional variants remain in original plan."
+    },
+    {
+      "group": "F04",
+      "live_http_automation": "PARTIAL_VARIANTS_PREPARED",
+      "live_execution": "NOT_RUN",
+      "isolated_coverage": "PARTIAL_BEHAVIOR_PASS",
+      "isolated_test": "test_registration_retry_and_conflict",
+      "notes": "Live replay before changes and after deactivation; audit replay and all post-edit variants still incomplete."
+    },
+    {
+      "group": "F05",
+      "live_http_automation": "PARTIAL_VARIANTS_PREPARED",
+      "live_execution": "NOT_RUN",
+      "isolated_coverage": "PARTIAL_BEHAVIOR_PASS",
+      "isolated_test": "test_registration_retry_and_conflict",
+      "notes": "Prepared live assertions do not establish full group coverage; additional variants remain in original plan."
+    },
+    {
+      "group": "F06",
+      "live_http_automation": "PARTIAL_VARIANTS_PREPARED",
+      "live_execution": "NOT_RUN",
+      "isolated_coverage": "NOT_MAPPED",
+      "isolated_test": null,
+      "notes": "Prepared live assertions do not establish full group coverage; additional variants remain in original plan."
+    },
+    {
+      "group": "F07",
+      "live_http_automation": "PARTIAL_VARIANTS_PREPARED",
+      "live_execution": "NOT_RUN",
+      "isolated_coverage": "PARTIAL_BEHAVIOR_PASS",
+      "isolated_test": "test_owner_isolation_all_mutations_and_list",
+      "notes": "Prepared live assertions do not establish full group coverage; additional variants remain in original plan."
+    },
+    {
+      "group": "F08",
+      "live_http_automation": "PARTIAL_VARIANTS_PREPARED",
+      "live_execution": "NOT_RUN",
+      "isolated_coverage": "PARTIAL_BEHAVIOR_PASS",
+      "isolated_test": "test_update_version_and_availability",
+      "notes": "Live profile update changes label/capacity; independent audit/version/immutable identity assertions implemented; other field-change variants incomplete."
+    },
+    {
+      "group": "F09",
+      "live_http_automation": "PARTIAL_VARIANTS_PREPARED",
+      "live_execution": "NOT_RUN",
+      "isolated_coverage": "PARTIAL_BEHAVIOR_PASS",
+      "isolated_test": "test_audit_is_atomic_and_idempotent_noop",
+      "notes": "Prepared live assertions do not establish full group coverage; additional variants remain in original plan."
+    },
+    {
+      "group": "F10",
+      "live_http_automation": "PARTIAL_VARIANTS_PREPARED",
+      "live_execution": "NOT_RUN",
+      "isolated_coverage": "PARTIAL_BEHAVIOR_PASS",
+      "isolated_test": "test_update_version_and_availability",
+      "notes": "Prepared live assertions do not establish full group coverage; additional variants remain in original plan."
+    },
+    {
+      "group": "F11",
+      "live_http_automation": "PARTIAL_VARIANTS_PREPARED",
+      "live_execution": "NOT_RUN",
+      "isolated_coverage": "PARTIAL_BEHAVIOR_PASS",
+      "isolated_test": "test_update_version_and_availability",
+      "notes": "Prepared live assertions do not establish full group coverage; additional variants remain in original plan."
+    },
+    {
+      "group": "F12",
+      "live_http_automation": "PARTIAL_VARIANTS_PREPARED",
+      "live_execution": "NOT_RUN",
+      "isolated_coverage": "PARTIAL_BEHAVIOR_PASS",
+      "isolated_test": "test_deactivate_preserves_identity_and_history",
+      "notes": "Prepared live assertions do not establish full group coverage; additional variants remain in original plan."
+    },
+    {
+      "group": "F13",
+      "live_http_automation": "PARTIAL_VARIANTS_PREPARED",
+      "live_execution": "NOT_RUN",
+      "isolated_coverage": "PARTIAL_BEHAVIOR_PASS",
+      "isolated_test": "test_deactivate_preserves_identity_and_history",
+      "notes": "Current-version deactivation retry implemented; stale retry specifically after deactivation remains incomplete."
+    },
+    {
+      "group": "F14",
+      "live_http_automation": "PARTIAL_VARIANTS_PREPARED",
+      "live_execution": "NOT_RUN",
+      "isolated_coverage": "PARTIAL_BEHAVIOR_PASS",
+      "isolated_test": "test_deactivate_preserves_identity_and_history",
+      "notes": "Prepared live assertions do not establish full group coverage; additional variants remain in original plan."
+    },
+    {
+      "group": "F15",
+      "live_http_automation": "PARTIAL_VARIANTS_PREPARED",
+      "live_execution": "NOT_RUN",
+      "isolated_coverage": "PARTIAL_BEHAVIOR_PASS",
+      "isolated_test": "test_owner_isolation_all_mutations_and_list",
+      "notes": "Known foreign/unknown UUIDs tested both directions; null-ID live variant remains incomplete."
+    },
+    {
+      "group": "F16",
+      "live_http_automation": "PARTIAL_VARIANTS_PREPARED",
+      "live_execution": "PARTIAL_ANONYMOUS_LIST_PASS",
+      "isolated_coverage": "PARTIAL_BEHAVIOR_PASS",
+      "isolated_test": "test_anonymous_donor_inactive_and_missing_identity",
+      "notes": "Only anonymous and invalid-bearer list variants actually executed. Live runner adds all RPC denials after approval; expired-token variant not implemented."
+    },
+    {
+      "group": "F17",
+      "live_http_automation": "PARTIAL_VARIANTS_PREPARED",
+      "live_execution": "NOT_RUN",
+      "isolated_coverage": "PARTIAL_BEHAVIOR_PASS",
+      "isolated_test": "test_anonymous_donor_inactive_and_missing_identity",
+      "notes": "Prepared live assertions do not establish full group coverage; additional variants remain in original plan."
+    },
+    {
+      "group": "F18",
+      "live_http_automation": "PARTIAL_VARIANTS_PREPARED",
+      "live_execution": "NOT_RUN",
+      "isolated_coverage": "NOT_MAPPED",
+      "isolated_test": null,
+      "notes": "Extra NGO-ID argument implemented; other argument/signature variants incomplete."
+    },
+    {
+      "group": "F19",
+      "live_http_automation": "PARTIAL_VARIANTS_PREPARED",
+      "live_execution": "NOT_RUN",
+      "isolated_coverage": "PARTIAL_BEHAVIOR_PASS",
+      "isolated_test": "test_direct_writes_reads_helpers_and_service_denied",
+      "notes": "Prepared live assertions do not establish full group coverage; additional variants remain in original plan."
+    },
+    {
+      "group": "F20",
+      "live_http_automation": "PARTIAL_VARIANTS_PREPARED",
+      "live_execution": "NOT_RUN",
+      "isolated_coverage": "PARTIAL_BEHAVIOR_PASS",
+      "isolated_test": "test_private_search_path_and_execute_acls",
+      "notes": "Prepared live assertions do not establish full group coverage; additional variants remain in original plan."
+    },
+    {
+      "group": "I01",
+      "live_http_automation": "PARTIAL_VARIANTS_PREPARED",
+      "live_execution": "NOT_RUN",
+      "isolated_coverage": "PARTIAL_BEHAVIOR_PASS",
+      "isolated_test": "test_invalid_values",
+      "notes": "Invalid variants prepared; accepted positive boundary variants only isolated/remaining."
+    },
+    {
+      "group": "I02",
+      "live_http_automation": "PARTIAL_VARIANTS_PREPARED",
+      "live_execution": "NOT_RUN",
+      "isolated_coverage": "PARTIAL_BEHAVIOR_PASS",
+      "isolated_test": "test_invalid_values",
+      "notes": "Invalid variants prepared; accepted positive boundary variants only isolated/remaining."
+    },
+    {
+      "group": "I03",
+      "live_http_automation": "PARTIAL_VARIANTS_PREPARED",
+      "live_execution": "NOT_RUN",
+      "isolated_coverage": "PARTIAL_BEHAVIOR_PASS",
+      "isolated_test": "test_invalid_values",
+      "notes": "Invalid cost/scale variants prepared; explicit zero-cost live positive variant remains."
+    },
+    {
+      "group": "I04",
+      "live_http_automation": "PARTIAL_VARIANTS_PREPARED",
+      "live_execution": "NOT_RUN",
+      "isolated_coverage": "PARTIAL_BEHAVIOR_PASS",
+      "isolated_test": "test_invalid_values",
+      "notes": "Invalid duration variants prepared; positive live boundaries remain."
+    },
+    {
+      "group": "I05",
+      "live_http_automation": "PARTIAL_VARIANTS_PREPARED",
+      "live_execution": "NOT_RUN",
+      "isolated_coverage": "PARTIAL_BEHAVIOR_PASS",
+      "isolated_test": "test_database_constraints_reject_nonfinite_and_negative_cost",
+      "notes": "String-coerced numeric/non-numeric API attempts prepared; typed nonfinite DB probes are isolated only."
+    },
+    {
+      "group": "I06",
+      "live_http_automation": "PARTIAL_VARIANTS_PREPARED",
+      "live_execution": "NOT_RUN",
+      "isolated_coverage": "NOT_MAPPED",
+      "isolated_test": null,
+      "notes": "Prepared live assertions do not establish full group coverage; additional variants remain in original plan."
+    },
+    {
+      "group": "D01",
+      "live_http_automation": "PARTIAL_VARIANTS_PREPARED",
+      "live_execution": "NOT_RUN",
+      "isolated_coverage": "NOT_MAPPED",
+      "isolated_test": null,
+      "notes": "Prepared live assertions do not establish full group coverage; additional variants remain in original plan."
+    },
+    {
+      "group": "D02",
+      "live_http_automation": "PARTIAL_VARIANTS_PREPARED",
+      "live_execution": "NOT_RUN",
+      "isolated_coverage": "PARTIAL_BEHAVIOR_PASS",
+      "isolated_test": "test_unverified_invalid_inactive_wrong_snapshot_depots",
+      "notes": "Prepared live assertions do not establish full group coverage; additional variants remain in original plan."
+    },
+    {
+      "group": "D03",
+      "live_http_automation": "NOT_IMPLEMENTED",
+      "live_execution": "NOT_RUN",
+      "isolated_coverage": "NOT_MAPPED",
+      "isolated_test": null,
+      "notes": "Needs dedicated existing-vehicle unverified-depot history; not part of initial fixture setup."
+    },
+    {
+      "group": "D04",
+      "live_http_automation": "NOT_IMPLEMENTED",
+      "live_execution": "NOT_RUN",
+      "isolated_coverage": "PARTIAL_BEHAVIOR_PASS",
+      "isolated_test": "test_unverified_after_registration_not_plannable",
+      "notes": "Not automated for DEV execution; prerequisites/operator implementation still required."
+    },
+    {
+      "group": "D05",
+      "live_http_automation": "NOT_IMPLEMENTED",
+      "live_execution": "NOT_RUN",
+      "isolated_coverage": "NOT_MAPPED",
+      "isolated_test": null,
+      "notes": "Needs dedicated depot revocation/history fixture; not part of initial setup."
+    },
+    {
+      "group": "D06",
+      "live_http_automation": "NOT_IMPLEMENTED",
+      "live_execution": "NOT_RUN",
+      "isolated_coverage": "PARTIAL_BEHAVIOR_PASS",
+      "isolated_test": "test_idle_depot_revocation_disables_planning",
+      "notes": "Only isolated evidence; do not revoke real NGO depots."
+    },
+    {
+      "group": "D07",
+      "live_http_automation": "NOT_IMPLEMENTED",
+      "live_execution": "NOT_RUN",
+      "isolated_coverage": "PARTIAL_BEHAVIOR_PASS",
+      "isolated_test": "test_unverified_invalid_inactive_wrong_snapshot_depots",
+      "notes": "Only isolated malformed/inactive/unapproved coverage variants; do not alter DEV network."
+    },
+    {
+      "group": "H01",
+      "live_http_automation": "PARTIAL_VARIANTS_PREPARED",
+      "live_execution": "NOT_RUN",
+      "isolated_coverage": "PARTIAL_BEHAVIOR_PASS",
+      "isolated_test": "test_all_nonterminal_routes_protect_operational_fields",
+      "notes": "Prepared live assertions do not establish full group coverage; additional variants remain in original plan."
+    },
+    {
+      "group": "H02",
+      "live_http_automation": "PARTIAL_VARIANTS_PREPARED",
+      "live_execution": "NOT_RUN",
+      "isolated_coverage": "PARTIAL_BEHAVIOR_PASS",
+      "isolated_test": "test_terminal_route_releases_protection",
+      "notes": "Prepared live assertions do not establish full group coverage; additional variants remain in original plan."
+    },
+    {
+      "group": "H03",
+      "live_http_automation": "NOT_IMPLEMENTED",
+      "live_execution": "NOT_RUN",
+      "isolated_coverage": "NOT_MAPPED",
+      "isolated_test": null,
+      "notes": "Not automated for DEV execution; prerequisites/operator implementation still required."
+    },
+    {
+      "group": "H04",
+      "live_http_automation": "NOT_IMPLEMENTED",
+      "live_execution": "NOT_RUN",
+      "isolated_coverage": "PARTIAL_BEHAVIOR_PASS",
+      "isolated_test": "test_terminal_route_with_legacy_activity_still_holds_vehicle",
+      "notes": "Blocked in DEV: no approved actual task/assignment fixtures or closure/cleanup workflow."
+    },
+    {
+      "group": "H05",
+      "live_http_automation": "NOT_IMPLEMENTED",
+      "live_execution": "NOT_RUN",
+      "isolated_coverage": "PARTIAL_BEHAVIOR_PASS",
+      "isolated_test": "test_completed_requires_collected_members_and_assignment_cleanup",
+      "notes": "Blocked in DEV: no approved actual task/assignment fixtures or closure/cleanup workflow."
+    },
+    {
+      "group": "H06",
+      "live_http_automation": "NOT_IMPLEMENTED",
+      "live_execution": "NOT_RUN",
+      "isolated_coverage": "PARTIAL_BEHAVIOR_PASS",
+      "isolated_test": "test_terminal_route_not_reactivated_after_fleet_change",
+      "notes": "Not automated for DEV execution; prerequisites/operator implementation still required."
+    },
+    {
+      "group": "H07",
+      "live_http_automation": "NOT_IMPLEMENTED",
+      "live_execution": "NOT_RUN",
+      "isolated_coverage": "PARTIAL_BEHAVIOR_PASS",
+      "isolated_test": "test_route_binding_rejects_unavailable_foreign_and_active_delete",
+      "notes": "Not automated for DEV execution; prerequisites/operator implementation still required."
+    },
+    {
+      "group": "H08",
+      "live_http_automation": "NOT_IMPLEMENTED",
+      "live_execution": "NOT_RUN",
+      "isolated_coverage": "PARTIAL_BEHAVIOR_PASS",
+      "isolated_test": "test_service_cannot_bypass_vehicle_guards",
+      "notes": "Not automated for DEV execution; prerequisites/operator implementation still required."
+    },
+    {
+      "group": "C01",
+      "live_http_automation": "PARTIAL_VARIANTS_PREPARED",
+      "live_execution": "NOT_RUN",
+      "isolated_coverage": "NOT_MAPPED",
+      "isolated_test": null,
+      "notes": "Prepared live assertions do not establish full group coverage; additional variants remain in original plan."
+    },
+    {
+      "group": "C02",
+      "live_http_automation": "PARTIAL_VARIANTS_PREPARED",
+      "live_execution": "NOT_RUN",
+      "isolated_coverage": "NOT_MAPPED",
+      "isolated_test": null,
+      "notes": "Prepared live assertions do not establish full group coverage; additional variants remain in original plan."
+    },
+    {
+      "group": "C03",
+      "live_http_automation": "PARTIAL_VARIANTS_PREPARED",
+      "live_execution": "NOT_RUN",
+      "isolated_coverage": "NOT_MAPPED",
+      "isolated_test": null,
+      "notes": "Live code races existing owner-scoped registration retries; fresh cross-owner concurrent insertion is NOT covered."
+    },
+    {
+      "group": "C04",
+      "live_http_automation": "PARTIAL_VARIANTS_PREPARED",
+      "live_execution": "NOT_RUN",
+      "isolated_coverage": "NOT_MAPPED",
+      "isolated_test": null,
+      "notes": "Conflicting effective update requests prepared; concurrent no-op and observed lock-wait variants remain."
+    },
+    {
+      "group": "C05",
+      "live_http_automation": "PARTIAL_VARIANTS_PREPARED",
+      "live_execution": "NOT_RUN",
+      "isolated_coverage": "NOT_MAPPED",
+      "isolated_test": null,
+      "notes": "Prepared live assertions do not establish full group coverage; additional variants remain in original plan."
+    },
+    {
+      "group": "C06",
+      "live_http_automation": "PARTIAL_VARIANTS_PREPARED",
+      "live_execution": "NOT_RUN",
+      "isolated_coverage": "NOT_MAPPED",
+      "isolated_test": null,
+      "notes": "Prepared live assertions do not establish full group coverage; additional variants remain in original plan."
+    },
+    {
+      "group": "C07",
+      "live_http_automation": "NOT_IMPLEMENTED",
+      "live_execution": "NOT_RUN",
+      "isolated_coverage": "PARTIAL_BEHAVIOR_PASS",
+      "isolated_test": "test_race_route_first_blocks_deactivation",
+      "notes": "Selected route-first races passed isolated only. DEV ordered driver/lock observation not implemented."
+    },
+    {
+      "group": "C08",
+      "live_http_automation": "NOT_IMPLEMENTED",
+      "live_execution": "NOT_RUN",
+      "isolated_coverage": "NOT_MAPPED",
+      "isolated_test": null,
+      "notes": "DEV ordered rollback driver not implemented; no pass claimed."
+    },
+    {
+      "group": "C09",
+      "live_http_automation": "NOT_IMPLEMENTED",
+      "live_execution": "NOT_RUN",
+      "isolated_coverage": "PARTIAL_BEHAVIOR_PASS",
+      "isolated_test": "test_race_deactivation_first_blocks_route",
+      "notes": "Selected fleet-first race passed isolated only. DEV ordered driver/lock observation not implemented."
+    },
+    {
+      "group": "C10",
+      "live_http_automation": "NOT_IMPLEMENTED",
+      "live_execution": "NOT_RUN",
+      "isolated_coverage": "PARTIAL_BEHAVIOR_PASS",
+      "isolated_test": "test_cancellation_rollback_keeps_vehicle_held",
+      "notes": "Selected cancellation/completion commit/rollback races passed isolated only; DEV ordered driver not implemented."
+    },
+    {
+      "group": "C11",
+      "live_http_automation": "NOT_IMPLEMENTED",
+      "live_execution": "NOT_RUN",
+      "isolated_coverage": "NOT_MAPPED",
+      "isolated_test": null,
+      "notes": "Multiple-hold live race and ordered driver not implemented."
+    },
+    {
+      "group": "C12",
+      "live_http_automation": "NOT_IMPLEMENTED",
+      "live_execution": "NOT_RUN",
+      "isolated_coverage": "NOT_MAPPED",
+      "isolated_test": null,
+      "notes": "Requires dedicated depot-history/ordered lock fixture; not implemented for DEV."
+    },
+    {
+      "group": "C13",
+      "live_http_automation": "NOT_IMPLEMENTED",
+      "live_execution": "NOT_RUN",
+      "isolated_coverage": "PARTIAL_BEHAVIOR_PASS",
+      "isolated_test": "test_stronger_isolation_rejected",
+      "notes": "Isolation-level write probes only implemented in isolated PostgreSQL tests."
+    }
+  ]
+}

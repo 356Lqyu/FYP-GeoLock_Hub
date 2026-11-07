@@ -1,0 +1,33 @@
+{
+  "status": "STAGE_A_REVIEW_ONLY_NOT_DEPLOYED",
+  "project_ref": "rcgyuwiidqvrgbxswhqj",
+  "authoritative_source": "supabase/migrations/20261031_claim_audit_and_failure_capture.sql",
+  "authoritative_sha256": "4c11ca6325856406e607b35b451c41fa461e620bf584543a053d2d16f0c222c8",
+  "source_pins": {
+    "start_pickup": "e89b650c83713b04e8310f4c372f10f4",
+    "complete_pickup": "ae1b885377292281da17951cb18afd55",
+    "submit_claim_reconciliation": "246a33d552da2ac4e229fa79c357d194",
+    "recover_expired_claims": "89e01f42d5ec23bfcbcdc47c1f4fd4e5",
+    "claim_listing": "2c1f60c876797c61b44b3cb43591bab8"
+  },
+  "source_pin_scope": "Reviewed local source only; fresh DEV source/ACL verification required",
+  "files": {
+    "20261101_routing_authority.sql": "fbe81acd7811e884536ed5bf125fb6b0b5eb71e6bd314872378e68b2da0ec94f",
+    "20261102_routing_publication.sql": "96bc7763a30b7a641d6dc768dda4e255e12d4b9de2a5e52e8979cb0e26d1682f",
+    "20261103_routing_pickup_and_reconciliation.sql": "6541f0a002ea56ad77c023e33ad1500ab2273cc821f87fa43d38e633bd6724ea"
+  },
+  "permitted_public_replacements": [
+    "assign_task_to_route",
+    "start_pickup",
+    "complete_pickup",
+    "submit_claim_reconciliation"
+  ],
+  "preserved_public_functions": [
+    "claim_listing",
+    "recover_expired_claims",
+    "cancel_claim",
+    "get_authorized_audit_events",
+    "geolock_transition_listing_donations"
+  ],
+  "runtime_sql_validation": "NOT_EXECUTED_STAGE_B_APPROVAL_REQUIRED"
+}

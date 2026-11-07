@@ -1,0 +1,11 @@
+--- claim_listing.original.sql
++++ claim_listing.corrected.sql
+@@ -37,7 +37,7 @@
+   end if;
+   select config_version into v_configuration from public.coordination_config where singleton;
+   if v_configuration is null then raise exception 'CLAIM_CONFIGURATION_NOT_AVAILABLE'; end if;
+-  select * into v_l from public.listings where listing_id=p_listing for update;
++  select * into v_l from public.listings where listing_id=p_listing for no key update;
+   if not found then v_reason:='LISTING_NOT_FOUND';
+   elsif v_l.listing_status<>'AVAILABLE' then v_reason:='CLAIM_CONFLICT';
+   elsif v_l.listing_expires_at is not null and v_l.listing_expires_at<=clock_timestamp() then v_reason:='LISTING_EXPIRED';

@@ -1,0 +1,51 @@
+{
+  "inspected_at_utc": "2026-11-06T16:29:19.844759+00:00",
+  "overall": "NO-GO",
+  "docker_builds": {
+    "planner": "NOT_TESTED",
+    "validator": "NOT_TESTED"
+  },
+  "constrained_full_network_benchmarks": "NOT_TESTED",
+  "minimum_qualified_paid_plan": null,
+  "source_preservation": {
+    "original_hashes_unchanged": 13,
+    "prior_implementation_seals_unchanged": 19,
+    "intentionally_updated": [
+      "docs/investigations/ROUTING_RENDER_IMPLEMENTATION_READINESS.md"
+    ]
+  },
+  "tests": {
+    "existing_hosted_pass": 21,
+    "new_recovery_pass": 4,
+    "new_recovery_error": 1,
+    "historical_218_not_repeated": true
+  },
+  "recovery": {
+    "scope": "DISPOSABLE_SYNTHETIC_WINDOWS_ONLY",
+    "sqlite_version": "3.53.1",
+    "error_code": 1546,
+    "error_name": "SQLITE_IOERR_TRUNCATE",
+    "linux_rehearsal": "NOT_TESTED"
+  },
+  "restrictions": {
+    "dev_connection": false,
+    "live_journal_read_or_copy": false,
+    "live_routing": false,
+    "software_install": false,
+    "worker_activation": false,
+    "render_deployment_or_charges": false
+  },
+  "inventory_limitations": [
+    "Six protected backup/result directories denied; no bypass",
+    "CIM OS query denied; Windows build obtained via Python",
+    "No complete approved sanitized benchmark bundle established"
+  ],
+  "primary_web_sources": [
+    "https://docs.docker.com/desktop/setup/install/windows-install/",
+    "https://learn.microsoft.com/en-us/windows/wsl/install",
+    "https://render.com/articles/how-to-implement-authentication-and-authorization",
+    "https://render.com/tutorials/web-service-vs-static-site/web-services",
+    "https://render.com/articles/fastapi-production-best-practices",
+    "https://render.com/docs/outbound-ip-addresses"
+  ]
+}

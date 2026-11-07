@@ -1,0 +1,14 @@
+{
+  "docs/investigations/routing-render-next-validation/component-measurements.json": "36055ae101d7b17d138a7d9519890c7f9eac54a1749ad9a4229f72fe60fcb2c9",
+  "docs/investigations/routing-render-next-validation/component_probe.py": "2533a355270ba5daac235297d84bf0c13120ecd0a848a2201ff017bc3fd251d0",
+  "docs/investigations/routing-render-next-validation/crash-recheck.log": "2948fbfc2aa8ee3515fe40d76a8d2074b11bcceb8c4f3d25f8153ad49860b111",
+  "docs/investigations/routing-render-next-validation/existing-hosted-regression.log": "4197193d12d96497e99cfe3e90872a2ca4f127feafa71ef85b232f74ca36b5ba",
+  "docs/investigations/routing-render-next-validation/inspect_local.py": "bb677773414c98aa46edae7203b4b1c3b7c99e26e3f98c31c8e54b07ae011a1b",
+  "docs/investigations/routing-render-next-validation/local-inventory.json": "90fe668a8da39adde55df50077de1d59fd46f692ccb03ff7a302280c9b8a1fcf",
+  "docs/investigations/routing-render-next-validation/recovery-final-diagnostic.log": "382f852c7ee14668bec441f9ae7ef89dee96006cab336e40d9c7787a0290da85",
+  "docs/investigations/routing-render-next-validation/recovery-rehearsal-fresh-bootstrap.log": "596866b85404d88e4c961a0e96467c294f0ee58794c22b6455cbfa282cb5765f",
+  "docs/investigations/routing-render-next-validation/recovery-rehearsal.log": "1cc1692f5ff66d5ad62685581f050881533e64694907b2eddf839a31bd049a98",
+  "docs/investigations/routing-render-next-validation/verification-summary.json": "fd209fba6d509fa3d55c203984f3242f90a0aa6721d51d5c0ce285692bbfbb96",
+  "backend/routing/hosted/tests/test_recovery_rehearsal.py": "9ea8e58c82a2ab7f544980a3a4e4a1811a969ff20489be5c9a74fa729a6af015",
+  "docs/investigations/ROUTING_RENDER_IMPLEMENTATION_READINESS.md": "73d56a7a893d3b783b282c2728af2527ff46fb0a7612cdc0be8826a6bb720dc9"
+}

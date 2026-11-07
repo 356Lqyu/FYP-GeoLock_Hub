@@ -1,0 +1,723 @@
+{
+  "checkedAtUtc": "2026-11-04T14:22:09Z",
+  "project": "rcgyuwiidqvrgbxswhqj",
+  "migrationSha256": "d80877ef1a0fc2a570ee87f5df0a664dba1ee580a30814614a0e9e9964663ab1",
+  "functions": [
+    {
+      "schema": "fleet_private",
+      "proname": "require_depot",
+      "args": "p_actor uuid",
+      "owner": "postgres",
+      "definer": true,
+      "volatility": "v",
+      "config": [
+        "search_path=pg_catalog, pg_temp"
+      ],
+      "acl": "{postgres=X/postgres}",
+      "normalized_md5": "4ff6b95d8bd074358be734979185860d"
+    },
+    {
+      "schema": "public",
+      "proname": "cancel_my_unstarted_route",
+      "args": "p_route uuid",
+      "owner": "postgres",
+      "definer": true,
+      "volatility": "v",
+      "config": [
+        "search_path=pg_catalog, pg_temp",
+        "TimeZone=UTC",
+        "extra_float_digits=0"
+      ],
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+      "normalized_md5": "25d5d50b727abd9cf94fd0b9c479e612"
+    },
+    {
+      "schema": "public",
+      "proname": "close_my_collected_route",
+      "args": "p_route uuid, p_depot_return_confirmed boolean",
+      "owner": "postgres",
+      "definer": true,
+      "volatility": "v",
+      "config": [
+        "search_path=pg_catalog, pg_temp",
+        "TimeZone=UTC",
+        "extra_float_digits=0"
+      ],
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+      "normalized_md5": "5f83aea95b8c8971ea3bfcbcb8b3c18a"
+    },
+    {
+      "schema": "public",
+      "proname": "close_my_resolved_route",
+      "args": "p_route uuid, p_depot_return_confirmed boolean, p_request uuid",
+      "owner": "postgres",
+      "definer": true,
+      "volatility": "v",
+      "config": [
+        "search_path=pg_catalog, pg_temp",
+        "TimeZone=UTC",
+        "extra_float_digits=0"
+      ],
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+      "normalized_md5": "1de1767851ac4a68e68e3c17f8e5d421"
+    },
+    {
+      "schema": "public",
+      "proname": "enforce_donation_transition",
+      "args": "",
+      "owner": "postgres",
+      "definer": false,
+      "volatility": "v",
+      "config": [
+        "search_path=public, pg_temp"
+      ],
+      "acl": "{postgres=X/postgres,anon=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+      "normalized_md5": "50f7c982be9c6cce75174e09f73649ae"
+    },
+    {
+      "schema": "public",
+      "proname": "geolock_assert_donation_lifecycle",
+      "args": "p_donation uuid",
+      "owner": "postgres",
+      "definer": false,
+      "volatility": "v",
+      "config": [
+        "search_path=pg_catalog, public, pg_temp"
+      ],
+      "acl": "{postgres=X/postgres}",
+      "normalized_md5": "3e7df59a90533e0708c51767889d930e"
+    },
+    {
+      "schema": "public",
+      "proname": "geolock_lock_listing_donations",
+      "args": "p_listing uuid, p_states text[]",
+      "owner": "postgres",
+      "definer": false,
+      "volatility": "v",
+      "config": [
+        "search_path=pg_catalog, public, pg_temp"
+      ],
+      "acl": "{postgres=X/postgres}",
+      "normalized_md5": "90816e7c6db3606dc8b6451a899d8036"
+    },
+    {
+      "schema": "public",
+      "proname": "geolock_transition_listing_donations",
+      "args": "p_listing uuid, p_from text, p_to text",
+      "owner": "postgres",
+      "definer": false,
+      "volatility": "v",
+      "config": [
+        "search_path=pg_catalog, public, pg_temp"
+      ],
+      "acl": "{postgres=X/postgres}",
+      "normalized_md5": "8a050031901f6796ed74210e4d5cbfec"
+    },
+    {
+      "schema": "public",
+      "proname": "geolock_transition_listing_donations",
+      "args": "p_listing uuid, p_from text, p_to text, p_claim uuid, p_request uuid, p_reason text",
+      "owner": "postgres",
+      "definer": false,
+      "volatility": "v",
+      "config": [
+        "search_path=pg_catalog, public, pg_temp"
+      ],
+      "acl": "{postgres=X/postgres}",
+      "normalized_md5": "67f27a85fb9129c9017bb0e9178f8ba1"
+    },
+    {
+      "schema": "public",
+      "proname": "get_my_authorized_route",
+      "args": "p_route uuid",
+      "owner": "postgres",
+      "definer": true,
+      "volatility": "v",
+      "config": [
+        "search_path=pg_catalog, pg_temp",
+        "TimeZone=UTC",
+        "extra_float_digits=0"
+      ],
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+      "normalized_md5": "167e9843e6e026df8844f441af77fded"
+    },
+    {
+      "schema": "public",
+      "proname": "get_my_authorized_route_pre_deferral",
+      "args": "p_route uuid",
+      "owner": "postgres",
+      "definer": true,
+      "volatility": "v",
+      "config": [
+        "search_path=pg_catalog, pg_temp",
+        "TimeZone=UTC",
+        "extra_float_digits=0"
+      ],
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+      "normalized_md5": "df7eb088b25c083673b223f164b7dcfd"
+    },
+    {
+      "schema": "public",
+      "proname": "get_my_claim_cards_v2",
+      "args": "",
+      "owner": "postgres",
+      "definer": true,
+      "volatility": "s",
+      "config": [
+        "search_path=pg_catalog, public, pg_temp"
+      ],
+      "acl": "{postgres=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+      "normalized_md5": "44da3209586085a93e76204e37288f13"
+    },
+    {
+      "schema": "public",
+      "proname": "get_my_donation_claim_reconciliation",
+      "args": "p_donation uuid",
+      "owner": "postgres",
+      "definer": true,
+      "volatility": "s",
+      "config": [
+        "search_path=pg_catalog, public, pg_temp"
+      ],
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+      "normalized_md5": "b23b62f1d1fad22a9eabc907157ea7d1"
+    },
+    {
+      "schema": "public",
+      "proname": "get_my_reconciliation_cases",
+      "args": "",
+      "owner": "postgres",
+      "definer": true,
+      "volatility": "s",
+      "config": [
+        "search_path=pg_catalog, public, pg_temp"
+      ],
+      "acl": "{postgres=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+      "normalized_md5": "ef135eb954b7052703b4c1df5315b312"
+    },
+    {
+      "schema": "public",
+      "proname": "submit_claim_reconciliation",
+      "args": "p_claim uuid, p_handover_confirmed boolean, p_request uuid",
+      "owner": "postgres",
+      "definer": true,
+      "volatility": "v",
+      "config": [
+        "search_path=pg_catalog, public, pg_temp"
+      ],
+      "acl": "{postgres=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+      "normalized_md5": "e752c02c40b04265aed0d995fb894e07"
+    },
+    {
+      "schema": "resolution_private",
+      "proname": "actor_key",
+      "args": "",
+      "owner": "postgres",
+      "definer": true,
+      "volatility": "s",
+      "config": [
+        "search_path=pg_catalog, pg_temp"
+      ],
+      "acl": "{postgres=X/postgres}",
+      "normalized_md5": "5cad2a30b4626899cd8f017736729d5f"
+    },
+    {
+      "schema": "resolution_private",
+      "proname": "receipt",
+      "args": "p_actor text, p_request uuid, p_operation text, p_payload jsonb",
+      "owner": "postgres",
+      "definer": true,
+      "volatility": "v",
+      "config": [
+        "search_path=pg_catalog, pg_temp"
+      ],
+      "acl": "{postgres=X/postgres}",
+      "normalized_md5": "93cc5a0866ca81b66513e7986a7c1a29"
+    },
+    {
+      "schema": "resolution_private",
+      "proname": "release_allowed",
+      "args": "p_donation uuid, p_target text",
+      "owner": "postgres",
+      "definer": true,
+      "volatility": "v",
+      "config": [
+        "search_path=pg_catalog, pg_temp"
+      ],
+      "acl": "{postgres=X/postgres}",
+      "normalized_md5": "270d3df3b0c2fe221133db681ab2a4b8"
+    },
+    {
+      "schema": "resolution_private",
+      "proname": "save_receipt",
+      "args": "p_actor text, p_request uuid, p_operation text, p_payload jsonb, p_result jsonb",
+      "owner": "postgres",
+      "definer": true,
+      "volatility": "v",
+      "config": [
+        "search_path=pg_catalog, pg_temp"
+      ],
+      "acl": "{postgres=X/postgres}",
+      "normalized_md5": "de64d3d69fe99d9d3c1a073ac5a01711"
+    },
+    {
+      "schema": "routing_private",
+      "proname": "check_remaining",
+      "args": "p_route uuid, p_next uuid, p_now timestamp with time zone",
+      "owner": "postgres",
+      "definer": true,
+      "volatility": "v",
+      "config": [
+        "search_path=pg_catalog, pg_temp",
+        "TimeZone=UTC",
+        "extra_float_digits=0"
+      ],
+      "acl": "{postgres=X/postgres}",
+      "normalized_md5": "fefd041705ec87001a10135923ac7acc"
+    },
+    {
+      "schema": "routing_private",
+      "proname": "close_collected",
+      "args": "p_route uuid",
+      "owner": "postgres",
+      "definer": true,
+      "volatility": "v",
+      "config": [
+        "search_path=pg_catalog, pg_temp",
+        "TimeZone=UTC",
+        "extra_float_digits=0"
+      ],
+      "acl": "{postgres=X/postgres}",
+      "normalized_md5": "e06bac2a616cc49f91e32042e592a24a"
+    },
+    {
+      "schema": "routing_private",
+      "proname": "finish_reconciled_collection",
+      "args": "p_claim uuid",
+      "owner": "postgres",
+      "definer": true,
+      "volatility": "v",
+      "config": [
+        "search_path=pg_catalog, pg_temp"
+      ],
+      "acl": "{postgres=X/postgres}",
+      "normalized_md5": "088e94184198f3e680c6fc5d779dba8e"
+    },
+    {
+      "schema": "routing_private",
+      "proname": "lock_reconciliation_scope",
+      "args": "p_claim uuid",
+      "owner": "postgres",
+      "definer": true,
+      "volatility": "v",
+      "config": [
+        "search_path=pg_catalog, pg_temp"
+      ],
+      "acl": "{postgres=X/postgres}",
+      "normalized_md5": "618ea50c0c300e98098cfa62333a8608"
+    },
+    {
+      "schema": "routing_private",
+      "proname": "lock_route",
+      "args": "p_route uuid, p_active boolean",
+      "owner": "postgres",
+      "definer": true,
+      "volatility": "v",
+      "config": [
+        "search_path=pg_catalog, pg_temp",
+        "TimeZone=UTC",
+        "extra_float_digits=0"
+      ],
+      "acl": "{postgres=X/postgres}",
+      "normalized_md5": "ebc10b61666e492afd7bbbd23f0e7448"
+    },
+    {
+      "schema": "routing_private",
+      "proname": "observe_task",
+      "args": "p_task uuid",
+      "owner": "postgres",
+      "definer": true,
+      "volatility": "s",
+      "config": [
+        "search_path=pg_catalog, pg_temp",
+        "TimeZone=UTC",
+        "extra_float_digits=0"
+      ],
+      "acl": "{postgres=X/postgres}",
+      "normalized_md5": "53f058161125f26980f65303d45dccc1"
+    },
+    {
+      "schema": "routing_private",
+      "proname": "permit_reconciled_collection",
+      "args": "p_claim uuid",
+      "owner": "postgres",
+      "definer": true,
+      "volatility": "v",
+      "config": [
+        "search_path=pg_catalog, pg_temp"
+      ],
+      "acl": "{postgres=X/postgres}",
+      "normalized_md5": "c5bbed4368a64f83ed837d6195b02050"
+    },
+    {
+      "schema": "routing_private",
+      "proname": "reconciliation_participant",
+      "args": "p_claim uuid",
+      "owner": "postgres",
+      "definer": true,
+      "volatility": "s",
+      "config": [
+        "search_path=pg_catalog, pg_temp"
+      ],
+      "acl": "{postgres=X/postgres}",
+      "normalized_md5": "12ccab6a7919008674e2ff340aab9100"
+    },
+    {
+      "schema": "routing_private",
+      "proname": "task_digest",
+      "args": "p jsonb",
+      "owner": "postgres",
+      "definer": false,
+      "volatility": "i",
+      "config": [
+        "search_path=pg_catalog, pg_temp",
+        "TimeZone=UTC",
+        "extra_float_digits=0"
+      ],
+      "acl": "{postgres=X/postgres}",
+      "normalized_md5": "e28f2dba4773bbbe8e32a700047e6f6e"
+    },
+    {
+      "schema": "routing_private",
+      "proname": "task_guard",
+      "args": "",
+      "owner": "postgres",
+      "definer": true,
+      "volatility": "v",
+      "config": [
+        "search_path=pg_catalog, pg_temp",
+        "TimeZone=UTC",
+        "extra_float_digits=0"
+      ],
+      "acl": "{postgres=X/postgres}",
+      "normalized_md5": "4012fed7dad4a6f7767d39bed3de70e6"
+    }
+  ],
+  "catalog": [
+    {
+      "read_only": "on",
+      "evidence": {
+        "markers": {
+          "v2_submit": null,
+          "round_columns": 0,
+          "renamed_reader": null,
+          "migration_tables": [
+            "auth.schema_migrations",
+            "storage.migrations",
+            "realtime.schema_migrations"
+          ],
+          "current_evidence_view": null
+        },
+        "triggers": [
+          {
+            "name": "resolution_test_scope",
+            "owner": "postgres",
+            "table": "public.pickup_tasks",
+            "enabled": "O",
+            "function": "resolution_private.test_scope_guard()",
+            "definition": "CREATE TRIGGER resolution_test_scope BEFORE UPDATE OF task_status ON public.pickup_tasks FOR EACH ROW EXECUTE FUNCTION resolution_private.test_scope_guard()"
+          },
+          {
+            "name": "routing_task_authority",
+            "owner": "postgres",
+            "table": "public.pickup_tasks",
+            "enabled": "O",
+            "function": "routing_private.task_guard()",
+            "definition": "CREATE TRIGGER routing_task_authority BEFORE UPDATE OF task_status ON public.pickup_tasks FOR EACH ROW EXECUTE FUNCTION routing_private.task_guard()"
+          },
+          {
+            "name": "immutable",
+            "owner": "postgres",
+            "table": "routing_private.cancelled_stop_history",
+            "enabled": "O",
+            "function": "routing_private.append_only()",
+            "definition": "CREATE TRIGGER immutable BEFORE DELETE OR UPDATE OR TRUNCATE ON routing_private.cancelled_stop_history FOR EACH STATEMENT EXECUTE FUNCTION routing_private.append_only()"
+          },
+          {
+            "name": "donations_lifecycle_at_commit",
+            "owner": "postgres",
+            "table": "public.donations",
+            "enabled": "O",
+            "function": "geolock_validate_donation_at_commit()",
+            "definition": "CREATE CONSTRAINT TRIGGER donations_lifecycle_at_commit AFTER INSERT OR UPDATE ON public.donations DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION geolock_validate_donation_at_commit()"
+          },
+          {
+            "name": "donations_require_photo_at_commit",
+            "owner": "postgres",
+            "table": "public.donations",
+            "enabled": "O",
+            "function": "require_donation_photo_before_commit()",
+            "definition": "CREATE CONSTRAINT TRIGGER donations_require_photo_at_commit AFTER INSERT ON public.donations DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION require_donation_photo_before_commit()"
+          },
+          {
+            "name": "trg_donation_road_node",
+            "owner": "postgres",
+            "table": "public.donations",
+            "enabled": "O",
+            "function": "geolock_assign_road_node()",
+            "definition": "CREATE TRIGGER trg_donation_road_node BEFORE INSERT ON public.donations FOR EACH ROW EXECUTE FUNCTION geolock_assign_road_node()"
+          },
+          {
+            "name": "trg_donation_transition",
+            "owner": "postgres",
+            "table": "public.donations",
+            "enabled": "O",
+            "function": "enforce_donation_transition()",
+            "definition": "CREATE TRIGGER trg_donation_transition BEFORE UPDATE ON public.donations FOR EACH ROW EXECUTE FUNCTION enforce_donation_transition()"
+          },
+          {
+            "name": "immutable_receipts",
+            "owner": "postgres",
+            "table": "resolution_private.requests",
+            "enabled": "O",
+            "function": "resolution_private.immutable()",
+            "definition": "CREATE TRIGGER immutable_receipts BEFORE DELETE OR UPDATE ON resolution_private.requests FOR EACH ROW EXECUTE FUNCTION resolution_private.immutable()"
+          },
+          {
+            "name": "c1_route_vehicle_guard",
+            "owner": "postgres",
+            "table": "public.pickup_routes",
+            "enabled": "O",
+            "function": "fleet_private.route_vehicle_guard()",
+            "definition": "CREATE TRIGGER c1_route_vehicle_guard BEFORE INSERT OR DELETE OR UPDATE ON public.pickup_routes FOR EACH ROW EXECUTE FUNCTION fleet_private.route_vehicle_guard()"
+          },
+          {
+            "name": "deferred_event_immutable",
+            "owner": "postgres",
+            "table": "routing_private.deferred_events",
+            "enabled": "O",
+            "function": "routing_private.reject_private_history_mutation()",
+            "definition": "CREATE TRIGGER deferred_event_immutable BEFORE DELETE OR UPDATE ON routing_private.deferred_events FOR EACH ROW EXECUTE FUNCTION routing_private.reject_private_history_mutation()"
+          },
+          {
+            "name": "mixed_route_closure_immutable",
+            "owner": "postgres",
+            "table": "routing_private.mixed_route_closures",
+            "enabled": "O",
+            "function": "routing_private.reject_private_history_mutation()",
+            "definition": "CREATE TRIGGER mixed_route_closure_immutable BEFORE DELETE OR UPDATE ON routing_private.mixed_route_closures FOR EACH ROW EXECUTE FUNCTION routing_private.reject_private_history_mutation()"
+          },
+          {
+            "name": "deferred_stop_event",
+            "owner": "postgres",
+            "table": "routing_private.deferred_stops",
+            "enabled": "O",
+            "function": "routing_private.record_deferred_event()",
+            "definition": "CREATE TRIGGER deferred_stop_event AFTER INSERT OR UPDATE ON routing_private.deferred_stops FOR EACH ROW EXECUTE FUNCTION routing_private.record_deferred_event()"
+          },
+          {
+            "name": "deferred_stop_transition",
+            "owner": "postgres",
+            "table": "routing_private.deferred_stops",
+            "enabled": "O",
+            "function": "routing_private.guard_deferred_transition()",
+            "definition": "CREATE TRIGGER deferred_stop_transition BEFORE DELETE OR UPDATE ON routing_private.deferred_stops FOR EACH ROW EXECUTE FUNCTION routing_private.guard_deferred_transition()"
+          }
+        ],
+        "constraints": [
+          {
+            "name": "claim_reconciliation_case_claim_unique",
+            "table": "claim_reconciliation_cases",
+            "definition": "UNIQUE (claim_id)"
+          },
+          {
+            "name": "claim_reconciliation_cases_case_status_check",
+            "table": "claim_reconciliation_cases",
+            "definition": "CHECK ((case_status = ANY (ARRAY['OPEN'::text, 'RESOLVED_COLLECTED'::text, 'RESOLVED_RELEASED'::text, 'MANUAL_REVIEW'::text])))"
+          },
+          {
+            "name": "claim_reconciliation_cases_claim_id_fkey",
+            "table": "claim_reconciliation_cases",
+            "definition": "FOREIGN KEY (claim_id) REFERENCES donation_claims(claim_id)"
+          },
+          {
+            "name": "claim_reconciliation_cases_listing_id_fkey",
+            "table": "claim_reconciliation_cases",
+            "definition": "FOREIGN KEY (listing_id) REFERENCES listings(listing_id)"
+          },
+          {
+            "name": "claim_reconciliation_cases_pkey",
+            "table": "claim_reconciliation_cases",
+            "definition": "PRIMARY KEY (case_id)"
+          },
+          {
+            "name": "claim_reconciliation_source_type_check",
+            "table": "claim_reconciliation_cases",
+            "definition": "CHECK ((source_type = ANY (ARRAY['DIRECT_DONATION'::text, 'HUB_BATCH'::text])))"
+          },
+          {
+            "name": "claim_reconciliation_evidence_case_id_fkey",
+            "table": "claim_reconciliation_evidence",
+            "definition": "FOREIGN KEY (case_id) REFERENCES claim_reconciliation_cases(case_id)"
+          },
+          {
+            "name": "claim_reconciliation_evidence_pkey",
+            "table": "claim_reconciliation_evidence",
+            "definition": "PRIMARY KEY (request_id)"
+          },
+          {
+            "name": "claim_reconciliation_one_response_per_actor",
+            "table": "claim_reconciliation_evidence",
+            "definition": "UNIQUE (case_id, actor_user_id)"
+          },
+          {
+            "name": "claim_reconciliation_response_object",
+            "table": "claim_reconciliation_evidence",
+            "definition": "CHECK (((response IS NULL) OR (jsonb_typeof(response) = 'object'::text)))"
+          },
+          {
+            "name": "requests_pkey",
+            "table": "resolution_private.requests",
+            "definition": "PRIMARY KEY (actor_key, request_id)"
+          }
+        ],
+        "default_function_acls": [
+          {
+            "acl": "{postgres=X/postgres,anon=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+            "owner": "postgres",
+            "schema": "public"
+          },
+          {
+            "acl": "{postgres=X/supabase_admin,anon=X/supabase_admin,authenticated=X/supabase_admin,service_role=X/supabase_admin}",
+            "owner": "supabase_admin",
+            "schema": "public"
+          },
+          {
+            "acl": "{postgres=X/postgres,anon=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+            "owner": "postgres",
+            "schema": "storage"
+          },
+          {
+            "acl": "{postgres=X/supabase_auth_admin,dashboard_user=X/supabase_auth_admin}",
+            "owner": "supabase_auth_admin",
+            "schema": "auth"
+          },
+          {
+            "acl": "{postgres=X/supabase_admin,anon=X/supabase_admin,authenticated=X/supabase_admin,service_role=X/supabase_admin}",
+            "owner": "supabase_admin",
+            "schema": "graphql_public"
+          },
+          {
+            "acl": "{postgres=X*/supabase_admin}",
+            "owner": "supabase_admin",
+            "schema": "extensions"
+          },
+          {
+            "acl": "{postgres=X/supabase_admin,anon=X/supabase_admin,authenticated=X/supabase_admin,service_role=X/supabase_admin}",
+            "owner": "supabase_admin",
+            "schema": "graphql"
+          },
+          {
+            "acl": "{postgres=X/supabase_admin,dashboard_user=X/supabase_admin}",
+            "owner": "supabase_admin",
+            "schema": "realtime"
+          },
+          {
+            "acl": "{postgres=X*/supabase_admin}",
+            "owner": "supabase_admin",
+            "schema": "cron"
+          }
+        ],
+        "textual_reader_callers": [],
+        "registered_reader_dependents": []
+      }
+    }
+  ],
+  "privacy": [
+    {
+      "read_only": "on",
+      "evidence": {
+        "public_rpc_schemas": null,
+        "new_wrapper_name_absent": true,
+        "base_address_unconditional": true,
+        "reader_foreign_owner_guard": true,
+        "reader_anon_can_execute_base": false,
+        "reader_auth_can_execute_base": true
+      }
+    }
+  ],
+  "patchAnchors": [
+    {
+      "name": "public.enforce_donation_transition",
+      "anchor": "resolution_private.release_allowed(old.donation_id,new.donation_status)",
+      "occurrences": 1,
+      "asserted": true
+    },
+    {
+      "name": "routing_private.permit_reconciled_collection",
+      "anchor": "WHERE case_id=rc.case_id)",
+      "occurrences": 1,
+      "asserted": false
+    },
+    {
+      "name": "routing_private.permit_reconciled_collection",
+      "anchor": "WHERE e.case_id=rc.case_id AND e.handover_confirmed IS TRUE",
+      "occurrences": 1,
+      "asserted": false
+    },
+    {
+      "name": "routing_private.task_guard",
+      "anchor": "EXISTS(SELECT 1 FROM public.donation_claims c JOIN public.claim_leases le USING(claim_id) WHERE c.claim_id=OLD.claim_id AND c.claim_status='RECONCILIATION_REQUIRED' AND le.lease_status='RECONCILIATION_REQUIRED')",
+      "occurrences": 1,
+      "asserted": true
+    },
+    {
+      "name": "routing_private.check_remaining",
+      "anchor": "SELECT * INTO STRICT b FROM routing_private.bindings WHERE route_id=p_route;",
+      "occurrences": 1,
+      "asserted": true
+    },
+    {
+      "name": "routing_private.check_remaining",
+      "anchor": "node:=coalesce(node,v.depot_road_node_id);",
+      "occurrences": 1,
+      "asserted": true
+    },
+    {
+      "name": "public.close_my_resolved_route",
+      "anchor": " IF p_depot_return_confirmed IS DISTINCT FROM true",
+      "occurrences": 1,
+      "asserted": false
+    },
+    {
+      "name": "public.close_my_resolved_route",
+      "anchor": "'outcome','MIXED_OUTCOME'",
+      "occurrences": 1,
+      "asserted": false
+    },
+    {
+      "name": "public.close_my_resolved_route",
+      "anchor": "'final_pickup_count',n,",
+      "occurrences": 2,
+      "asserted": false
+    },
+    {
+      "name": "public.close_my_resolved_route",
+      "anchor": "'depot_return_confirmed',true,",
+      "occurrences": 1,
+      "asserted": false
+    },
+    {
+      "name": "public.close_my_collected_route",
+      "anchor": " PERFORM routing_private.close_collected(p_route);",
+      "occurrences": 1,
+      "asserted": true
+    },
+    {
+      "name": "public.geolock_assert_donation_lifecycle",
+      "anchor": "v_l.listing_status<>'AVAILABLE' or exists(select 1 from public.donation_claims c",
+      "occurrences": 1,
+      "asserted": true
+    }
+  ]
+}

@@ -1,0 +1,210 @@
+{
+  "status": "RUNNING",
+  "integrity": {
+    "version": "GEOLOCK-BM-v3.3",
+    "matrix_id": "OSM-DIRECTED-v3.3",
+    "dataset_seed": 20260915,
+    "scenario_counts": {
+      "HUB_RECOMMENDATION": 2000,
+      "HUB_RECOMMENDATION_VERIFICATION": 19,
+      "CLAIM_COORDINATION": 150,
+      "GEOFENCE_VERIFICATION": 100,
+      "LEASE_RECOVERY": 100,
+      "LEASE_ACTIVE_VERIFICATION": 25,
+      "HUB_AGGREGATION": 100,
+      "ROUTE_PLANNING": 100
+    },
+    "verified_sha256": {
+      "experiments\\repro_inputs\\v33\\road_nodes.csv": "a8905fb29f95b6ba02c099fd60a188f98ae92f01c7586995295b096b673df6ea",
+      "experiments\\repro_inputs\\v33\\road_distance_matrix.csv": "b9a272d2396354695ae2ec6fd744a17510f1b5e7c61989fe7b404d2d0e0133e1",
+      "experiments\\repro_inputs\\v33\\ngos.csv": "ddc14fe9958c272c7d8b7dc32b23ad6bfffd2a066f1b158a05a7cd3e5c535eaa",
+      "experiments\\repro_inputs\\v33\\vehicles.csv": "79be6284565e0f544914bcb6b0fb5a847a0756a6039808bfc03920046f571413",
+      "experiments\\repro_inputs\\v33\\hubs.csv": "1709d42ecdf1aa4dfe7e671315e8620587cebd161099d0f9769da10d77462ade",
+      "experiments\\repro_inputs\\v33\\donors.csv": "aefee7b3fc9b0c955f7ae3d60238dd4ec7cea49885dcd0545706acb797604e63",
+      "experiments\\repro_inputs\\v33\\donations.csv": "057dbd5b9486c79984ae2c64144daad2a4c4db6b8c0fbc233c1bcae9eb9b288b",
+      "experiments\\repro_inputs\\v33\\donation_hub_candidates.csv": "51e68ae42c7b3de39c5016615b29a157d4a0f12693ba356b3f0e005b0d42e7ca",
+      "experiments\\repro_inputs\\v33\\listings.csv": "71f8552af8731ac8b0ddfb205f32c78413088ba3bd3e2a1d4aa9830abe5e532f",
+      "experiments\\repro_inputs\\v33\\hub_batches.csv": "3ce5ceb404a4807f2885f5cbae3392ff309c536fb30181701970c2507ee5c3f4",
+      "experiments\\repro_inputs\\v33\\hub_batch_members.csv": "9c14be844ff948bd0a3c08ef7be7b1697b3cac279b602ba3c0263c23c25e8367",
+      "experiments\\repro_inputs\\v33\\scenarios.csv": "973d91972df90c0e39501a35ca2ae181d1a6af37d5ccb83c56e4b4bf2d5c966c",
+      "experiments\\repro_inputs\\v33\\scenario_members.csv": "7c09e2a9a040726458078c6d23370978a3cba6f155cb2b68aa2bbc356518e6d0",
+      "experiments\\repro_inputs\\v33\\claim_initial_states.csv": "30e5f3bbd933fd3827bcafb9d119d036ece0dbe1e17f0172f66b919cf98d1065",
+      "experiments\\repro_inputs\\v33\\verification_cases.csv": "740d57558291543ab9716188be59d5a96e97d41d5e6d83e26bf2a0027b28cc3a",
+      "baseline implementation\\source code\\fcfs_baseline.py": "f61583f5a26fe9706332b6884d94f4ac9ce468c10c33031877c34190aab388d5",
+      "baseline implementation\\source code\\nearest_next_baseline.py": "d434cd3a92055e310c220c09c2642d32fd4406c32c95630bb133eea81a375f5f",
+      "baseline implementation\\source code\\non_atomic_claim_baseline.py": "44eb362fbbb2b515154bb39b9830e865b39c86fdfc76da218ea82a32133d3dbb",
+      "baseline implementation\\source code\\protected_claim_without_lease_recovery_baseline.py": "9117604c5f2a76ede9356adcc72207d2ce74bd3f84292cf4b2567aaa15abdd95",
+      "benchmark dataset/dataset/generation_manifest.json": "139c823a20753e16bf1d6c0aea137ff03a171b57def95723d1be9bd4c66afe34"
+    },
+    "teammate_root": "C:\\Users\\User\\Downloads\\FYP-GeoLock_Hub-ss (1)\\FYP-GeoLock_Hub-ss",
+    "transport_repairs": [
+      {
+        "file": "road_nodes",
+        "source_sha256": "19b5f7e0157cf86d9e04dd2c326fad69d783d0634a0d35118e83ca1718e2bf94",
+        "manifest_sha256": "a8905fb29f95b6ba02c099fd60a188f98ae92f01c7586995295b096b673df6ea",
+        "repair": "CRLF bytes in separate copy only"
+      },
+      {
+        "file": "road_distance_matrix",
+        "source_sha256": "f2343b5e27c54b3287bc28025e2f4a66e90aad8ef8bfa03c5906a9911d7b79e3",
+        "manifest_sha256": "b9a272d2396354695ae2ec6fd744a17510f1b5e7c61989fe7b404d2d0e0133e1",
+        "repair": "CRLF bytes in separate copy only"
+      },
+      {
+        "file": "ngos",
+        "source_sha256": "da9ce85429acb9e62aec95f99bbc41f3347dbb67cdb3ceefd3978ba8f035a91a",
+        "manifest_sha256": "ddc14fe9958c272c7d8b7dc32b23ad6bfffd2a066f1b158a05a7cd3e5c535eaa",
+        "repair": "CRLF bytes in separate copy only"
+      },
+      {
+        "file": "vehicles",
+        "source_sha256": "6b58a4234459b124689cc86f48e9c0923ff648d1efb25851e3392ca990834e80",
+        "manifest_sha256": "79be6284565e0f544914bcb6b0fb5a847a0756a6039808bfc03920046f571413",
+        "repair": "CRLF bytes in separate copy only"
+      },
+      {
+        "file": "hubs",
+        "source_sha256": "ca5166d70c1a6c4435f02797958b42d1697f306b2cead9af0829d17b238ce7ad",
+        "manifest_sha256": "1709d42ecdf1aa4dfe7e671315e8620587cebd161099d0f9769da10d77462ade",
+        "repair": "CRLF bytes in separate copy only"
+      },
+      {
+        "file": "donors",
+        "source_sha256": "01b1ee883965d60b570506dd2c57a00f57c15c2f5ede28e6751d0621bad2911b",
+        "manifest_sha256": "aefee7b3fc9b0c955f7ae3d60238dd4ec7cea49885dcd0545706acb797604e63",
+        "repair": "CRLF bytes in separate copy only"
+      },
+      {
+        "file": "donations",
+        "source_sha256": "671b96bc3fb65a0f7cd7fe33fd5b3bee9048575455170c6044f9a55ffd80ef39",
+        "manifest_sha256": "057dbd5b9486c79984ae2c64144daad2a4c4db6b8c0fbc233c1bcae9eb9b288b",
+        "repair": "CRLF bytes in separate copy only"
+      },
+      {
+        "file": "donation_hub_candidates",
+        "source_sha256": "a38a2baf8b798e7839cda4036a55a735a089db7b1dca3a988cb65df854cb3b32",
+        "manifest_sha256": "51e68ae42c7b3de39c5016615b29a157d4a0f12693ba356b3f0e005b0d42e7ca",
+        "repair": "CRLF bytes in separate copy only"
+      },
+      {
+        "file": "listings",
+        "source_sha256": "8173a79498260cf7830e1b32dbb49f1c9ea727593a2c634aa853560b17c65038",
+        "manifest_sha256": "71f8552af8731ac8b0ddfb205f32c78413088ba3bd3e2a1d4aa9830abe5e532f",
+        "repair": "CRLF bytes in separate copy only"
+      },
+      {
+        "file": "hub_batches",
+        "source_sha256": "11916848b5c4f3b5d5151665e0f2e2f4b675343f3df2f178c4204be52568ce56",
+        "manifest_sha256": "3ce5ceb404a4807f2885f5cbae3392ff309c536fb30181701970c2507ee5c3f4",
+        "repair": "CRLF bytes in separate copy only"
+      },
+      {
+        "file": "hub_batch_members",
+        "source_sha256": "34ae0a29246dc396b1bf7806f1e6ac6b66e0a1e4b2883efa457a1ff06df5a4c5",
+        "manifest_sha256": "9c14be844ff948bd0a3c08ef7be7b1697b3cac279b602ba3c0263c23c25e8367",
+        "repair": "CRLF bytes in separate copy only"
+      },
+      {
+        "file": "scenarios",
+        "source_sha256": "a6c053d24bb587c82d394b10f265159e7ffb13c380ba9f3eb848741c482942d3",
+        "manifest_sha256": "973d91972df90c0e39501a35ca2ae181d1a6af37d5ccb83c56e4b4bf2d5c966c",
+        "repair": "CRLF bytes in separate copy only"
+      },
+      {
+        "file": "scenario_members",
+        "source_sha256": "ed8b69a605670118946465609977a99e8296fe2206c8fe01eda61f4ab9b0bb49",
+        "manifest_sha256": "7c09e2a9a040726458078c6d23370978a3cba6f155cb2b68aa2bbc356518e6d0",
+        "repair": "CRLF bytes in separate copy only"
+      },
+      {
+        "file": "claim_initial_states",
+        "source_sha256": "e67ce5dab2be7774a03964eeedb305887176146214d8b170b7685d64a7a20bc4",
+        "manifest_sha256": "30e5f3bbd933fd3827bcafb9d119d036ece0dbe1e17f0172f66b919cf98d1065",
+        "repair": "CRLF bytes in separate copy only"
+      },
+      {
+        "file": "verification_cases",
+        "source_sha256": "189bb7eb9e2bb06dee73f9bba1fd04a245ac43a4aebdfbd5d8ad25a9f5fe26b5",
+        "manifest_sha256": "740d57558291543ab9716188be59d5a96e97d41d5e6d83e26bf2a0027b28cc3a",
+        "repair": "CRLF bytes in separate copy only"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.14 (main, Aug 25 2026, 14:01:42) [MSC v.1944 64 bit (AMD64)]",
+    "executable": "C:\\Users\\User\\Downloads\\FYP-GeoLock_Hub\\.venv-stage8\\Scripts\\python.exe",
+    "platform": "Windows-11-10.0.22621-SP0",
+    "ortools": "9.15.6755",
+    "psycopg": "3.3.6",
+    "git_commit": "df626175c1413249ec2fceb314e0df431d5e692b",
+    "working_tree_dirty": true,
+    "remote_access": false
+  },
+  "configuration": {
+    "approved": true,
+    "geofence_km": 20,
+    "lease_minutes": 360,
+    "route_minutes": 240,
+    "service_minutes": 10,
+    "safety_margin_minutes": 0,
+    "mandatory": false,
+    "availability_policy": "BASELINE_ROUTING_WINDOW",
+    "listing_expiry_policy": "COMMON_STAGE8_ADMISSION",
+    "currency": "BENCHMARK_COST_UNIT",
+    "fixed_cost": 5,
+    "distance_cost_per_km": 1,
+    "solver_wall_seconds": 30,
+    "deterministic_seconds_per_pass": 0.25,
+    "seed": 42
+  },
+  "source_sha256": {
+    "backend\\routing\\phase_b\\baselines.py": "d56175fc83cd538620177b35353e1668fbc9c776ea3b246827f33cf32d3118f2",
+    "backend\\routing\\phase_b\\benchmark.py": "997373b067f51f8e5c2f05b80195185a7538307b1339d878ebc73cd52289e239",
+    "backend\\routing\\phase_b\\models.py": "63633df8520becdc64d3e0a39261993967ec3c94caf76ed2cb5855731e0b5b4f",
+    "backend\\routing\\phase_b\\optimizers.py": "0de1c90a50b3964802c6fe6a6ef3f54d3bbc0439382733bc83971e79a0627eb9",
+    "backend\\routing\\phase_b\\problem.py": "28e519da3358326a6ee0606616a7464ec4dbce58ee6b09e22d86410f19ae051b",
+    "backend\\routing\\phase_b\\routing_model.py": "df8608fa7fd066b94fd06fc6dbbf1e8c822e781ca3854ba9c4b5315ac67b4353",
+    "backend\\routing\\phase_b\\scenarios.py": "8a35f1c5b45ee0dc5c3e84fce1d1466422ca564b94bb7146883e31099d5de999",
+    "backend\\routing\\phase_b\\validation.py": "44386397dd070ae4e5685b7a510b31487f99e1f04071605e35ac4ed80f8b511a",
+    "backend\\routing\\phase_b\\__init__.py": "0ad92194fb4a16c5404ff412941902891f3f3c9575158aeb3907f8d26a8cee93",
+    "backend\\routing\\phase_c2\\matrices.py": "cf5c850fb1c6bdb2aac048c71a11f7c292ad2a85c16971efd7d33e53466d2763",
+    "backend\\routing\\phase_c2\\orchestration.py": "0290b3097d7a568d656fe9e057b1b4ab56db85863bdb8ca7d73afbfc9dbc13ce",
+    "backend\\routing\\phase_c2\\__init__.py": "731b5b9733cd2dbd22708f3415433df408875efe82f0c738c815dc13f985c2ee",
+    "backend\\routing\\phase_c2\\__main__.py": "dff56e6a56c9b97ccc706842c2cfc284bf0553d489bd6c06f9d4b9f8bf96de73",
+    "backend\\routing\\integration\\graph_worker.py": "f6e84f9f53945a74d3bdd0349ddb96258946ccce1945999754d7f43d25820fb2",
+    "backend\\routing\\integration\\presentation.py": "efd6f96fb94e255a6c32468accb1ce52bb01ab4241753260fe28c4bb2d58e8f8",
+    "backend\\routing\\integration\\route_resolution.py": "eba18ba5ff72d34389394f39526e7457c14a3d38baae7f565b5c6eb18015ada7",
+    "backend\\routing\\integration\\worker.py": "ac257d278962cd256ad9e1d4298d5fea530590064a5e07dc677e4e36d6f2c454",
+    "backend\\routing\\integration\\__init__.py": "f0c69eadc9e48c08594863f432da269f03f994e5d96dd565cac0b38874371aef",
+    "backend\\routing\\worker_service\\connection_diagnostic.py": "db53626ab98208d0fcdd7ec2763a5294f5a6ffc023fd41650f5310a81baf2814",
+    "backend\\routing\\worker_service\\connection_diagnostic_native17.py": "85ddc649cabc7fe7eaff3ab8e814004f2522872a8b0b8414029de7966c39bb91",
+    "backend\\routing\\worker_service\\errors.py": "70a8ea2499c7eac8f4e8fc7446d5d365f714453aeefbe2dc883ed67a9865ceac",
+    "backend\\routing\\worker_service\\graph_cache.py": "f1186d21ce1fd7c29601fc906dec3a51cd2398b73631a413f5f5211f35cdbd3f",
+    "backend\\routing\\worker_service\\journal.py": "af8300af1b66d44d2a5b04085cfec13474d419fc2aea6ae901ea466b493b2eb8",
+    "backend\\routing\\worker_service\\native_readonly_session.py": "85d1661404a1802ac8d6a6f8048858a47eee8f4a239624ff41be8df15e883eb1",
+    "backend\\routing\\worker_service\\native_service_connection.py": "11847d34dfeb464fae897f3ae976a7ebb10b57aa9b5d3f27e040dd9a50df4f91",
+    "backend\\routing\\worker_service\\native_service_diagnostic.py": "c33a5086ddf69c06b9e193e45de927629e76a5954b30e08b7cf79419a6d3c95f",
+    "backend\\routing\\worker_service\\native_service_probe.py": "010c227678a50c753fff38acfe0f724988efd6b22ce80292487c9df042c7b5d9",
+    "backend\\routing\\worker_service\\native_worker.py": "f5c388ba559a84b022c01bd63f0d379a8d6beeb8afcbdd5f5310363760505571",
+    "backend\\routing\\worker_service\\orchestrator.py": "b35c5747f8534ccb96af38524a1748c12587c2f720bc1c46e1eb08b5e35611c1",
+    "backend\\routing\\worker_service\\password_transport_check.py": "f90a705532160c4f391251b233955e1801af524cc8062d204d67dee37c1cf3a4",
+    "backend\\routing\\worker_service\\probe_diagnostics.py": "43a233f437b7b8e555e54e877ce082fbe838fd0d430b24eb59796f5f60408b30",
+    "backend\\routing\\worker_service\\probe_resources.py": "50c65517f28412fdebc5da95abbb0d04453f5916fa96ee737c49a01440bfc48e",
+    "backend\\routing\\worker_service\\readonly_pilot_probe.py": "d03ae8eba2e32f2ac49f77566f8023f9463e2ed676057ce251eea46dc43edea1",
+    "backend\\routing\\worker_service\\server.py": "7593492a1c13d8f9e68e449af026caa98955a160f5c9c80880cfef05a9024db7",
+    "backend\\routing\\worker_service\\staged.py": "738b7d9ef220ff5a76868d5b2170187b209e35fcd5f0c71b1b4a9619c2ae226b",
+    "backend\\routing\\worker_service\\staged_client.py": "85971c9d648f7a96f488cd3a0c759da63accf761c065793a44eeed6e3a66c810",
+    "backend\\routing\\worker_service\\transport.py": "7f55a571d7339c1c2e26ca5f1db3bd57773e353951c5dda26192d673e6f85dee",
+    "backend\\routing\\worker_service\\validator.py": "1bbc49d021ff50f454abe9d906131a77ca5ce12e9ff9c8568060ca4422081535",
+    "backend\\routing\\worker_service\\__init__.py": "ad27fcf151eb3597fb720be5b628f9333d58cc5487b68e20c53434fea9353e74",
+    "backend\\routing\\worker_service\\__main__.py": "ddd60a1df996b2b744c45953165711e5afe2711f5f0249f4e98875e1342411df",
+    "experiments\\e4_post_claim_routing\\run.py": "4ce3ab3b9bf2e9d1dfa1ca4ac50e471bd4b93717846a13b2c6697ae700819fd8",
+    "experiments\\repro_benchmark.py": "0094771155d3e45ef70f63fceca2042ccc92ff538fc68e827125dad3abb8aca7",
+    "backend\\routing\\contract.py": "a949eab61be944e873309fc999669096b2598eb80b4c881277667311f2d81251",
+    "backend\\routing\\benchmark_v32\\adapter.py": "edcc3ebc357d1b99dcde847eee037787844a6262648ba6f4f048784828b5deb7",
+    "backend\\routing\\benchmark_v32\\runner.py": "4166fef16c7f682ec1fe056f1e77f3d1b797cd758714290c676f183db4f11178"
+  },
+  "actual_proposed": "backend.routing.phase_b.optimizers.proposed: same callable used by integration solve_bundle/METHODS",
+  "runs_per_method_per_scenario": 1,
+  "formal_supervisor_approval_not_inferred": true
+}

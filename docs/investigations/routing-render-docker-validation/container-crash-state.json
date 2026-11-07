@@ -1,0 +1,41 @@
+{
+  "state": {
+    "Status": "exited",
+    "Running": false,
+    "Paused": false,
+    "Restarting": false,
+    "OOMKilled": false,
+    "Dead": false,
+    "Pid": 0,
+    "ExitCode": 137,
+    "Error": "",
+    "StartedAt": "2026-11-06T17:13:57.861471495Z",
+    "FinishedAt": "2026-11-06T17:14:00.162513706Z"
+  },
+  "mounts": [
+    {
+      "type": "bind",
+      "destination": "/probe.py"
+    },
+    {
+      "type": "volume",
+      "destination": "/var/data"
+    },
+    {
+      "type": "bind",
+      "destination": "/app/backend/routing/hosted/tests"
+    },
+    {
+      "type": "bind",
+      "destination": "/app/backend/routing/integration/tests"
+    },
+    {
+      "type": "bind",
+      "destination": "/app/backend/routing/phase_c2/tests"
+    },
+    {
+      "type": "bind",
+      "destination": "/app/backend/routing/worker_service/tests"
+    }
+  ]
+}

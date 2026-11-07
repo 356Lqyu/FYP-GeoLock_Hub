@@ -1,0 +1,838 @@
+{
+  "project": "rcgyuwiidqvrgbxswhqj",
+  "mode": "SELECT-only",
+  "queries": [
+    {
+      "name": "grants",
+      "query": "SELECT now() AS inspected_at,c.relowner::regrole::text AS owner,c.relacl,c.relrowsecurity,c.relforcerowsecurity FROM pg_class c WHERE c.oid='public.vehicles'::regclass",
+      "rows": [
+        {
+          "inspected_at": "2026-10-23 20:11:55.04773+00",
+          "owner": "postgres",
+          "relacl": "{postgres=arwdDxtm/postgres,anon=arwdDxtm/postgres,authenticated=arwdDxtm/postgres,service_role=arwdDxtm/postgres}",
+          "relrowsecurity": true,
+          "relforcerowsecurity": false
+        }
+      ]
+    },
+    {
+      "name": "acl",
+      "query": "SELECT grantee,privilege_type,is_grantable FROM information_schema.role_table_grants WHERE table_schema='public' AND table_name='vehicles' ORDER BY grantee,privilege_type",
+      "rows": [
+        {
+          "grantee": "anon",
+          "privilege_type": "DELETE",
+          "is_grantable": "NO"
+        },
+        {
+          "grantee": "anon",
+          "privilege_type": "INSERT",
+          "is_grantable": "NO"
+        },
+        {
+          "grantee": "anon",
+          "privilege_type": "REFERENCES",
+          "is_grantable": "NO"
+        },
+        {
+          "grantee": "anon",
+          "privilege_type": "SELECT",
+          "is_grantable": "NO"
+        },
+        {
+          "grantee": "anon",
+          "privilege_type": "TRIGGER",
+          "is_grantable": "NO"
+        },
+        {
+          "grantee": "anon",
+          "privilege_type": "TRUNCATE",
+          "is_grantable": "NO"
+        },
+        {
+          "grantee": "anon",
+          "privilege_type": "UPDATE",
+          "is_grantable": "NO"
+        },
+        {
+          "grantee": "authenticated",
+          "privilege_type": "DELETE",
+          "is_grantable": "NO"
+        },
+        {
+          "grantee": "authenticated",
+          "privilege_type": "INSERT",
+          "is_grantable": "NO"
+        },
+        {
+          "grantee": "authenticated",
+          "privilege_type": "REFERENCES",
+          "is_grantable": "NO"
+        },
+        {
+          "grantee": "authenticated",
+          "privilege_type": "SELECT",
+          "is_grantable": "NO"
+        },
+        {
+          "grantee": "authenticated",
+          "privilege_type": "TRIGGER",
+          "is_grantable": "NO"
+        },
+        {
+          "grantee": "authenticated",
+          "privilege_type": "TRUNCATE",
+          "is_grantable": "NO"
+        },
+        {
+          "grantee": "authenticated",
+          "privilege_type": "UPDATE",
+          "is_grantable": "NO"
+        },
+        {
+          "grantee": "postgres",
+          "privilege_type": "DELETE",
+          "is_grantable": "YES"
+        },
+        {
+          "grantee": "postgres",
+          "privilege_type": "INSERT",
+          "is_grantable": "YES"
+        },
+        {
+          "grantee": "postgres",
+          "privilege_type": "REFERENCES",
+          "is_grantable": "YES"
+        },
+        {
+          "grantee": "postgres",
+          "privilege_type": "SELECT",
+          "is_grantable": "YES"
+        },
+        {
+          "grantee": "postgres",
+          "privilege_type": "TRIGGER",
+          "is_grantable": "YES"
+        },
+        {
+          "grantee": "postgres",
+          "privilege_type": "TRUNCATE",
+          "is_grantable": "YES"
+        },
+        {
+          "grantee": "postgres",
+          "privilege_type": "UPDATE",
+          "is_grantable": "YES"
+        },
+        {
+          "grantee": "service_role",
+          "privilege_type": "DELETE",
+          "is_grantable": "NO"
+        },
+        {
+          "grantee": "service_role",
+          "privilege_type": "INSERT",
+          "is_grantable": "NO"
+        },
+        {
+          "grantee": "service_role",
+          "privilege_type": "REFERENCES",
+          "is_grantable": "NO"
+        },
+        {
+          "grantee": "service_role",
+          "privilege_type": "SELECT",
+          "is_grantable": "NO"
+        },
+        {
+          "grantee": "service_role",
+          "privilege_type": "TRIGGER",
+          "is_grantable": "NO"
+        },
+        {
+          "grantee": "service_role",
+          "privilege_type": "TRUNCATE",
+          "is_grantable": "NO"
+        },
+        {
+          "grantee": "service_role",
+          "privilege_type": "UPDATE",
+          "is_grantable": "NO"
+        }
+      ]
+    },
+    {
+      "name": "columns_acl",
+      "query": "SELECT attname,attacl FROM pg_attribute WHERE attrelid='public.vehicles'::regclass AND attnum>0 AND NOT attisdropped",
+      "rows": [
+        {
+          "attname": "vehicle_id",
+          "attacl": null
+        },
+        {
+          "attname": "ngo_user_id",
+          "attacl": null
+        },
+        {
+          "attname": "vehicle_label",
+          "attacl": null
+        },
+        {
+          "attname": "payload_capacity_kg",
+          "attacl": null
+        },
+        {
+          "attname": "depot_road_node_id",
+          "attacl": null
+        },
+        {
+          "attname": "active_flag",
+          "attacl": null
+        }
+      ]
+    },
+    {
+      "name": "effective",
+      "query": "SELECT r.rolname,r.rolbypassrls,r.rolinherit,has_table_privilege(r.rolname,'public.vehicles','SELECT') AS sel,has_table_privilege(r.rolname,'public.vehicles','INSERT') AS ins,has_table_privilege(r.rolname,'public.vehicles','UPDATE') AS upd,has_table_privilege(r.rolname,'public.vehicles','DELETE') AS del,has_table_privilege(r.rolname,'public.vehicles','TRUNCATE') AS trunc,has_table_privilege(r.rolname,'public.vehicles','REFERENCES') AS refs,has_table_privilege(r.rolname,'public.vehicles','TRIGGER') AS trig FROM pg_roles r WHERE rolname IN ('anon','authenticated','service_role','postgres')",
+      "rows": [
+        {
+          "rolname": "authenticated",
+          "rolbypassrls": false,
+          "rolinherit": true,
+          "sel": true,
+          "ins": true,
+          "upd": true,
+          "del": true,
+          "trunc": true,
+          "refs": true,
+          "trig": true
+        },
+        {
+          "rolname": "anon",
+          "rolbypassrls": false,
+          "rolinherit": true,
+          "sel": true,
+          "ins": true,
+          "upd": true,
+          "del": true,
+          "trunc": true,
+          "refs": true,
+          "trig": true
+        },
+        {
+          "rolname": "service_role",
+          "rolbypassrls": true,
+          "rolinherit": true,
+          "sel": true,
+          "ins": true,
+          "upd": true,
+          "del": true,
+          "trunc": true,
+          "refs": true,
+          "trig": true
+        },
+        {
+          "rolname": "postgres",
+          "rolbypassrls": true,
+          "rolinherit": true,
+          "sel": true,
+          "ins": true,
+          "upd": true,
+          "del": true,
+          "trunc": true,
+          "refs": true,
+          "trig": true
+        }
+      ]
+    },
+    {
+      "name": "policies",
+      "query": "SELECT * FROM pg_policies WHERE schemaname='public' AND tablename IN ('vehicles','pickup_routes')",
+      "rows": []
+    },
+    {
+      "name": "routes",
+      "query": "SELECT conname,pg_get_constraintdef(oid) FROM pg_constraint WHERE conrelid='public.pickup_routes'::regclass",
+      "rows": [
+        {
+          "conname": "pickup_routes_ngo_user_id_fkey",
+          "pg_get_constraintdef": "FOREIGN KEY (ngo_user_id) REFERENCES ngo_profiles(user_id)"
+        },
+        {
+          "conname": "pickup_routes_pkey",
+          "pg_get_constraintdef": "PRIMARY KEY (route_id)"
+        },
+        {
+          "conname": "pickup_routes_route_id_ngo_user_id_key",
+          "pg_get_constraintdef": "UNIQUE (route_id, ngo_user_id)"
+        },
+        {
+          "conname": "pickup_routes_route_status_check",
+          "pg_get_constraintdef": "CHECK ((route_status = ANY (ARRAY['DRAFT'::text, 'VALIDATED'::text, 'AUTHORISED'::text, 'IN_PROGRESS'::text, 'COMPLETED'::text, 'CANCELLED'::text, 'STALE'::text])))"
+        },
+        {
+          "conname": "pickup_routes_total_distance_km_check",
+          "pg_get_constraintdef": "CHECK ((total_distance_km >= (0)::numeric))"
+        },
+        {
+          "conname": "pickup_routes_total_duration_min_check",
+          "pg_get_constraintdef": "CHECK ((total_duration_min >= (0)::numeric))"
+        },
+        {
+          "conname": "pickup_routes_vehicle_id_ngo_user_id_fkey",
+          "pg_get_constraintdef": "FOREIGN KEY (vehicle_id, ngo_user_id) REFERENCES vehicles(vehicle_id, ngo_user_id)"
+        }
+      ]
+    },
+    {
+      "name": "counts",
+      "query": "SELECT route_status,count(*) FROM public.pickup_routes GROUP BY route_status",
+      "rows": []
+    },
+    {
+      "name": "functions",
+      "query": "SELECT p.oid::regprocedure::text AS signature,p.proowner::regrole::text AS owner,p.proacl,p.proconfig,pg_get_functiondef(p.oid) AS definition FROM pg_proc p WHERE p.pronamespace='public'::regnamespace AND p.prokind='f' AND (p.prosrc ILIKE '%pickup_routes%' OR p.prosrc ILIKE '%vehicles%' OR p.proname IN ('geolock_assign_vehicle_depot','start_pickup')) ORDER BY p.proname",
+      "rows": [
+        {
+          "signature": "assign_task_to_route(uuid,uuid,integer)",
+          "owner": "postgres",
+          "proacl": "{postgres=X/postgres,anon=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+          "proconfig": [
+            "search_path=public, extensions, pg_temp"
+          ],
+          "definition": "CREATE OR REPLACE FUNCTION public.assign_task_to_route(p_route uuid, p_task uuid, p_stop_order integer)\n RETURNS void\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public', 'extensions', 'pg_temp'\nAS $function$\r\ndeclare v_actor uuid:=auth.uid();v_r public.pickup_routes%rowtype;\r\n v_t public.pickup_tasks%rowtype;\r\nbegin\r\n select * into v_r from public.pickup_routes where route_id=p_route for update;\r\n if not found or v_r.ngo_user_id is distinct from v_actor or v_r.route_status<>'DRAFT'\r\n then raise exception 'ROUTE_NOT_EDITABLE_BY_NGO'; end if;\r\n select * into v_t from public.pickup_tasks where task_id=p_task for update;\r\n if not found or v_t.ngo_user_id<>v_actor or v_t.task_status not in ('CONFIRMED','PLANNED')\r\n then raise exception 'TASK_NOT_ASSIGNABLE'; end if;\r\n if not exists(select 1 from public.donation_claims c\r\n join public.claim_leases l on l.claim_id=c.claim_id\r\n where c.claim_id=v_t.claim_id and c.claim_status='ACTIVE'\r\n and l.lease_status='ACTIVE' and l.expires_at>clock_timestamp())\r\n then raise exception 'STALE_CLAIM'; end if;\r\n insert into public.active_task_route_assignments(task_id,route_id)\r\n values(p_task,p_route);\r\n insert into public.pickup_route_stops(route_id,ngo_user_id,stop_order,task_id)\r\n values(p_route,v_actor,p_stop_order,p_task);\r\n update public.pickup_tasks set task_status='PLANNED' where task_id=p_task;\r\n insert into public.audit_events(actor_user_id,actor_role,entity_type,entity_id,event_type,\r\n requested_state,resulting_state,outcome,details)\r\n values(v_actor,'NGO','TASK',p_task,'ASSIGN_ROUTE','PLANNED','PLANNED','SUCCESS',\r\n jsonb_build_object('route_id',p_route));\r\nend $function$\n"
+        },
+        {
+          "signature": "cancel_claim(uuid,uuid)",
+          "owner": "postgres",
+          "proacl": "{postgres=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+          "proconfig": [
+            "search_path=pg_catalog, public, pg_temp"
+          ],
+          "definition": "CREATE OR REPLACE FUNCTION public.cancel_claim(p_claim uuid, p_request uuid)\n RETURNS jsonb\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'pg_catalog', 'public', 'pg_temp'\nAS $function$\r\ndeclare\r\n  v_actor uuid := auth.uid();\r\n  v_role text;\r\n  v_c public.donation_claims%rowtype;\r\n  v_l public.listings%rowtype;\r\n  v_le public.claim_leases%rowtype;\r\n  v_t public.pickup_tasks%rowtype;\r\n  v_req public.claim_cancellation_requests%rowtype;\r\n  v_fingerprint text;\r\n  v_result jsonb;\r\n  v_reason text;\r\n  v_safe boolean := false;\r\n  v_version text;\r\nbegin\r\n  if v_actor is null then raise exception 'UNAUTHENTICATED'; end if;\r\n  if p_claim is null or p_request is null then raise exception 'CLAIM_AND_REQUEST_REQUIRED'; end if;\r\n  select c.* into v_c from public.donation_claims c where c.claim_id=p_claim;\r\n  if not found or v_c.ngo_user_id is distinct from v_actor\r\n     or not exists(select 1 from public.ngo_profiles n where n.user_id=v_actor and n.active_flag) then\r\n    raise exception 'CLAIM_NOT_FOUND_OR_FORBIDDEN';\r\n  end if;\r\n  select p.role into v_role from public.user_profiles p where p.user_id=v_actor;\r\n  v_fingerprint := v_actor::text || ':' || p_claim::text;\r\n  insert into public.claim_cancellation_requests(request_id,claim_id,actor_user_id,request_fingerprint)\r\n    values(p_request,p_claim,v_actor,v_fingerprint) on conflict(request_id) do nothing;\r\n  select r.* into v_req from public.claim_cancellation_requests r\r\n    where r.request_id=p_request for update;\r\n  if v_req.request_fingerprint is distinct from v_fingerprint then\r\n    insert into public.audit_events(actor_user_id,actor_role,entity_type,entity_id,event_type,\r\n      request_id,claim_id,correlation_id,requested_state,resulting_state,reason_code,outcome,details)\r\n    values(v_actor,v_role,'CLAIM',p_claim,'CANCEL_CLAIM',p_request,p_claim,p_request,\r\n      'RELEASED',null,'IDEMPOTENCY_KEY_REUSED_WITH_DIFFERENT_PAYLOAD','REJECTED',\r\n      jsonb_build_object('request_id',p_request));\r\n    return jsonb_build_object('outcome','REJECTED','claim_id',p_claim,\r\n      'reason_code','IDEMPOTENCY_KEY_REUSED_WITH_DIFFERENT_PAYLOAD');\r\n  end if;\r\n  if v_req.response is not null then return v_req.response; end if;\r\n\r\n  -- Keep the deployed pickup lock prefix exactly: claim, lease, listing, task.\r\n  select c.* into v_c from public.donation_claims c where c.claim_id=p_claim for update;\r\n  if not found then raise exception 'CLAIM_NOT_FOUND'; end if;\r\n  select le.* into v_le from public.claim_leases le where le.claim_id=p_claim for update;\r\n  if not found then raise exception 'LEASE_MISSING_REQUIRES_RECONCILIATION'; end if;\r\n  select l.* into v_l from public.listings l where l.listing_id=v_c.listing_id for update;\r\n  if not found then raise exception 'LISTING_MISSING_REQUIRES_RECONCILIATION'; end if;\r\n  select t.* into v_t from public.pickup_tasks t where t.claim_id=p_claim for update;\r\n\r\n  if v_t.task_id is null then v_reason := 'PICKUP_TASK_MISSING_REQUIRES_RECONCILIATION';\r\n  elsif not public.geolock_lock_listing_donations(v_l.listing_id,array['CLAIMED']) then\r\n    v_reason := 'DONATION_SET_REQUIRES_RECONCILIATION';\r\n  elsif v_c.claim_status <> 'ACTIVE' then v_reason := 'CLAIM_NOT_ACTIVE';\r\n  elsif v_le.lease_status <> 'ACTIVE' then v_reason := 'LEASE_NOT_ACTIVE';\r\n  elsif v_le.expires_at <= clock_timestamp() then v_reason := 'LEASE_EXPIRED_USE_RECOVERY';\r\n  elsif v_l.listing_status <> 'CLAIMED' then v_reason := 'LISTING_NOT_CLAIMED';\r\n  elsif v_t.task_status <> 'CONFIRMED' then v_reason := 'PICKUP_ALREADY_STARTED_OR_CLOSED';\r\n  elsif v_l.source_type='DIRECT_DONATION' and not exists(select 1 from public.donations d\r\n      where d.donation_id=v_l.donation_id and d.donation_status='CLAIMED') then\r\n    v_reason := 'DONATION_STATE_REQUIRES_RECONCILIATION';\r\n  elsif v_l.source_type='HUB_BATCH' and (\r\n      not exists(select 1 from public.hub_batch_members m\r\n        where m.batch_id=v_l.batch_id and m.membership_status='ACTIVE')\r\n      or exists(select 1 from public.hub_batch_members m join public.donations d using(donation_id)\r\n        where m.batch_id=v_l.batch_id and m.membership_status='ACTIVE' and d.donation_status<>'CLAIMED')\r\n      or exists(select 1 from public.hub_batch_members m\r\n        where m.batch_id=v_l.batch_id and m.membership_status='ACTIVE'\r\n          and not exists(select 1 from public.hub_inventory hi\r\n            where hi.donation_id=m.donation_id and hi.inventory_status='BATCHED'))) then\r\n    v_reason := 'BATCH_CUSTODY_STATE_REQUIRES_RECONCILIATION';\r\n  elsif exists(select 1 from public.active_task_route_assignments a where a.task_id=v_t.task_id)\r\n     or exists(select 1 from public.pickup_route_stops s\r\n      join public.pickup_routes r using(route_id)\r\n      where s.task_id=v_t.task_id and r.route_status not in ('CANCELLED','STALE')) then\r\n    v_reason := 'TASK_HAS_ROUTE_ACTIVITY';\r\n  elsif v_l.listing_expires_at is not null and v_l.listing_expires_at <= clock_timestamp() then\r\n    v_reason := 'LISTING_EXPIRED';\r\n  else\r\n    v_safe := true;\r\n  end if;\r\n\r\n  if v_safe then\r\n    update public.donation_claims set claim_status='RELEASED',closed_at=clock_timestamp(),\r\n      close_reason='NGO_CANCELLED_BEFORE_PICKUP' where claim_id=p_claim;\r\n    update public.claim_leases set lease_status='RELEASED',closed_at=clock_timestamp(),\r\n      release_reason='NGO_CANCELLED_BEFORE_PICKUP' where lease_id=v_le.lease_id;\r\n    update public.pickup_tasks set task_status='STALE' where task_id=v_t.task_id;\r\n    update public.listings set listing_status='AVAILABLE',listing_version=listing_version+1\r\n      where listing_id=v_l.listing_id and listing_status='CLAIMED';\r\n    perform public.geolock_transition_listing_donations(v_l.listing_id,'CLAIMED',\r\n      case when v_l.source_type='DIRECT_DONATION' then 'AVAILABLE' else 'BATCHED' end);\r\n    v_reason := 'NGO_CANCELLED_BEFORE_PICKUP';\r\n  end if;\r\n  v_result := jsonb_build_object('outcome',case when v_safe then 'SUCCESS' else 'REJECTED' end,\r\n    'claim_id',p_claim,'listing_id',v_c.listing_id,'reason_code',v_reason,\r\n    'claim_status',case when v_safe then 'RELEASED' else v_c.claim_status end,\r\n    'resulting_listing_status',case when v_safe then 'AVAILABLE' else v_l.listing_status end);\r\n  update public.claim_cancellation_requests set response=v_result,completed_at=clock_timestamp()\r\n    where request_id=p_request;\r\n  select c.config_version into v_version from public.coordination_config c where c.singleton;\r\n  insert into public.audit_events(actor_user_id,actor_role,entity_type,entity_id,event_type,\r\n    request_id,claim_id,lease_id,correlation_id,previous_state,requested_state,resulting_state,\r\n    reason_code,outcome,software_version,configuration_version,details)\r\n  values(v_actor,v_role,'CLAIM',p_claim,'CANCEL_CLAIM',p_request,p_claim,v_le.lease_id,\r\n    p_request,\r\n    v_c.claim_status,'RELEASED',case when v_safe then 'RELEASED' else v_c.claim_status end,\r\n    v_reason,case when v_safe then 'SUCCESS' else 'REJECTED' end,\r\n    'geolock-stage1-2026-10-19',v_version,\r\n    jsonb_build_object('donation_id',v_l.donation_id,\r\n      'listing_id',v_c.listing_id,'task_id',v_t.task_id));\r\n  return v_result;\r\nend;\r\n$function$\n"
+        },
+        {
+          "signature": "geolock_assign_vehicle_depot()",
+          "owner": "postgres",
+          "proacl": "{postgres=X/postgres,service_role=X/postgres}",
+          "proconfig": [
+            "search_path=public, pg_temp"
+          ],
+          "definition": "CREATE OR REPLACE FUNCTION public.geolock_assign_vehicle_depot()\n RETURNS trigger\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public', 'pg_temp'\nAS $function$\r\nbegin\r\n  select n.road_node_id into new.depot_road_node_id\r\n    from public.ngo_profiles n\r\n   where n.user_id = new.ngo_user_id and n.location_verified_at is not null;\r\n  return new;\r\nend $function$\n"
+        },
+        {
+          "signature": "geolock_backfill_road_nodes()",
+          "owner": "postgres",
+          "proacl": "{postgres=X/postgres,service_role=X/postgres}",
+          "proconfig": [
+            "search_path=public, extensions, pg_temp"
+          ],
+          "definition": "CREATE OR REPLACE FUNCTION public.geolock_backfill_road_nodes()\n RETURNS jsonb\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public', 'extensions', 'pg_temp'\nAS $function$\r\ndeclare v_hubs integer; v_listings integer; v_donations integer; v_ngos integer := 0;\r\n  v_rows integer; r record;\r\nbegin\r\n  if coalesce(auth.role(), '') <> 'service_role'\r\n     and session_user not in ('postgres', 'supabase_admin') then\r\n    raise exception 'TRUSTED_OPERATOR_ONLY';\r\n  end if;\r\n\r\n  update public.community_hubs set road_node_id = null;   -- trigger re-resolves\r\n  get diagnostics v_hubs = row_count;\r\n\r\n  update public.donations d\r\n     set pickup_road_node_id = r2.node_id\r\n    from public.donations d2\r\n    left join lateral public.geolock_resolve_road_node(d2.latitude, d2.longitude) r2 on true\r\n   where d.donation_id = d2.donation_id\r\n     -- READY_FOR_PICKUP previously included claimed direct donations. Tasks\r\n     -- retain their listing-node snapshot; do not rewrite tasks or route stops.\r\n     and (d.donation_status in ('SUBMITTED','AVAILABLE','HUB_ASSIGNED')\r\n       or (d.donation_status='CLAIMED' and d.collection_path='DIRECT_PICKUP'))\r\n     and d.pickup_road_node_id is distinct from r2.node_id;\r\n  get diagnostics v_donations = row_count;\r\n\r\n  update public.listings l\r\n     set pickup_road_node_id = r2.node_id\r\n    from public.listings l2\r\n    left join lateral public.geolock_resolve_road_node(l2.pickup_latitude, l2.pickup_longitude) r2 on true\r\n   where l.listing_id = l2.listing_id\r\n     and l.listing_status = 'AVAILABLE'\r\n     and l.pickup_road_node_id is distinct from r2.node_id;\r\n  get diagnostics v_listings = row_count;\r\n\r\n  -- Re-check verified NGOs against the new snapshot (verification is kept only\r\n  -- if the stored location still snaps within 500 m).\r\n  for r in select n.user_id, n.latitude, n.longitude from public.ngo_profiles n\r\n            where n.location_verified_at is not null loop\r\n    update public.ngo_profiles\r\n       set road_node_id = (select x.node_id from public.geolock_resolve_road_node(r.latitude, r.longitude) x)\r\n     where user_id = r.user_id;\r\n    update public.vehicles set depot_road_node_id = null where ngo_user_id = r.user_id;\r\n    perform public.geolock_refresh_ngo_road_eligibility(r.user_id);\r\n    v_ngos := v_ngos + 1;\r\n  end loop;\r\n  select count(*) into v_rows from public.ngo_listing_road_eligibility;\r\n\r\n  return jsonb_build_object('hubs_rechecked', v_hubs, 'donations_changed', v_donations,\r\n    'listings_changed', v_listings, 'ngos_rechecked', v_ngos, 'eligibility_rows', v_rows);\r\nend $function$\n"
+        },
+        {
+          "signature": "set_ngo_operating_location(text,double precision,double precision)",
+          "owner": "postgres",
+          "proacl": "{postgres=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+          "proconfig": [
+            "search_path=public, extensions, pg_temp"
+          ],
+          "definition": "CREATE OR REPLACE FUNCTION public.set_ngo_operating_location(p_operating_address text, p_latitude double precision, p_longitude double precision)\n RETURNS jsonb\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public', 'extensions', 'pg_temp'\nAS $function$\r\ndeclare\r\n  v_user uuid := auth.uid();\r\n  v_ngo public.ngo_profiles%rowtype;\r\n  v_snapshot text;\r\n  v_node text;\r\n  v_snap_distance double precision;\r\n  v_resolved_snapshot text;\r\n  v_generation bigint;\r\nbegin\r\n  if v_user is null then raise exception 'UNAUTHENTICATED'; end if;\r\n  if nullif(btrim(p_operating_address),'') is null\r\n     or p_latitude is null or p_longitude is null\r\n     or p_latitude not between -90 and 90\r\n     or p_longitude not between -180 and 180 then\r\n    raise exception 'INVALID_NGO_LOCATION';\r\n  end if;\r\n\r\n  -- Keep the approved snapshot fixed through validation, invalidation and enqueue.\r\n  select c.network_snapshot_id into v_snapshot\r\n    from public.road_network_coverage c\r\n   where c.active_flag and c.dataset_kind='OPERATIONAL'\r\n     and c.approved_at is not null and c.max_snap_distance_m=500\r\n   for share;\r\n  if v_snapshot is null then raise exception 'OPERATIONAL_ROAD_COVERAGE_UNAVAILABLE'; end if;\r\n\r\n  select * into v_ngo from public.ngo_profiles n\r\n   where n.user_id=v_user and n.active_flag for update;\r\n  if not found then raise exception 'ACTIVE_NGO_PROFILE_REQUIRED'; end if;\r\n\r\n  if exists(\r\n    select 1 from public.donation_claims c\r\n     where c.ngo_user_id=v_user and (\r\n       c.claim_status in ('ACTIVE','RECONCILIATION_REQUIRED')\r\n       or exists(select 1 from public.claim_leases le\r\n                  where le.claim_id=c.claim_id\r\n                    and le.lease_status in ('ACTIVE','RECONCILIATION_REQUIRED'))\r\n       or not exists(select 1 from public.claim_leases le where le.claim_id=c.claim_id\r\n          and ((c.claim_status='COMPLETED' and le.lease_status='COMPLETED')\r\n            or (c.claim_status in ('RELEASED','EXPIRED','CANCELLED')\r\n                and le.lease_status in ('RELEASED','EXPIRED'))))\r\n     )\r\n  ) then raise exception 'NGO_HAS_ACTIVE_OR_UNRESOLVED_CLAIMS'; end if;\r\n\r\n  select r.node_id,r.snap_distance_m,r.snapshot_id\r\n    into v_node,v_snap_distance,v_resolved_snapshot\r\n    from public.geolock_resolve_road_node(p_latitude,p_longitude) r;\r\n  if v_node is null or v_snap_distance is null or v_snap_distance < 0\r\n     or v_snap_distance > 500 or v_resolved_snapshot is distinct from v_snapshot then\r\n    raise exception 'NGO_LOCATION_NOT_ROUTABLE';\r\n  end if;\r\n\r\n  v_generation := v_ngo.location_generation + 1;\r\n  update public.ngo_profiles set operating_address=btrim(p_operating_address),\r\n    latitude=p_latitude,longitude=p_longitude,road_node_id=v_node,\r\n    location_verified_at=clock_timestamp(),location_generation=v_generation\r\n   where user_id=v_user;\r\n  -- Existing trigger derives vehicle depots from the trusted NGO node.\r\n  update public.vehicles set depot_road_node_id=null where ngo_user_id=v_user;\r\n\r\n  -- Remove every prior result before committing the new location generation.\r\n  delete from public.ngo_listing_road_eligibility where ngo_user_id=v_user;\r\n  insert into public.ngo_eligibility_refresh_jobs(\r\n    ngo_user_id,location_generation,expected_road_node_id,expected_snapshot_id)\r\n  values(v_user,v_generation,v_node,v_snapshot);\r\n\r\n  insert into public.audit_events(actor_user_id,actor_role,entity_type,entity_id,\r\n    event_type,request_id,correlation_id,previous_state,requested_state,\r\n    resulting_state,reason_code,outcome,details)\r\n  values(v_user,'NGO','NGO',v_user,'SET_NGO_OPERATING_LOCATION',gen_random_uuid(),\r\n    gen_random_uuid(),case when v_ngo.location_verified_at is null then 'INCOMPLETE' else 'VERIFIED' end,\r\n    'VERIFIED','ELIGIBILITY_PENDING','SERVER_ROAD_NODE_VALIDATION','SUCCESS',\r\n    jsonb_build_object('network_snapshot_id',v_snapshot,'road_node_id',v_node,\r\n      'snap_distance_m',round(v_snap_distance::numeric,1),\r\n      'location_generation',v_generation));\r\n\r\n  return jsonb_build_object('location_status','VERIFIED','eligibility_status','PENDING',\r\n    'road_node_id',v_node,'snap_distance_m',round(v_snap_distance::numeric,1),\r\n    'network_snapshot_id',v_snapshot,'location_generation',v_generation);\r\nend;\r\n$function$\n"
+        },
+        {
+          "signature": "start_pickup(uuid)",
+          "owner": "postgres",
+          "proacl": "{postgres=X/postgres,anon=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+          "proconfig": [
+            "search_path=public, extensions, pg_temp"
+          ],
+          "definition": "CREATE OR REPLACE FUNCTION public.start_pickup(p_claim uuid)\n RETURNS void\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public', 'extensions', 'pg_temp'\nAS $function$\r\ndeclare v_actor uuid:=auth.uid();v_c public.donation_claims%rowtype;\r\n v_l public.listings%rowtype;v_lease public.claim_leases%rowtype;\r\nbegin\r\n select * into v_c from public.donation_claims where claim_id=p_claim for update;\r\n if not found or v_c.ngo_user_id is distinct from v_actor or v_c.claim_status<>'ACTIVE'\r\n then raise exception 'NOT_ACTIVE_CLAIM_HOLDER'; end if;\r\n select * into v_lease from public.claim_leases where claim_id=p_claim for update;\r\n if not found or v_lease.lease_status<>'ACTIVE' or v_lease.expires_at<=clock_timestamp()\r\n then raise exception 'STALE_OR_EXPIRED_LEASE'; end if;\r\n select * into v_l from public.listings where listing_id=v_c.listing_id for update;\r\n if v_l.listing_status<>'CLAIMED' then raise exception 'LISTING_NOT_CLAIMED'; end if;\r\n update public.pickup_tasks set task_status='DISPATCHED'\r\n where claim_id=p_claim and task_status in ('CONFIRMED','PLANNED');\r\n if not found then raise exception 'PICKUP_TASK_NOT_DISPATCHABLE'; end if;\r\n perform public.geolock_transition_listing_donations(v_l.listing_id,'CLAIMED','PICKUP_IN_PROGRESS');\r\n insert into public.audit_events(actor_user_id,actor_role,entity_type,entity_id,event_type,\r\n claim_id,lease_id,requested_state,resulting_state,outcome)\r\n values(v_actor,'NGO','CLAIM',p_claim,'START_PICKUP',p_claim,v_lease.lease_id,\r\n 'PICKUP_IN_PROGRESS','PICKUP_IN_PROGRESS','SUCCESS');\r\nend $function$\n"
+        },
+        {
+          "signature": "submit_claim_reconciliation(uuid,boolean,uuid)",
+          "owner": "postgres",
+          "proacl": "{postgres=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+          "proconfig": [
+            "search_path=pg_catalog, public, pg_temp"
+          ],
+          "definition": "CREATE OR REPLACE FUNCTION public.submit_claim_reconciliation(p_claim uuid, p_handover_confirmed boolean, p_request uuid)\n RETURNS jsonb\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'pg_catalog', 'public', 'pg_temp'\nAS $function$\r\ndeclare\r\n  v_actor uuid := auth.uid(); v_role text; v_case public.claim_reconciliation_cases%rowtype;\r\n  v_c public.donation_claims%rowtype; v_l public.listings%rowtype;\r\n  v_le public.claim_leases%rowtype; v_t public.pickup_tasks%rowtype;\r\n  v_d public.donations%rowtype; v_counterpart uuid; v_allowed boolean := false;\r\n  v_prior public.claim_reconciliation_evidence%rowtype; v_values integer; v_true integer;\r\n  v_result jsonb; v_cfg text; v_did uuid; v_batch_states text[];\r\nbegin\r\n  if v_actor is null then raise exception 'UNAUTHENTICATED'; end if;\r\n  if p_claim is null or p_request is null or p_handover_confirmed is null then\r\n    raise exception 'CLAIM_EVIDENCE_REQUIRED'; end if;\r\n  -- Same lock prefix as start/complete/recovery.\r\n  select c.* into v_c from public.donation_claims c where c.claim_id=p_claim for update;\r\n  if not found then raise exception 'CLAIM_NOT_FOUND'; end if;\r\n  select le.* into v_le from public.claim_leases le where le.claim_id=p_claim for update;\r\n  if not found then raise exception 'LEASE_NOT_FOUND'; end if;\r\n  select l.* into v_l from public.listings l where l.listing_id=v_c.listing_id for update;\r\n  if not found then raise exception 'LISTING_NOT_FOUND'; end if;\r\n  select t.* into v_t from public.pickup_tasks t where t.claim_id=p_claim for update;\r\n  if not found then raise exception 'PICKUP_TASK_NOT_FOUND'; end if;\r\n  if v_c.claim_status<>'RECONCILIATION_REQUIRED'\r\n     or v_le.lease_status<>'RECONCILIATION_REQUIRED'\r\n     or v_l.listing_status<>'CLAIMED' then\r\n    raise exception 'RECONCILIATION_STATE_MISMATCH';\r\n  end if;\r\n  select p.role into v_role from public.user_profiles p where p.user_id=v_actor;\r\n  select * into v_case from public.claim_reconciliation_cases c\r\n    where c.claim_id=p_claim and c.case_status in ('OPEN','MANUAL_REVIEW') for update;\r\n  if not found then raise exception 'RECONCILIATION_NOT_OPEN'; end if;\r\n\r\n  if v_actor=v_c.ngo_user_id and v_role='NGO' then v_allowed:=true; end if;\r\n  if v_l.source_type='DIRECT_DONATION' then\r\n    select d.donor_user_id into v_counterpart from public.donations d where d.donation_id=v_l.donation_id;\r\n    if v_actor=v_counterpart and v_role='DONOR' then v_allowed:=true; end if;\r\n  elsif v_l.source_type='HUB_BATCH' then\r\n    select h.admin_user_id into v_counterpart from public.hub_batches b\r\n      join public.community_hubs h using(hub_id) where b.batch_id=v_l.batch_id;\r\n    if v_actor=v_counterpart and v_role='HUB_ADMIN' then v_allowed:=true; end if;\r\n  end if;\r\n  if not v_allowed then raise exception 'RECONCILIATION_PARTICIPANT_ONLY'; end if;\r\n\r\n  select * into v_prior from public.claim_reconciliation_evidence e where e.request_id=p_request;\r\n  if found then\r\n    if v_prior.case_id<>v_case.case_id or v_prior.actor_user_id<>v_actor\r\n       or v_prior.handover_confirmed<>p_handover_confirmed then\r\n      select c.config_version into v_cfg from public.coordination_config c where c.singleton;\r\n      insert into public.audit_events(actor_user_id,actor_role,entity_type,entity_id,event_type,\r\n        request_id,claim_id,lease_id,correlation_id,\r\n        previous_state,requested_state,resulting_state,reason_code,outcome,\r\n        software_version,configuration_version,details)\r\n      values(v_actor,v_role,'CLAIM',p_claim,'CLAIM_RECONCILIATION_EVIDENCE',p_request,p_claim,\r\n        v_le.lease_id,p_request,v_c.claim_status,\r\n        case when p_handover_confirmed then 'COLLECTED' else 'RELEASED' end,\r\n        v_c.claim_status,'IDEMPOTENCY_KEY_REUSED_WITH_DIFFERENT_PAYLOAD','REJECTED',\r\n        'geolock-stage1-2026-10-19',v_cfg,jsonb_build_object('donation_id',v_l.donation_id,\r\n        'listing_id',v_l.listing_id,'case_id',v_case.case_id));\r\n      return jsonb_build_object('outcome','REJECTED','reason_code','IDEMPOTENCY_KEY_REUSED_WITH_DIFFERENT_PAYLOAD');\r\n    end if;\r\n    if v_prior.response is not null then return v_prior.response; end if;\r\n  else\r\n    if exists(select 1 from public.claim_reconciliation_evidence e\r\n        where e.case_id=v_case.case_id and e.actor_user_id=v_actor) then\r\n      select c.config_version into v_cfg from public.coordination_config c where c.singleton;\r\n      insert into public.audit_events(actor_user_id,actor_role,entity_type,entity_id,event_type,\r\n        request_id,claim_id,lease_id,correlation_id,\r\n        previous_state,requested_state,resulting_state,reason_code,outcome,\r\n        software_version,configuration_version,details)\r\n      values(v_actor,v_role,'CLAIM',p_claim,'CLAIM_RECONCILIATION_EVIDENCE',p_request,p_claim,\r\n        v_le.lease_id,p_request,v_c.claim_status,\r\n        case when p_handover_confirmed then 'COLLECTED' else 'RELEASED' end,\r\n        v_c.claim_status,'EVIDENCE_ALREADY_SUBMITTED','REJECTED',\r\n        'geolock-stage1-2026-10-19',v_cfg,jsonb_build_object('donation_id',v_l.donation_id,\r\n        'listing_id',v_l.listing_id,'case_id',v_case.case_id));\r\n      return jsonb_build_object('outcome','REJECTED','reason_code','EVIDENCE_ALREADY_SUBMITTED');\r\n    end if;\r\n    insert into public.claim_reconciliation_evidence(request_id,case_id,actor_user_id,handover_confirmed)\r\n      values(p_request,v_case.case_id,v_actor,p_handover_confirmed);\r\n  end if;\r\n\r\n  -- Lock and validate the complete immutable member set before finalizing evidence.\r\n  if not public.geolock_lock_listing_donations(v_l.listing_id,\r\n    array['CLAIMED','PICKUP_IN_PROGRESS','COLLECTED']) then\r\n    raise exception 'RECONCILIATION_DONATION_SET_REQUIRES_REVIEW';\r\n  end if;\r\n  -- The complete immutable member set is locked above. A partially progressed\r\n  -- batch is inconsistent custody, even if both participants report handover.\r\n  if v_l.source_type='HUB_BATCH' then\r\n    select array_agg(distinct d.donation_status order by d.donation_status)\r\n      into v_batch_states\r\n    from public.hub_batch_members m join public.donations d using(donation_id)\r\n    where m.batch_id=v_l.batch_id and m.membership_status='ACTIVE';\r\n  end if;\r\n  select count(*),count(*) filter(where e.handover_confirmed)\r\n    into v_values,v_true from public.claim_reconciliation_evidence e where e.case_id=v_case.case_id;\r\n  if cardinality(v_batch_states)>1 then\r\n    update public.claim_reconciliation_cases set case_status='MANUAL_REVIEW',\r\n      resolution_reason='MIXED_BATCH_DONATION_STATES' where case_id=v_case.case_id;\r\n    v_result:=jsonb_build_object('outcome','RECONCILIATION_REQUIRED','case_id',v_case.case_id,\r\n      'reason_code','MIXED_BATCH_DONATION_STATES');\r\n  elsif v_values<2 then\r\n    v_result:=jsonb_build_object('outcome','AWAITING_COUNTERPART','case_id',v_case.case_id,\r\n      'reason_code','SECOND_PARTY_CONFIRMATION_REQUIRED');\r\n  elsif v_true not in (0,2) then\r\n    update public.claim_reconciliation_cases set case_status='MANUAL_REVIEW',\r\n      resolution_reason='PARTY_EVIDENCE_CONFLICT' where case_id=v_case.case_id;\r\n    v_result:=jsonb_build_object('outcome','RECONCILIATION_REQUIRED','case_id',v_case.case_id,\r\n      'reason_code','PARTY_EVIDENCE_CONFLICT');\r\n  elsif v_true=2 then\r\n    if v_t.task_status not in ('DISPATCHED','COLLECTED') then\r\n      update public.claim_reconciliation_cases set case_status='MANUAL_REVIEW',\r\n        resolution_reason='HANDOVER_EVIDENCE_CONFLICTS_WITH_TASK_STATE' where case_id=v_case.case_id;\r\n      v_result:=jsonb_build_object('outcome','RECONCILIATION_REQUIRED','case_id',v_case.case_id,\r\n        'reason_code','HANDOVER_EVIDENCE_CONFLICTS_WITH_TASK_STATE');\r\n    else\r\n      if v_l.source_type='DIRECT_DONATION' then\r\n        select d.* into v_d from public.donations d where d.donation_id=v_l.donation_id for update;\r\n        if v_d.donation_status not in ('PICKUP_IN_PROGRESS','COLLECTED') then raise exception 'DONATION_STATE_REQUIRES_REVIEW'; end if;\r\n        if v_d.donation_status='PICKUP_IN_PROGRESS' then\r\n          update public.donations set donation_status='COLLECTED' where donation_id=v_d.donation_id;\r\n        end if;\r\n      else\r\n        for v_did in select m.donation_id from public.hub_batch_members m\r\n          where m.batch_id=v_l.batch_id and m.membership_status='ACTIVE' order by m.donation_id loop\r\n          select d.* into v_d from public.donations d where d.donation_id=v_did for update;\r\n          if v_d.donation_status not in ('PICKUP_IN_PROGRESS','COLLECTED') then raise exception 'BATCH_DONATION_STATE_REQUIRES_REVIEW'; end if;\r\n          if v_d.donation_status='PICKUP_IN_PROGRESS' then\r\n            update public.donations set donation_status='COLLECTED' where donation_id=v_did;\r\n          end if;\r\n        end loop;\r\n        update public.hub_inventory set inventory_status='COLLECTED'\r\n          where donation_id in(select m.donation_id from public.hub_batch_members m\r\n            where m.batch_id=v_l.batch_id and m.membership_status='ACTIVE');\r\n        update public.hub_batches set batch_status='COLLECTED' where batch_id=v_l.batch_id;\r\n      end if;\r\n      update public.pickup_tasks set task_status='COLLECTED' where task_id=v_t.task_id;\r\n      update public.listings set listing_status='CLOSED',listing_version=listing_version+1 where listing_id=v_l.listing_id;\r\n      update public.donation_claims set claim_status='COMPLETED',closed_at=clock_timestamp(),close_reason='RECONCILED_HANDOVER_CONFIRMED' where claim_id=p_claim;\r\n      update public.claim_leases set lease_status='COMPLETED',closed_at=clock_timestamp() where lease_id=v_le.lease_id;\r\n      update public.claim_reconciliation_cases set case_status='RESOLVED_COLLECTED',resolved_at=clock_timestamp(),\r\n        resolution_reason='BOTH_PARTIES_CONFIRMED_HANDOVER' where case_id=v_case.case_id;\r\n      v_result:=jsonb_build_object('outcome','SUCCESS','case_id',v_case.case_id,\r\n        'claim_status','COMPLETED','donation_status','COLLECTED','reason_code','HANDOVER_CONFIRMED');\r\n    end if;\r\n  else\r\n    if v_t.task_status='CONFIRMED'\r\n       and v_l.listing_status='CLAIMED'\r\n       and (v_l.listing_expires_at is null or v_l.listing_expires_at>clock_timestamp())\r\n       and ((v_l.source_type='DIRECT_DONATION' and exists(select 1 from public.donations d\r\n              where d.donation_id=v_l.donation_id and d.donation_status='CLAIMED'))\r\n         or (v_l.source_type='HUB_BATCH'\r\n             and exists(select 1 from public.hub_batch_members m\r\n               where m.batch_id=v_l.batch_id and m.membership_status='ACTIVE')\r\n             and not exists(select 1 from public.hub_batch_members m join public.donations d using(donation_id)\r\n               where m.batch_id=v_l.batch_id and m.membership_status='ACTIVE'\r\n                 and d.donation_status<>'CLAIMED')\r\n              and not exists(select 1 from public.hub_batch_members m\r\n                where m.batch_id=v_l.batch_id and m.membership_status='ACTIVE'\r\n                  and not exists(select 1 from public.hub_inventory hi\r\n                    where hi.donation_id=m.donation_id and hi.inventory_status='BATCHED'))))\r\n       and not exists(select 1 from public.active_task_route_assignments a where a.task_id=v_t.task_id)\r\n       and not exists(\r\n      select 1 from public.pickup_route_stops s join public.pickup_routes r using(route_id)\r\n      where s.task_id=v_t.task_id and r.route_status not in ('CANCELLED','STALE')) then\r\n      update public.donation_claims set claim_status='RELEASED',closed_at=clock_timestamp(),close_reason='RECONCILED_NO_HANDOVER' where claim_id=p_claim;\r\n      update public.claim_leases set lease_status='RELEASED',closed_at=clock_timestamp(),release_reason='RECONCILED_NO_HANDOVER' where lease_id=v_le.lease_id;\r\n      update public.pickup_tasks set task_status='STALE' where task_id=v_t.task_id;\r\n      update public.listings set listing_status='AVAILABLE',listing_version=listing_version+1 where listing_id=v_l.listing_id;\r\n      perform public.geolock_transition_listing_donations(v_l.listing_id,'CLAIMED',\r\n        case when v_l.source_type='DIRECT_DONATION' then 'AVAILABLE' else 'BATCHED' end);\r\n      update public.claim_reconciliation_cases set case_status='RESOLVED_RELEASED',resolved_at=clock_timestamp(),\r\n        resolution_reason='BOTH_PARTIES_CONFIRMED_NO_HANDOVER' where case_id=v_case.case_id;\r\n      v_result:=jsonb_build_object('outcome','SUCCESS','case_id',v_case.case_id,\r\n        'claim_status','RELEASED','reason_code','NO_HANDOVER_CONFIRMED');\r\n    else\r\n      update public.claim_reconciliation_cases set case_status='MANUAL_REVIEW',\r\n        resolution_reason='NO_HANDOVER_CONFIRMED_AFTER_PICKUP_STARTED' where case_id=v_case.case_id;\r\n      v_result:=jsonb_build_object('outcome','RECONCILIATION_REQUIRED','case_id',v_case.case_id,\r\n        'reason_code','NO_HANDOVER_AFTER_PICKUP_STARTED_REQUIRES_REVIEW');\r\n    end if;\r\n  end if;\r\n\r\n  update public.claim_reconciliation_evidence set response=v_result where request_id=p_request;\r\n  select c.config_version into v_cfg from public.coordination_config c where c.singleton;\r\n  -- This path accepted the evidence; waiting/manual review is a workflow state,\r\n  -- not a failed database operation. Earlier rejection paths remain REJECTED.\r\n  insert into public.audit_events(actor_user_id,actor_role,entity_type,entity_id,event_type,\r\n    request_id,claim_id,lease_id,correlation_id,previous_state,requested_state,resulting_state,\r\n    reason_code,outcome,software_version,configuration_version,details)\r\n  values(v_actor,v_role,'CLAIM',p_claim,'CLAIM_RECONCILIATION_EVIDENCE',p_request,p_claim,\r\n    v_le.lease_id,p_request,v_c.claim_status,\r\n    case when p_handover_confirmed then 'COLLECTED' else 'RELEASED' end,\r\n    coalesce(v_result->>'claim_status',v_c.claim_status),v_result->>'reason_code','SUCCESS',\r\n    'geolock-stage1-2026-10-19',v_cfg,jsonb_build_object('donation_id',v_l.donation_id,\r\n        'listing_id',v_l.listing_id,'case_id',v_case.case_id,\r\n      'handover_confirmed',p_handover_confirmed,\r\n      'reconciliation_status',v_result->>'outcome',\r\n      'batch_donation_states',to_jsonb(v_batch_states)));\r\n  return v_result;\r\nend;\r\n$function$\n"
+        },
+        {
+          "signature": "verify_ngo_location(uuid,boolean,text)",
+          "owner": "postgres",
+          "proacl": "{postgres=X/postgres,service_role=X/postgres}",
+          "proconfig": [
+            "search_path=public, extensions, pg_temp"
+          ],
+          "definition": "CREATE OR REPLACE FUNCTION public.verify_ngo_location(p_ngo uuid, p_verified boolean, p_reason text)\n RETURNS jsonb\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public', 'extensions', 'pg_temp'\nAS $function$\r\ndeclare\r\n  v_ngo public.ngo_profiles%rowtype;\r\n  v_node text;\r\n  v_dist double precision;\r\n  v_prev text;\r\n  v_new text;\r\n  v_eligible integer;\r\nbegin\r\n  if coalesce(auth.role(), '') <> 'service_role'\r\n     and session_user not in ('postgres', 'supabase_admin') then\r\n    raise exception 'TRUSTED_VERIFIER_ONLY';\r\n  end if;\r\n  if p_ngo is null or p_verified is null then raise exception 'NGO_AND_DECISION_REQUIRED'; end if;\r\n  if nullif(btrim(p_reason), '') is null then raise exception 'VERIFICATION_REASON_REQUIRED'; end if;\r\n\r\n  select * into v_ngo from public.ngo_profiles where user_id = p_ngo for update;\r\n  if not found then raise exception 'NGO_NOT_FOUND'; end if;\r\n  v_prev := case when v_ngo.location_verified_at is null then 'UNVERIFIED' else 'VERIFIED' end;\r\n\r\n  if p_verified then\r\n    select node_id, snap_distance_m into v_node, v_dist\r\n      from public.geolock_resolve_road_node(v_ngo.latitude, v_ngo.longitude);\r\n    if v_node is null then raise exception 'NGO_LOCATION_NOT_ROUTABLE'; end if;\r\n  end if;\r\n  v_new := case when p_verified then 'VERIFIED' else 'UNVERIFIED' end;\r\n\r\n  update public.ngo_profiles\r\n     set location_verified_at = case when p_verified then clock_timestamp() end,\r\n         road_node_id = v_node\r\n   where user_id = p_ngo;\r\n  update public.vehicles set depot_road_node_id = null where ngo_user_id = p_ngo;\r\n\r\n  perform public.geolock_refresh_ngo_road_eligibility(p_ngo);\r\n  select count(*) into v_eligible from public.ngo_listing_road_eligibility\r\n   where ngo_user_id = p_ngo and outcome = 'ELIGIBLE';\r\n\r\n  insert into public.audit_events(actor_user_id, actor_role, entity_type, entity_id,\r\n    event_type, request_id, previous_state, requested_state, resulting_state,\r\n    reason_code, outcome, details)\r\n  values (null, 'SYSTEM', 'NGO', p_ngo, 'VERIFY_NGO_LOCATION', gen_random_uuid(),\r\n    v_prev, v_new, v_new, p_reason, 'SUCCESS',\r\n    jsonb_build_object('road_node_id', v_node,\r\n                       'snap_distance_m', round(v_dist::numeric, 1),\r\n                       'eligible_open_listings', v_eligible));\r\n\r\n  return jsonb_build_object('ngo_user_id', p_ngo, 'location_status', v_new,\r\n    'road_node_id', v_node, 'snap_distance_m', round(v_dist::numeric, 1),\r\n    'eligible_open_listings', v_eligible);\r\nend $function$\n"
+        }
+      ]
+    },
+    {
+      "name": "triggers",
+      "query": "SELECT tgrelid::regclass::text AS relation,tgname,pg_get_triggerdef(oid) AS definition FROM pg_trigger WHERE tgrelid IN ('public.vehicles'::regclass,'public.pickup_routes'::regclass) AND NOT tgisinternal",
+      "rows": [
+        {
+          "relation": "vehicles",
+          "tgname": "trg_vehicle_depot_node",
+          "definition": "CREATE TRIGGER trg_vehicle_depot_node BEFORE INSERT OR UPDATE OF depot_road_node_id, ngo_user_id ON public.vehicles FOR EACH ROW EXECUTE FUNCTION geolock_assign_vehicle_depot()"
+        }
+      ]
+    },
+    {
+      "name": "membership",
+      "query": "SELECT member::regrole::text AS member,roleid::regrole::text AS role,inherit_option,set_option FROM pg_auth_members WHERE member IN (SELECT oid FROM pg_roles WHERE rolname IN ('anon','authenticated','service_role'))",
+      "rows": []
+    },
+    {
+      "name": "inventory",
+      "query": "SELECT count(*) AS vehicles FROM public.vehicles",
+      "rows": [
+        {
+          "vehicles": 0
+        }
+      ]
+    },
+    {
+      "name": "acl_expanded",
+      "query": "SELECT CASE WHEN a.grantee=0 THEN 'PUBLIC' ELSE a.grantee::regrole::text END AS grantee,a.privilege_type,a.is_grantable FROM pg_class c CROSS JOIN LATERAL aclexplode(c.relacl) a WHERE c.oid='public.vehicles'::regclass ORDER BY 1,2",
+      "rows": [
+        {
+          "grantee": "anon",
+          "privilege_type": "DELETE",
+          "is_grantable": false
+        },
+        {
+          "grantee": "anon",
+          "privilege_type": "INSERT",
+          "is_grantable": false
+        },
+        {
+          "grantee": "anon",
+          "privilege_type": "MAINTAIN",
+          "is_grantable": false
+        },
+        {
+          "grantee": "anon",
+          "privilege_type": "REFERENCES",
+          "is_grantable": false
+        },
+        {
+          "grantee": "anon",
+          "privilege_type": "SELECT",
+          "is_grantable": false
+        },
+        {
+          "grantee": "anon",
+          "privilege_type": "TRIGGER",
+          "is_grantable": false
+        },
+        {
+          "grantee": "anon",
+          "privilege_type": "TRUNCATE",
+          "is_grantable": false
+        },
+        {
+          "grantee": "anon",
+          "privilege_type": "UPDATE",
+          "is_grantable": false
+        },
+        {
+          "grantee": "authenticated",
+          "privilege_type": "DELETE",
+          "is_grantable": false
+        },
+        {
+          "grantee": "authenticated",
+          "privilege_type": "INSERT",
+          "is_grantable": false
+        },
+        {
+          "grantee": "authenticated",
+          "privilege_type": "MAINTAIN",
+          "is_grantable": false
+        },
+        {
+          "grantee": "authenticated",
+          "privilege_type": "REFERENCES",
+          "is_grantable": false
+        },
+        {
+          "grantee": "authenticated",
+          "privilege_type": "SELECT",
+          "is_grantable": false
+        },
+        {
+          "grantee": "authenticated",
+          "privilege_type": "TRIGGER",
+          "is_grantable": false
+        },
+        {
+          "grantee": "authenticated",
+          "privilege_type": "TRUNCATE",
+          "is_grantable": false
+        },
+        {
+          "grantee": "authenticated",
+          "privilege_type": "UPDATE",
+          "is_grantable": false
+        },
+        {
+          "grantee": "postgres",
+          "privilege_type": "DELETE",
+          "is_grantable": false
+        },
+        {
+          "grantee": "postgres",
+          "privilege_type": "INSERT",
+          "is_grantable": false
+        },
+        {
+          "grantee": "postgres",
+          "privilege_type": "MAINTAIN",
+          "is_grantable": false
+        },
+        {
+          "grantee": "postgres",
+          "privilege_type": "REFERENCES",
+          "is_grantable": false
+        },
+        {
+          "grantee": "postgres",
+          "privilege_type": "SELECT",
+          "is_grantable": false
+        },
+        {
+          "grantee": "postgres",
+          "privilege_type": "TRIGGER",
+          "is_grantable": false
+        },
+        {
+          "grantee": "postgres",
+          "privilege_type": "TRUNCATE",
+          "is_grantable": false
+        },
+        {
+          "grantee": "postgres",
+          "privilege_type": "UPDATE",
+          "is_grantable": false
+        },
+        {
+          "grantee": "service_role",
+          "privilege_type": "DELETE",
+          "is_grantable": false
+        },
+        {
+          "grantee": "service_role",
+          "privilege_type": "INSERT",
+          "is_grantable": false
+        },
+        {
+          "grantee": "service_role",
+          "privilege_type": "MAINTAIN",
+          "is_grantable": false
+        },
+        {
+          "grantee": "service_role",
+          "privilege_type": "REFERENCES",
+          "is_grantable": false
+        },
+        {
+          "grantee": "service_role",
+          "privilege_type": "SELECT",
+          "is_grantable": false
+        },
+        {
+          "grantee": "service_role",
+          "privilege_type": "TRIGGER",
+          "is_grantable": false
+        },
+        {
+          "grantee": "service_role",
+          "privilege_type": "TRUNCATE",
+          "is_grantable": false
+        },
+        {
+          "grantee": "service_role",
+          "privilege_type": "UPDATE",
+          "is_grantable": false
+        }
+      ]
+    },
+    {
+      "name": "route_columns",
+      "query": "SELECT c.relname,a.attname,format_type(a.atttypid,a.atttypmod) AS type,a.attnotnull FROM pg_class c JOIN pg_attribute a ON a.attrelid=c.oid AND a.attnum>0 AND NOT a.attisdropped WHERE c.relnamespace='public'::regnamespace AND c.relname IN ('pickup_route_stops','active_task_route_assignments','pickup_tasks') ORDER BY 1,a.attnum",
+      "rows": [
+        {
+          "relname": "active_task_route_assignments",
+          "attname": "task_id",
+          "type": "uuid",
+          "attnotnull": true
+        },
+        {
+          "relname": "active_task_route_assignments",
+          "attname": "route_id",
+          "type": "uuid",
+          "attnotnull": true
+        },
+        {
+          "relname": "active_task_route_assignments",
+          "attname": "assigned_at",
+          "type": "timestamp with time zone",
+          "attnotnull": true
+        },
+        {
+          "relname": "pickup_route_stops",
+          "attname": "route_id",
+          "type": "uuid",
+          "attnotnull": true
+        },
+        {
+          "relname": "pickup_route_stops",
+          "attname": "ngo_user_id",
+          "type": "uuid",
+          "attnotnull": true
+        },
+        {
+          "relname": "pickup_route_stops",
+          "attname": "stop_order",
+          "type": "integer",
+          "attnotnull": true
+        },
+        {
+          "relname": "pickup_route_stops",
+          "attname": "task_id",
+          "type": "uuid",
+          "attnotnull": true
+        },
+        {
+          "relname": "pickup_route_stops",
+          "attname": "planned_arrival",
+          "type": "timestamp with time zone",
+          "attnotnull": false
+        },
+        {
+          "relname": "pickup_tasks",
+          "attname": "task_id",
+          "type": "uuid",
+          "attnotnull": true
+        },
+        {
+          "relname": "pickup_tasks",
+          "attname": "claim_id",
+          "type": "uuid",
+          "attnotnull": true
+        },
+        {
+          "relname": "pickup_tasks",
+          "attname": "listing_id",
+          "type": "uuid",
+          "attnotnull": true
+        },
+        {
+          "relname": "pickup_tasks",
+          "attname": "ngo_user_id",
+          "type": "uuid",
+          "attnotnull": true
+        },
+        {
+          "relname": "pickup_tasks",
+          "attname": "pickup_road_node_id",
+          "type": "text",
+          "attnotnull": true
+        },
+        {
+          "relname": "pickup_tasks",
+          "attname": "load_kg",
+          "type": "numeric(12,3)",
+          "attnotnull": true
+        },
+        {
+          "relname": "pickup_tasks",
+          "attname": "task_status",
+          "type": "text",
+          "attnotnull": true
+        },
+        {
+          "relname": "pickup_tasks",
+          "attname": "created_at",
+          "type": "timestamp with time zone",
+          "attnotnull": true
+        }
+      ]
+    },
+    {
+      "name": "route_jobs",
+      "query": "SELECT jobname,schedule,active,command FROM cron.job WHERE jobname ILIKE '%route%' OR command ILIKE '%pickup_routes%'",
+      "rows": []
+    },
+    {
+      "name": "route_writers",
+      "query": "SELECT p.oid::regprocedure::text AS signature,pg_get_functiondef(p.oid) AS definition FROM pg_proc p WHERE p.pronamespace='public'::regnamespace AND p.prokind='f' AND (p.prosrc ~* '(update|insert[[:space:]]+into|delete[[:space:]]+from)[[:space:]]+(public[.])?pickup_routes' OR p.proname IN ('complete_pickup','recover_expired_claims'))",
+      "rows": [
+        {
+          "signature": "complete_pickup(uuid,boolean)",
+          "definition": "CREATE OR REPLACE FUNCTION public.complete_pickup(p_claim uuid, p_handover_confirmed boolean)\n RETURNS void\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public', 'extensions', 'pg_temp'\nAS $function$\r\ndeclare v_actor uuid:=auth.uid();v_c public.donation_claims%rowtype;\r\n v_l public.listings%rowtype;v_lease public.claim_leases%rowtype;\r\nbegin\r\n select * into v_c from public.donation_claims where claim_id=p_claim for update;\r\n if not found or v_c.ngo_user_id is distinct from v_actor or v_c.claim_status<>'ACTIVE'\r\n then raise exception 'NOT_ACTIVE_CLAIM_HOLDER'; end if;\r\n select * into v_lease from public.claim_leases where claim_id=p_claim for update;\r\n if not found or v_lease.lease_status<>'ACTIVE' or v_lease.expires_at<=clock_timestamp()\r\n then raise exception 'STALE_OR_EXPIRED_LEASE'; end if;\r\n if p_handover_confirmed is distinct from true then raise exception 'HANDOVER_NOT_CONFIRMED'; end if;\r\n select * into v_l from public.listings where listing_id=v_c.listing_id for update;\r\n if v_l.listing_status<>'CLAIMED' then raise exception 'LISTING_NOT_CLAIMED'; end if;\r\n update public.pickup_tasks set task_status='COLLECTED'\r\n where claim_id=p_claim and task_status='DISPATCHED';\r\n if not found then raise exception 'PICKUP_NOT_STARTED'; end if;\r\n perform public.geolock_transition_listing_donations(v_l.listing_id,'PICKUP_IN_PROGRESS','COLLECTED');\r\n if v_l.source_type='HUB_BATCH' then\r\n  update public.hub_inventory set inventory_status='COLLECTED'\r\n  where donation_id in(select donation_id from public.hub_batch_members\r\n    where batch_id=v_l.batch_id and membership_status='ACTIVE');\r\n  update public.hub_batches set batch_status='COLLECTED' where batch_id=v_l.batch_id;\r\n end if;\r\n update public.listings set listing_status='CLOSED',listing_version=listing_version+1\r\n where listing_id=v_l.listing_id;\r\n update public.donation_claims set claim_status='COMPLETED',closed_at=clock_timestamp()\r\n where claim_id=p_claim;\r\n update public.claim_leases set lease_status='COMPLETED',closed_at=clock_timestamp()\r\n where claim_id=p_claim;\r\n insert into public.audit_events(actor_user_id,actor_role,entity_type,entity_id,event_type,\r\n claim_id,lease_id,requested_state,resulting_state,outcome)\r\n values(v_actor,'NGO','CLAIM',p_claim,'COMPLETE_PICKUP',p_claim,v_lease.lease_id,\r\n 'COLLECTED','COLLECTED','SUCCESS');\r\nend $function$\n"
+        },
+        {
+          "signature": "recover_expired_claims(integer)",
+          "definition": "CREATE OR REPLACE FUNCTION public.recover_expired_claims(p_limit integer DEFAULT 100)\n RETURNS integer\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'pg_catalog', 'public', 'extensions', 'pg_temp'\nAS $function$\r\ndeclare\r\n  v_rec record; v_c public.donation_claims%rowtype; v_le public.claim_leases%rowtype;\r\n  v_l public.listings%rowtype; v_t public.pickup_tasks%rowtype;\r\n  v_uncertain boolean; v_count integer:=0; v_did uuid; v_cfg text;\r\nbegin\r\n  if auth.role() is distinct from 'service_role' and session_user <> 'postgres' then\r\n    raise exception 'TRUSTED_SCHEDULER_ONLY';\r\n  end if;\r\n  for v_rec in\r\n    select c.claim_id,cl.lease_id,cl.expires_at from public.donation_claims c\r\n    join public.claim_leases cl using(claim_id)\r\n    where c.claim_status='ACTIVE' and cl.lease_status='ACTIVE' and cl.expires_at<=clock_timestamp()\r\n    order by cl.expires_at,c.claim_id\r\n    for update of c skip locked\r\n    limit greatest(1,least(coalesce(p_limit,100),1000))\r\n  loop\r\n    select c.* into v_c from public.donation_claims c where c.claim_id=v_rec.claim_id;\r\n    -- Current row lock was obtained on claim above; follow V3 writer order.\r\n    select le.* into v_le from public.claim_leases le where le.lease_id=v_rec.lease_id for update;\r\n    if v_c.claim_status<>'ACTIVE' or v_le.lease_status<>'ACTIVE'\r\n       or v_le.expires_at>clock_timestamp() then continue; end if;\r\n    select l.* into v_l from public.listings l where l.listing_id=v_c.listing_id for update;\r\n    select t.* into v_t from public.pickup_tasks t where t.claim_id=v_c.claim_id for update;\r\n\r\n    -- Unresolved custody evidence for this claim or listing fences reopening.\r\n    v_uncertain := exists(select 1 from public.claim_reconciliation_cases rc\r\n        where (rc.claim_id=v_c.claim_id or rc.listing_id=v_l.listing_id)\r\n          and rc.case_status in ('OPEN','MANUAL_REVIEW'))\r\n      or v_l.listing_id is null\r\n      or v_t.task_id is null\r\n      or v_l.listing_status<>'CLAIMED'\r\n      or v_t.task_status<>'CONFIRMED'\r\n      or exists(select 1 from public.active_task_route_assignments a where a.task_id=v_t.task_id)\r\n      or exists(select 1 from public.pickup_route_stops s\r\n        where s.task_id=v_t.task_id)\r\n      or (v_l.source_type='DIRECT_DONATION' and exists(select 1 from public.donations d\r\n        where d.donation_id=v_l.donation_id and d.donation_status in ('PICKUP_IN_PROGRESS','COLLECTED','DELIVERED')))\r\n      or (v_l.source_type='HUB_BATCH' and exists(select 1 from public.hub_batch_members m\r\n        join public.donations d using(donation_id) where m.batch_id=v_l.batch_id\r\n        and m.membership_status='ACTIVE' and d.donation_status in ('PICKUP_IN_PROGRESS','COLLECTED','DELIVERED')));\r\n    if v_l.source_type='DIRECT_DONATION' then\r\n      v_uncertain:=v_uncertain or not exists(select 1 from public.donations d\r\n        where d.donation_id=v_l.donation_id and d.donation_status='CLAIMED');\r\n    elsif v_l.source_type='HUB_BATCH' then\r\n      v_uncertain:=v_uncertain\r\n        or not exists(select 1 from public.hub_batch_members m\r\n          where m.batch_id=v_l.batch_id and m.membership_status='ACTIVE')\r\n        or exists(select 1 from public.hub_batch_members m join public.donations d using(donation_id)\r\n          where m.batch_id=v_l.batch_id and m.membership_status='ACTIVE'\r\n            and d.donation_status<>'CLAIMED')\r\n        or exists(select 1 from public.hub_batch_members m join public.hub_inventory hi using(donation_id)\r\n          where m.batch_id=v_l.batch_id and m.membership_status='ACTIVE'\r\n            and hi.inventory_status<>'BATCHED');\r\n    end if;\r\n    if v_l.listing_id is not null then\r\n      v_uncertain:=not public.geolock_lock_listing_donations(v_l.listing_id,array['CLAIMED']) or v_uncertain;\r\n    end if;\r\n    -- Decide listing expiry only after acquiring the donation/batch lock set.\r\n    -- An expired listing cannot be safely reopened; retain custody for reconciliation.\r\n    v_uncertain:=v_uncertain\r\n      or (v_l.listing_expires_at is not null and v_l.listing_expires_at<=clock_timestamp());\r\n    if v_uncertain then\r\n      update public.claim_leases set lease_status='RECONCILIATION_REQUIRED' where lease_id=v_le.lease_id;\r\n      update public.donation_claims set claim_status='RECONCILIATION_REQUIRED' where claim_id=v_c.claim_id;\r\n      if v_l.listing_id is not null then\r\n        insert into public.claim_reconciliation_cases(claim_id,listing_id,donation_id,source_type,case_status)\r\n          values(v_c.claim_id,v_l.listing_id,v_l.donation_id,v_l.source_type,'OPEN')\r\n          on conflict(claim_id) do nothing;\r\n      end if;\r\n    else\r\n      update public.claim_leases set lease_status='RELEASED',closed_at=clock_timestamp(),release_reason='EXPIRED_SAFE_RELEASE'\r\n        where lease_id=v_le.lease_id;\r\n      update public.donation_claims set claim_status='RELEASED',closed_at=clock_timestamp(),close_reason='EXPIRED_SAFE_RELEASE'\r\n        where claim_id=v_c.claim_id;\r\n      update public.pickup_tasks set task_status='STALE' where task_id=v_t.task_id;\r\n      if v_l.listing_status='CLAIMED' and (v_l.listing_expires_at is null or v_l.listing_expires_at>clock_timestamp()) then\r\n        update public.listings set listing_status='AVAILABLE',listing_version=listing_version+1\r\n          where listing_id=v_l.listing_id and listing_status='CLAIMED';\r\n        perform public.geolock_transition_listing_donations(v_l.listing_id,'CLAIMED',\r\n          case when v_l.source_type='DIRECT_DONATION' then 'AVAILABLE' else 'BATCHED' end);\r\n      else\r\n        raise exception 'RECOVERY_LISTING_REOPEN_PRECONDITION_CHANGED';\r\n      end if;\r\n    end if;\r\n    select c.config_version into v_cfg from public.coordination_config c where c.singleton;\r\n    insert into public.audit_events(actor_role,entity_type,entity_id,event_type,claim_id,lease_id,\r\n      correlation_id,previous_state,requested_state,resulting_state,reason_code,outcome,\r\n      software_version,configuration_version,details)\r\n    values('SYSTEM','CLAIM',v_c.claim_id,'LEASE_RECOVERY',v_c.claim_id,v_le.lease_id,\r\n      gen_random_uuid(),'ACTIVE',case when v_uncertain then 'RECONCILIATION_REQUIRED' else 'RELEASED' end,\r\n      case when v_uncertain then 'RECONCILIATION_REQUIRED' else 'RELEASED' end,\r\n      case when v_uncertain then 'HANDOVER_OR_ROUTE_ACTIVITY_UNCERTAIN' else 'EXPIRED_SAFE_RELEASE' end,\r\n      'SUCCESS','geolock-stage1-2026-10-19',v_cfg,\r\n      jsonb_build_object('donation_id',v_l.donation_id,\r\n        'listing_id',v_l.listing_id,'task_id',v_t.task_id));\r\n    v_count:=v_count+1;\r\n  end loop;\r\n  return v_count;\r\nend;\r\n$function$\n"
+        }
+      ]
+    },
+    {
+      "name": "route_acl",
+      "query": "SELECT CASE WHEN a.grantee=0 THEN 'PUBLIC' ELSE a.grantee::regrole::text END AS grantee,a.privilege_type FROM pg_class c CROSS JOIN LATERAL aclexplode(c.relacl) a WHERE c.oid='public.pickup_routes'::regclass ORDER BY 1,2",
+      "rows": [
+        {
+          "grantee": "anon",
+          "privilege_type": "DELETE"
+        },
+        {
+          "grantee": "anon",
+          "privilege_type": "INSERT"
+        },
+        {
+          "grantee": "anon",
+          "privilege_type": "MAINTAIN"
+        },
+        {
+          "grantee": "anon",
+          "privilege_type": "REFERENCES"
+        },
+        {
+          "grantee": "anon",
+          "privilege_type": "SELECT"
+        },
+        {
+          "grantee": "anon",
+          "privilege_type": "TRIGGER"
+        },
+        {
+          "grantee": "anon",
+          "privilege_type": "TRUNCATE"
+        },
+        {
+          "grantee": "anon",
+          "privilege_type": "UPDATE"
+        },
+        {
+          "grantee": "authenticated",
+          "privilege_type": "DELETE"
+        },
+        {
+          "grantee": "authenticated",
+          "privilege_type": "INSERT"
+        },
+        {
+          "grantee": "authenticated",
+          "privilege_type": "MAINTAIN"
+        },
+        {
+          "grantee": "authenticated",
+          "privilege_type": "REFERENCES"
+        },
+        {
+          "grantee": "authenticated",
+          "privilege_type": "SELECT"
+        },
+        {
+          "grantee": "authenticated",
+          "privilege_type": "TRIGGER"
+        },
+        {
+          "grantee": "authenticated",
+          "privilege_type": "TRUNCATE"
+        },
+        {
+          "grantee": "authenticated",
+          "privilege_type": "UPDATE"
+        },
+        {
+          "grantee": "postgres",
+          "privilege_type": "DELETE"
+        },
+        {
+          "grantee": "postgres",
+          "privilege_type": "INSERT"
+        },
+        {
+          "grantee": "postgres",
+          "privilege_type": "MAINTAIN"
+        },
+        {
+          "grantee": "postgres",
+          "privilege_type": "REFERENCES"
+        },
+        {
+          "grantee": "postgres",
+          "privilege_type": "SELECT"
+        },
+        {
+          "grantee": "postgres",
+          "privilege_type": "TRIGGER"
+        },
+        {
+          "grantee": "postgres",
+          "privilege_type": "TRUNCATE"
+        },
+        {
+          "grantee": "postgres",
+          "privilege_type": "UPDATE"
+        },
+        {
+          "grantee": "service_role",
+          "privilege_type": "DELETE"
+        },
+        {
+          "grantee": "service_role",
+          "privilege_type": "INSERT"
+        },
+        {
+          "grantee": "service_role",
+          "privilege_type": "MAINTAIN"
+        },
+        {
+          "grantee": "service_role",
+          "privilege_type": "REFERENCES"
+        },
+        {
+          "grantee": "service_role",
+          "privilege_type": "SELECT"
+        },
+        {
+          "grantee": "service_role",
+          "privilege_type": "TRIGGER"
+        },
+        {
+          "grantee": "service_role",
+          "privilege_type": "TRUNCATE"
+        },
+        {
+          "grantee": "service_role",
+          "privilege_type": "UPDATE"
+        }
+      ]
+    },
+    {
+      "name": "bypass_parameters",
+      "query": "SELECT r.rolname,has_parameter_privilege(r.rolname,'session_replication_role','SET') AS can_disable_replication_triggers,pg_has_role(r.rolname,'postgres','USAGE') AS inherits_postgres FROM pg_roles r WHERE rolname IN ('anon','authenticated','service_role')",
+      "rows": [
+        {
+          "rolname": "authenticated",
+          "can_disable_replication_triggers": false,
+          "inherits_postgres": false
+        },
+        {
+          "rolname": "anon",
+          "can_disable_replication_triggers": false,
+          "inherits_postgres": false
+        },
+        {
+          "rolname": "service_role",
+          "can_disable_replication_triggers": false,
+          "inherits_postgres": false
+        }
+      ]
+    }
+  ]
+}

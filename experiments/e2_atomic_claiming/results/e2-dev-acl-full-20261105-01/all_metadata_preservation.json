@@ -1,0 +1,18 @@
+{
+  "functions_checked": 193,
+  "changed": [
+    [
+      "claim_listing(uuid,uuid)",
+      [
+        "prosrc"
+      ]
+    ],
+    [
+      "geolock_lock_listing_donations(uuid,text[])",
+      [
+        "prosrc"
+      ]
+    ]
+  ],
+  "all_other_metadata_and_grants_unchanged": true
+}

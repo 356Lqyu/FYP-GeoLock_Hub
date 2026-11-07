@@ -1,0 +1,55 @@
+{
+  "actual_claim_hash": "2c1f60c876797c61b44b3cb43591bab8",
+  "unchanged": true,
+  "actual_rpc_results": [
+    {
+      "outcome": "ERROR",
+      "claim_id": null,
+      "replayed": false,
+      "reason_code": "CLAIM_TRANSACTION_ROLLED_BACK",
+      "failure_audit_id": "36d52e1b-26ba-4f8a-9931-8d170867b66b",
+      "rollback_confirmed": true
+    },
+    {
+      "outcome": "SUCCESS",
+      "claim_id": "624a50d1-37b2-49c7-9639-1c627e8fb361",
+      "replayed": false,
+      "reason_code": null
+    }
+  ],
+  "failure_audits": [
+    {
+      "request_id": "0be58aa1-587c-4ae1-95e2-04cf1ddab177",
+      "details": {
+        "ngo_id": "11111111-1111-1111-1111-111111111111",
+        "outcome": "ERROR",
+        "batch_id": null,
+        "lease_id": null,
+        "sqlstate": "40P01",
+        "donation_id": "536e9202-b33f-4c5f-be13-64ec37adcead",
+        "donation_ids": [
+          "536e9202-b33f-4c5f-be13-64ec37adcead"
+        ],
+        "correlation_id": "0be58aa1-587c-4ae1-95e2-04cf1ddab177",
+        "previous_state": "AVAILABLE",
+        "transaction_id": "763",
+        "requested_state": "CLAIMED",
+        "resulting_state": "AVAILABLE",
+        "software_version": "geolock-claim-audit-v1",
+        "rollback_confirmed": true,
+        "configuration_version": "v2.0"
+      }
+    }
+  ],
+  "committed_claims": [
+    {
+      "claim_status": "ACTIVE",
+      "n": 1
+    }
+  ],
+  "compatible_no_key_update_control": "Both lock upgrades completed without deadlock",
+  "scope": "Forced real-FK statement interleaving, not a replacement benchmark or proof of every historical lock graph",
+  "host": "127.0.0.1",
+  "port": 57325,
+  "remote_connections": 0
+}

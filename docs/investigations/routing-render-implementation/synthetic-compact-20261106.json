@@ -1,0 +1,64 @@
+{
+  "engine": "compact",
+  "scope": "SYNTHETIC-1000-NODES-3000-EDGES-NOT-FULL-NETWORK",
+  "fixture_sha256": "aa346d9169354a56787e62bbb5080c5df61c2bfc1980bebba490297c2f074aa0",
+  "platform": "Windows-11-10.0.22621-SP0",
+  "python": "3.12.14",
+  "node_count": 1000,
+  "edge_count": 3000,
+  "required_nodes": 3,
+  "cgroup_before": {
+    "memory.max": null,
+    "cpu.max": null,
+    "memory.peak": null,
+    "memory.events": null
+  },
+  "startup_and_fixture_seconds": 0.7681897000002209,
+  "after_fixture": {
+    "peak_rss_bytes": 40128512,
+    "peak_commit_bytes": 26529792
+  },
+  "compact_payload_bytes": 100008,
+  "warm_seconds": 0.11139160000038828,
+  "matrix_seconds": [
+    0.0701072000001659,
+    0.07423209999979008,
+    0.0755221999997957
+  ],
+  "matrix_sha256": "32dbb385501226b876d9a30486c89d0f80c90c4bc8acf3d55abbc814d1571e09",
+  "after_matrix": {
+    "peak_rss_bytes": 46784512,
+    "peak_commit_bytes": 32890880
+  },
+  "four_methods_solver_seconds": 1.052718200000072,
+  "methods": [
+    "fcfs",
+    "nearest_neighbour",
+    "distance_only",
+    "proposed"
+  ],
+  "all_four_plans_valid": true,
+  "independent_validation_seconds": 0.0036923000002389017,
+  "validation_status": {
+    "candidate_digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+    "snapshot_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "matrix_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "input_sha256": "ede61a78863941c7dbce7fdd8e68802e60069511ebe9d35d3cac5f817d22d5c4",
+    "matrix_sha256": "32dbb385501226b876d9a30486c89d0f80c90c4bc8acf3d55abbc814d1571e09",
+    "validator_build": "OFFLINE-RENDER-BENCHMARK",
+    "valid": true,
+    "feasible": true,
+    "dispatch_authority_issued": false
+  },
+  "final_memory": {
+    "peak_rss_bytes": 91983872,
+    "peak_commit_bytes": 297476096
+  },
+  "cgroup_after": {
+    "memory.max": null,
+    "cpu.max": null,
+    "memory.peak": null,
+    "memory.events": null
+  },
+  "total_seconds": 2.160388900000271
+}

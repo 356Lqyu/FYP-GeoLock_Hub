@@ -1,0 +1,10 @@
+{"label": "compile-sealed-full-graph", "exit_code": 0, "oom": false, "timeout": false}
+{"label": "prepare-and-parity-100-nodes", "exit_code": 1, "oom": false, "timeout": false}
+Traceback (most recent call last):
+  File "C:\Users\User\Downloads\FYP-GeoLock_Hub\docs\investigations\routing-render-workload-validation\run_workloads.py", line 81, in <module>
+    if __name__=='__main__':main()
+                            ^^^^^^
+  File "C:\Users\User\Downloads\FYP-GeoLock_Hub\docs\investigations\routing-render-workload-validation\run_workloads.py", line 59, in main
+    assert prepared['exit_code']==0
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

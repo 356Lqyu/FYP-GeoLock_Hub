@@ -1,185 +1,143 @@
-# Stage 2 atomic claim tests (isolated DEV only)
+# Claim E2 harness: current audit and failure-receipt contract
 
-## Current-version review — 23 October 2026
+Preparation only. No live run is implied by local validation.
+The authoritative source is `../migrations/20261031_claim_audit_and_failure_capture.sql`.
 
-**Minimum acceptance preparation follow-up:** the confirmed delayed-race defect
-is now corrected and validated by 25 offline regressions and four isolated
-PostgreSQL tests. Use the [two-actor package](review-only/stage3j/two_actor/README.md)
-and its new entry point, which requires exactly two sessions/two fresh fixtures.
-The original ten-actor suite below is retained; do not run it for this step.
-The original findings below describe the pre-fix review. No live tests ran and
-the saved DEV account/cron snapshot has not been refreshed in this preparation.
+## Entry points and fixture scope
 
-The [Stage 3J evidence matrix](review-only/stage3j/EVIDENCE_MATRIX.md) and
-[acceptance plan](review-only/stage3j/ACCEPTANCE_PLAN.md) qualify the historical
-preparation notes below. Current road eligibility, asynchronous workers and
-Flutter workflows are implemented; they are not pending algorithm development.
-Fresh SELECT-only DEV inspection found two active NGO profiles, only one with
-verified road-node evidence. Ten eligible authenticated sessions and dedicated
-fresh fixtures are therefore still unproven prerequisites for this runner.
+All three runners now default to non-mutating preflight. They require `--env-file`,
+`--manifest` and a new `--output-dir` outside the repository. No runner creates
+accounts, donations, listings, claims, leases or fault hooks. They reject shared
+project targets and retained recovery fixtures before network access.
 
-Original defect, now fixed: executor shutdown previously waited
-for blocked requests before the outer finally releases their listing lock.
-The fix and isolated validation are recorded in the two-actor package; current
-live execution still needs preflight and separate approval. No production SQL
-change is indicated. The original runner
-also has no 50-client cohort or full deployed-source/build result manifest.
-Historical 2/10/50 G16 results are retained, but use an older RPC/fixture contract
-and do not establish current-version acceptance. Stage 3I supervised direct
-recovery remains PASS; job 3 stays inactive; unattended recovery is not approved.
-No stateful execution is authorized by this documentation update.
+| Runner | Sessions | Fresh direct listings | Manifest purpose |
+|---|---:|---:|---|
+| `claim_two_actor_acceptance.py` | exactly 2 | 2: race, delayed | `two_actor` |
+| `claim_concurrency_test.py --actors 2` | exactly 2 | 2: race, delayed | `two_actor` |
+| `claim_concurrency_test.py --actors 10` | exactly 10 | 4: 2-way, 10-way, delayed, discarded response | `concurrency_10` |
+| `claim_fault_injection_dev_test.py --actors 2` | exactly 2 | 1 dedicated fault listing | `fault_injection` |
 
-`claim_concurrency_test.py` and `claim_fault_injection_dev_test.py` are
-state-changing integration tests. They have been prepared but **not run**.
-Never use the original shared project (`mffccmlimmbrgasgfnnq`). The runners
-hard-require isolated DEV project `rcgyuwiidqvrgbxswhqj`, a matching exact
-allowlist, HTTPS, and the typed disposable-project confirmation.
+Fault testing also permits ten distinct sessions with `--actors 10`. Every
+configured NGO must pass Auth user verification and actual authorized discovery
+for every configured listing. Concurrent retries deliberately reuse one actor's
+request; they are not counted as distinct-NGO experiments.
 
-## Required test data and authentication
+## Reviewed manifest and preflight
 
-Prepare these records through the approved trusted test workflow in the
-isolated DEV project. Do not use this suite to set `location_verified_at`,
-invent coordinates, insert road nodes, or bypass discovery/claim checks.
+Copy `review-only/stage3j/two_actor/fixture_manifest.template.json` outside the
+repository. Supply exact ordered actor IDs, listing/donation mappings, a unique
+STAGE3J label, an approval reference and operator. Match these with env values
+`GEOLOCK_STAGE3J_DONATION_IDS`, `GEOLOCK_TEST_LISTING_IDS`,
+`GEOLOCK_STAGE3J_FIXTURE_LABEL` and the exact number of NGO JWTs.
 
-- Ten distinct, active NGO users with genuine authenticated Supabase sessions.
-- Each NGO must have a trusted verified location and be within 20 km of each
-  listing assigned to that NGO, according to deployed backend rules.
-- Four distinct, dedicated `AVAILABLE` listings for: two-way race, ten-way
-  race, delayed-lock race, and discarded-response retry. Each must have a valid
-  trusted road-node assignment and pass `discover_eligible_listing_cards()`
-  for its assigned NGO set.
-- One additional dedicated `AVAILABLE` listing for rollback/fault injection.
-- The singleton coordination config must exist with `claim_lease_minutes=360`.
-- These claims commit and are not cleaned up by the runner. Use a fresh set of
-  disposable listings for every normal-suite run; preserve audit history.
+Prepare baseline evidence manually from the SELECT-only `01_health.sql` on the
+intended DEV project during a separately authorized inspection. Review the output;
+never auto-adopt a drifted baseline. `health_baseline` must pin:
 
-Historical setup note (superseded for current implementation status by Stage 3J):
-the repository fixture setup creates only two NGO accounts and does
-not produce trusted operational verification or road-node assignments. Since
-those trusted-fixture prerequisites were not established by that setup, the two-way and ten-way
-success/conflict races, delayed race, and discarded-response retry case are
-**BLOCKED** until ten legitimate eligible accounts and valid operational
-listings are provisioned through the approved trusted workflow. The test does
-not fabricate those prerequisites.
+- SHA256 of the exact current local migration file bytes;
+- `other_functions_md5` (the SQL now excludes the ten explicitly checked signatures);
+- exact `function_acls` for all ten signatures, preserving JSON null where applicable;
+- actual recovery-history total/failed/unfinished counts (failures and unfinished must be zero).
 
-## Local configuration
+`approved_functions.json` is a **local source-derived expectation**, not a newly
+captured DEV snapshot. Its nine migration bodies were compared with actual local
+PostgreSQL definitions. The unchanged claim-card reader was compared with its
+20261028 source. Live preflight must independently match every definition, signature,
+owner, security setting, search path, ACL and failure index. Do not replace the
+expected hashes merely to make a failed preflight pass.
 
-Copy `claim_concurrency_test.env.template` to a file outside the repository,
-for example `%LOCALAPPDATA%\GeoLockHub\dev\stage2-claims.env`. Restrict that
-directory to the current Windows user. Fill in the DEV publishable key, service
-role JWT, Session Pooler URL, ten user JWTs, four listing UUIDs, and fault-listing
-UUID. The service-role JWT is used only for test verification reads. The NGO
-JWTs are used for claim/discovery RPC calls. Do not print them or add the filled
-file to Git.
+Preflight uses READ ONLY PostgreSQL verification connections, GET Auth checks and
+the read-only discovery RPC. It requires fresh manifest-mapped >=10 kg direct
+fixtures with valid photos/items, no claims/failures/cases/routes, a resolved node,
+NULL listing expiration and completed current eligibility refresh. It also requires
+the unchanged 360-minute policy, healthy eligibility workers, all recovery cron jobs inactive,
+no overdue active pair and no unresolved reconciliation case.
 
-The existing setup script creates only two synthetic NGO accounts. It is not
-an acceptable source of ten test users until the trusted verification and
-operational road-node dependencies are implemented. Use actual DEV-approved
-test accounts and sessions; do not borrow accounts from the shared project.
+Create DEV fixtures later through protected donor onboarding/donation/photo and
+trusted location workflows; let `claim_listing` create claims and leases. Do not run
+`stage1_claim_recovery_dev_setup.py` unchanged: it inserts synthetic business rows.
 
-## Windows CMD commands (for later, after explicit test approval)
+Example for a later authorized **preflight only** (PowerShell, repository root):
 
-```cmd
-cd /d C:\Users\User\Downloads\FYP-GeoLock_Hub
-if not exist "%LOCALAPPDATA%\GeoLockHub\dev" mkdir "%LOCALAPPDATA%\GeoLockHub\dev"
-copy /Y supabase\tests\claim_concurrency_test.env.template "%LOCALAPPDATA%\GeoLockHub\dev\stage2-claims.env"
-icacls "%LOCALAPPDATA%\GeoLockHub\dev" /inheritance:r /grant:r "%USERDOMAIN%\%USERNAME%:(OI)(CI)F"
-icacls "%LOCALAPPDATA%\GeoLockHub\dev\stage2-claims.env" /inheritance:r /grant:r "%USERDOMAIN%\%USERNAME%:F"
-notepad "%LOCALAPPDATA%\GeoLockHub\dev\stage2-claims.env"
-py -m venv .venv-dev-fixtures
-.venv-dev-fixtures\Scripts\python.exe -m pip install -r supabase\tests\requirements-dev-fixtures.txt
-.venv-dev-fixtures\Scripts\python.exe supabase\tests\claim_concurrency_test.py --env-file "%LOCALAPPDATA%\GeoLockHub\dev\stage2-claims.env"
+```powershell
+& '.venv-dev-fixtures/Scripts/python.exe' -B supabase/tests/claim_two_actor_acceptance.py --env-file '<private-env>' --manifest '<reviewed-manifest.json>' --output-dir '<new-private-output-folder>'
 ```
 
-The normal runner will:
+Execution additionally requires `--execute --execution-approval` with the exact
+runner-specific token: `I_APPROVE_STAGE3J_TWO_ACTOR_ACCEPTANCE`,
+`I_APPROVE_DEV_CLAIM_CONCURRENCY`, or `I_APPROVE_DEV_CLAIM_FAULT_INJECTION`.
+These are operator attestations, not substitutes for scope approval or passed guards.
 
-1. Require the exact isolated DEV reference, allowlist, confirmation, and URL.
-2. Confirm ten distinct JWT subjects, the 360-minute config, fresh listing
-   states, non-null road-node values, and actual per-user discovery eligibility.
-3. Synchronize authenticated NGO attempts for 2 and 10 callers.
-4. Verify committed `claim_requests`, active claims, leases, listing status,
-   pickup tasks, and one `CLAIM_ATTEMPT` audit event for every initial attempt.
-5. Replay the winning UUID, try changed-listing and changed-NGO payloads, and
-   verify the original committed state is unchanged.
-6. Discard the body of an HTTP 200 response, then retry the same UUID and
-   verify the original claim and artifacts. This is a **discarded-response
-   retry**, not a simulation of an unknown commit outcome: the client receives
-   HTTP 200, so genuine post-commit response loss remains untested.
-7. Hold a PostgreSQL row lock on the delayed-test listing and use
-   `pg_blocking_pids()` to correlate waiting claim sessions specifically to
-   that lock-holder backend PID. The case reports PASS only after both request
-   sessions are observed blocked by that PID. Otherwise it reports
-   INCONCLUSIVE after releasing the lock and draining the requests. The listing
-   may still have been consumed on an inconclusive run; inspect committed DEV
-   state and do not reuse it without confirming it remains fresh.
+## Result semantics and assertions
 
-The delayed test needs `psycopg 3`, permission to observe relevant
-`pg_stat_activity` rows, and the verified Session Pooler URL. It does not add a
-production delay hook or alter the claim function. If visibility or matching
-does not confirm both requests blocked by the test's own PID, it is
-INCONCLUSIVE, never PASS. The two claim requests are released and may consume
-the listing, so inspect its database state before reusing the fixture.
+Business `CONFLICT`/`INELIGIBLE` is distinct from confirmed rollback. Successful
+claims and business rejections retain their request and audit. Claim audit outcomes
+are SUCCESS/REJECTED, not CONFLICT/INELIGIBLE. Losing attempts have no invented lease.
 
-## Rollback and audit-write fault injection
+A confirmed failure requires HTTP 200 with `outcome=ERROR`, boolean
+`rollback_confirmed=true`, NULL claim, `replayed=false`, a valid failure UUID and
+one of the migration's two failure reasons. Verify the actual ledger row and its
+five-column deduplication key: actor, request, listing, operation, reason. Sequential
+and concurrent failed retries reuse the receipt. Changed actor/listing request reuse
+returns a durable ERROR receipt while original business rows and audits stay intact.
 
-The seven failure points are `claim_requests_insert`, `donation_claims_insert`,
-`claim_leases_insert`, `listings_update`, `pickup_tasks_insert`,
-`claim_requests_update`, and `audit_events_insert`.
+Every normal race requires one winner, N-1 conflicts, one claim/360-minute lease/task,
+claimed donation/listing, N claim-attempt audits and one donation transition audit.
+Check actor, claim, lease, request, correlation, reason, software/config version and
+shared transaction ID. Unexpected ERROR receipts are verified and then stop the
+normal race; they are never counted as business conflicts.
 
-`claim_write_failpoints_dev.sql` is a separate test-support script, **not a
-production migration**. Its DDL is transactional. It refuses to proceed if
-the helper schema or any named test trigger already exists, and it creates
-plain new test objects rather than replacing existing ones. It adds a private
-schema/table and narrowly targeted triggers on existing tables; a trigger
-raises only for a request UUID explicitly registered in that private table.
-It does not alter `claim_listing` or weaken any constraint. Review its SQL and
-confirm the SQL Editor is connected to disposable DEV before manually
-installing it. The runner checks that the seven trigger names, target tables,
-and helper function match the expected test-only map and that no stale
-failpoint rows remain. A PostgreSQL connection is used only to register and
-clear test UUIDs and inspect rollback state.
+Two-actor acceptance additionally checks own/foreign failure retrieval, historical
+replay, nonholder/released-holder denial and normal cancellation with exactly linked
+release audits. It preserves failure records in stable replay snapshots. Ten-actor
+execution retains committed claims. No audit/business-history deletion is permitted.
 
-After reviewing/installing those hooks and only with separate approval, run:
+HTTP errors, timeouts, invalid JSON and network failures are not confirmed rollback
+receipts. Stop and retain the original request UUID for read-only reconciliation.
+Discarding a received HTTP-200 body is labelled discarded-response testing, not proof
+of an unknown commit outcome. Lock visibility failures remain INCONCLUSIVE.
 
-```cmd
-.venv-dev-fixtures\Scripts\python.exe supabase\tests\claim_fault_injection_dev_test.py --env-file "%LOCALAPPDATA%\GeoLockHub\dev\stage2-claims.env"
+## Fault hooks and recovery
+
+The fault runner never installs hooks. A later separate review must approve
+`claim_write_failpoints_dev.sql`, its request-scoped helper and seven target triggers.
+Capture `fault_hooks` as the ordered rows returned by `verify_hooks`: name, relation,
+helper signature, enabled state, trigger definition and normalized helper-body MD5.
+Pin them in the private manifest; review the exact source and trigger conditions.
+The health fingerprint must include this approved test support installation.
+
+Each fault verifies no partial business or audit writes, exactly one durable failure,
+sequential plus concurrent receipt deduplication, and own/foreign retrieval. Only after
+all checks pass is that exact test registration removed. After seven faults, the final
+request is retried without its fault: it must succeed, preserve the failure and replay
+without duplicates. This intentionally consumes the dedicated fault listing.
+
+On uncertainty or assertion failure the registration is retained, journaled and never
+cleared automatically. Do not blindly rerun or execute broad cleanup. The separate
+cleanup script is operator-only after inspection; this task does not install or run it
+in DEV. Failure-ledger-unavailability and cancellation fault cases stay local initially.
+
+Live recovery remains disabled. No recovery RPC, cron activation or timestamp rewrite
+is exposed by these runners. Any future expiry experiment needs a fresh normally
+created claim, natural 360-minute expiry and a separate target-isolation/safety review.
+`recover_expired_claims(1)` does not identify a particular claim.
+
+## Evidence and local validation
+
+Private JSONL journals record request UUIDs before calls, UTC times, HTTP and business
+outcomes, receipt IDs, monotonic elapsed milliseconds, fixture/source baselines and
+lock observations. Keep tokens, URLs with credentials, addresses and raw exception
+messages out of exports. Preserve failed/interrupted journals and scoped audit history.
+
+Local validation commands (no Supabase connection):
+
+```powershell
+& '.venv-dev-fixtures/Scripts/python.exe' -B -m unittest discover -s supabase/tests -p 'claim_*offline_test.py'
+& '.venv-dev-fixtures/Scripts/python.exe' -B supabase/tests/claim_two_actor_isolated_test.py --run-isolated --pg-bin 'C:/Program Files/PostgreSQL/17/bin'
+& '.venv-dev-fixtures/Scripts/python.exe' -B supabase/tests/claim_audit_isolated_test.py --run-isolated
 ```
 
-The fault test expects all seven injected failures to return an error and leave
-no request, claim, lease, pickup task, listing transition, or claim-attempt
-audit row committed. It verifies each rollback before proceeding. It uses a
-separate eligible fault listing that remains `AVAILABLE` after each rollback.
-
-After testing, manually run `claim_write_failpoints_dev_cleanup.sql` in the
-same isolated DEV project. The cleanup validates any matching trigger is
-attached to the expected table and uses the expected helper before dropping
-it, deletes and verifies all test-owned failpoint rows, then drops only the
-named test triggers and helper objects. It uses no `CASCADE`, so unexpected
-objects cause it to stop. It is safe to run again after successful cleanup.
-Confirm its final result reports `test_schema_removed = true` and
-`remaining_test_triggers = 0`.
-
-If a test process or SQL Editor session is interrupted, do not immediately
-rerun the tests. First inspect the dedicated listing, request UUIDs, and
-`geolock_stage2_test.claim_write_failpoints` rows using read-only queries. If
-the helper objects remain, execute the separate cleanup script in DEV after
-reviewing its target-project banner. Then verify the helper schema is absent
-and no failpoint registrations remain. Never delete claim/audit rows from the
-normal concurrency suite; its successful claims intentionally consume their
-listings and preserve audit evidence. A stale failpoint row is request-scoped,
-but clean it up before continuing.
-
-## Audit durability boundary
-
-The RPC can durably audit ordinary returned outcomes (`SUCCESS`, `CONFLICT`,
-and `INELIGIBLE`) because the request result and audit insert commit together.
-An exception from any required write rolls the transaction back, including an
-audit event attempted in that transaction. The fault test therefore expects no
-`CLAIM_ATTEMPT` row after an injected write failure; it establishes atomic
-rollback, not durable evidence for rolled-back failures. Durable logging of
-those exceptional failures requires a separately trusted post-rollback logger
-or another approved mechanism and is not implemented by these test changes.
-
-The changed-payload idempotency check also raises an exception; the test checks
-that the original claim/request/audit rows remain unchanged. That rejection
-does not itself create a committed audit event under the current RPC behavior.
+Disposable-local schemas use explicit Auth/road/cron/HTTP doubles and local fixture
+DML. They validate coordination and receipt behavior, not real DEV eligibility,
+PostgREST delivery or operational account readiness. Existing historical benchmark
+and Stage 3I evidence must not be relabelled as current live acceptance.

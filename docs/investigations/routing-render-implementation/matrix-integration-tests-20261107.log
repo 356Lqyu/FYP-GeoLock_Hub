@@ -1,0 +1,49 @@
+test_digest_tamper_fails (backend.routing.phase_c2.tests.test_local.MatrixTests.test_digest_tamper_fails) ... ok
+test_directed_no_reverse_invention (backend.routing.phase_c2.tests.test_local.MatrixTests.test_directed_no_reverse_invention) ... ok
+test_distance_and_time_same_path (backend.routing.phase_c2.tests.test_local.MatrixTests.test_distance_and_time_same_path) ... ok
+test_incomplete_search_is_missing (backend.routing.phase_c2.tests.test_local.MatrixTests.test_incomplete_search_is_missing) ... ok
+test_negative_nonfinite_and_precision_rejected (backend.routing.phase_c2.tests.test_local.MatrixTests.test_negative_nonfinite_and_precision_rejected) ... ok
+test_reproducible_hash_and_immutable_copy (backend.routing.phase_c2.tests.test_local.MatrixTests.test_reproducible_hash_and_immutable_copy) ... ok
+test_shared_project_rejected (backend.routing.phase_c2.tests.test_local.MatrixTests.test_shared_project_rejected) ... ok
+test_unknown_edge_endpoint (backend.routing.phase_c2.tests.test_local.MatrixTests.test_unknown_edge_endpoint) ... ok
+test_zero_cycles_terminate (backend.routing.phase_c2.tests.test_local.MatrixTests.test_zero_cycles_terminate) ... ok
+test_zero_diagonal_only_known_node (backend.routing.phase_c2.tests.test_local.MatrixTests.test_zero_diagonal_only_known_node) ... ok
+test_all_four_identical_frozen_inputs_and_independent_validity (backend.routing.phase_c2.tests.test_local.OrchestrationTests.test_all_four_identical_frozen_inputs_and_independent_validity) ... ok
+test_c1_projection_and_version_binding (backend.routing.phase_c2.tests.test_local.OrchestrationTests.test_c1_projection_and_version_binding) ... ok
+test_capacity_infeasible_no_candidate (backend.routing.phase_c2.tests.test_local.OrchestrationTests.test_capacity_infeasible_no_candidate) ... ok
+test_complete_synthetic_graph_projection_comparison_pipeline (backend.routing.phase_c2.tests.test_local.OrchestrationTests.test_complete_synthetic_graph_projection_comparison_pipeline) ... ok
+test_foreign_fleet_rejected (backend.routing.phase_c2.tests.test_local.OrchestrationTests.test_foreign_fleet_rejected) ... ok
+test_held_unavailable_deactivated_and_incomplete_excluded (backend.routing.phase_c2.tests.test_local.OrchestrationTests.test_held_unavailable_deactivated_and_incomplete_excluded) ... ok
+test_hub_location_not_replaceable (backend.routing.phase_c2.tests.test_local.OrchestrationTests.test_hub_location_not_replaceable) ... ok
+test_invalid_vehicle_fields (backend.routing.phase_c2.tests.test_local.OrchestrationTests.test_invalid_vehicle_fields) ... ok
+test_missing_hold_facts_fail_closed (backend.routing.phase_c2.tests.test_local.OrchestrationTests.test_missing_hold_facts_fail_closed) ... ok
+test_missing_roads_fail_closed (backend.routing.phase_c2.tests.test_local.OrchestrationTests.test_missing_roads_fail_closed) ... ok
+test_no_eligible_tasks (backend.routing.phase_c2.tests.test_local.OrchestrationTests.test_no_eligible_tasks) ... ok
+test_rpc_ineligible_flag_cannot_be_overridden (backend.routing.phase_c2.tests.test_local.OrchestrationTests.test_rpc_ineligible_flag_cannot_be_overridden) ... ok
+test_tampered_solver_output_rejected (backend.routing.phase_c2.tests.test_local.OrchestrationTests.test_tampered_solver_output_rejected) ... ok
+test_zero_fleet_no_defaults (backend.routing.phase_c2.tests.test_local.OrchestrationTests.test_zero_fleet_no_defaults) ... ok
+test_duplicate_rows_rejected (backend.routing.integration.tests.test_worker.GraphWorkerTests.test_duplicate_rows_rejected) ... ok
+test_inactive_pickup_not_invented (backend.routing.integration.tests.test_worker.GraphWorkerTests.test_inactive_pickup_not_invented) ... ok
+test_reuses_directed_same_path_matrix (backend.routing.integration.tests.test_worker.GraphWorkerTests.test_reuses_directed_same_path_matrix) ... ok
+test_truncated_export_rejected (backend.routing.integration.tests.test_worker.GraphWorkerTests.test_truncated_export_rejected) ... ok
+test_empty_fleet_no_default (backend.routing.integration.tests.test_worker.WorkerTests.test_empty_fleet_no_default) ... ok
+test_empty_tasks_no_dispatch_candidate (backend.routing.integration.tests.test_worker.WorkerTests.test_empty_tasks_no_dispatch_candidate) ... ok
+test_expired_lease_and_existing_assignment_excluded (backend.routing.integration.tests.test_worker.WorkerTests.test_expired_lease_and_existing_assignment_excluded) ... ok
+test_expired_service_window_explicitly_excluded_without_hiding_valid_task (backend.routing.integration.tests.test_worker.WorkerTests.test_expired_service_window_explicitly_excluded_without_hiding_valid_task) ... ok
+test_foreign_ownership_denied (backend.routing.integration.tests.test_worker.WorkerTests.test_foreign_ownership_denied) ... ok
+test_four_methods_and_no_authority (backend.routing.integration.tests.test_worker.WorkerTests.test_four_methods_and_no_authority) ... ok
+test_frozen_export_not_mutated (backend.routing.integration.tests.test_worker.WorkerTests.test_frozen_export_not_mutated) ... ok
+test_missing_arc_fails_closed (backend.routing.integration.tests.test_worker.WorkerTests.test_missing_arc_fails_closed) ... ok
+test_separate_validation_binds_both_hash_domains (backend.routing.integration.tests.test_worker.WorkerTests.test_separate_validation_binds_both_hash_domains) ... ok
+test_unsealed_and_wrong_matrix_denied (backend.routing.integration.tests.test_worker.WorkerTests.test_unsealed_and_wrong_matrix_denied) ... ok
+test_unverified_depot_denied (backend.routing.integration.tests.test_worker.WorkerTests.test_unverified_depot_denied) ... ok
+test_validator_rebuilds_source_and_rejects_changed_cost (backend.routing.integration.tests.test_worker.WorkerTests.test_validator_rebuilds_source_and_rejects_changed_cost) ... ok
+test_validator_rejects_authority_claim (backend.routing.integration.tests.test_worker.WorkerTests.test_validator_rejects_authority_claim) ... ok
+test_validator_rejects_duplicate_task (backend.routing.integration.tests.test_worker.WorkerTests.test_validator_rejects_duplicate_task) ... ok
+test_wrong_hub_node_denied (backend.routing.integration.tests.test_worker.WorkerTests.test_wrong_hub_node_denied) ... ok
+test_wrong_inventory_member_denied (backend.routing.integration.tests.test_worker.WorkerTests.test_wrong_inventory_member_denied) ... ok
+
+----------------------------------------------------------------------
+Ran 44 tests in 1.774s
+
+OK

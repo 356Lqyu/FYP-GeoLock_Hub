@@ -1,0 +1,88 @@
+{
+  "project_ref": "rcgyuwiidqvrgbxswhqj",
+  "status": "REVIEW_ONLY_NOT_AUTHORIZED_FOR_DEPLOYMENT",
+  "files": [
+    {
+      "path": "docs\\stage8\\integration\\001_authority_proposal.sql",
+      "sha256": "ae4ad5fe603e6d169de42420dbee5f3c59908976a03f95526e46d50e3f0b86f9",
+      "functions": [
+        "routing_private.hash",
+        "routing_private.worker",
+        "routing_private.append_only",
+        "routing_private.snapshot_guard",
+        "routing_private.freeze_network",
+        "public.install_routing_policy",
+        "routing_private.network_digest",
+        "public.freeze_routing_graph",
+        "public.store_routing_matrix",
+        "routing_private.observe_task",
+        "routing_private.task_digest",
+        "routing_private.ngo_observation",
+        "public.begin_my_routing_snapshot",
+        "public.seal_routing_snapshot",
+        "public.submit_routing_candidate",
+        "public.read_routing_work_item",
+        "public.attest_routing_candidate",
+        "public.read_frozen_routing_graph",
+        "public.read_routing_snapshot_bundle",
+        "public.read_pending_routing_snapshot"
+      ],
+      "tables": [
+        "routing_private.policies",
+        "routing_private.graphs",
+        "routing_private.matrices",
+        "routing_private.snapshots",
+        "routing_private.candidates",
+        "routing_private.validations",
+        "routing_private.requests",
+        "routing_private.bindings",
+        "routing_private.items",
+        "routing_private.cancelled_stop_history",
+        "routing_private.legacy_inflight"
+      ],
+      "indexes": [
+        "routing_one_vehicle_booking",
+        "routing_one_task_booking",
+        "routing_candidate_snapshot",
+        "routing_binding_candidate"
+      ]
+    },
+    {
+      "path": "docs\\stage8\\integration\\002_publication_proposal.sql",
+      "sha256": "b01ce0ce3be66abfef755b81a73aa84dde8a57d8d27400af9ccd19e9b5ddd831",
+      "functions": [
+        "routing_private.actor_lock",
+        "routing_private.lock_sources",
+        "routing_private.task_window",
+        "routing_private.admissible",
+        "routing_private.arc",
+        "routing_private.snapshot_task",
+        "public.authorize_my_routing_candidate",
+        "public.assign_task_to_route"
+      ],
+      "tables": [],
+      "indexes": []
+    },
+    {
+      "path": "docs\\stage8\\integration\\003_pickup_enforcement_proposal.sql",
+      "sha256": "e968ca18e5d70b70c91467dcef567b45ce8cb24aa075b1a6340e1f0c529b5ab7",
+      "functions": [
+        "routing_private.lock_route",
+        "routing_private.close_collected",
+        "public.close_my_collected_route",
+        "public.cancel_my_unstarted_route",
+        "routing_private.task_guard",
+        "routing_private.check_remaining",
+        "public.start_pickup",
+        "public.complete_pickup",
+        "public.get_my_routing_overview",
+        "public.get_my_authorized_route",
+        "routing_private.legacy_start_pickup",
+        "routing_private.legacy_complete_pickup"
+      ],
+      "tables": [],
+      "indexes": []
+    }
+  ],
+  "inherited_c1_sha256": "f50af9705de117bdd12581f2515605c8e5c548e0fee7ae01d7ea33ecfbb0cb05"
+}

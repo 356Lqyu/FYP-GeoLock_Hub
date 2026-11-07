@@ -1,0 +1,31 @@
+{
+  "status": "PASS",
+  "database_changes_executed": false,
+  "validation": "Offline statement-scope inspection and explicit-grant replay, not PostgreSQL DDL execution or full SQL/PLpgSQL parsing.",
+  "checks": [
+    "forward states exactly match expected manifests",
+    "rollback restores exact captured privileges/grantors/grant options",
+    "no blanket GRANT ALL, REVOKE ALL, CASCADE or unplanned permission statements",
+    "all functions, function defaults, policies, triggers, owners and role graph preserved",
+    "client effective table/sequence grants modeled false; service_role preserved",
+    "read-only SQL files contain only top-level SELECT/WITH statements"
+  ],
+  "permission_statement_counts": {
+    "postgres_forward": 64,
+    "supabase_admin_forward": 4,
+    "supabase_admin_rollback": 4,
+    "postgres_rollback": 64
+  },
+  "read_only_files": [
+    "00_capture_snapshot.sql",
+    "00b_capture_storage_triggers.sql",
+    "00c_capture_comparable_manifest.sql",
+    "00d_capture_column_dependencies.sql",
+    "00e_capture_event_triggers.sql",
+    "01_preflight_verify_snapshot.sql",
+    "11_verify_after_postgres.sql",
+    "30_postchange_verify.sql",
+    "92_verify_restored_snapshot.sql"
+  ],
+  "source_files_hashed": 60
+}

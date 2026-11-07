@@ -1,0 +1,2 @@
+-r ../phase_b/requirements-lock.txt
+psycopg[binary]==3.3.6

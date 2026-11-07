@@ -1,0 +1,62 @@
+{
+  "scope": "Stage B.3 only; unrelated and other-account work excluded",
+  "files": [
+    {
+      "path": "backend/routing/phase_b/routing_model.py",
+      "sha256": "df8608fa7fd066b94fd06fc6dbbf1e8c822e781ca3854ba9c4b5315ac67b4353",
+      "purpose": "Correct native timeout interpretation only"
+    },
+    {
+      "path": "backend/routing/phase_b/tests/test_reproducibility.py",
+      "sha256": "a88c95c65ca13b90e59258ba39d308af9e838ddb2527ab1c68f806453edef60f",
+      "purpose": "Targeted timeout/order/hash and inactive-policy regressions"
+    },
+    {
+      "path": "backend/routing/diagnostics/__init__.py",
+      "sha256": "5895fff106620e53e8040bf1cbe618ef1a832f0e1da9a9d6af44c591fd243820",
+      "purpose": "Isolated diagnostics package"
+    },
+    {
+      "path": "backend/routing/diagnostics/reproducibility.py",
+      "sha256": "37e2a690341ca427037332adda52780d8c69ca46a7a63d8c013d5f3b9bada8af",
+      "purpose": "Freeze and record native verification and short replay runs"
+    },
+    {
+      "path": "backend/routing/diagnostics/policy_proposal.py",
+      "sha256": "a9092d41e7928768a0fc40b633a39aa9e97d6d79ddaf726b78e636b32c23868b",
+      "purpose": "Inactive diagnostic comparison proposal"
+    },
+    {
+      "path": "backend/routing/diagnostics/postgres_candidate_hashes.py",
+      "sha256": "91a154199b39dc0bf7fbe7ad9b3f7e4494510d5b25785e39e7366226b9f2565c",
+      "purpose": "Disposable PostgreSQL jsonb hash evidence collector"
+    },
+    {
+      "path": "backend/routing/diagnostics/summarize.py",
+      "sha256": "a71990ed9f815e88b995d5bc41b833802af98c74e0cb2487dbba691dd0d0c955",
+      "purpose": "Aggregate saved observations"
+    },
+    {
+      "path": "backend/routing/diagnostics/finalize.py",
+      "sha256": "71f0435c958803658f7304921d5153297a95d8b175fa1cc8e270b4ca80d9b611",
+      "purpose": "Offline resume audit and original-guard replay"
+    },
+    {
+      "path": "docs/stage8/stage-b3/REPORT.md",
+      "sha256": "052ea40a7ed6db5862b86863c86bd2511d3185dcdf29941550a1fd08a6a82b8c",
+      "purpose": "Final Stage B.3 findings and evidence"
+    },
+    {
+      "path": "docs/stage8/stage-b3/REPRODUCIBILITY_POLICY_PROPOSAL.md",
+      "sha256": "da784918e27d5604bc5bc1767df55c2a1d3ebb39e9b473e85f3a753c31f409ce",
+      "purpose": "Not activated academic policy proposal"
+    },
+    {
+      "path": "docs/stage8/stage-b3/CHAPTER5_ROUTING_READINESS.md",
+      "sha256": "623761240108ed49d1b39ca29bfecf6a0dbaef6b4e5298705a125de40af2622d",
+      "purpose": "Routing readiness and remaining limits"
+    }
+  ],
+  "generated_evidence_directory": "results/stage-b3",
+  "status": "COMPLETE_LOCAL_B3_SCOPE_ONLY"
+}

@@ -1,0 +1,216 @@
+{
+  "overall_result": "PASS",
+  "conditional_read_only_signoff": true,
+  "project_ref": "rcgyuwiidqvrgbxswhqj",
+  "migration_sha256": "f50af9705de117bdd12581f2515605c8e5c548e0fee7ae01d7ea33ecfbb0cb05",
+  "verification_context": {
+    "isolation": "read committed",
+    "observed_at": "2026-10-24T10:38:30.276445+00:00",
+    "search_path": "\"\\$user\", public, extensions",
+    "database_name": "postgres",
+    "execution_role": "postgres",
+    "server_version": "17.11"
+  },
+  "checks_completed": 32,
+  "catalog_comparator_failures": [],
+  "check_results": [
+    {
+      "check_id": "C01_context",
+      "result": "PASS",
+      "rows": 1
+    },
+    {
+      "check_id": "C02_columns",
+      "result": "PASS",
+      "rows": 15
+    },
+    {
+      "check_id": "C03_constraints",
+      "result": "PASS",
+      "rows": 13
+    },
+    {
+      "check_id": "C04_acl_rls",
+      "result": "PASS",
+      "rows": 2
+    },
+    {
+      "check_id": "C05_effective_privileges",
+      "result": "PASS",
+      "rows": 24
+    },
+    {
+      "check_id": "C06_counts",
+      "result": "PASS",
+      "rows": 1
+    },
+    {
+      "check_id": "C07_route_activity",
+      "result": "PASS",
+      "rows": 0
+    },
+    {
+      "check_id": "C08_vehicle_functions",
+      "result": "PASS",
+      "rows": 11
+    },
+    {
+      "check_id": "C09_dependencies",
+      "result": "PASS",
+      "rows": 75
+    },
+    {
+      "check_id": "C10_legacy_vehicle_rows",
+      "result": "PASS",
+      "rows": 0
+    },
+    {
+      "check_id": "C11_fleet_objects",
+      "result": "PASS",
+      "rows": 14
+    },
+    {
+      "check_id": "C12_triggers_indexes",
+      "result": "PASS",
+      "rows": 11
+    },
+    {
+      "check_id": "C13_role_capabilities",
+      "result": "PASS",
+      "rows": 3
+    },
+    {
+      "check_id": "C14_vehicle_relations",
+      "result": "PASS",
+      "rows": 2
+    },
+    {
+      "check_id": "C15_depot_identity",
+      "result": "PASS",
+      "rows": 4
+    },
+    {
+      "check_id": "C16_route_jobs",
+      "result": "PASS",
+      "rows": 0
+    },
+    {
+      "check_id": "C17_route_row_hashes",
+      "result": "PASS",
+      "rows": 0
+    },
+    {
+      "check_id": "C18_assignment_hashes",
+      "result": "PASS",
+      "rows": 0
+    },
+    {
+      "check_id": "C19_invalid_legacy_capacity",
+      "result": "PASS",
+      "rows": 0
+    },
+    {
+      "check_id": "C20_private_schema",
+      "result": "PASS",
+      "rows": 1
+    },
+    {
+      "check_id": "L01_protected_object_fingerprints",
+      "result": "PASS",
+      "rows": 712
+    },
+    {
+      "check_id": "V01_expected_columns",
+      "result": "PASS",
+      "rows": 9
+    },
+    {
+      "check_id": "V02_table_permission_assertions",
+      "result": "PASS",
+      "rows": 24
+    },
+    {
+      "check_id": "V03_column_permission_assertions",
+      "result": "PASS",
+      "rows": 120
+    },
+    {
+      "check_id": "V04_rpc_assertions",
+      "result": "PASS",
+      "rows": 15
+    },
+    {
+      "check_id": "V05_private_permissions",
+      "result": "PASS",
+      "rows": 27
+    },
+    {
+      "check_id": "V06_route_truncate",
+      "result": "PASS",
+      "rows": 3
+    },
+    {
+      "check_id": "V07_integrity_rows",
+      "result": "PASS",
+      "rows": 0
+    },
+    {
+      "check_id": "V08_snapshot_seal",
+      "result": "PASS",
+      "rows": 1
+    },
+    {
+      "check_id": "V09_trigger_assertions",
+      "result": "PASS",
+      "rows": 4
+    },
+    {
+      "check_id": "V10_constraint_assertions",
+      "result": "PASS",
+      "rows": 2
+    },
+    {
+      "check_id": "V11_private_function_assertions",
+      "result": "PASS",
+      "rows": 9
+    }
+  ],
+  "protected_objects": {
+    "before": 712,
+    "after": 712,
+    "exact_identity_and_hash_match": true
+  },
+  "counts_before": {
+    "stops": 0,
+    "routes": 0,
+    "vehicles": 0,
+    "active_assignments": 0,
+    "nonterminal_routes": 0
+  },
+  "counts_after": {
+    "stops": 0,
+    "routes": 0,
+    "vehicles": 0,
+    "active_assignments": 0,
+    "nonterminal_routes": 0
+  },
+  "installation_seal": {
+    "pass": true,
+    "owner": "postgres",
+    "marker": "geolock-stage8-c1-v2:364bdf2b0f4e413ce0f43d10c56684dc",
+    "nspname": "fleet_private"
+  },
+  "offline_tests": {
+    "routing_suite": 117,
+    "package_comparator_suite": 12,
+    "saved_reports_revalidated": 252,
+    "reproducible_groups": 84,
+    "phase_a_files_preserved": 17
+  },
+  "unexpected_objects_or_deviations": [],
+  "runtime_authenticated_rpc_tests": "NOT_PERFORMED",
+  "dev_concurrency_tests": "NOT_PERFORMED",
+  "mutations_performed_by_codex": false,
+  "backup": "Custom-format PostgreSQL backup creation reported by user; contents/restore not independently verified",
+  "phase_c2_started": false
+}

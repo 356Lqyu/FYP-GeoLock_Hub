@@ -1,0 +1,240 @@
+{
+  "project_ref": "rcgyuwiidqvrgbxswhqj",
+  "inspection": "READ ONLY; no recovery or scheduler changes",
+  "catalog": [
+    {
+      "evidence": {
+        "identity": {
+          "database": "postgres",
+          "read_only": "on",
+          "session_user": "supabase_read_only_user"
+        },
+        "functions": [
+          {
+            "acl": "{postgres=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+            "md5": "ef135eb954b7052703b4c1df5315b312",
+            "owner": "postgres",
+            "config": [
+              "search_path=pg_catalog, public, pg_temp"
+            ],
+            "signature": "get_my_reconciliation_cases()",
+            "definition": "CREATE OR REPLACE FUNCTION public.get_my_reconciliation_cases()\n RETURNS TABLE(case_id uuid, claim_id uuid, listing_id uuid, donation_id uuid, source_type text, case_status text, opened_at timestamp with time zone)\n LANGUAGE plpgsql\n STABLE SECURITY DEFINER\n SET search_path TO 'pg_catalog', 'public', 'pg_temp'\nAS $function$\r\ndeclare v_user uuid:=auth.uid(); v_role text;\r\nbegin\r\n  if v_user is null then raise exception 'UNAUTHENTICATED'; end if;\r\n  select p.role into v_role from public.user_profiles p where p.user_id=v_user;\r\n  if v_role not in ('DONOR','NGO','HUB_ADMIN') then raise exception 'ROLE_REQUIRED'; end if;\r\n  return query\r\n  select rc.case_id,rc.claim_id,rc.listing_id,rc.donation_id,rc.source_type,rc.case_status,rc.opened_at\r\n  from public.claim_reconciliation_cases rc\r\n  join public.donation_claims c using(claim_id)\r\n  join public.listings l using(listing_id)\r\n  where rc.case_status in ('OPEN','MANUAL_REVIEW') and (\r\n    (v_role='NGO' and c.ngo_user_id=v_user)\r\n    or (v_role='DONOR' and l.source_type='DIRECT_DONATION' and exists(\r\n      select 1 from public.donations d where d.donation_id=l.donation_id and d.donor_user_id=v_user))\r\n    or (v_role='HUB_ADMIN' and l.source_type='HUB_BATCH' and exists(\r\n      select 1 from public.hub_batches b join public.community_hubs h using(hub_id)\r\n      where b.batch_id=l.batch_id and h.admin_user_id=v_user))\r\n  ) order by rc.opened_at desc,rc.case_id;\r\nend;\r\n$function$\n"
+          },
+          {
+            "acl": "{postgres=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+            "md5": "8cd1c3c183bb1af41bebc9094556a905",
+            "owner": "postgres",
+            "config": [
+              "search_path=pg_catalog, public, pg_temp"
+            ],
+            "signature": "submit_claim_reconciliation(uuid,boolean,uuid)",
+            "definition": "CREATE OR REPLACE FUNCTION public.submit_claim_reconciliation(p_claim uuid, p_handover_confirmed boolean, p_request uuid)\n RETURNS jsonb\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'pg_catalog', 'public', 'pg_temp'\nAS $function$\r\ndeclare\r\n  v_actor uuid := auth.uid(); v_role text; v_case public.claim_reconciliation_cases%rowtype;\r\n  v_c public.donation_claims%rowtype; v_l public.listings%rowtype;\r\n  v_le public.claim_leases%rowtype; v_t public.pickup_tasks%rowtype;\r\n  v_d public.donations%rowtype; v_counterpart uuid; v_allowed boolean := false;\r\n  v_prior public.claim_reconciliation_evidence%rowtype; v_values integer; v_true integer;\r\n  v_result jsonb; v_cfg text; v_did uuid; v_batch_states text[];\r\nbegin\r\n  if v_actor is null then raise exception 'UNAUTHENTICATED'; end if;\r\n  if p_claim is null or p_request is null or p_handover_confirmed is null then\r\n    raise exception 'CLAIM_EVIDENCE_REQUIRED'; end if;\r\n  -- STAGE_A_AUTHORIZED_REPLAY_BEGIN\r\n  perform routing_private.lock_reconciliation_scope(p_claim);\r\n  select e.response into v_result from public.claim_reconciliation_evidence e\r\n  join public.claim_reconciliation_cases rc using(case_id)\r\n  where e.request_id=p_request and e.actor_user_id=v_actor\r\n    and e.handover_confirmed is not distinct from p_handover_confirmed\r\n    and rc.claim_id=p_claim;\r\n  if v_result is not null then return v_result; end if;\r\n  -- STAGE_A_AUTHORIZED_REPLAY_END\r\n  -- Same lock prefix as start/complete/recovery.\r\n  select c.* into v_c from public.donation_claims c where c.claim_id=p_claim for update;\r\n  if not found then raise exception 'CLAIM_NOT_FOUND'; end if;\r\n  select le.* into v_le from public.claim_leases le where le.claim_id=p_claim for update;\r\n  if not found then raise exception 'LEASE_NOT_FOUND'; end if;\r\n  select l.* into v_l from public.listings l where l.listing_id=v_c.listing_id for update;\r\n  if not found then raise exception 'LISTING_NOT_FOUND'; end if;\r\n  select t.* into v_t from public.pickup_tasks t where t.claim_id=p_claim for update;\r\n  if not found then raise exception 'PICKUP_TASK_NOT_FOUND'; end if;\r\n  if v_c.claim_status<>'RECONCILIATION_REQUIRED'\r\n     or v_le.lease_status<>'RECONCILIATION_REQUIRED'\r\n     or v_l.listing_status<>'CLAIMED' then\r\n    raise exception 'RECONCILIATION_STATE_MISMATCH';\r\n  end if;\r\n  select p.role into v_role from public.user_profiles p where p.user_id=v_actor;\r\n  select * into v_case from public.claim_reconciliation_cases c\r\n    where c.claim_id=p_claim and c.case_status in ('OPEN','MANUAL_REVIEW') for update;\r\n  if not found then raise exception 'RECONCILIATION_NOT_OPEN'; end if;\r\n\r\n  if v_actor=v_c.ngo_user_id and v_role='NGO' then v_allowed:=true; end if;\r\n  if v_l.source_type='DIRECT_DONATION' then\r\n    select d.donor_user_id into v_counterpart from public.donations d where d.donation_id=v_l.donation_id;\r\n    if v_actor=v_counterpart and v_role='DONOR' then v_allowed:=true; end if;\r\n  elsif v_l.source_type='HUB_BATCH' then\r\n    select h.admin_user_id into v_counterpart from public.hub_batches b\r\n      join public.community_hubs h using(hub_id) where b.batch_id=v_l.batch_id;\r\n    if v_actor=v_counterpart and v_role='HUB_ADMIN' then v_allowed:=true; end if;\r\n  end if;\r\n  if not v_allowed then raise exception 'RECONCILIATION_PARTICIPANT_ONLY'; end if;\r\n\r\n  select * into v_prior from public.claim_reconciliation_evidence e where e.request_id=p_request;\r\n  if found then\r\n    if v_prior.case_id<>v_case.case_id or v_prior.actor_user_id<>v_actor\r\n       or v_prior.handover_confirmed<>p_handover_confirmed then\r\n      select c.config_version into v_cfg from public.coordination_config c where c.singleton;\r\n      insert into public.audit_events(actor_user_id,actor_role,entity_type,entity_id,event_type,\r\n        request_id,claim_id,lease_id,correlation_id,\r\n        previous_state,requested_state,resulting_state,reason_code,outcome,\r\n        software_version,configuration_version,details)\r\n      values(v_actor,v_role,'CLAIM',p_claim,'CLAIM_RECONCILIATION_EVIDENCE',p_request,p_claim,\r\n        v_le.lease_id,p_request,v_c.claim_status,\r\n        case when p_handover_confirmed then 'COLLECTED' else 'RELEASED' end,\r\n        v_c.claim_status,'IDEMPOTENCY_KEY_REUSED_WITH_DIFFERENT_PAYLOAD','REJECTED',\r\n        'geolock-stage1-2026-10-19',v_cfg,jsonb_build_object('donation_id',v_l.donation_id,\r\n        'listing_id',v_l.listing_id,'case_id',v_case.case_id));\r\n      return jsonb_build_object('outcome','REJECTED','reason_code','IDEMPOTENCY_KEY_REUSED_WITH_DIFFERENT_PAYLOAD');\r\n    end if;\r\n    if v_prior.response is not null then return v_prior.response; end if;\r\n  else\r\n    if exists(select 1 from public.claim_reconciliation_evidence e\r\n        where e.case_id=v_case.case_id and e.actor_user_id=v_actor) then\r\n      select c.config_version into v_cfg from public.coordination_config c where c.singleton;\r\n      insert into public.audit_events(actor_user_id,actor_role,entity_type,entity_id,event_type,\r\n        request_id,claim_id,lease_id,correlation_id,\r\n        previous_state,requested_state,resulting_state,reason_code,outcome,\r\n        software_version,configuration_version,details)\r\n      values(v_actor,v_role,'CLAIM',p_claim,'CLAIM_RECONCILIATION_EVIDENCE',p_request,p_claim,\r\n        v_le.lease_id,p_request,v_c.claim_status,\r\n        case when p_handover_confirmed then 'COLLECTED' else 'RELEASED' end,\r\n        v_c.claim_status,'EVIDENCE_ALREADY_SUBMITTED','REJECTED',\r\n        'geolock-stage1-2026-10-19',v_cfg,jsonb_build_object('donation_id',v_l.donation_id,\r\n        'listing_id',v_l.listing_id,'case_id',v_case.case_id));\r\n      return jsonb_build_object('outcome','REJECTED','reason_code','EVIDENCE_ALREADY_SUBMITTED');\r\n    end if;\r\n    insert into public.claim_reconciliation_evidence(request_id,case_id,actor_user_id,handover_confirmed)\r\n      values(p_request,v_case.case_id,v_actor,p_handover_confirmed);\r\n  end if;\r\n\r\n  -- Lock and validate the complete immutable member set before finalizing evidence.\r\n  if not public.geolock_lock_listing_donations(v_l.listing_id,\r\n    array['CLAIMED','PICKUP_IN_PROGRESS','COLLECTED']) then\r\n    raise exception 'RECONCILIATION_DONATION_SET_REQUIRES_REVIEW';\r\n  end if;\r\n  -- The complete immutable member set is locked above. A partially progressed\r\n  -- batch is inconsistent custody, even if both participants report handover.\r\n  if v_l.source_type='HUB_BATCH' then\r\n    select array_agg(distinct d.donation_status order by d.donation_status)\r\n      into v_batch_states\r\n    from public.hub_batch_members m join public.donations d using(donation_id)\r\n    where m.batch_id=v_l.batch_id and m.membership_status='ACTIVE';\r\n  end if;\r\n  select count(*),count(*) filter(where e.handover_confirmed)\r\n    into v_values,v_true from public.claim_reconciliation_evidence e where e.case_id=v_case.case_id;\r\n  if cardinality(v_batch_states)>1 then\r\n    update public.claim_reconciliation_cases set case_status='MANUAL_REVIEW',\r\n      resolution_reason='MIXED_BATCH_DONATION_STATES' where case_id=v_case.case_id;\r\n    v_result:=jsonb_build_object('outcome','RECONCILIATION_REQUIRED','case_id',v_case.case_id,\r\n      'reason_code','MIXED_BATCH_DONATION_STATES');\r\n  elsif v_values<2 then\r\n    v_result:=jsonb_build_object('outcome','AWAITING_COUNTERPART','case_id',v_case.case_id,\r\n      'reason_code','SECOND_PARTY_CONFIRMATION_REQUIRED');\r\n  elsif v_true not in (0,2) then\r\n    update public.claim_reconciliation_cases set case_status='MANUAL_REVIEW',\r\n      resolution_reason='PARTY_EVIDENCE_CONFLICT' where case_id=v_case.case_id;\r\n    v_result:=jsonb_build_object('outcome','RECONCILIATION_REQUIRED','case_id',v_case.case_id,\r\n      'reason_code','PARTY_EVIDENCE_CONFLICT');\r\n  elsif v_true=2 then\r\n    if v_t.task_status not in ('DISPATCHED','COLLECTED') then\r\n      update public.claim_reconciliation_cases set case_status='MANUAL_REVIEW',\r\n        resolution_reason='HANDOVER_EVIDENCE_CONFLICTS_WITH_TASK_STATE' where case_id=v_case.case_id;\r\n      v_result:=jsonb_build_object('outcome','RECONCILIATION_REQUIRED','case_id',v_case.case_id,\r\n        'reason_code','HANDOVER_EVIDENCE_CONFLICTS_WITH_TASK_STATE');\r\n    else\r\n      if v_l.source_type='DIRECT_DONATION' then\r\n        select d.* into v_d from public.donations d where d.donation_id=v_l.donation_id for update;\r\n        if v_d.donation_status not in ('PICKUP_IN_PROGRESS','COLLECTED') then raise exception 'DONATION_STATE_REQUIRES_REVIEW'; end if;\r\n        if v_d.donation_status='PICKUP_IN_PROGRESS' then\r\n          update public.donations set donation_status='COLLECTED' where donation_id=v_d.donation_id;\r\n        end if;\r\n      else\r\n        for v_did in select m.donation_id from public.hub_batch_members m\r\n          where m.batch_id=v_l.batch_id and m.membership_status='ACTIVE' order by m.donation_id loop\r\n          select d.* into v_d from public.donations d where d.donation_id=v_did for update;\r\n          if v_d.donation_status not in ('PICKUP_IN_PROGRESS','COLLECTED') then raise exception 'BATCH_DONATION_STATE_REQUIRES_REVIEW'; end if;\r\n          if v_d.donation_status='PICKUP_IN_PROGRESS' then\r\n            update public.donations set donation_status='COLLECTED' where donation_id=v_did;\r\n          end if;\r\n        end loop;\r\n        update public.hub_inventory set inventory_status='COLLECTED'\r\n          where donation_id in(select m.donation_id from public.hub_batch_members m\r\n            where m.batch_id=v_l.batch_id and m.membership_status='ACTIVE');\r\n        update public.hub_batches set batch_status='COLLECTED' where batch_id=v_l.batch_id;\r\n      end if;\r\n      perform routing_private.permit_reconciled_collection(p_claim);\r\n      update public.pickup_tasks set task_status='COLLECTED' where task_id=v_t.task_id;\r\n      update public.listings set listing_status='CLOSED',listing_version=listing_version+1 where listing_id=v_l.listing_id;\r\n      update public.donation_claims set claim_status='COMPLETED',closed_at=clock_timestamp(),close_reason='RECONCILED_HANDOVER_CONFIRMED' where claim_id=p_claim;\r\n      update public.claim_leases set lease_status='COMPLETED',closed_at=clock_timestamp() where lease_id=v_le.lease_id;\r\n      update public.claim_reconciliation_cases set case_status='RESOLVED_COLLECTED',resolved_at=clock_timestamp(),\r\n        resolution_reason='BOTH_PARTIES_CONFIRMED_HANDOVER' where case_id=v_case.case_id;\r\n      perform routing_private.finish_reconciled_collection(p_claim);\r\n      v_result:=jsonb_build_object('outcome','SUCCESS','case_id',v_case.case_id,\r\n        'claim_status','COMPLETED','donation_status','COLLECTED','reason_code','HANDOVER_CONFIRMED');\r\n    end if;\r\n  else\r\n    if v_t.task_status='CONFIRMED'\r\n       and v_l.listing_status='CLAIMED'\r\n       and (v_l.listing_expires_at is null or v_l.listing_expires_at>clock_timestamp())\r\n       and ((v_l.source_type='DIRECT_DONATION' and exists(select 1 from public.donations d\r\n              where d.donation_id=v_l.donation_id and d.donation_status='CLAIMED'))\r\n         or (v_l.source_type='HUB_BATCH'\r\n             and exists(select 1 from public.hub_batch_members m\r\n               where m.batch_id=v_l.batch_id and m.membership_status='ACTIVE')\r\n             and not exists(select 1 from public.hub_batch_members m join public.donations d using(donation_id)\r\n               where m.batch_id=v_l.batch_id and m.membership_status='ACTIVE'\r\n                 and d.donation_status<>'CLAIMED')\r\n              and not exists(select 1 from public.hub_batch_members m\r\n                where m.batch_id=v_l.batch_id and m.membership_status='ACTIVE'\r\n                  and not exists(select 1 from public.hub_inventory hi\r\n                    where hi.donation_id=m.donation_id and hi.inventory_status='BATCHED'))))\r\n       and not exists(select 1 from public.active_task_route_assignments a where a.task_id=v_t.task_id)\r\n       and not exists(\r\n      select 1 from public.pickup_route_stops s join public.pickup_routes r using(route_id)\r\n      where s.task_id=v_t.task_id and r.route_status not in ('CANCELLED','STALE')) then\r\n      update public.donation_claims set claim_status='RELEASED',closed_at=clock_timestamp(),close_reason='RECONCILED_NO_HANDOVER' where claim_id=p_claim;\r\n      update public.claim_leases set lease_status='RELEASED',closed_at=clock_timestamp(),release_reason='RECONCILED_NO_HANDOVER' where lease_id=v_le.lease_id;\r\n      update public.pickup_tasks set task_status='STALE' where task_id=v_t.task_id;\r\n      update public.listings set listing_status='AVAILABLE',listing_version=listing_version+1 where listing_id=v_l.listing_id;\r\n      perform public.geolock_transition_listing_donations(v_l.listing_id,'CLAIMED',\r\n        case when v_l.source_type='DIRECT_DONATION' then 'AVAILABLE' else 'BATCHED' end,p_claim,p_request,'RECONCILED_NO_HANDOVER');\r\n      update public.claim_reconciliation_cases set case_status='RESOLVED_RELEASED',resolved_at=clock_timestamp(),\r\n        resolution_reason='BOTH_PARTIES_CONFIRMED_NO_HANDOVER' where case_id=v_case.case_id;\r\n      v_result:=jsonb_build_object('outcome','SUCCESS','case_id',v_case.case_id,\r\n        'claim_status','RELEASED','reason_code','NO_HANDOVER_CONFIRMED');\r\n    else\r\n      update public.claim_reconciliation_cases set case_status='MANUAL_REVIEW',\r\n        resolution_reason='NO_HANDOVER_CONFIRMED_AFTER_PICKUP_STARTED' where case_id=v_case.case_id;\r\n      v_result:=jsonb_build_object('outcome','RECONCILIATION_REQUIRED','case_id',v_case.case_id,\r\n        'reason_code','NO_HANDOVER_AFTER_PICKUP_STARTED_REQUIRES_REVIEW');\r\n    end if;\r\n  end if;\r\n\r\n  update public.claim_reconciliation_evidence set response=v_result where request_id=p_request;\r\n  select c.config_version into v_cfg from public.coordination_config c where c.singleton;\r\n  -- This path accepted the evidence; waiting/manual review is a workflow state,\r\n  -- not a failed database operation. Earlier rejection paths remain REJECTED.\r\n  insert into public.audit_events(actor_user_id,actor_role,entity_type,entity_id,event_type,\r\n    request_id,claim_id,lease_id,correlation_id,previous_state,requested_state,resulting_state,\r\n    reason_code,outcome,software_version,configuration_version,details)\r\n  values(v_actor,v_role,'CLAIM',p_claim,'CLAIM_RECONCILIATION_EVIDENCE',p_request,p_claim,\r\n    v_le.lease_id,p_request,v_c.claim_status,\r\n    case when p_handover_confirmed then 'COLLECTED' else 'RELEASED' end,\r\n    coalesce(v_result->>'claim_status',v_c.claim_status),v_result->>'reason_code','SUCCESS',\r\n    'geolock-stage1-2026-10-19',v_cfg,jsonb_build_object('donation_id',v_l.donation_id,\r\n        'listing_id',v_l.listing_id,'case_id',v_case.case_id,\r\n      'handover_confirmed',p_handover_confirmed,\r\n      'reconciliation_status',v_result->>'outcome',\r\n      'batch_donation_states',to_jsonb(v_batch_states)));\r\n  return v_result;\r\nend;\r\n$function$\n"
+          },
+          {
+            "acl": "{postgres=X/postgres,service_role=X/postgres}",
+            "md5": "89e01f42d5ec23bfcbcdc47c1f4fd4e5",
+            "owner": "postgres",
+            "config": [
+              "search_path=pg_catalog, public, extensions, pg_temp"
+            ],
+            "signature": "recover_expired_claims(integer)",
+            "definition": "CREATE OR REPLACE FUNCTION public.recover_expired_claims(p_limit integer DEFAULT 100)\n RETURNS integer\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'pg_catalog', 'public', 'extensions', 'pg_temp'\nAS $function$\r\ndeclare\r\n  v_rec record; v_c public.donation_claims%rowtype; v_le public.claim_leases%rowtype;\r\n  v_l public.listings%rowtype; v_t public.pickup_tasks%rowtype;\r\n  v_uncertain boolean; v_count integer:=0; v_did uuid; v_cfg text;\r\nbegin\r\n  if auth.role() is distinct from 'service_role' and session_user <> 'postgres' then\r\n    raise exception 'TRUSTED_SCHEDULER_ONLY';\r\n  end if;\r\n  for v_rec in\r\n    select c.claim_id,cl.lease_id,cl.expires_at from public.donation_claims c\r\n    join public.claim_leases cl using(claim_id)\r\n    where c.claim_status='ACTIVE' and cl.lease_status='ACTIVE' and cl.expires_at<=clock_timestamp()\r\n    order by cl.expires_at,c.claim_id\r\n    for update of c skip locked\r\n    limit greatest(1,least(coalesce(p_limit,100),1000))\r\n  loop\r\n    select c.* into v_c from public.donation_claims c where c.claim_id=v_rec.claim_id;\r\n    -- Current row lock was obtained on claim above; follow V3 writer order.\r\n    select le.* into v_le from public.claim_leases le where le.lease_id=v_rec.lease_id for update;\r\n    if v_c.claim_status<>'ACTIVE' or v_le.lease_status<>'ACTIVE'\r\n       or v_le.expires_at>clock_timestamp() then continue; end if;\r\n    select l.* into v_l from public.listings l where l.listing_id=v_c.listing_id for update;\r\n    select t.* into v_t from public.pickup_tasks t where t.claim_id=v_c.claim_id for update;\r\n\r\n    -- Unresolved custody evidence for this claim or listing fences reopening.\r\n    v_uncertain := exists(select 1 from public.claim_reconciliation_cases rc\r\n        where (rc.claim_id=v_c.claim_id or rc.listing_id=v_l.listing_id)\r\n          and rc.case_status in ('OPEN','MANUAL_REVIEW'))\r\n      or v_l.listing_id is null\r\n      or v_t.task_id is null\r\n      or v_l.listing_status<>'CLAIMED'\r\n      or v_t.task_status<>'CONFIRMED'\r\n      or exists(select 1 from public.active_task_route_assignments a where a.task_id=v_t.task_id)\r\n      or exists(select 1 from public.pickup_route_stops s\r\n        where s.task_id=v_t.task_id)\r\n      or (v_l.source_type='DIRECT_DONATION' and exists(select 1 from public.donations d\r\n        where d.donation_id=v_l.donation_id and d.donation_status in ('PICKUP_IN_PROGRESS','COLLECTED','DELIVERED')))\r\n      or (v_l.source_type='HUB_BATCH' and exists(select 1 from public.hub_batch_members m\r\n        join public.donations d using(donation_id) where m.batch_id=v_l.batch_id\r\n        and m.membership_status='ACTIVE' and d.donation_status in ('PICKUP_IN_PROGRESS','COLLECTED','DELIVERED')));\r\n    if v_l.source_type='DIRECT_DONATION' then\r\n      v_uncertain:=v_uncertain or not exists(select 1 from public.donations d\r\n        where d.donation_id=v_l.donation_id and d.donation_status='CLAIMED');\r\n    elsif v_l.source_type='HUB_BATCH' then\r\n      v_uncertain:=v_uncertain\r\n        or not exists(select 1 from public.hub_batch_members m\r\n          where m.batch_id=v_l.batch_id and m.membership_status='ACTIVE')\r\n        or exists(select 1 from public.hub_batch_members m join public.donations d using(donation_id)\r\n          where m.batch_id=v_l.batch_id and m.membership_status='ACTIVE'\r\n            and d.donation_status<>'CLAIMED')\r\n        or exists(select 1 from public.hub_batch_members m join public.hub_inventory hi using(donation_id)\r\n          where m.batch_id=v_l.batch_id and m.membership_status='ACTIVE'\r\n            and hi.inventory_status<>'BATCHED');\r\n    end if;\r\n    if v_l.listing_id is not null then\r\n      v_uncertain:=not public.geolock_lock_listing_donations(v_l.listing_id,array['CLAIMED']) or v_uncertain;\r\n    end if;\r\n    -- Decide listing expiry only after acquiring the donation/batch lock set.\r\n    -- An expired listing cannot be safely reopened; retain custody for reconciliation.\r\n    v_uncertain:=v_uncertain\r\n      or (v_l.listing_expires_at is not null and v_l.listing_expires_at<=clock_timestamp());\r\n    if v_uncertain then\r\n      update public.claim_leases set lease_status='RECONCILIATION_REQUIRED' where lease_id=v_le.lease_id;\r\n      update public.donation_claims set claim_status='RECONCILIATION_REQUIRED' where claim_id=v_c.claim_id;\r\n      if v_l.listing_id is not null then\r\n        insert into public.claim_reconciliation_cases(claim_id,listing_id,donation_id,source_type,case_status)\r\n          values(v_c.claim_id,v_l.listing_id,v_l.donation_id,v_l.source_type,'OPEN')\r\n          on conflict(claim_id) do nothing;\r\n      end if;\r\n    else\r\n      update public.claim_leases set lease_status='RELEASED',closed_at=clock_timestamp(),release_reason='EXPIRED_SAFE_RELEASE'\r\n        where lease_id=v_le.lease_id;\r\n      update public.donation_claims set claim_status='RELEASED',closed_at=clock_timestamp(),close_reason='EXPIRED_SAFE_RELEASE'\r\n        where claim_id=v_c.claim_id;\r\n      update public.pickup_tasks set task_status='STALE' where task_id=v_t.task_id;\r\n      if v_l.listing_status='CLAIMED' and (v_l.listing_expires_at is null or v_l.listing_expires_at>clock_timestamp()) then\r\n        update public.listings set listing_status='AVAILABLE',listing_version=listing_version+1\r\n          where listing_id=v_l.listing_id and listing_status='CLAIMED';\r\n        perform public.geolock_transition_listing_donations(v_l.listing_id,'CLAIMED',\r\n          case when v_l.source_type='DIRECT_DONATION' then 'AVAILABLE' else 'BATCHED' end,v_c.claim_id,NULL,'EXPIRED_SAFE_RELEASE');\r\n      else\r\n        raise exception 'RECOVERY_LISTING_REOPEN_PRECONDITION_CHANGED';\r\n      end if;\r\n    end if;\r\n    select c.config_version into v_cfg from public.coordination_config c where c.singleton;\r\n    insert into public.audit_events(actor_role,entity_type,entity_id,event_type,claim_id,lease_id,\r\n      correlation_id,previous_state,requested_state,resulting_state,reason_code,outcome,\r\n      software_version,configuration_version,details)\r\n    values('SYSTEM','CLAIM',v_c.claim_id,'LEASE_RECOVERY',v_c.claim_id,v_le.lease_id,\r\n      gen_random_uuid(),'ACTIVE',case when v_uncertain then 'RECONCILIATION_REQUIRED' else 'RELEASED' end,\r\n      case when v_uncertain then 'RECONCILIATION_REQUIRED' else 'RELEASED' end,\r\n      case when v_uncertain then 'HANDOVER_OR_ROUTE_ACTIVITY_UNCERTAIN' else 'EXPIRED_SAFE_RELEASE' end,\r\n      'SUCCESS','geolock-stage1-2026-10-19',v_cfg,\r\n      jsonb_build_object('donation_id',v_l.donation_id,\r\n        'listing_id',v_l.listing_id,'task_id',v_t.task_id));\r\n    v_count:=v_count+1;\r\n  end loop;\r\n  return v_count;\r\nend;\r\n$function$\n"
+          }
+        ],
+        "extensions": [
+          {
+            "name": "pg_cron",
+            "version": "1.6.4"
+          }
+        ],
+        "observed_at": "2026-10-28T05:40:42.049699+00:00",
+        "cron_available": true
+      }
+    }
+  ],
+  "queue": [
+    {
+      "claim_id": "dd1be70f-0e42-4b75-9124-cac3702d76f6",
+      "listing_id": "95d6cd51-866b-4eec-8a36-36dc24296aec",
+      "lease_id": "aab2f43c-84ff-4d28-aeaa-94c0000dd487",
+      "expires_at": "2026-10-25 01:37:43.127649+00",
+      "task_id": "bbbf6b10-cb79-42ed-82cc-8b2246bf8bcb",
+      "task_status": "CONFIRMED",
+      "source_type": "DIRECT_DONATION",
+      "listing_status": "CLAIMED",
+      "listing_expires_at": null,
+      "task_ready": true,
+      "listing_reopenable": true,
+      "no_unresolved_case": true,
+      "no_competing_owner": true,
+      "no_route_reservation": true,
+      "custody_ready": true,
+      "historical_snapshots": [
+        "2aa2c13b-091f-49fc-81c1-891f6d414676",
+        "d761e0a1-6bd6-4c75-a7da-de40aa973dd7",
+        "d0e82ff8-40cd-4199-99cd-e3330e97e690",
+        "f597018e-e068-486f-a99b-4e194a2c57dc"
+      ],
+      "assessment": "CONSERVATIVE_RELEASE_CANDIDATE_NOT_EXECUTION_GUARANTEE"
+    },
+    {
+      "claim_id": "b4bea793-9755-470a-95bb-6b02bc0c4443",
+      "listing_id": "0323ebc0-b5e4-4c9e-8c8b-fcbb6db90390",
+      "lease_id": "97bae28f-9e89-4ff9-b8de-05c8e56484bc",
+      "expires_at": "2026-10-25 01:37:48.92055+00",
+      "task_id": "521ad842-5d79-4157-97f9-9fb1c73ca632",
+      "task_status": "CONFIRMED",
+      "source_type": "DIRECT_DONATION",
+      "listing_status": "CLAIMED",
+      "listing_expires_at": null,
+      "task_ready": true,
+      "listing_reopenable": true,
+      "no_unresolved_case": true,
+      "no_competing_owner": true,
+      "no_route_reservation": true,
+      "custody_ready": true,
+      "historical_snapshots": [
+        "2aa2c13b-091f-49fc-81c1-891f6d414676",
+        "d761e0a1-6bd6-4c75-a7da-de40aa973dd7",
+        "d0e82ff8-40cd-4199-99cd-e3330e97e690",
+        "f597018e-e068-486f-a99b-4e194a2c57dc"
+      ],
+      "assessment": "CONSERVATIVE_RELEASE_CANDIDATE_NOT_EXECUTION_GUARANTEE"
+    },
+    {
+      "claim_id": "ca8eb131-6ca0-4256-9a8c-c8f781fcbf05",
+      "listing_id": "2d06b504-d2dd-4121-8840-c8bf893f8a60",
+      "lease_id": "6bdc1a39-91e4-4a22-bf8f-d6d0a1eb7e74",
+      "expires_at": "2026-10-27 17:23:40.741031+00",
+      "task_id": "daa38fdb-ce05-4ca2-aca2-b808cfeb5216",
+      "task_status": "CONFIRMED",
+      "source_type": "DIRECT_DONATION",
+      "listing_status": "CLAIMED",
+      "listing_expires_at": null,
+      "task_ready": true,
+      "listing_reopenable": true,
+      "no_unresolved_case": true,
+      "no_competing_owner": true,
+      "no_route_reservation": true,
+      "custody_ready": true,
+      "historical_snapshots": [
+        "2aa2c13b-091f-49fc-81c1-891f6d414676",
+        "d761e0a1-6bd6-4c75-a7da-de40aa973dd7",
+        "d0e82ff8-40cd-4199-99cd-e3330e97e690",
+        "f597018e-e068-486f-a99b-4e194a2c57dc"
+      ],
+      "assessment": "CONSERVATIVE_RELEASE_CANDIDATE_NOT_EXECUTION_GUARANTEE"
+    },
+    {
+      "claim_id": "988b92f7-10d5-4471-ae72-cf1a37d53e0f",
+      "listing_id": "28d0a66b-71b6-4e7c-ac50-ba29584a0daf",
+      "lease_id": "0e394cda-4950-461e-ab8b-76928b1a2469",
+      "expires_at": "2026-10-28 00:33:19.848407+00",
+      "task_id": "ee44e644-f7aa-4a73-a201-86ebb9578960",
+      "task_status": "CONFIRMED",
+      "source_type": "DIRECT_DONATION",
+      "listing_status": "CLAIMED",
+      "listing_expires_at": null,
+      "task_ready": true,
+      "listing_reopenable": true,
+      "no_unresolved_case": true,
+      "no_competing_owner": true,
+      "no_route_reservation": true,
+      "custody_ready": true,
+      "historical_snapshots": [],
+      "assessment": "CONSERVATIVE_RELEASE_CANDIDATE_NOT_EXECUTION_GUARANTEE"
+    },
+    {
+      "claim_id": "26265510-e487-4587-9557-f1a8bee6cc19",
+      "listing_id": "267369c2-d638-46be-9389-fa6347ed24dd",
+      "lease_id": "e46dd829-005d-4537-8dab-400fdef2c28f",
+      "expires_at": "2026-10-28 00:34:51.414531+00",
+      "task_id": "8ad61585-d5c2-41bf-829a-7f2cd13990e8",
+      "task_status": "CONFIRMED",
+      "source_type": "DIRECT_DONATION",
+      "listing_status": "CLAIMED",
+      "listing_expires_at": null,
+      "task_ready": true,
+      "listing_reopenable": true,
+      "no_unresolved_case": true,
+      "no_competing_owner": true,
+      "no_route_reservation": true,
+      "custody_ready": true,
+      "historical_snapshots": [],
+      "assessment": "CONSERVATIVE_RELEASE_CANDIDATE_NOT_EXECUTION_GUARANTEE"
+    },
+    {
+      "claim_id": "84879ced-16b5-441e-9e3b-308283edf7be",
+      "listing_id": "71d2e224-6fa8-487b-9b12-2eb8cbc29ad3",
+      "lease_id": "6fd552cc-4032-4300-9f93-a1c16b8fb07d",
+      "expires_at": "2026-10-28 00:34:55.644637+00",
+      "task_id": "d7cdf0d8-72b5-41d0-b75d-f20fe8bae3f4",
+      "task_status": "CONFIRMED",
+      "source_type": "DIRECT_DONATION",
+      "listing_status": "CLAIMED",
+      "listing_expires_at": null,
+      "task_ready": true,
+      "listing_reopenable": true,
+      "no_unresolved_case": true,
+      "no_competing_owner": true,
+      "no_route_reservation": true,
+      "custody_ready": true,
+      "historical_snapshots": [],
+      "assessment": "CONSERVATIVE_RELEASE_CANDIDATE_NOT_EXECUTION_GUARANTEE"
+    }
+  ],
+  "authorization": [
+    {
+      "evidence": {
+        "observed_at": "2026-10-28T05:42:04.733264+00:00",
+        "snapshot_references": [
+          {
+            "claim": "dd1be70f-0e42-4b75-9124-cac3702d76f6",
+            "snapshot_ids": [
+              "2aa2c13b-091f-49fc-81c1-891f6d414676",
+              "d761e0a1-6bd6-4c75-a7da-de40aa973dd7",
+              "d0e82ff8-40cd-4199-99cd-e3330e97e690",
+              "f597018e-e068-486f-a99b-4e194a2c57dc"
+            ]
+          },
+          {
+            "claim": "b4bea793-9755-470a-95bb-6b02bc0c4443",
+            "snapshot_ids": [
+              "2aa2c13b-091f-49fc-81c1-891f6d414676",
+              "d761e0a1-6bd6-4c75-a7da-de40aa973dd7",
+              "d0e82ff8-40cd-4199-99cd-e3330e97e690",
+              "f597018e-e068-486f-a99b-4e194a2c57dc"
+            ]
+          },
+          {
+            "claim": "ca8eb131-6ca0-4256-9a8c-c8f781fcbf05",
+            "snapshot_ids": [
+              "2aa2c13b-091f-49fc-81c1-891f6d414676",
+              "d761e0a1-6bd6-4c75-a7da-de40aa973dd7",
+              "d0e82ff8-40cd-4199-99cd-e3330e97e690",
+              "f597018e-e068-486f-a99b-4e194a2c57dc"
+            ]
+          },
+          {
+            "claim": "988b92f7-10d5-4471-ae72-cf1a37d53e0f",
+            "snapshot_ids": null
+          },
+          {
+            "claim": "26265510-e487-4587-9557-f1a8bee6cc19",
+            "snapshot_ids": null
+          },
+          {
+            "claim": "84879ced-16b5-441e-9e3b-308283edf7be",
+            "snapshot_ids": null
+          }
+        ],
+        "authorization_checks": [
+          {
+            "function": "authorize_my_routing_candidate(uuid,uuid,timestamp with time zone)",
+            "definition": "CREATE OR REPLACE FUNCTION public.authorize_my_routing_candidate(p_request uuid, p_candidate uuid, p_depart_at timestamp with time zone)\n RETURNS jsonb\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'pg_catalog', 'pg_temp'\n SET \"TimeZone\" TO 'UTC'\n SET extra_float_digits TO '0'\nAS $function$\r\nDECLARE ngo uuid:=fleet_private.require_ngo(); c routing_private.candidates%rowtype; s routing_private.snapshots%rowtype;\r\n m routing_private.matrices%rowtype; v public.vehicles%rowtype; original jsonb; r jsonb; stop jsonb; obs jsonb; cur jsonb; win jsonb; a jsonb;\r\n ids uuid[]; served uuid[]:=ARRAY[]::uuid[]; vehicles uuid[]:=ARRAY[]::uuid[]; routes uuid[]:=ARRAY[]::uuid[];\r\n rid uuid; vid uuid; tid uuid; node text; last_node text; load numeric; km numeric; cursor_us numeric; arr numeric; start_us numeric; end_us numeric;\r\n nominal_cursor_us numeric; nominal_arr numeric; nominal_start_us numeric; nominal_end_us numeric; retimed_stops jsonb;\r\n request_hash text; prior routing_private.requests%rowtype; policy jsonb; ord integer; cutoff_end timestamptz; automatic_departure boolean := p_depart_at IS NULL; receipt jsonb;\r\nBEGIN\r\n IF NOT EXISTS(SELECT 1 FROM pg_trigger WHERE tgrelid='public.pickup_tasks'::regclass AND tgname='routing_task_authority' AND tgenabled='O')\r\n THEN RAISE EXCEPTION 'DISPATCH_CUTOVER_REQUIRED_BEFORE_AUTHORIZATION'; END IF;\r\n IF p_request IS NULL THEN RAISE EXCEPTION 'REQUEST_AND_DEPARTURE_REQUIRED'; END IF;\r\n PERFORM routing_private.actor_lock(ngo);\r\n request_hash:=CASE WHEN automatic_departure THEN routing_private.hash(jsonb_build_array('AUTHORIZE_AUTO_NOW',p_candidate)) ELSE routing_private.hash(jsonb_build_array('AUTHORIZE',p_candidate,p_depart_at)) END;\r\n SELECT * INTO prior FROM routing_private.requests WHERE ngo_id=ngo AND request_id=p_request;\r\n IF FOUND THEN IF prior.payload_digest IS DISTINCT FROM request_hash THEN RAISE EXCEPTION 'REQUEST_CONFLICT'; END IF; RETURN prior.result; END IF;\r\n SELECT * INTO STRICT c FROM routing_private.candidates WHERE candidate_id=p_candidate;\r\n SELECT * INTO STRICT s FROM routing_private.snapshots WHERE snapshot_id=c.snapshot_id;\r\n IF s.ngo_id<>ngo THEN RAISE EXCEPTION 'NOT_SNAPSHOT_OWNER'; END IF;\r\n SELECT * INTO STRICT m FROM routing_private.matrices WHERE matrix_id=s.matrix_id;\r\n IF NOT EXISTS(SELECT 1 FROM routing_private.validations WHERE candidate_id=c.candidate_id AND candidate_digest=c.digest)\r\n OR c.body->'plan'->>'method' IS DISTINCT FROM 'proposed' OR c.body->'plan'->>'feasible' IS DISTINCT FROM 'true'\r\n OR c.body->'plan'->>'dispatch_authority_issued' IS DISTINCT FROM 'false'\r\n OR NOT coalesce(jsonb_array_length(c.body->'plan'->'routes') BETWEEN 1 AND 20,false)\r\n THEN RAISE EXCEPTION 'VALIDATED_FEASIBLE_PLAN_REQUIRED'; END IF;\r\n IF routing_private.ngo_observation(ngo) IS DISTINCT FROM s.body->'ngo' THEN RAISE EXCEPTION 'PLAN_STALE_NGO'; END IF;\r\n policy:=s.body->'policy'; cutoff_end:=s.cutoff+make_interval(secs=>((policy->>'horizon_minutes')::numeric*60)::double precision);\r\n IF NOT automatic_departure AND (p_depart_at<clock_timestamp() OR p_depart_at>cutoff_end) THEN RAISE EXCEPTION 'INVALID_DEPARTURE'; END IF;\r\n SELECT array_agg((o->'task'->>'task_id')::uuid) INTO ids FROM jsonb_array_elements(s.body->'observations') o;\r\n PERFORM routing_private.lock_sources(ids);\r\n -- Canonical vehicle ordering prevents multi-vehicle publication deadlocks.\r\n PERFORM 1 FROM public.vehicles WHERE vehicle_id IN(SELECT (x->>'vehicle_id')::uuid FROM jsonb_array_elements(c.body->'plan'->'routes') x) ORDER BY vehicle_id FOR UPDATE;\r\n IF automatic_departure THEN\r\n  p_depart_at:=clock_timestamp();\r\n  IF p_depart_at>cutoff_end THEN RAISE EXCEPTION 'INVALID_DEPARTURE'; END IF;\r\n END IF;\r\n FOR r IN SELECT value FROM jsonb_array_elements(c.body->'plan'->'routes') LOOP\r\n  vid:=(r->>'vehicle_id')::uuid;\r\n  IF vid=ANY(vehicles) THEN RAISE EXCEPTION 'DUPLICATE_VEHICLE'; END IF; vehicles:=array_append(vehicles,vid);\r\n  SELECT * INTO STRICT v FROM public.vehicles WHERE vehicle_id=vid;\r\n  SELECT x INTO original FROM jsonb_array_elements(s.body->'vehicles') x WHERE x->>'vehicle_id'=vid::text;\r\n  IF original IS NULL OR original->>'vehicle_version' IS DISTINCT FROM v.vehicle_version::text OR v.ngo_user_id<>ngo\r\n  OR NOT v.active_flag OR NOT v.available_for_planning OR fleet_private.vehicle_has_hold(vid)\r\n  OR v.depot_road_node_id IS DISTINCT FROM fleet_private.require_depot(ngo) THEN RAISE EXCEPTION 'PLAN_STALE_VEHICLE'; END IF;\r\n  IF r->>'ngo_id' IS DISTINCT FROM ngo::text OR r->>'start_node_id' IS DISTINCT FROM v.depot_road_node_id\r\n   OR r->>'end_node_id' IS DISTINCT FROM v.depot_road_node_id OR (r->>'departure_us')::numeric IS DISTINCT FROM 0::numeric\r\n   OR NOT coalesce(jsonb_array_length(r->'stops') BETWEEN 1 AND 100,false) THEN RAISE EXCEPTION 'INVALID_ROUTE_DEPOT_OR_STOPS'; END IF;\r\n  rid:=gen_random_uuid(); load:=0; km:=0; cursor_us:=0; nominal_cursor_us:=0; retimed_stops:='[]'::jsonb; last_node:=v.depot_road_node_id; ord:=0;\r\n  INSERT INTO public.pickup_routes(route_id,ngo_user_id,vehicle_id,route_status,matrix_id,authorised_at,validation_reference)\r\n  VALUES(rid,ngo,vid,'DRAFT',m.matrix_id::text,clock_timestamp(),c.candidate_id::text);\r\n  INSERT INTO routing_private.bindings(route_id,candidate_id,ngo_id,vehicle_id,vehicle_version,plan,departure_at)\r\n  VALUES(rid,c.candidate_id,ngo,vid,v.vehicle_version,r,p_depart_at);\r\n  FOR stop IN SELECT value FROM jsonb_array_elements(r->'stops') LOOP\r\n   ord:=ord+1; tid:=(stop->>'task_id')::uuid;\r\n   IF tid=ANY(served) THEN RAISE EXCEPTION 'DUPLICATE_TASK'; END IF; served:=array_append(served,tid);\r\n   obs:=routing_private.snapshot_task(s.body,tid);\r\n   IF obs IS NULL OR NOT routing_private.admissible(obs,ngo,s.cutoff,policy) THEN RAISE EXCEPTION 'UNAUTHORIZED_TASK'; END IF;\r\n   PERFORM 1 FROM public.pickup_tasks WHERE task_id=tid FOR UPDATE;\r\n   cur:=routing_private.observe_task(tid);\r\n   IF routing_private.task_digest(cur) IS DISTINCT FROM routing_private.task_digest(obs)\r\n    OR cur->'task'->>'task_status' IS DISTINCT FROM 'CONFIRMED'\r\n    OR EXISTS(SELECT 1 FROM public.active_task_route_assignments WHERE task_id=tid) THEN RAISE EXCEPTION 'PLAN_STALE_TASK'; END IF;\r\n   node:=obs->'task'->>'pickup_road_node_id'; win:=routing_private.task_window(obs,s.cutoff,policy);\r\n   IF stop->>'road_node_id' IS DISTINCT FROM node THEN RAISE EXCEPTION 'UNAUTHORIZED_PICKUP_NODE'; END IF;\r\n   a:=routing_private.arc(m.body,last_node,node);\r\n   -- Solver offsets use a nominal zero departure at the snapshot cutoff.\r\n   -- Validate those offsets first, then replay the same ordered route against\r\n   -- the actual departure. Shifting nominal waits would count the delay twice.\r\n   nominal_arr:=nominal_cursor_us+(a->>'minutes')::numeric*60000000;\r\n   nominal_start_us:=greatest(nominal_arr,extract(epoch FROM ((win->>'start')::timestamptz-s.cutoff))*1000000);\r\n   nominal_end_us:=nominal_start_us+(win->>'service')::numeric*60000000;\r\n   arr:=cursor_us+(a->>'minutes')::numeric*60000000;\r\n   start_us:=greatest(arr,extract(epoch FROM ((win->>'start')::timestamptz-p_depart_at))*1000000);\r\n   end_us:=start_us+(win->>'service')::numeric*60000000;\r\n   IF (stop->>'arrival_us')::numeric IS DISTINCT FROM nominal_arr OR (stop->>'service_start_us')::numeric IS DISTINCT FROM nominal_start_us\r\n    OR (stop->>'departure_us')::numeric IS DISTINCT FROM nominal_end_us\r\n    OR s.cutoff+make_interval(secs=>(nominal_end_us/1000000)::double precision)>(win->>'end')::timestamptz\r\n    OR p_depart_at+make_interval(secs=>(end_us/1000000)::double precision)>(win->>'end')::timestamptz THEN RAISE EXCEPTION 'ROUTE_SCHEDULE_INVALID'; END IF;\r\n   retimed_stops:=retimed_stops||jsonb_build_array(stop||jsonb_build_object('arrival_us',arr,'service_start_us',start_us,'departure_us',end_us));\r\n   load:=load+(obs->'task'->>'load_kg')::numeric; km:=km+(a->>'km')::numeric;\r\n   IF load>v.payload_capacity_kg OR (stop->>'cumulative_load_kg')::numeric IS DISTINCT FROM load THEN RAISE EXCEPTION 'CAPACITY_VIOLATION'; END IF;\r\n   INSERT INTO routing_private.items(route_id,task_id,ordinal,observation_digest,planned_xid) VALUES(rid,tid,ord,routing_private.task_digest(obs),pg_current_xact_id());\r\n   INSERT INTO public.active_task_route_assignments(task_id,route_id) VALUES(tid,rid);\r\n   INSERT INTO public.pickup_route_stops(route_id,ngo_user_id,stop_order,task_id,planned_arrival)\r\n    VALUES(rid,ngo,ord,tid,p_depart_at+make_interval(secs=>(arr/1000000)::double precision));\r\n   UPDATE public.pickup_tasks SET task_status='PLANNED' WHERE task_id=tid;\r\n   cursor_us:=end_us; nominal_cursor_us:=nominal_end_us; last_node:=node;\r\n  END LOOP;\r\n  a:=routing_private.arc(m.body,last_node,v.depot_road_node_id); cursor_us:=cursor_us+(a->>'minutes')::numeric*60000000; km:=km+(a->>'km')::numeric;\r\n  nominal_cursor_us:=nominal_cursor_us+(a->>'minutes')::numeric*60000000;\r\n  IF (r->>'return_us')::numeric IS DISTINCT FROM nominal_cursor_us OR nominal_cursor_us>v.max_route_duration_min*60000000 OR cursor_us>v.max_route_duration_min*60000000\r\n   OR p_depart_at+make_interval(secs=>(cursor_us/1000000)::double precision)>cutoff_end THEN RAISE EXCEPTION 'ROUTE_DURATION_INVALID'; END IF;\r\n  IF EXISTS(SELECT 1 FROM routing_private.items i WHERE route_id=rid AND\r\n    (routing_private.snapshot_task(s.body,i.task_id)->'lease'->>'expires_at')::timestamptz<=p_depart_at+make_interval(secs=>(cursor_us/1000000+(policy->>'dispatch_margin_minutes')::numeric*60)::double precision)) THEN RAISE EXCEPTION 'LEASE_TOO_SHORT'; END IF;\r\n  UPDATE public.pickup_routes SET route_status='AUTHORISED',total_distance_km=km,total_duration_min=cursor_us/60000000 WHERE route_id=rid;\r\n  UPDATE routing_private.bindings SET plan=r||jsonb_build_object('stops',retimed_stops,'return_us',cursor_us) WHERE route_id=rid;\r\n  routes:=array_append(routes,rid);\r\n END LOOP;\r\n IF (policy->>'mandatory')::boolean AND EXISTS(SELECT 1 FROM jsonb_array_elements(s.body->'observations') o WHERE routing_private.admissible(o,ngo,s.cutoff,policy) AND NOT((o->'task'->>'task_id')::uuid=ANY(served))) THEN RAISE EXCEPTION 'MANDATORY_TASK_UNSERVED'; END IF;\r\n -- Claimed unserved IDs must equal the exact admitted-task complement.\r\n IF (SELECT coalesce(array_agg(x ORDER BY x),ARRAY[]::text[]) FROM jsonb_array_elements_text(c.body->'plan'->'unserved_tasks') x)\r\n IS DISTINCT FROM (SELECT coalesce(array_agg(o->'task'->>'task_id' ORDER BY o->'task'->>'task_id'),ARRAY[]::text[]) FROM jsonb_array_elements(s.body->'observations') o\r\n WHERE routing_private.admissible(o,ngo,s.cutoff,policy) AND NOT((o->'task'->>'task_id')::uuid=ANY(served))) THEN RAISE EXCEPTION 'UNSERVED_TASK_MISMATCH'; END IF;\r\n receipt:=jsonb_build_object('route_ids',routes,'candidate_id',p_candidate);\r\n IF automatic_departure THEN receipt:=receipt||jsonb_build_object('snapshot_id',s.snapshot_id,'departure_mode','AUTO_NOW','planned_departure_at',p_depart_at); END IF;\r\n INSERT INTO routing_private.requests VALUES(ngo,p_request,'AUTHORIZE',request_hash,receipt);\r\n INSERT INTO public.audit_events(actor_user_id,actor_role,entity_type,entity_id,event_type,outcome,details)\r\n VALUES(ngo,'NGO','ROUTING',p_candidate,'AUTHORIZE_ROUTING','SUCCESS',jsonb_build_object('routes',routes,'candidate_digest',c.digest));\r\n RETURN receipt;\r\nEND $function$\n"
+          }
+        ]
+      }
+    }
+  ]
+}

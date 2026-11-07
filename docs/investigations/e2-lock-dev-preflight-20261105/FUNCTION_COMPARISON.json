@@ -1,0 +1,752 @@
+[
+  {
+    "signature": "public.authorize_my_routing_candidate(uuid,uuid,timestamp with time zone)",
+    "expected_md5": "e383a34bfadba383cf71ac07b0854a47",
+    "actual_md5": "e383a34bfadba383cf71ac07b0854a47",
+    "differences": [],
+    "expected": {
+      "hash": "e383a34bfadba383cf71ac07b0854a47",
+      "owner": "postgres",
+      "definer": true,
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+      "config": [
+        "search_path=pg_catalog, pg_temp",
+        "TimeZone=UTC",
+        "extra_float_digits=0"
+      ]
+    },
+    "actual": {
+      "hash": "e383a34bfadba383cf71ac07b0854a47",
+      "owner": "postgres",
+      "definer": true,
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+      "config": [
+        "search_path=pg_catalog, pg_temp",
+        "TimeZone=UTC",
+        "extra_float_digits=0"
+      ]
+    }
+  },
+  {
+    "signature": "public.cancel_claim(uuid,uuid)",
+    "expected_md5": "f24c46b0c39e945df6d2e2bfb3862573",
+    "actual_md5": "f24c46b0c39e945df6d2e2bfb3862573",
+    "differences": [
+      "acl"
+    ],
+    "expected": {
+      "hash": "f24c46b0c39e945df6d2e2bfb3862573",
+      "owner": "postgres",
+      "definer": true,
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+      "config": [
+        "search_path=pg_catalog, public, pg_temp"
+      ]
+    },
+    "actual": {
+      "hash": "f24c46b0c39e945df6d2e2bfb3862573",
+      "owner": "postgres",
+      "definer": true,
+      "acl": "{postgres=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+      "config": [
+        "search_path=pg_catalog, public, pg_temp"
+      ]
+    }
+  },
+  {
+    "signature": "public.cancel_my_unstarted_route(uuid)",
+    "expected_md5": "a54faa6575a55a38679749b1383f6840",
+    "actual_md5": "a54faa6575a55a38679749b1383f6840",
+    "differences": [],
+    "expected": {
+      "hash": "a54faa6575a55a38679749b1383f6840",
+      "owner": "postgres",
+      "definer": true,
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+      "config": [
+        "search_path=pg_catalog, pg_temp",
+        "TimeZone=UTC",
+        "extra_float_digits=0"
+      ]
+    },
+    "actual": {
+      "hash": "a54faa6575a55a38679749b1383f6840",
+      "owner": "postgres",
+      "definer": true,
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+      "config": [
+        "search_path=pg_catalog, pg_temp",
+        "TimeZone=UTC",
+        "extra_float_digits=0"
+      ]
+    }
+  },
+  {
+    "signature": "public.claim_listing(uuid,uuid)",
+    "expected_md5": "2c1f60c876797c61b44b3cb43591bab8",
+    "actual_md5": "2c1f60c876797c61b44b3cb43591bab8",
+    "differences": [
+      "acl"
+    ],
+    "expected": {
+      "hash": "2c1f60c876797c61b44b3cb43591bab8",
+      "owner": "postgres",
+      "definer": true,
+      "acl": "{=X/postgres,postgres=X/postgres,authenticated=X/postgres}",
+      "config": [
+        "search_path=pg_catalog, public, extensions, pg_temp"
+      ]
+    },
+    "actual": {
+      "hash": "2c1f60c876797c61b44b3cb43591bab8",
+      "owner": "postgres",
+      "definer": true,
+      "acl": "{postgres=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+      "config": [
+        "search_path=pg_catalog, public, extensions, pg_temp"
+      ]
+    }
+  },
+  {
+    "signature": "public.close_my_collected_route(uuid,boolean)",
+    "expected_md5": "2863ee5cf179708c023be71bb2320684",
+    "actual_md5": "2863ee5cf179708c023be71bb2320684",
+    "differences": [],
+    "expected": {
+      "hash": "2863ee5cf179708c023be71bb2320684",
+      "owner": "postgres",
+      "definer": true,
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+      "config": [
+        "search_path=pg_catalog, pg_temp",
+        "TimeZone=UTC",
+        "extra_float_digits=0"
+      ]
+    },
+    "actual": {
+      "hash": "2863ee5cf179708c023be71bb2320684",
+      "owner": "postgres",
+      "definer": true,
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+      "config": [
+        "search_path=pg_catalog, pg_temp",
+        "TimeZone=UTC",
+        "extra_float_digits=0"
+      ]
+    }
+  },
+  {
+    "signature": "public.close_my_resolved_route(uuid,boolean,uuid)",
+    "expected_md5": "401117567094d3f9b6c17d28b8604ec1",
+    "actual_md5": "401117567094d3f9b6c17d28b8604ec1",
+    "differences": [],
+    "expected": {
+      "hash": "401117567094d3f9b6c17d28b8604ec1",
+      "owner": "postgres",
+      "definer": true,
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+      "config": [
+        "search_path=pg_catalog, pg_temp",
+        "TimeZone=UTC",
+        "extra_float_digits=0"
+      ]
+    },
+    "actual": {
+      "hash": "401117567094d3f9b6c17d28b8604ec1",
+      "owner": "postgres",
+      "definer": true,
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+      "config": [
+        "search_path=pg_catalog, pg_temp",
+        "TimeZone=UTC",
+        "extra_float_digits=0"
+      ]
+    }
+  },
+  {
+    "signature": "public.complete_pickup(uuid,boolean)",
+    "expected_md5": "26f0cd8cebe783c65b45e05649693860",
+    "actual_md5": "26f0cd8cebe783c65b45e05649693860",
+    "differences": [],
+    "expected": {
+      "hash": "26f0cd8cebe783c65b45e05649693860",
+      "owner": "postgres",
+      "definer": true,
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+      "config": [
+        "search_path=pg_catalog, pg_temp",
+        "TimeZone=UTC",
+        "extra_float_digits=0"
+      ]
+    },
+    "actual": {
+      "hash": "26f0cd8cebe783c65b45e05649693860",
+      "owner": "postgres",
+      "definer": true,
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+      "config": [
+        "search_path=pg_catalog, pg_temp",
+        "TimeZone=UTC",
+        "extra_float_digits=0"
+      ]
+    }
+  },
+  {
+    "signature": "public.confirm_my_route_depot_checkpoint(uuid,boolean,uuid)",
+    "expected_md5": "f5fd65220bf370955729286ac3f07f11",
+    "actual_md5": "f5fd65220bf370955729286ac3f07f11",
+    "differences": [],
+    "expected": {
+      "hash": "f5fd65220bf370955729286ac3f07f11",
+      "owner": "postgres",
+      "definer": true,
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+      "config": [
+        "search_path=pg_catalog, pg_temp"
+      ]
+    },
+    "actual": {
+      "hash": "f5fd65220bf370955729286ac3f07f11",
+      "owner": "postgres",
+      "definer": true,
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+      "config": [
+        "search_path=pg_catalog, pg_temp"
+      ]
+    }
+  },
+  {
+    "signature": "public.defer_my_pickup_for_reconciliation(uuid,uuid)",
+    "expected_md5": "749b753b6647c44457751bd628ac3637",
+    "actual_md5": "749b753b6647c44457751bd628ac3637",
+    "differences": [],
+    "expected": {
+      "hash": "749b753b6647c44457751bd628ac3637",
+      "owner": "postgres",
+      "definer": true,
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+      "config": [
+        "search_path=pg_catalog, pg_temp",
+        "TimeZone=UTC",
+        "extra_float_digits=0"
+      ]
+    },
+    "actual": {
+      "hash": "749b753b6647c44457751bd628ac3637",
+      "owner": "postgres",
+      "definer": true,
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+      "config": [
+        "search_path=pg_catalog, pg_temp",
+        "TimeZone=UTC",
+        "extra_float_digits=0"
+      ]
+    }
+  },
+  {
+    "signature": "public.finalize_route_resolution(uuid,bigint,uuid)",
+    "expected_md5": "3650767a5a9bc4928b58193321367ed8",
+    "actual_md5": "3650767a5a9bc4928b58193321367ed8",
+    "differences": [],
+    "expected": {
+      "hash": "3650767a5a9bc4928b58193321367ed8",
+      "owner": "postgres",
+      "definer": true,
+      "acl": "{postgres=X/postgres,geolock_route_resolver=X/postgres}",
+      "config": [
+        "search_path=pg_catalog, pg_temp"
+      ]
+    },
+    "actual": {
+      "hash": "3650767a5a9bc4928b58193321367ed8",
+      "owner": "postgres",
+      "definer": true,
+      "acl": "{postgres=X/postgres,geolock_route_resolver=X/postgres}",
+      "config": [
+        "search_path=pg_catalog, pg_temp"
+      ]
+    }
+  },
+  {
+    "signature": "public.geolock_lock_listing_donations(uuid,text[])",
+    "expected_md5": "90816e7c6db3606dc8b6451a899d8036",
+    "actual_md5": "90816e7c6db3606dc8b6451a899d8036",
+    "differences": [],
+    "expected": {
+      "hash": "90816e7c6db3606dc8b6451a899d8036",
+      "owner": "postgres",
+      "definer": false,
+      "acl": "{postgres=X/postgres}",
+      "config": [
+        "search_path=pg_catalog, public, pg_temp"
+      ]
+    },
+    "actual": {
+      "hash": "90816e7c6db3606dc8b6451a899d8036",
+      "owner": "postgres",
+      "definer": false,
+      "acl": "{postgres=X/postgres}",
+      "config": [
+        "search_path=pg_catalog, public, pg_temp"
+      ]
+    }
+  },
+  {
+    "signature": "public.geolock_transition_listing_donations(uuid,text,text)",
+    "expected_md5": "8a050031901f6796ed74210e4d5cbfec",
+    "actual_md5": "8a050031901f6796ed74210e4d5cbfec",
+    "differences": [],
+    "expected": {
+      "hash": "8a050031901f6796ed74210e4d5cbfec",
+      "owner": "postgres",
+      "definer": false,
+      "acl": "{postgres=X/postgres}",
+      "config": [
+        "search_path=pg_catalog, public, pg_temp"
+      ]
+    },
+    "actual": {
+      "hash": "8a050031901f6796ed74210e4d5cbfec",
+      "owner": "postgres",
+      "definer": false,
+      "acl": "{postgres=X/postgres}",
+      "config": [
+        "search_path=pg_catalog, public, pg_temp"
+      ]
+    }
+  },
+  {
+    "signature": "public.geolock_transition_listing_donations(uuid,text,text,uuid,uuid,text)",
+    "expected_md5": "67f27a85fb9129c9017bb0e9178f8ba1",
+    "actual_md5": "67f27a85fb9129c9017bb0e9178f8ba1",
+    "differences": [],
+    "expected": {
+      "hash": "67f27a85fb9129c9017bb0e9178f8ba1",
+      "owner": "postgres",
+      "definer": false,
+      "acl": "{postgres=X/postgres}",
+      "config": [
+        "search_path=pg_catalog, public, pg_temp"
+      ]
+    },
+    "actual": {
+      "hash": "67f27a85fb9129c9017bb0e9178f8ba1",
+      "owner": "postgres",
+      "definer": false,
+      "acl": "{postgres=X/postgres}",
+      "config": [
+        "search_path=pg_catalog, public, pg_temp"
+      ]
+    }
+  },
+  {
+    "signature": "public.recover_expired_claims(integer)",
+    "expected_md5": "05fe46d8b76085f71c87fcc5f6520775",
+    "actual_md5": "05fe46d8b76085f71c87fcc5f6520775",
+    "differences": [],
+    "expected": {
+      "hash": "05fe46d8b76085f71c87fcc5f6520775",
+      "owner": "postgres",
+      "definer": true,
+      "acl": "{postgres=X/postgres,service_role=X/postgres}",
+      "config": [
+        "search_path=pg_catalog, public, extensions, pg_temp"
+      ]
+    },
+    "actual": {
+      "hash": "05fe46d8b76085f71c87fcc5f6520775",
+      "owner": "postgres",
+      "definer": true,
+      "acl": "{postgres=X/postgres,service_role=X/postgres}",
+      "config": [
+        "search_path=pg_catalog, public, extensions, pg_temp"
+      ]
+    }
+  },
+  {
+    "signature": "public.report_my_route_interruption(uuid,text,uuid)",
+    "expected_md5": "e245085411815961f3c5bab3320b8973",
+    "actual_md5": "e245085411815961f3c5bab3320b8973",
+    "differences": [],
+    "expected": {
+      "hash": "e245085411815961f3c5bab3320b8973",
+      "owner": "postgres",
+      "definer": true,
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+      "config": [
+        "search_path=pg_catalog, pg_temp"
+      ]
+    },
+    "actual": {
+      "hash": "e245085411815961f3c5bab3320b8973",
+      "owner": "postgres",
+      "definer": true,
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+      "config": [
+        "search_path=pg_catalog, pg_temp"
+      ]
+    }
+  },
+  {
+    "signature": "resolution_private.lock_case(uuid)",
+    "expected_md5": "bd6ff3d99c3804f5233212796e290925",
+    "actual_md5": "bd6ff3d99c3804f5233212796e290925",
+    "differences": [],
+    "expected": {
+      "hash": "bd6ff3d99c3804f5233212796e290925",
+      "owner": "postgres",
+      "definer": true,
+      "acl": "{postgres=X/postgres}",
+      "config": [
+        "search_path=pg_catalog, pg_temp"
+      ]
+    },
+    "actual": {
+      "hash": "bd6ff3d99c3804f5233212796e290925",
+      "owner": "postgres",
+      "definer": true,
+      "acl": "{postgres=X/postgres}",
+      "config": [
+        "search_path=pg_catalog, pg_temp"
+      ]
+    }
+  },
+  {
+    "signature": "public.resolve_my_claim_reconciliation(uuid,uuid)",
+    "expected_md5": "c9c5f1636788022bf43b416de5db074e",
+    "actual_md5": "c9c5f1636788022bf43b416de5db074e",
+    "differences": [],
+    "expected": {
+      "hash": "c9c5f1636788022bf43b416de5db074e",
+      "owner": "postgres",
+      "definer": true,
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+      "config": [
+        "search_path=pg_catalog, pg_temp"
+      ]
+    },
+    "actual": {
+      "hash": "c9c5f1636788022bf43b416de5db074e",
+      "owner": "postgres",
+      "definer": true,
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+      "config": [
+        "search_path=pg_catalog, pg_temp"
+      ]
+    }
+  },
+  {
+    "signature": "public.review_my_claim_reconciliation(uuid,text,bigint,uuid)",
+    "expected_md5": "66cec993efe030f8499e6963e428d02a",
+    "actual_md5": "66cec993efe030f8499e6963e428d02a",
+    "differences": [],
+    "expected": {
+      "hash": "66cec993efe030f8499e6963e428d02a",
+      "owner": "postgres",
+      "definer": true,
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+      "config": [
+        "search_path=pg_catalog, pg_temp"
+      ]
+    },
+    "actual": {
+      "hash": "66cec993efe030f8499e6963e428d02a",
+      "owner": "postgres",
+      "definer": true,
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+      "config": [
+        "search_path=pg_catalog, pg_temp"
+      ]
+    }
+  },
+  {
+    "signature": "routing_private.coord_decide(uuid,uuid)",
+    "expected_md5": "69fcdab19e8d9bcac672e6456cf534ff",
+    "actual_md5": "69fcdab19e8d9bcac672e6456cf534ff",
+    "differences": [],
+    "expected": {
+      "hash": "69fcdab19e8d9bcac672e6456cf534ff",
+      "owner": "postgres",
+      "definer": true,
+      "acl": "{postgres=X/postgres}",
+      "config": [
+        "search_path=pg_catalog, pg_temp"
+      ]
+    },
+    "actual": {
+      "hash": "69fcdab19e8d9bcac672e6456cf534ff",
+      "owner": "postgres",
+      "definer": true,
+      "acl": "{postgres=X/postgres}",
+      "config": [
+        "search_path=pg_catalog, pg_temp"
+      ]
+    }
+  },
+  {
+    "signature": "routing_private.legacy_complete_pickup(uuid,boolean)",
+    "expected_md5": "ae1b885377292281da17951cb18afd55",
+    "actual_md5": "ae1b885377292281da17951cb18afd55",
+    "differences": [],
+    "expected": {
+      "hash": "ae1b885377292281da17951cb18afd55",
+      "owner": "postgres",
+      "definer": true,
+      "acl": "{postgres=X/postgres}",
+      "config": [
+        "search_path=pg_catalog, pg_temp",
+        "TimeZone=UTC",
+        "extra_float_digits=0"
+      ]
+    },
+    "actual": {
+      "hash": "ae1b885377292281da17951cb18afd55",
+      "owner": "postgres",
+      "definer": true,
+      "acl": "{postgres=X/postgres}",
+      "config": [
+        "search_path=pg_catalog, pg_temp",
+        "TimeZone=UTC",
+        "extra_float_digits=0"
+      ]
+    }
+  },
+  {
+    "signature": "routing_private.legacy_start_pickup(uuid)",
+    "expected_md5": "e89b650c83713b04e8310f4c372f10f4",
+    "actual_md5": "e89b650c83713b04e8310f4c372f10f4",
+    "differences": [],
+    "expected": {
+      "hash": "e89b650c83713b04e8310f4c372f10f4",
+      "owner": "postgres",
+      "definer": true,
+      "acl": "{postgres=X/postgres}",
+      "config": [
+        "search_path=pg_catalog, pg_temp",
+        "TimeZone=UTC",
+        "extra_float_digits=0"
+      ]
+    },
+    "actual": {
+      "hash": "e89b650c83713b04e8310f4c372f10f4",
+      "owner": "postgres",
+      "definer": true,
+      "acl": "{postgres=X/postgres}",
+      "config": [
+        "search_path=pg_catalog, pg_temp",
+        "TimeZone=UTC",
+        "extra_float_digits=0"
+      ]
+    }
+  },
+  {
+    "signature": "routing_private.lock_reconciliation_scope(uuid)",
+    "expected_md5": "618ea50c0c300e98098cfa62333a8608",
+    "actual_md5": "618ea50c0c300e98098cfa62333a8608",
+    "differences": [],
+    "expected": {
+      "hash": "618ea50c0c300e98098cfa62333a8608",
+      "owner": "postgres",
+      "definer": true,
+      "acl": "{postgres=X/postgres}",
+      "config": [
+        "search_path=pg_catalog, pg_temp"
+      ]
+    },
+    "actual": {
+      "hash": "618ea50c0c300e98098cfa62333a8608",
+      "owner": "postgres",
+      "definer": true,
+      "acl": "{postgres=X/postgres}",
+      "config": [
+        "search_path=pg_catalog, pg_temp"
+      ]
+    }
+  },
+  {
+    "signature": "routing_private.lock_route(uuid,boolean)",
+    "expected_md5": "ebc10b61666e492afd7bbbd23f0e7448",
+    "actual_md5": "ebc10b61666e492afd7bbbd23f0e7448",
+    "differences": [],
+    "expected": {
+      "hash": "ebc10b61666e492afd7bbbd23f0e7448",
+      "owner": "postgres",
+      "definer": true,
+      "acl": "{postgres=X/postgres}",
+      "config": [
+        "search_path=pg_catalog, pg_temp",
+        "TimeZone=UTC",
+        "extra_float_digits=0"
+      ]
+    },
+    "actual": {
+      "hash": "ebc10b61666e492afd7bbbd23f0e7448",
+      "owner": "postgres",
+      "definer": true,
+      "acl": "{postgres=X/postgres}",
+      "config": [
+        "search_path=pg_catalog, pg_temp",
+        "TimeZone=UTC",
+        "extra_float_digits=0"
+      ]
+    }
+  },
+  {
+    "signature": "routing_private.lock_route_for_recovery(uuid)",
+    "expected_md5": "20d815e7357e243757e1dc8b7d066a4e",
+    "actual_md5": "20d815e7357e243757e1dc8b7d066a4e",
+    "differences": [],
+    "expected": {
+      "hash": "20d815e7357e243757e1dc8b7d066a4e",
+      "owner": "postgres",
+      "definer": true,
+      "acl": "{postgres=X/postgres}",
+      "config": [
+        "search_path=pg_catalog, pg_temp",
+        "TimeZone=UTC",
+        "extra_float_digits=0"
+      ]
+    },
+    "actual": {
+      "hash": "20d815e7357e243757e1dc8b7d066a4e",
+      "owner": "postgres",
+      "definer": true,
+      "acl": "{postgres=X/postgres}",
+      "config": [
+        "search_path=pg_catalog, pg_temp",
+        "TimeZone=UTC",
+        "extra_float_digits=0"
+      ]
+    }
+  },
+  {
+    "signature": "routing_private.lock_sources(uuid[])",
+    "expected_md5": "52dc6262f3f85bd3c67a787401cf71aa",
+    "actual_md5": "52dc6262f3f85bd3c67a787401cf71aa",
+    "differences": [],
+    "expected": {
+      "hash": "52dc6262f3f85bd3c67a787401cf71aa",
+      "owner": "postgres",
+      "definer": true,
+      "acl": "{postgres=X/postgres}",
+      "config": [
+        "search_path=pg_catalog, pg_temp",
+        "TimeZone=UTC",
+        "extra_float_digits=0"
+      ]
+    },
+    "actual": {
+      "hash": "52dc6262f3f85bd3c67a787401cf71aa",
+      "owner": "postgres",
+      "definer": true,
+      "acl": "{postgres=X/postgres}",
+      "config": [
+        "search_path=pg_catalog, pg_temp",
+        "TimeZone=UTC",
+        "extra_float_digits=0"
+      ]
+    }
+  },
+  {
+    "signature": "public.start_pickup(uuid)",
+    "expected_md5": "cb306433867538804b67aa1a242867b4",
+    "actual_md5": "cb306433867538804b67aa1a242867b4",
+    "differences": [],
+    "expected": {
+      "hash": "cb306433867538804b67aa1a242867b4",
+      "owner": "postgres",
+      "definer": true,
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+      "config": [
+        "search_path=pg_catalog, pg_temp",
+        "TimeZone=UTC",
+        "extra_float_digits=0"
+      ]
+    },
+    "actual": {
+      "hash": "cb306433867538804b67aa1a242867b4",
+      "owner": "postgres",
+      "definer": true,
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+      "config": [
+        "search_path=pg_catalog, pg_temp",
+        "TimeZone=UTC",
+        "extra_float_digits=0"
+      ]
+    }
+  },
+  {
+    "signature": "public.submit_claim_reconciliation(uuid,boolean,uuid)",
+    "expected_md5": "de0e779f604cf9fc5459ca58b6f86ee0",
+    "actual_md5": "de0e779f604cf9fc5459ca58b6f86ee0",
+    "differences": [
+      "acl"
+    ],
+    "expected": {
+      "hash": "de0e779f604cf9fc5459ca58b6f86ee0",
+      "owner": "postgres",
+      "definer": true,
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+      "config": [
+        "search_path=pg_catalog, pg_temp"
+      ]
+    },
+    "actual": {
+      "hash": "de0e779f604cf9fc5459ca58b6f86ee0",
+      "owner": "postgres",
+      "definer": true,
+      "acl": "{postgres=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+      "config": [
+        "search_path=pg_catalog, pg_temp"
+      ]
+    }
+  },
+  {
+    "signature": "public.submit_claim_reconciliation_v2(uuid,boolean,integer,bigint,uuid)",
+    "expected_md5": "07be1bb35ed84b21f9acda69b7c35b16",
+    "actual_md5": "07be1bb35ed84b21f9acda69b7c35b16",
+    "differences": [],
+    "expected": {
+      "hash": "07be1bb35ed84b21f9acda69b7c35b16",
+      "owner": "postgres",
+      "definer": true,
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+      "config": [
+        "search_path=pg_catalog, pg_temp"
+      ]
+    },
+    "actual": {
+      "hash": "07be1bb35ed84b21f9acda69b7c35b16",
+      "owner": "postgres",
+      "definer": true,
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+      "config": [
+        "search_path=pg_catalog, pg_temp"
+      ]
+    }
+  },
+  {
+    "signature": "public.submit_route_resolution_evidence(uuid,uuid,text,bigint,uuid)",
+    "expected_md5": "7122f77ea8ed84d28bc08fbf77192d40",
+    "actual_md5": "7122f77ea8ed84d28bc08fbf77192d40",
+    "differences": [],
+    "expected": {
+      "hash": "7122f77ea8ed84d28bc08fbf77192d40",
+      "owner": "postgres",
+      "definer": true,
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+      "config": [
+        "search_path=pg_catalog, pg_temp"
+      ]
+    },
+    "actual": {
+      "hash": "7122f77ea8ed84d28bc08fbf77192d40",
+      "owner": "postgres",
+      "definer": true,
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+      "config": [
+        "search_path=pg_catalog, pg_temp"
+      ]
+    }
+  }
+]

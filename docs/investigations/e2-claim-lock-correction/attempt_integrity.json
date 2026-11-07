@@ -1,0 +1,27 @@
+{
+  "status": "STOPPED_REQUIRES_WIDER_CHANGES",
+  "not_a_test_pass": true,
+  "draft_python_ast_checks": 3,
+  "executed_controller_sources_unchanged": true,
+  "files_sha256": {
+    "docs/investigations/E2_CLAIM_LOCK_CORRECTION_LOCAL_REVIEW.md": "d9e0de089ea9fe7fac42cbc550a6f62e5ddf577bd1714d4b7e1cc109bd780037",
+    "docs/investigations/e2-claim-lock-correction/claim_listing.diff": "758805bd23400030528748d39456ca51f41f64358f24d729d99a7c65f9ee2526",
+    "docs/investigations/e2-claim-lock-correction/original_evidence_integrity.json": "381e36474e5232309089ff3129626da162c1e36d0b855d9f6da72ba37ff48423",
+    "docs/investigations/e2-claim-lock-correction/proposed_migration.sql": "9f5cb85d176c7064d430b6896692aca7788d302840d236645840f9847fab180c",
+    "docs/investigations/e2-claim-lock-correction/rollback_patch.sql": "5de5b4bf00652f6fc15ad6fd601543e8885e955a6de9ea5d9587051d14f4326e",
+    "experiments/e2_atomic_claiming/run_corrected.py": "f249637defdf0988a55c0468ad8363e9e75a6cd2c0be62a7fa79b2fdb53311a6",
+    "experiments/e2_atomic_claiming/corrected_regressions.py": "9b32974be9a78baf0e1fda6ab3e97a335f08e579d02b8ce15d04deefbfff2987",
+    "experiments/e2_atomic_claiming/summarize_corrected.py": "5e0fb904726a4f3535a3e6a674ba9164ba789f2b39e76dcbf21db92e4c6769c1",
+    "experiments/e2_atomic_claiming/results/e2-20261105-v33-no-key-update-01/applied_candidate.sql": "f4e5a91a30177f5825f64965f7158152e79e09b79c59e7f9e3fe79daea028718",
+    "experiments/e2_atomic_claiming/results/e2-20261105-v33-no-key-update-01/cluster-stop.json": "68143cdc441feda019564790f714b64a6e4b1d582b3b9e05c0d4dd861a69c851",
+    "experiments/e2_atomic_claiming/results/e2-20261105-v33-no-key-update-01/database_errors.csv": "ce21d10e1ef8e81290964248fb1feefa50aa16e35999981de7af2100730f697a",
+    "experiments/e2_atomic_claiming/results/e2-20261105-v33-no-key-update-01/failures.json": "a5338d955b09046ec0b16f3a9625b7955c763aae07dc722e474e6078745f932f",
+    "experiments/e2_atomic_claiming/results/e2-20261105-v33-no-key-update-01/manifest.json": "f836bf0365e025ae0a1fbfe0308f82d79d01fd26e7a5594795661985fbbac9f5",
+    "experiments/e2_atomic_claiming/results/e2-20261105-v33-no-key-update-01/proposed_committed_states.json": "eaaa9590a84d6defa45e05efe7c53341c56e86bf0ab3aeca225172f112395fee",
+    "experiments/e2_atomic_claiming/results/e2-20261105-v33-no-key-update-01/proposed_requests.json": "658cd9a293af3dbd721cc156b32f13acfd4dc588cbb68ad50c48b773a747500a",
+    "experiments/e2_atomic_claiming/results/e2-20261105-v33-no-key-update-01/proposed_results_per_scenario.csv": "db24166a150a54f155942d57174e51573f6512b555ec74b7675e339c01f420a0",
+    "experiments/e2_atomic_claiming/results/e2-20261105-v33-no-key-update-01/STOPPED.json": "4325faa4542076a47ad1432b4d1bfe1376c4bf4cfc72902f41dc8918985fa1e7",
+    "experiments/e2_atomic_claiming/results/e2-20261105-v33-no-key-update-01/stopped_committed_states.json": "13376070beb5519d6456245807f0cb982858b0104b90647a8e60b0117b6a36e7",
+    "experiments/e2_atomic_claiming/results/e2-20261105-v33-no-key-update-01/stopped_function_evidence.json": "63f5c0de284abc28adad443fa5460f79d9d877843a063dc9b22623b7304cd5de"
+  }
+}

@@ -1,0 +1,111 @@
+{
+  "scope": "Stage B only; unrelated preexisting worktree changes excluded",
+  "files": [
+    {
+      "path": "backend/routing/phase_b/__init__.py",
+      "sha256": "00ee669e2a022e5b824b40f25025b5cd5faef1168e7e7656e2aeb84855de696a",
+      "reason": "Export RoutingModel as the primary proposed method; preserve baseline dispatch."
+    },
+    {
+      "path": "backend/routing/phase_b/routing_model.py",
+      "sha256": "0a6756bb72b4e1d503bfe56b7b9a634296f640c552b98640e5d5d4d0103cecf6",
+      "reason": "Actual RoutingModel implementation with unchanged authority and wire contracts."
+    },
+    {
+      "path": "backend/routing/phase_b/benchmark.py",
+      "sha256": "997373b067f51f8e5c2f05b80195185a7538307b1339d878ebc73cd52289e239",
+      "reason": "Record accurate solver engine per method; keep replay guard."
+    },
+    {
+      "path": "backend/routing/phase_b/README.md",
+      "sha256": "aa59d5e0389dad12ea8cc9ded426d4ff3caa21ffef32c37a6ae6a3faaf68ce92",
+      "reason": "Document engine change and unresolved repeatability."
+    },
+    {
+      "path": "backend/routing/phase_b/tests/test_algorithms.py",
+      "sha256": "32ee19b44db1695deeb75e5500652299eec4e9231a61bf65009a50b43dd2ef15",
+      "reason": "Separate historical CP-SAT proof/repeat guarantees and explicit short unit profiles."
+    },
+    {
+      "path": "backend/routing/phase_b/tests/test_routing_model.py",
+      "sha256": "2e7fd06146f54122c22354a0c434d365c124888e6b24097b4f1d68872b327f9b",
+      "reason": "Native RoutingModel/independent validator tests."
+    },
+    {
+      "path": "backend/routing/worker_service/tests/test_solver_invocation.py",
+      "sha256": "e394a4dcd241bd851d709fc6e77a6dc2bff85a791c726e8bcc895bf2359d7f9b",
+      "reason": "Assert real RoutingModel invocation and returned candidate wire shape."
+    },
+    {
+      "path": "backend/routing/worker_service/README.md",
+      "sha256": "e0515bf4166d1fa1c47bbfb907210fdfcd0f0738de6845fed20ab9a12a0fdea5",
+      "reason": "Document local engine verification and transport limits."
+    },
+    {
+      "path": "supabase/tests/stage8_stage_b_isolated_test.py",
+      "sha256": "a24d57df1499941cae4236bd4212d9b01ec91e3f10b5c323ae72879bfae1a80d",
+      "reason": "Opt-in disposable full-business-schema PostgreSQL test harness."
+    },
+    {
+      "path": "supabase/tests/stage8_stage_a_offline_test.py",
+      "sha256": "9dc6a4da815af6e160b18e4a10857713d67386f30420aeddb7c7ef1aad510591",
+      "reason": "Regression for pre/post-publication assignment guards."
+    },
+    {
+      "path": "docs/stage8/stage-a/build_package.py",
+      "sha256": "92617abf690cf0e348b66d5f279179ca5aa79b9d54d8d79e0ae5c5483f912957",
+      "reason": "Fix source guard dependency ordering without adopting observed hashes."
+    },
+    {
+      "path": "docs/stage8/stage-a/forward-migrations/20261101_routing_authority.sql",
+      "sha256": "fbe81acd7811e884536ed5bf125fb6b0b5eb71e6bd314872378e68b2da0ec94f",
+      "reason": "Regenerated reviewed forward guard."
+    },
+    {
+      "path": "docs/stage8/stage-a/forward-migrations/20261103_routing_pickup_and_reconciliation.sql",
+      "sha256": "6541f0a002ea56ad77c023e33ad1500ab2273cc821f87fa43d38e633bd6724ea",
+      "reason": "Guard expected post-publication assignment definition."
+    },
+    {
+      "path": "docs/stage8/stage-a/package-manifest.json",
+      "sha256": "b1253280da85782405b7aae328702828d3e1917560bf03ec7a83eaa87211ea2c",
+      "reason": "Regenerated current forward-source hashes."
+    },
+    {
+      "path": "docs/stage8/stage-a/postdeployment_catalog.sql",
+      "sha256": "53b4cbf76c2b25e622461f9118ff0c49265806a59af7e062379fc4e69e248c4e",
+      "reason": "Regenerated expected current forward-package catalog inspection."
+    },
+    {
+      "path": "docs/stage8/stage-a/README.md",
+      "sha256": "2e1492d1b798b03fa63fec1a0ac6c5b4f597f6ab37f9ba6b78a46ebc8c0bd167",
+      "reason": "Link current verification while retaining historical Stage A evidence."
+    },
+    {
+      "path": "docs/stage8/stage-b/run_offline.py",
+      "sha256": "dd47fe6992f46c8af7d62b26601d013a214f0d698729f7676b92d3fd06520e56",
+      "reason": "Run existing offline suite without overwriting Stage A evidence."
+    },
+    {
+      "path": "docs/stage8/stage-b/collect_evidence.py",
+      "sha256": "656c5f23bfad1117585f256e52306b0974028939c597bafadf7994119dcea8a4",
+      "reason": "Collect explicit source and result manifests without SQL/network."
+    },
+    {
+      "path": "docs/stage8/stage-b/REPORT.md",
+      "sha256": "2aaf8e1573e856245fbe610c7bc04a0ac27988a95ca1e4d416020e31c287b8e1",
+      "reason": "Detailed limited-scope verification report and blockers."
+    },
+    {
+      "path": "docs/stage8/stage-b/CHAPTER5_READINESS.md",
+      "sha256": "dfde3ad6ef13ddd5d300aaf7907ef03e24d16ce3a3421907595135ee7d94e099",
+      "reason": "Update all eight experiment tracks without running experiments."
+    }
+  ],
+  "generated_evidence_directory": "results/stage-b",
+  "generated_manifests": [
+    "docs/stage8/stage-b/changed-files.json",
+    "results/stage-b/verification.json",
+    "results/stage-b/evidence-files.json"
+  ]
+}

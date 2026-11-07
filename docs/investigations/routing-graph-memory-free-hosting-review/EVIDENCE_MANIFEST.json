@@ -1,0 +1,23 @@
+{
+  "scope": "Investigation only; new synthetic evidence; no source or DEV changes",
+  "product_source_hashes_unchanged_during_investigation": true,
+  "dev_connection_attempted": false,
+  "artifacts": {
+    "docs/investigations/ROUTING_GRAPH_MEMORY_AND_FREE_HOSTING_REVIEW.md": "cf45f38c63f89aa7de60996ebd3e679df41aefb1eeb9b9754e993669fcab7ff4",
+    "docs/investigations/routing-graph-memory-free-hosting-review/DEV_ACCESS_STATUS.json": "6ad8e15e1e97df152c738854e1826dd14ddd35e97af337760860e60bf1901b37",
+    "docs/investigations/routing-graph-memory-free-hosting-review/OFFLINE_GRAPH_PROFILE.json": "e595257d3d91daab5eb45dd26d1db4e56578c3ed4e20270203a08440bd8f18dc",
+    "docs/investigations/routing-graph-memory-free-hosting-review/OFFLINE_SOLVER_PROFILE.json": "630e48d005b4e3e517cfadd11cbfacd5e7c34626fcabc1e788bb69ac30485155",
+    "docs/investigations/routing-graph-memory-free-hosting-review/OFFLINE_TEST_RESULTS.txt": "55d289df6fdc6e8e8e19cf53ca67098c86325aa8bf620d37cd90510d0aa52b63",
+    "docs/investigations/routing-graph-memory-free-hosting-review/READ_ONLY_INVENTORY_NOT_EXECUTED.sql": "aad75e42f4affb4ead960ffdb79be313ec6996bda544d5c629e9dc49ef7126de",
+    "docs/investigations/routing-graph-memory-free-hosting-review/REFERENCE_ZIP_CHECK.json": "6c4c7f30b5f45e2e94e2e5fc5a1ee2332d75e53383e126f9bd0c4917693107d8",
+    "docs/investigations/routing-graph-memory-free-hosting-review/REPRESENTATION_ESTIMATES.json": "d53a5fbd021c458b12068791f0153bec5b1c72b8a4c82663323fa3af1ce84f6b"
+  },
+  "validation": {
+    "offline_tests_passed": 6,
+    "report_sections": 14,
+    "local_reference_targets_valid": 24,
+    "full_graph_reprofiled": false,
+    "optimized_planner_implemented": false,
+    "cloud_deployed": false
+  }
+}

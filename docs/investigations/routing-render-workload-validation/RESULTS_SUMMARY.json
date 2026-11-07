@@ -1,0 +1,134 @@
+{
+  "cases": 34,
+  "planner_cases": 16,
+  "validator_cases": 16,
+  "oom": 0,
+  "external_timeouts": 1,
+  "screening": [
+    {
+      "case": "small",
+      "profile": "8gb-2cpu",
+      "memory_screen": true,
+      "time_screen": true,
+      "usable": true,
+      "screen_pass": true
+    },
+    {
+      "case": "small",
+      "profile": "512mb-0.1cpu",
+      "memory_screen": true,
+      "time_screen": true,
+      "usable": true,
+      "screen_pass": true
+    },
+    {
+      "case": "small",
+      "profile": "2gb-1cpu",
+      "memory_screen": true,
+      "time_screen": true,
+      "usable": true,
+      "screen_pass": true
+    },
+    {
+      "case": "small",
+      "profile": "4gb-2cpu",
+      "memory_screen": true,
+      "time_screen": true,
+      "usable": true,
+      "screen_pass": true
+    },
+    {
+      "case": "typical-provisional",
+      "profile": "8gb-2cpu",
+      "memory_screen": true,
+      "time_screen": true,
+      "usable": true,
+      "screen_pass": true
+    },
+    {
+      "case": "typical-provisional",
+      "profile": "512mb-0.1cpu",
+      "memory_screen": false,
+      "time_screen": false,
+      "usable": true,
+      "screen_pass": false
+    },
+    {
+      "case": "typical-provisional",
+      "profile": "2gb-1cpu",
+      "memory_screen": true,
+      "time_screen": true,
+      "usable": true,
+      "screen_pass": true
+    },
+    {
+      "case": "typical-provisional",
+      "profile": "4gb-2cpu",
+      "memory_screen": true,
+      "time_screen": true,
+      "usable": true,
+      "screen_pass": true
+    },
+    {
+      "case": "large-provisional",
+      "profile": "8gb-2cpu",
+      "memory_screen": true,
+      "time_screen": true,
+      "usable": false,
+      "screen_pass": false
+    },
+    {
+      "case": "large-provisional",
+      "profile": "512mb-0.1cpu",
+      "memory_screen": false,
+      "time_screen": false,
+      "usable": false,
+      "screen_pass": false
+    },
+    {
+      "case": "large-provisional",
+      "profile": "2gb-1cpu",
+      "memory_screen": true,
+      "time_screen": true,
+      "usable": false,
+      "screen_pass": false
+    },
+    {
+      "case": "large-provisional",
+      "profile": "4gb-2cpu",
+      "memory_screen": true,
+      "time_screen": true,
+      "usable": false,
+      "screen_pass": false
+    },
+    {
+      "case": "source-boundary-stress",
+      "profile": "8gb-2cpu",
+      "memory_screen": true,
+      "time_screen": true,
+      "usable": false,
+      "screen_pass": false
+    },
+    {
+      "case": "source-boundary-stress",
+      "profile": "2gb-1cpu",
+      "memory_screen": true,
+      "time_screen": true,
+      "usable": false,
+      "screen_pass": false
+    },
+    {
+      "case": "source-boundary-stress",
+      "profile": "4gb-2cpu",
+      "memory_screen": true,
+      "time_screen": true,
+      "usable": false,
+      "screen_pass": false
+    }
+  ],
+  "validator_peak_rss_mib": 31.40234375,
+  "validator_peak_cgroup_mib": 22.8203125,
+  "validator_runs_completed": 16,
+  "validators_all_valid": true,
+  "outcome": "LOCAL_MODELED_RESULTS_ONLY; NO-GO FOR DEPLOYMENT"
+}

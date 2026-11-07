@@ -1,0 +1,106 @@
+{
+  "authorize_my_routing_candidate(uuid,uuid,timestamp with time zone)": [
+    "routing_private.lock_sources(uuid[])"
+  ],
+  "cancel_claim(uuid,uuid)": [
+    "geolock_lock_listing_donations(uuid,text[])",
+    "geolock_transition_listing_donations(uuid,text,text)",
+    "geolock_transition_listing_donations(uuid,text,text,uuid,uuid,text)"
+  ],
+  "cancel_my_unstarted_route(uuid)": [
+    "routing_private.lock_route(uuid,boolean)"
+  ],
+  "claim_listing(uuid,uuid)": [
+    "geolock_lock_listing_donations(uuid,text[])",
+    "geolock_transition_listing_donations(uuid,text,text)",
+    "geolock_transition_listing_donations(uuid,text,text,uuid,uuid,text)"
+  ],
+  "close_my_collected_route(uuid,boolean)": [
+    "routing_private.lock_route(uuid,boolean)"
+  ],
+  "close_my_resolved_route(uuid,boolean,uuid)": [
+    "routing_private.lock_route(uuid,boolean)"
+  ],
+  "complete_pickup(uuid,boolean)": [
+    "routing_private.legacy_complete_pickup(uuid,boolean)",
+    "routing_private.lock_route(uuid,boolean)"
+  ],
+  "confirm_my_route_depot_checkpoint(uuid,boolean,uuid)": [
+    "routing_private.lock_route(uuid,boolean)"
+  ],
+  "defer_my_pickup_for_reconciliation(uuid,uuid)": [
+    "routing_private.lock_route(uuid,boolean)"
+  ],
+  "finalize_route_resolution(uuid,bigint,uuid)": [
+    "geolock_transition_listing_donations(uuid,text,text)",
+    "geolock_transition_listing_donations(uuid,text,text,uuid,uuid,text)",
+    "resolution_private.lock_case(uuid)"
+  ],
+  "geolock_lock_listing_donations(uuid,text[])": [],
+  "geolock_transition_listing_donations(uuid,text,text)": [
+    "geolock_transition_listing_donations(uuid,text,text)",
+    "geolock_transition_listing_donations(uuid,text,text,uuid,uuid,text)"
+  ],
+  "geolock_transition_listing_donations(uuid,text,text,uuid,uuid,text)": [
+    "geolock_lock_listing_donations(uuid,text[])"
+  ],
+  "recover_expired_claims(integer)": [
+    "geolock_lock_listing_donations(uuid,text[])",
+    "geolock_transition_listing_donations(uuid,text,text)",
+    "geolock_transition_listing_donations(uuid,text,text,uuid,uuid,text)",
+    "routing_private.lock_route_for_recovery(uuid)"
+  ],
+  "report_my_route_interruption(uuid,text,uuid)": [
+    "routing_private.lock_route(uuid,boolean)"
+  ],
+  "resolution_private.lock_case(uuid)": [
+    "routing_private.lock_sources(uuid[])"
+  ],
+  "resolve_my_claim_reconciliation(uuid,uuid)": [
+    "routing_private.coord_decide(uuid,uuid)",
+    "routing_private.lock_reconciliation_scope(uuid)"
+  ],
+  "review_my_claim_reconciliation(uuid,text,bigint,uuid)": [
+    "routing_private.lock_reconciliation_scope(uuid)"
+  ],
+  "routing_private.coord_decide(uuid,uuid)": [
+    "geolock_lock_listing_donations(uuid,text[])",
+    "geolock_transition_listing_donations(uuid,text,text)",
+    "geolock_transition_listing_donations(uuid,text,text,uuid,uuid,text)"
+  ],
+  "routing_private.legacy_complete_pickup(uuid,boolean)": [
+    "geolock_transition_listing_donations(uuid,text,text)",
+    "geolock_transition_listing_donations(uuid,text,text,uuid,uuid,text)"
+  ],
+  "routing_private.legacy_start_pickup(uuid)": [
+    "geolock_transition_listing_donations(uuid,text,text)",
+    "geolock_transition_listing_donations(uuid,text,text,uuid,uuid,text)"
+  ],
+  "routing_private.lock_reconciliation_scope(uuid)": [
+    "routing_private.lock_sources(uuid[])"
+  ],
+  "routing_private.lock_route(uuid,boolean)": [
+    "routing_private.lock_sources(uuid[])"
+  ],
+  "routing_private.lock_route_for_recovery(uuid)": [
+    "routing_private.lock_sources(uuid[])"
+  ],
+  "routing_private.lock_sources(uuid[])": [
+    "geolock_lock_listing_donations(uuid,text[])"
+  ],
+  "start_pickup(uuid)": [
+    "routing_private.legacy_start_pickup(uuid)",
+    "routing_private.lock_route(uuid,boolean)"
+  ],
+  "submit_claim_reconciliation(uuid,boolean,uuid)": [
+    "submit_claim_reconciliation_v2(uuid,boolean,integer,bigint,uuid)"
+  ],
+  "submit_claim_reconciliation_v2(uuid,boolean,integer,bigint,uuid)": [
+    "routing_private.coord_decide(uuid,uuid)",
+    "routing_private.lock_reconciliation_scope(uuid)"
+  ],
+  "submit_route_resolution_evidence(uuid,uuid,text,bigint,uuid)": [
+    "routing_private.lock_reconciliation_scope(uuid)",
+    "submit_claim_reconciliation(uuid,boolean,uuid)"
+  ]
+}

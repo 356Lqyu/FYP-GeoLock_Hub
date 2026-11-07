@@ -1,0 +1,20 @@
+{
+  "verified_at_utc": "2026-11-06T18:17:30.813919+00:00",
+  "source_checks": "PASS",
+  "prior_sealed_files_checked": 81,
+  "intentionally_updated_prior_reports": [
+    "docs/investigations/routing-render-docker-validation/MEASUREMENTS.md",
+    "docs/investigations/ROUTING_RENDER_IMPLEMENTATION_READINESS.md"
+  ],
+  "unchanged_hosted_source_files": 18,
+  "graph_and_frozen_inputs_hashes_match": true,
+  "full_100_node_legacy_compact_matrix_parity": true,
+  "resource_cases": 34,
+  "planner_cases": 16,
+  "validator_cases": 16,
+  "external_timeouts": 1,
+  "oom_kills": 0,
+  "scope": "OFFLINE_MODELED_ONLY_NOT_DB_AUTHORIZATION_OR_PRODUCTION_QUALIFICATION",
+  "postgres_journal_redesign": "DESIGN_ONLY_NOT_IMPLEMENTED",
+  "decision": "NO-GO FOR DEPLOYMENT; REVIEW BOUNDED FYP HOSTING CHOICE"
+}

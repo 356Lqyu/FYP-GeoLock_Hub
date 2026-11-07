@@ -1,0 +1,20 @@
+[
+  {
+    "pid": 16148,
+    "wait_event_type": "Lock",
+    "wait_event": "transactionid",
+    "blockers": [
+      23500
+    ],
+    "query": "SELECT public.claim_listing($1,$2)"
+  },
+  {
+    "pid": 23500,
+    "wait_event_type": "Lock",
+    "wait_event": "transactionid",
+    "blockers": [
+      16148
+    ],
+    "query": "SELECT public.claim_listing($1,$2)"
+  }
+]

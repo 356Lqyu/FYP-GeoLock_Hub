@@ -1,0 +1,23 @@
+{
+  "project_ref": "rcgyuwiidqvrgbxswhqj",
+  "batch_b_authorized": false,
+  "allow_identity_setup": false,
+  "run_id": "REPLACE_WITH_NEW_UUID_AFTER_APPROVAL",
+  "expires_at": "REPLACE_WITH_AWARE_ISO_TIMESTAMP_WITHIN_24_HOURS",
+  "max_vehicles": 5,
+  "max_routes": 12,
+  "recovery_ready": false,
+  "password_rotation_confirmed_at": null,
+  "post_c1_recovery": {
+    "location": null,
+    "created_at": null,
+    "usable_confirmed": false,
+    "includes_c1_v2": false
+  },
+  "synthetic_depot": {
+    "node": "28918006",
+    "latitude": 3.145694,
+    "longitude": 101.7150234,
+    "snapshot": "OSM-OPS-20261018"
+  }
+}

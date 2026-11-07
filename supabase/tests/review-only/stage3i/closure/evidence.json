@@ -1,0 +1,486 @@
+{
+  "stage": "STAGE3I_PHASE2_CLOSURE",
+  "dev_project": "rcgyuwiidqvrgbxswhqj",
+  "access": "SELECT-only Supabase MCP; no closure mutations",
+  "functional_verdict": "PASS",
+  "supervised_automatic_direct_recovery": "VERIFIED",
+  "permanent_unattended_recovery": "NOT YET APPROVED",
+  "verification_at": "2026-10-23 13:18:01.54404+00",
+  "audit": {
+    "audited_at": "2026-10-23 13:12:37.676653+00",
+    "current_database": "postgres",
+    "current_user": "supabase_read_only_user",
+    "transaction_read_only": "on",
+    "jobs": [
+      {
+        "jobid": 1,
+        "active": true,
+        "command": "set statement_timeout = '10min'; select public.process_ngo_eligibility_refresh_jobs();",
+        "jobname": "geolock-ngo-eligibility-refresh",
+        "database": "postgres",
+        "nodename": "localhost",
+        "nodeport": 5432,
+        "schedule": "* * * * *",
+        "username": "postgres"
+      },
+      {
+        "jobid": 2,
+        "active": true,
+        "command": "set statement_timeout = '10min'; select public.process_listing_eligibility_refresh_jobs();",
+        "jobname": "geolock-listing-eligibility-refresh",
+        "database": "postgres",
+        "nodename": "localhost",
+        "nodeport": 5432,
+        "schedule": "* * * * *",
+        "username": "postgres"
+      },
+      {
+        "jobid": 3,
+        "active": false,
+        "command": "set lock_timeout = '5s'; set statement_timeout = '50s'; select public.recover_expired_claims(1); -- STAGE3I_ONE_USE_8b4a48ed-97e4-41a9-aa1f-b588ae850b4f",
+        "jobname": "geolock-expired-claim-recovery",
+        "database": "postgres",
+        "nodename": "localhost",
+        "nodeport": 5432,
+        "schedule": "* * * * *",
+        "username": "postgres"
+      }
+    ],
+    "recovery_schedules": [
+      {
+        "jobid": 3,
+        "active": false,
+        "command": "set lock_timeout = '5s'; set statement_timeout = '50s'; select public.recover_expired_claims(1); -- STAGE3I_ONE_USE_8b4a48ed-97e4-41a9-aa1f-b588ae850b4f",
+        "jobname": "geolock-expired-claim-recovery",
+        "database": "postgres",
+        "nodename": "localhost",
+        "nodeport": 5432,
+        "schedule": "* * * * *",
+        "username": "postgres"
+      }
+    ],
+    "history_summary": {
+      "total": 17,
+      "failed": 0,
+      "succeeded": 17,
+      "latest_end": "2026-10-23T13:00:00.089637+00:00",
+      "unfinished": 0
+    },
+    "test_runs": [
+      {
+        "jobid": 3,
+        "runid": 5180,
+        "status": "succeeded",
+        "command": "set lock_timeout = '5s'; set statement_timeout = '50s'; select public.recover_expired_claims(1); -- STAGE3I_ONE_USE_8b4a48ed-97e4-41a9-aa1f-b588ae850b4f",
+        "job_pid": 540386,
+        "database": "postgres",
+        "end_time": "2026-10-23T12:56:00.471205+00:00",
+        "username": "postgres",
+        "start_time": "2026-10-23T12:56:00.067623+00:00",
+        "return_message": "1 row"
+      },
+      {
+        "jobid": 3,
+        "runid": 5183,
+        "status": "succeeded",
+        "command": "set lock_timeout = '5s'; set statement_timeout = '50s'; select public.recover_expired_claims(1); -- STAGE3I_ONE_USE_8b4a48ed-97e4-41a9-aa1f-b588ae850b4f",
+        "job_pid": 540418,
+        "database": "postgres",
+        "end_time": "2026-10-23T12:57:00.096267+00:00",
+        "username": "postgres",
+        "start_time": "2026-10-23T12:57:00.085016+00:00",
+        "return_message": "1 row"
+      },
+      {
+        "jobid": 3,
+        "runid": 5186,
+        "status": "succeeded",
+        "command": "set lock_timeout = '5s'; set statement_timeout = '50s'; select public.recover_expired_claims(1); -- STAGE3I_ONE_USE_8b4a48ed-97e4-41a9-aa1f-b588ae850b4f",
+        "job_pid": 540439,
+        "database": "postgres",
+        "end_time": "2026-10-23T12:58:00.151371+00:00",
+        "username": "postgres",
+        "start_time": "2026-10-23T12:58:00.14255+00:00",
+        "return_message": "1 row"
+      },
+      {
+        "jobid": 3,
+        "runid": 5189,
+        "status": "succeeded",
+        "command": "set lock_timeout = '5s'; set statement_timeout = '50s'; select public.recover_expired_claims(1); -- STAGE3I_ONE_USE_8b4a48ed-97e4-41a9-aa1f-b588ae850b4f",
+        "job_pid": 540479,
+        "database": "postgres",
+        "end_time": "2026-10-23T12:59:00.132357+00:00",
+        "username": "postgres",
+        "start_time": "2026-10-23T12:59:00.12553+00:00",
+        "return_message": "1 row"
+      },
+      {
+        "jobid": 3,
+        "runid": 5192,
+        "status": "succeeded",
+        "command": "set lock_timeout = '5s'; set statement_timeout = '50s'; select public.recover_expired_claims(1); -- STAGE3I_ONE_USE_8b4a48ed-97e4-41a9-aa1f-b588ae850b4f",
+        "job_pid": 540501,
+        "database": "postgres",
+        "end_time": "2026-10-23T13:00:00.089637+00:00",
+        "username": "postgres",
+        "start_time": "2026-10-23T13:00:00.081383+00:00",
+        "return_message": "1 row"
+      }
+    ],
+    "scheduler_audit_correlation": [
+      {
+        "runid": 5180,
+        "end_time": "2026-10-23T12:56:00.471205+00:00",
+        "start_time": "2026-10-23T12:56:00.067623+00:00",
+        "recovery_event_id": "b770ed5f-c564-4d79-8cfd-b8e526ef9ae6",
+        "recovery_occurred_at": "2026-10-23T12:56:00.467156+00:00"
+      }
+    ],
+    "eligibility_health": [
+      {
+        "runs": 60,
+        "jobid": 1,
+        "status": "succeeded",
+        "latest_end": "2026-10-23T13:12:00.149332+00:00",
+        "latest_start": "2026-10-23T13:12:00.128218+00:00"
+      },
+      {
+        "runs": 60,
+        "jobid": 2,
+        "status": "succeeded",
+        "latest_end": "2026-10-23T13:12:00.145998+00:00",
+        "latest_start": "2026-10-23T13:12:00.126962+00:00"
+      }
+    ],
+    "unfinished_runs": [],
+    "active_transactions": [],
+    "relevant_locks": [],
+    "recovery_function": {
+      "acl": "{postgres=X/postgres,service_role=X/postgres}",
+      "owner": "postgres",
+      "config": [
+        "search_path=pg_catalog, public, extensions, pg_temp"
+      ],
+      "return": "integer",
+      "body_md5": "5ff6d8719db9681aae6f444b89dfbaee",
+      "arguments": "p_limit integer DEFAULT 100",
+      "security_definer": true
+    },
+    "other_functions": {
+      "md5": "6991083a881075cdf0e75d0c266396f0",
+      "count": 85
+    },
+    "overdue_active_pairs": 0,
+    "nonterminal_claims": 0,
+    "unresolved_cases": 0,
+    "fixture_items": [
+      {
+        "item_id": "d61171ba-998f-4805-863a-f091f5505647",
+        "quantity": 1,
+        "item_name": "Rice",
+        "created_at": "2026-10-22T20:31:37.833764+00:00",
+        "unit_label": "piece",
+        "category_id": "977fbf03-c3ae-4864-8307-ef2c98f7e7be",
+        "description": null,
+        "donation_id": "3a012ba4-25cc-4054-897e-008e11da3e9e",
+        "item_condition": "GOOD",
+        "unit_weight_kg": 20
+      }
+    ],
+    "fixture_images": [
+      {
+        "image_id": "802e898f-65e2-4a95-ae80-2b73cd5794f0",
+        "created_at": "2026-10-22T20:31:37.972953+00:00",
+        "is_primary": true,
+        "size_bytes": 122987,
+        "content_type": "image/webp",
+        "display_order": 1,
+        "owner_user_id": "21d373a7-6551-4469-81d1-280198d4317e"
+      }
+    ]
+  },
+  "verification": {
+    "lifecycle_ok": true,
+    "recovery_audit_ok": true,
+    "donation_audit_ok": true,
+    "refresh_completed": true,
+    "custody_clear": true,
+    "unrelated_unchanged": true,
+    "recovery_paused": true,
+    "scheduler_success": true,
+    "scheduler_no_errors": true,
+    "all_checks_pass": true,
+    "fixture": {
+      "claim": {
+        "claim_id": "8161392c-e1e1-4723-a954-c80b6b61a8c7",
+        "listing_id": "95d6cd51-866b-4eec-8a36-36dc24296aec",
+        "claimed_at": "2026-10-22T20:33:13.265845+00:00",
+        "claim_status": "RELEASED",
+        "closed_at": "2026-10-23T12:56:00.084318+00:00",
+        "close_reason": "EXPIRED_SAFE_RELEASE",
+        "request_id": "38aba660-edee-4cab-b1eb-ee75692607c4"
+      },
+      "lease": {
+        "claim_id": "8161392c-e1e1-4723-a954-c80b6b61a8c7",
+        "lease_id": "11b7d48e-a459-4b47-b1db-b43f98d0d474",
+        "closed_at": "2026-10-23T12:56:00.080786+00:00",
+        "issued_at": "2026-10-22T20:33:13.441725+00:00",
+        "expires_at": "2026-10-23T02:33:13.441725+00:00",
+        "lease_status": "RELEASED",
+        "release_reason": "EXPIRED_SAFE_RELEASE"
+      },
+      "task": {
+        "task_id": "270caa8b-5a6d-481c-b199-c9a47156dda2",
+        "claim_id": "8161392c-e1e1-4723-a954-c80b6b61a8c7",
+        "listing_id": "95d6cd51-866b-4eec-8a36-36dc24296aec",
+        "task_status": "STALE",
+        "load_kg": 20,
+        "created_at": "2026-10-22T20:33:13.265845+00:00",
+        "pickup_road_node_id": "2308277456"
+      },
+      "listing": {
+        "listing_id": "95d6cd51-866b-4eec-8a36-36dc24296aec",
+        "donation_id": "3a012ba4-25cc-4054-897e-008e11da3e9e",
+        "source_type": "DIRECT_DONATION",
+        "batch_id": null,
+        "listing_status": "AVAILABLE",
+        "listing_version": 3,
+        "eligibility_generation": 2,
+        "listing_expires_at": null,
+        "listing_weight_kg": 20
+      },
+      "donation": {
+        "donation_id": "3a012ba4-25cc-4054-897e-008e11da3e9e",
+        "title": "STAGE3I-E2E-30bc928b-2843-4b9c-a5d4-298b76a8c514",
+        "collection_path": "DIRECT_PICKUP",
+        "donation_status": "AVAILABLE",
+        "total_weight_kg": 20,
+        "availability_start": null,
+        "availability_end": null
+      }
+    },
+    "audits": [
+      {
+        "details": {
+          "weight_kg": 20,
+          "threshold_kg": 10,
+          "collection_path": "DIRECT_PICKUP",
+          "validation_passed": true
+        },
+        "outcome": "SUCCESS",
+        "claim_id": null,
+        "event_id": "721f6d06-1250-455c-b873-91f79078316e",
+        "lease_id": null,
+        "entity_id": "3a012ba4-25cc-4054-897e-008e11da3e9e",
+        "actor_role": "DONOR",
+        "event_type": "CREATE_DONATION",
+        "request_id": null,
+        "entity_type": "DONATION",
+        "occurred_at": "2026-10-22T20:31:37.967097+00:00",
+        "reason_code": null,
+        "actor_user_id": "21d373a7-6551-4469-81d1-280198d4317e",
+        "correlation_id": null,
+        "previous_state": null,
+        "requested_state": "AVAILABLE",
+        "resulting_state": "AVAILABLE",
+        "software_version": null,
+        "configuration_version": "v2.0"
+      },
+      {
+        "details": {
+          "request_id": "83c7a7ff-eb24-48a1-803e-94e1cd0c706f",
+          "photo_count": 1
+        },
+        "outcome": "SUCCESS",
+        "claim_id": null,
+        "event_id": "089ccb7f-2fce-4921-b7e8-9380a13f7d9a",
+        "lease_id": null,
+        "entity_id": "3a012ba4-25cc-4054-897e-008e11da3e9e",
+        "actor_role": "DONOR",
+        "event_type": "DONATION_PHOTOS_ATTACHED",
+        "request_id": null,
+        "entity_type": "DONATION",
+        "occurred_at": "2026-10-22T20:31:37.976882+00:00",
+        "reason_code": null,
+        "actor_user_id": "21d373a7-6551-4469-81d1-280198d4317e",
+        "correlation_id": null,
+        "previous_state": null,
+        "requested_state": "ONE_TO_THREE_PHOTOS",
+        "resulting_state": "ONE_TO_THREE_PHOTOS",
+        "software_version": null,
+        "configuration_version": "v2.0"
+      },
+      {
+        "details": {
+          "listing_id": "95d6cd51-866b-4eec-8a36-36dc24296aec"
+        },
+        "outcome": "SUCCESS",
+        "claim_id": "8161392c-e1e1-4723-a954-c80b6b61a8c7",
+        "event_id": "10e73c1c-9d88-4247-a4a0-049499038380",
+        "lease_id": "11b7d48e-a459-4b47-b1db-b43f98d0d474",
+        "entity_id": "3a012ba4-25cc-4054-897e-008e11da3e9e",
+        "actor_role": "NGO",
+        "event_type": "DONATION_STATUS_CHANGED",
+        "request_id": null,
+        "entity_type": "DONATION",
+        "occurred_at": "2026-10-22T20:33:13.458984+00:00",
+        "reason_code": null,
+        "actor_user_id": "743cf8c1-12db-4c7d-8768-e584bae29c0e",
+        "correlation_id": null,
+        "previous_state": "AVAILABLE",
+        "requested_state": "CLAIMED",
+        "resulting_state": "CLAIMED",
+        "software_version": null,
+        "configuration_version": null
+      },
+      {
+        "details": {
+          "ngo_id": "743cf8c1-12db-4c7d-8768-e584bae29c0e"
+        },
+        "outcome": "SUCCESS",
+        "claim_id": "8161392c-e1e1-4723-a954-c80b6b61a8c7",
+        "event_id": "11f33058-1753-4879-af19-6696831e9a7a",
+        "lease_id": "11b7d48e-a459-4b47-b1db-b43f98d0d474",
+        "entity_id": "95d6cd51-866b-4eec-8a36-36dc24296aec",
+        "actor_role": "NGO",
+        "event_type": "CLAIM_ATTEMPT",
+        "request_id": "38aba660-edee-4cab-b1eb-ee75692607c4",
+        "entity_type": "LISTING",
+        "occurred_at": "2026-10-22T20:33:13.464518+00:00",
+        "reason_code": null,
+        "actor_user_id": "743cf8c1-12db-4c7d-8768-e584bae29c0e",
+        "correlation_id": null,
+        "previous_state": "AVAILABLE",
+        "requested_state": "CLAIMED",
+        "resulting_state": "CLAIMED",
+        "software_version": null,
+        "configuration_version": "v2.0"
+      },
+      {
+        "details": {
+          "listing_id": "95d6cd51-866b-4eec-8a36-36dc24296aec"
+        },
+        "outcome": "SUCCESS",
+        "claim_id": "8161392c-e1e1-4723-a954-c80b6b61a8c7",
+        "event_id": "bff5e136-7d47-4fe8-9480-fb4dc5480b86",
+        "lease_id": "11b7d48e-a459-4b47-b1db-b43f98d0d474",
+        "entity_id": "3a012ba4-25cc-4054-897e-008e11da3e9e",
+        "actor_role": "SYSTEM",
+        "event_type": "DONATION_STATUS_CHANGED",
+        "request_id": null,
+        "entity_type": "DONATION",
+        "occurred_at": "2026-10-23T12:56:00.462465+00:00",
+        "reason_code": null,
+        "actor_user_id": null,
+        "correlation_id": null,
+        "previous_state": "CLAIMED",
+        "requested_state": "AVAILABLE",
+        "resulting_state": "AVAILABLE",
+        "software_version": null,
+        "configuration_version": null
+      },
+      {
+        "details": {
+          "task_id": "270caa8b-5a6d-481c-b199-c9a47156dda2",
+          "listing_id": "95d6cd51-866b-4eec-8a36-36dc24296aec",
+          "donation_id": "3a012ba4-25cc-4054-897e-008e11da3e9e"
+        },
+        "outcome": "SUCCESS",
+        "claim_id": "8161392c-e1e1-4723-a954-c80b6b61a8c7",
+        "event_id": "b770ed5f-c564-4d79-8cfd-b8e526ef9ae6",
+        "lease_id": "11b7d48e-a459-4b47-b1db-b43f98d0d474",
+        "entity_id": "8161392c-e1e1-4723-a954-c80b6b61a8c7",
+        "actor_role": "SYSTEM",
+        "event_type": "LEASE_RECOVERY",
+        "request_id": null,
+        "entity_type": "CLAIM",
+        "occurred_at": "2026-10-23T12:56:00.467156+00:00",
+        "reason_code": "EXPIRED_SAFE_RELEASE",
+        "actor_user_id": null,
+        "correlation_id": "7c6fd929-3485-46c7-be68-45edbac53f1c",
+        "previous_state": "ACTIVE",
+        "requested_state": "RELEASED",
+        "resulting_state": "RELEASED",
+        "software_version": "geolock-stage1-2026-10-19",
+        "configuration_version": "v2.0"
+      }
+    ],
+    "eligibility_refresh": [
+      {
+        "job_id": 10,
+        "job_status": "COMPLETED",
+        "listing_id": "95d6cd51-866b-4eec-8a36-36dc24296aec",
+        "started_at": "2026-10-22T20:32:00.322821+00:00",
+        "completed_at": "2026-10-22T20:32:13.416868+00:00",
+        "requested_at": "2026-10-22T20:31:37.964845+00:00",
+        "attempt_count": 1,
+        "last_error_code": null,
+        "expected_snapshot_id": "OSM-OPS-20261018",
+        "expected_road_node_id": "2308277456",
+        "eligibility_generation": 1
+      },
+      {
+        "job_id": 11,
+        "job_status": "COMPLETED",
+        "listing_id": "95d6cd51-866b-4eec-8a36-36dc24296aec",
+        "started_at": "2026-10-23T12:57:00.084639+00:00",
+        "completed_at": "2026-10-23T12:57:09.075953+00:00",
+        "requested_at": "2026-10-23T12:56:00.454185+00:00",
+        "attempt_count": 1,
+        "last_error_code": null,
+        "expected_snapshot_id": "OSM-OPS-20261018",
+        "expected_road_node_id": "2308277456",
+        "eligibility_generation": 2
+      }
+    ],
+    "other_business_md5": "070bb28ff5737477d6d91ec9e36feb02"
+  },
+  "phase1_comparison": {
+    "changed_fields": {
+      "claim": [
+        "closed_at",
+        "claim_status",
+        "close_reason"
+      ],
+      "lease": [
+        "closed_at",
+        "lease_status",
+        "release_reason"
+      ],
+      "task": [
+        "task_status"
+      ],
+      "listing": [
+        "listing_status",
+        "listing_version",
+        "eligibility_generation"
+      ],
+      "donation": [
+        "updated_at",
+        "donation_status"
+      ]
+    },
+    "unexpected_changes": {
+      "claim": [],
+      "lease": [],
+      "task": [],
+      "listing": [],
+      "donation": []
+    },
+    "items_unchanged": true,
+    "photo_metadata_unchanged": true,
+    "baseline_audits_preserved": true,
+    "generation1_refresh_unchanged": true,
+    "lease_issued_and_expiry_unchanged": true
+  },
+  "operational_caveat": {
+    "observed_new_runs": 5,
+    "recovery_correlated_runid": 5180,
+    "later_successful_runs": 4,
+    "immediate_pause_after_first_outcome": "NOT INDEPENDENTLY DEMONSTRATED",
+    "five_minute_window": "NOT CONFIRMED: actual activation and pause-COMMIT receipts were not supplied",
+    "numeric_recovery_return_counts": "Not recorded: cron return_message is 1 row; do not infer one recovery per run"
+  },
+  "privacy": "Donor address/coordinates, signed photo URLs, credentials and JWTs omitted."
+}

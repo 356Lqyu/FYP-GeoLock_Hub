@@ -1,0 +1,5 @@
+﻿method,case,scenarios,replacement_success,old_holder_still_active,incorrect_active_releases,errors
+protected_claim_without_lease_recovery,lease expired,100,0,100,,0
+protected_claim_without_lease_recovery,lease still running,25,0,25,0,0
+proposed,lease expired,100,100,0,,0
+proposed,lease still running,25,0,25,0,0

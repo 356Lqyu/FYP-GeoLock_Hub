@@ -1,0 +1,1327 @@
+{
+  "project": "rcgyuwiidqvrgbxswhqj",
+  "mode": "SELECT-only",
+  "queries": [
+    {
+      "name": "schema",
+      "query": "SELECT c.relname,c.relrowsecurity,c.relforcerowsecurity,a.attname,format_type(a.atttypid,a.atttypmod) AS type,a.attnotnull,pg_get_expr(d.adbin,d.adrelid) AS default_expr FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace JOIN pg_attribute a ON a.attrelid=c.oid AND a.attnum>0 AND NOT a.attisdropped LEFT JOIN pg_attrdef d ON d.adrelid=c.oid AND d.adnum=a.attnum WHERE n.nspname='public' AND c.relname IN ('vehicles','ngo_profiles','profiles','pickup_routes','active_task_route_assignments','road_network_nodes') ORDER BY c.relname,a.attnum",
+      "rows": [
+        {
+          "relname": "active_task_route_assignments",
+          "relrowsecurity": true,
+          "relforcerowsecurity": false,
+          "attname": "task_id",
+          "type": "uuid",
+          "attnotnull": true,
+          "default_expr": null
+        },
+        {
+          "relname": "active_task_route_assignments",
+          "relrowsecurity": true,
+          "relforcerowsecurity": false,
+          "attname": "route_id",
+          "type": "uuid",
+          "attnotnull": true,
+          "default_expr": null
+        },
+        {
+          "relname": "active_task_route_assignments",
+          "relrowsecurity": true,
+          "relforcerowsecurity": false,
+          "attname": "assigned_at",
+          "type": "timestamp with time zone",
+          "attnotnull": true,
+          "default_expr": "now()"
+        },
+        {
+          "relname": "ngo_profiles",
+          "relrowsecurity": true,
+          "relforcerowsecurity": false,
+          "attname": "user_id",
+          "type": "uuid",
+          "attnotnull": true,
+          "default_expr": null
+        },
+        {
+          "relname": "ngo_profiles",
+          "relrowsecurity": true,
+          "relforcerowsecurity": false,
+          "attname": "role",
+          "type": "text",
+          "attnotnull": true,
+          "default_expr": "'NGO'::text"
+        },
+        {
+          "relname": "ngo_profiles",
+          "relrowsecurity": true,
+          "relforcerowsecurity": false,
+          "attname": "ngo_name",
+          "type": "text",
+          "attnotnull": true,
+          "default_expr": null
+        },
+        {
+          "relname": "ngo_profiles",
+          "relrowsecurity": true,
+          "relforcerowsecurity": false,
+          "attname": "registration_number",
+          "type": "text",
+          "attnotnull": false,
+          "default_expr": null
+        },
+        {
+          "relname": "ngo_profiles",
+          "relrowsecurity": true,
+          "relforcerowsecurity": false,
+          "attname": "operating_address",
+          "type": "text",
+          "attnotnull": false,
+          "default_expr": null
+        },
+        {
+          "relname": "ngo_profiles",
+          "relrowsecurity": true,
+          "relforcerowsecurity": false,
+          "attname": "latitude",
+          "type": "double precision",
+          "attnotnull": false,
+          "default_expr": null
+        },
+        {
+          "relname": "ngo_profiles",
+          "relrowsecurity": true,
+          "relforcerowsecurity": false,
+          "attname": "longitude",
+          "type": "double precision",
+          "attnotnull": false,
+          "default_expr": null
+        },
+        {
+          "relname": "ngo_profiles",
+          "relrowsecurity": true,
+          "relforcerowsecurity": false,
+          "attname": "road_node_id",
+          "type": "text",
+          "attnotnull": false,
+          "default_expr": null
+        },
+        {
+          "relname": "ngo_profiles",
+          "relrowsecurity": true,
+          "relforcerowsecurity": false,
+          "attname": "active_flag",
+          "type": "boolean",
+          "attnotnull": true,
+          "default_expr": "true"
+        },
+        {
+          "relname": "ngo_profiles",
+          "relrowsecurity": true,
+          "relforcerowsecurity": false,
+          "attname": "location_verified_at",
+          "type": "timestamp with time zone",
+          "attnotnull": false,
+          "default_expr": null
+        },
+        {
+          "relname": "ngo_profiles",
+          "relrowsecurity": true,
+          "relforcerowsecurity": false,
+          "attname": "location_generation",
+          "type": "bigint",
+          "attnotnull": true,
+          "default_expr": "0"
+        },
+        {
+          "relname": "pickup_routes",
+          "relrowsecurity": true,
+          "relforcerowsecurity": false,
+          "attname": "route_id",
+          "type": "uuid",
+          "attnotnull": true,
+          "default_expr": "gen_random_uuid()"
+        },
+        {
+          "relname": "pickup_routes",
+          "relrowsecurity": true,
+          "relforcerowsecurity": false,
+          "attname": "ngo_user_id",
+          "type": "uuid",
+          "attnotnull": true,
+          "default_expr": null
+        },
+        {
+          "relname": "pickup_routes",
+          "relrowsecurity": true,
+          "relforcerowsecurity": false,
+          "attname": "vehicle_id",
+          "type": "uuid",
+          "attnotnull": true,
+          "default_expr": null
+        },
+        {
+          "relname": "pickup_routes",
+          "relrowsecurity": true,
+          "relforcerowsecurity": false,
+          "attname": "route_status",
+          "type": "text",
+          "attnotnull": true,
+          "default_expr": "'DRAFT'::text"
+        },
+        {
+          "relname": "pickup_routes",
+          "relrowsecurity": true,
+          "relforcerowsecurity": false,
+          "attname": "matrix_id",
+          "type": "text",
+          "attnotnull": false,
+          "default_expr": null
+        },
+        {
+          "relname": "pickup_routes",
+          "relrowsecurity": true,
+          "relforcerowsecurity": false,
+          "attname": "total_distance_km",
+          "type": "numeric(14,3)",
+          "attnotnull": false,
+          "default_expr": null
+        },
+        {
+          "relname": "pickup_routes",
+          "relrowsecurity": true,
+          "relforcerowsecurity": false,
+          "attname": "total_duration_min",
+          "type": "numeric(14,3)",
+          "attnotnull": false,
+          "default_expr": null
+        },
+        {
+          "relname": "pickup_routes",
+          "relrowsecurity": true,
+          "relforcerowsecurity": false,
+          "attname": "planned_at",
+          "type": "timestamp with time zone",
+          "attnotnull": true,
+          "default_expr": "now()"
+        },
+        {
+          "relname": "pickup_routes",
+          "relrowsecurity": true,
+          "relforcerowsecurity": false,
+          "attname": "authorised_at",
+          "type": "timestamp with time zone",
+          "attnotnull": false,
+          "default_expr": null
+        },
+        {
+          "relname": "pickup_routes",
+          "relrowsecurity": true,
+          "relforcerowsecurity": false,
+          "attname": "validation_reference",
+          "type": "text",
+          "attnotnull": false,
+          "default_expr": null
+        },
+        {
+          "relname": "road_network_nodes",
+          "relrowsecurity": true,
+          "relforcerowsecurity": false,
+          "attname": "osm_node_id",
+          "type": "bigint",
+          "attnotnull": true,
+          "default_expr": null
+        },
+        {
+          "relname": "road_network_nodes",
+          "relrowsecurity": true,
+          "relforcerowsecurity": false,
+          "attname": "network_snapshot_id",
+          "type": "text",
+          "attnotnull": true,
+          "default_expr": null
+        },
+        {
+          "relname": "road_network_nodes",
+          "relrowsecurity": true,
+          "relforcerowsecurity": false,
+          "attname": "latitude",
+          "type": "double precision",
+          "attnotnull": true,
+          "default_expr": null
+        },
+        {
+          "relname": "road_network_nodes",
+          "relrowsecurity": true,
+          "relforcerowsecurity": false,
+          "attname": "longitude",
+          "type": "double precision",
+          "attnotnull": true,
+          "default_expr": null
+        },
+        {
+          "relname": "road_network_nodes",
+          "relrowsecurity": true,
+          "relforcerowsecurity": false,
+          "attname": "geog",
+          "type": "geography(Point,4326)",
+          "attnotnull": false,
+          "default_expr": "(st_setsrid(st_makepoint(longitude, latitude), 4326))::geography"
+        },
+        {
+          "relname": "road_network_nodes",
+          "relrowsecurity": true,
+          "relforcerowsecurity": false,
+          "attname": "component_id",
+          "type": "integer",
+          "attnotnull": true,
+          "default_expr": null
+        },
+        {
+          "relname": "road_network_nodes",
+          "relrowsecurity": true,
+          "relforcerowsecurity": false,
+          "attname": "active_flag",
+          "type": "boolean",
+          "attnotnull": true,
+          "default_expr": "true"
+        },
+        {
+          "relname": "vehicles",
+          "relrowsecurity": true,
+          "relforcerowsecurity": false,
+          "attname": "vehicle_id",
+          "type": "uuid",
+          "attnotnull": true,
+          "default_expr": "gen_random_uuid()"
+        },
+        {
+          "relname": "vehicles",
+          "relrowsecurity": true,
+          "relforcerowsecurity": false,
+          "attname": "ngo_user_id",
+          "type": "uuid",
+          "attnotnull": true,
+          "default_expr": null
+        },
+        {
+          "relname": "vehicles",
+          "relrowsecurity": true,
+          "relforcerowsecurity": false,
+          "attname": "vehicle_label",
+          "type": "text",
+          "attnotnull": true,
+          "default_expr": null
+        },
+        {
+          "relname": "vehicles",
+          "relrowsecurity": true,
+          "relforcerowsecurity": false,
+          "attname": "payload_capacity_kg",
+          "type": "numeric(12,3)",
+          "attnotnull": true,
+          "default_expr": null
+        },
+        {
+          "relname": "vehicles",
+          "relrowsecurity": true,
+          "relforcerowsecurity": false,
+          "attname": "depot_road_node_id",
+          "type": "text",
+          "attnotnull": false,
+          "default_expr": null
+        },
+        {
+          "relname": "vehicles",
+          "relrowsecurity": true,
+          "relforcerowsecurity": false,
+          "attname": "active_flag",
+          "type": "boolean",
+          "attnotnull": true,
+          "default_expr": "true"
+        }
+      ]
+    },
+    {
+      "name": "constraints",
+      "query": "SELECT conrelid::regclass::text AS table_name,conname,pg_get_constraintdef(oid) AS definition FROM pg_constraint WHERE connamespace='public'::regnamespace AND (conrelid IN (SELECT oid FROM pg_class WHERE relname IN ('vehicles','ngo_profiles','profiles','pickup_routes','active_task_route_assignments')) OR confrelid='public.vehicles'::regclass) ORDER BY table_name,conname",
+      "rows": [
+        {
+          "table_name": "active_task_route_assignments",
+          "conname": "active_task_route_assignments_pkey",
+          "definition": "PRIMARY KEY (task_id)"
+        },
+        {
+          "table_name": "active_task_route_assignments",
+          "conname": "active_task_route_assignments_route_id_fkey",
+          "definition": "FOREIGN KEY (route_id) REFERENCES pickup_routes(route_id)"
+        },
+        {
+          "table_name": "active_task_route_assignments",
+          "conname": "active_task_route_assignments_task_id_fkey",
+          "definition": "FOREIGN KEY (task_id) REFERENCES pickup_tasks(task_id)"
+        },
+        {
+          "table_name": "active_task_route_assignments",
+          "conname": "active_task_route_assignments_task_id_route_id_key",
+          "definition": "UNIQUE (task_id, route_id)"
+        },
+        {
+          "table_name": "ngo_profiles",
+          "conname": "ngo_profiles_latitude_check",
+          "definition": "CHECK (((latitude >= ('-90'::integer)::double precision) AND (latitude <= (90)::double precision)))"
+        },
+        {
+          "table_name": "ngo_profiles",
+          "conname": "ngo_profiles_longitude_check",
+          "definition": "CHECK (((longitude >= ('-180'::integer)::double precision) AND (longitude <= (180)::double precision)))"
+        },
+        {
+          "table_name": "ngo_profiles",
+          "conname": "ngo_profiles_operating_address_check",
+          "definition": "CHECK ((btrim(operating_address) <> ''::text))"
+        },
+        {
+          "table_name": "ngo_profiles",
+          "conname": "ngo_profiles_pkey",
+          "definition": "PRIMARY KEY (user_id)"
+        },
+        {
+          "table_name": "ngo_profiles",
+          "conname": "ngo_profiles_registration_number_key",
+          "definition": "UNIQUE (registration_number)"
+        },
+        {
+          "table_name": "ngo_profiles",
+          "conname": "ngo_profiles_role_check",
+          "definition": "CHECK ((role = 'NGO'::text))"
+        },
+        {
+          "table_name": "ngo_profiles",
+          "conname": "ngo_profiles_user_id_role_fkey",
+          "definition": "FOREIGN KEY (user_id, role) REFERENCES user_profiles(user_id, role)"
+        },
+        {
+          "table_name": "pickup_routes",
+          "conname": "pickup_routes_ngo_user_id_fkey",
+          "definition": "FOREIGN KEY (ngo_user_id) REFERENCES ngo_profiles(user_id)"
+        },
+        {
+          "table_name": "pickup_routes",
+          "conname": "pickup_routes_pkey",
+          "definition": "PRIMARY KEY (route_id)"
+        },
+        {
+          "table_name": "pickup_routes",
+          "conname": "pickup_routes_route_id_ngo_user_id_key",
+          "definition": "UNIQUE (route_id, ngo_user_id)"
+        },
+        {
+          "table_name": "pickup_routes",
+          "conname": "pickup_routes_route_status_check",
+          "definition": "CHECK ((route_status = ANY (ARRAY['DRAFT'::text, 'VALIDATED'::text, 'AUTHORISED'::text, 'IN_PROGRESS'::text, 'COMPLETED'::text, 'CANCELLED'::text, 'STALE'::text])))"
+        },
+        {
+          "table_name": "pickup_routes",
+          "conname": "pickup_routes_total_distance_km_check",
+          "definition": "CHECK ((total_distance_km >= (0)::numeric))"
+        },
+        {
+          "table_name": "pickup_routes",
+          "conname": "pickup_routes_total_duration_min_check",
+          "definition": "CHECK ((total_duration_min >= (0)::numeric))"
+        },
+        {
+          "table_name": "pickup_routes",
+          "conname": "pickup_routes_vehicle_id_ngo_user_id_fkey",
+          "definition": "FOREIGN KEY (vehicle_id, ngo_user_id) REFERENCES vehicles(vehicle_id, ngo_user_id)"
+        },
+        {
+          "table_name": "vehicles",
+          "conname": "vehicles_ngo_user_id_fkey",
+          "definition": "FOREIGN KEY (ngo_user_id) REFERENCES ngo_profiles(user_id)"
+        },
+        {
+          "table_name": "vehicles",
+          "conname": "vehicles_payload_capacity_kg_check",
+          "definition": "CHECK ((payload_capacity_kg > (0)::numeric))"
+        },
+        {
+          "table_name": "vehicles",
+          "conname": "vehicles_pkey",
+          "definition": "PRIMARY KEY (vehicle_id)"
+        },
+        {
+          "table_name": "vehicles",
+          "conname": "vehicles_vehicle_id_ngo_user_id_key",
+          "definition": "UNIQUE (vehicle_id, ngo_user_id)"
+        }
+      ]
+    },
+    {
+      "name": "functions",
+      "query": "SELECT p.oid::regprocedure::text AS signature,pg_get_functiondef(p.oid) AS definition,p.proacl FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace WHERE n.nspname='public' AND p.prokind='f' AND (p.proname ILIKE '%vehicle%' OR p.proname ILIKE '%ngo%' OR p.proname IN ('assign_task_to_route','start_pickup')) ORDER BY p.proname",
+      "rows": [
+        {
+          "signature": "assign_task_to_route(uuid,uuid,integer)",
+          "definition": "CREATE OR REPLACE FUNCTION public.assign_task_to_route(p_route uuid, p_task uuid, p_stop_order integer)\n RETURNS void\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public', 'extensions', 'pg_temp'\nAS $function$\r\ndeclare v_actor uuid:=auth.uid();v_r public.pickup_routes%rowtype;\r\n v_t public.pickup_tasks%rowtype;\r\nbegin\r\n select * into v_r from public.pickup_routes where route_id=p_route for update;\r\n if not found or v_r.ngo_user_id is distinct from v_actor or v_r.route_status<>'DRAFT'\r\n then raise exception 'ROUTE_NOT_EDITABLE_BY_NGO'; end if;\r\n select * into v_t from public.pickup_tasks where task_id=p_task for update;\r\n if not found or v_t.ngo_user_id<>v_actor or v_t.task_status not in ('CONFIRMED','PLANNED')\r\n then raise exception 'TASK_NOT_ASSIGNABLE'; end if;\r\n if not exists(select 1 from public.donation_claims c\r\n join public.claim_leases l on l.claim_id=c.claim_id\r\n where c.claim_id=v_t.claim_id and c.claim_status='ACTIVE'\r\n and l.lease_status='ACTIVE' and l.expires_at>clock_timestamp())\r\n then raise exception 'STALE_CLAIM'; end if;\r\n insert into public.active_task_route_assignments(task_id,route_id)\r\n values(p_task,p_route);\r\n insert into public.pickup_route_stops(route_id,ngo_user_id,stop_order,task_id)\r\n values(p_route,v_actor,p_stop_order,p_task);\r\n update public.pickup_tasks set task_status='PLANNED' where task_id=p_task;\r\n insert into public.audit_events(actor_user_id,actor_role,entity_type,entity_id,event_type,\r\n requested_state,resulting_state,outcome,details)\r\n values(v_actor,'NGO','TASK',p_task,'ASSIGN_ROUTE','PLANNED','PLANNED','SUCCESS',\r\n jsonb_build_object('route_id',p_route));\r\nend $function$\n",
+          "proacl": "{postgres=X/postgres,anon=X/postgres,authenticated=X/postgres,service_role=X/postgres}"
+        },
+        {
+          "signature": "geolock_assign_vehicle_depot()",
+          "definition": "CREATE OR REPLACE FUNCTION public.geolock_assign_vehicle_depot()\n RETURNS trigger\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public', 'pg_temp'\nAS $function$\r\nbegin\r\n  select n.road_node_id into new.depot_road_node_id\r\n    from public.ngo_profiles n\r\n   where n.user_id = new.ngo_user_id and n.location_verified_at is not null;\r\n  return new;\r\nend $function$\n",
+          "proacl": "{postgres=X/postgres,service_role=X/postgres}"
+        },
+        {
+          "signature": "geolock_ngo_eligibility_ready(uuid)",
+          "definition": "CREATE OR REPLACE FUNCTION public.geolock_ngo_eligibility_ready(p_ngo uuid)\n RETURNS boolean\n LANGUAGE sql\n STABLE SECURITY DEFINER\n SET search_path TO 'public', 'pg_temp'\nAS $function$\r\n  select coalesce((\r\n    select case\r\n      when n.location_generation=0 then true\r\n      -- A non-legacy location generation without its atomic queue row is not\r\n      -- ready. This is a fail-closed guard for manual corruption/partial repair.\r\n      when not exists(select 1 from public.ngo_eligibility_refresh_jobs j\r\n        where j.ngo_user_id=n.user_id and j.location_generation=n.location_generation) then false\r\n      when exists(select 1 from public.ngo_eligibility_refresh_jobs j\r\n        where j.ngo_user_id=n.user_id and j.location_generation=n.location_generation\r\n          and (j.job_status in ('PENDING','PROCESSING')\r\n            or (j.job_status='FAILED' and j.attempt_count<3))) then false\r\n      when exists(select 1 from public.ngo_eligibility_refresh_jobs j\r\n        where j.ngo_user_id=n.user_id and j.location_generation=n.location_generation\r\n          and (j.job_status='SUPERSEDED'\r\n            or (j.job_status='FAILED' and j.attempt_count>=3))) then false\r\n      else true\r\n    end\r\n    from public.ngo_profiles n where n.user_id=p_ngo\r\n      and n.active_flag and n.location_verified_at is not null and n.road_node_id is not null\r\n  ),false)\r\n$function$\n",
+          "proacl": "{postgres=X/postgres}"
+        },
+        {
+          "signature": "geolock_ngo_listing_road_check(uuid,uuid)",
+          "definition": "CREATE OR REPLACE FUNCTION public.geolock_ngo_listing_road_check(p_ngo uuid, p_listing uuid)\n RETURNS jsonb\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public', 'extensions', 'pg_temp'\nAS $function$\r\ndeclare v_n public.ngo_profiles%rowtype; v_l public.listings%rowtype;\r\n  v_radius integer; v_km double precision; v_outcome text;\r\nbegin\r\n  -- claim_listing already holds NGO FOR SHARE, then listing FOR UPDATE.\r\n  -- Do not let on-demand routing bypass pending/failed/stale queue generations.\r\n  if not public.geolock_ngo_eligibility_ready(p_ngo)\r\n     or not public.geolock_listing_eligibility_ready(p_listing) then\r\n    return jsonb_build_object('outcome','ELIGIBILITY_UNDETERMINED');\r\n  end if;\r\n  select * into v_n from public.ngo_profiles where user_id = p_ngo;\r\n  select * into v_l from public.listings where listing_id = p_listing;\r\n  select geofence_radius_m into v_radius from public.coordination_config where singleton;\r\n  if v_n.user_id is null or v_n.location_verified_at is null\r\n     or v_n.latitude is null or v_n.longitude is null then\r\n    return jsonb_build_object('outcome', 'ELIGIBILITY_UNDETERMINED');\r\n  end if;\r\n  if public.geolock_active_road_snapshot() is null\r\n     or v_n.road_node_id is null or v_l.pickup_road_node_id is null then\r\n    return jsonb_build_object('outcome', 'ROUTE_UNAVAILABLE');\r\n  end if;\r\n  if not extensions.ST_DWithin(\r\n       extensions.ST_SetSRID(extensions.ST_MakePoint(v_n.longitude, v_n.latitude), 4326)::extensions.geography,\r\n       extensions.ST_SetSRID(extensions.ST_MakePoint(v_l.pickup_longitude, v_l.pickup_latitude), 4326)::extensions.geography,\r\n       v_radius) then\r\n    return jsonb_build_object('outcome', 'OUTSIDE_GEOFENCE');\r\n  end if;\r\n\r\n  select e.outcome, e.road_distance_km into v_outcome, v_km\r\n    from public.ngo_listing_road_eligibility e\r\n   where e.ngo_user_id = p_ngo and e.listing_id = p_listing\r\n     and e.network_snapshot_id = public.geolock_active_road_snapshot()\r\n     and e.ngo_road_node_id = v_n.road_node_id\r\n     and e.listing_road_node_id = v_l.pickup_road_node_id\r\n     and e.geofence_radius_m = v_radius;\r\n  if not found then\r\n    perform public.geolock_refresh_listing_road_eligibility(p_listing, p_ngo);\r\n    select e.outcome, e.road_distance_km into v_outcome, v_km\r\n      from public.ngo_listing_road_eligibility e\r\n     where e.ngo_user_id = p_ngo and e.listing_id = p_listing;\r\n  end if;\r\n  return jsonb_build_object('outcome', coalesce(v_outcome, 'ROUTE_UNAVAILABLE'),\r\n                            'road_distance_km', round(v_km::numeric, 3));\r\nend $function$\n",
+          "proacl": "{postgres=X/postgres,service_role=X/postgres}"
+        },
+        {
+          "signature": "geolock_refresh_ngo_road_eligibility(uuid)",
+          "definition": "CREATE OR REPLACE FUNCTION public.geolock_refresh_ngo_road_eligibility(p_ngo uuid)\n RETURNS void\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public', 'extensions', 'pg_temp'\nAS $function$\r\ndeclare v_n public.ngo_profiles%rowtype; v_snapshot text; v_radius integer;\r\nbegin\r\n  delete from public.ngo_listing_road_eligibility e\r\n   where e.ngo_user_id = p_ngo\r\n     and exists (select 1 from public.listings l\r\n                  where l.listing_id = e.listing_id\r\n                    and (l.listing_status = 'AVAILABLE'\r\n                         or exists (select 1 from public.donation_claims c\r\n                                     where c.listing_id = l.listing_id and c.ngo_user_id = p_ngo\r\n                                       and c.claim_status in ('ACTIVE','COMPLETED','RECONCILIATION_REQUIRED'))));\r\n  select * into v_n from public.ngo_profiles where user_id = p_ngo;\r\n  v_snapshot := public.geolock_active_road_snapshot();\r\n  select geofence_radius_m into v_radius from public.coordination_config where singleton;\r\n  if not found or v_snapshot is null or v_n.road_node_id is null\r\n     or v_n.location_verified_at is null or not v_n.active_flag or v_radius is null then\r\n    return;\r\n  end if;\r\n\r\n  insert into public.ngo_listing_road_eligibility(listing_id, ngo_user_id,\r\n    network_snapshot_id, ngo_road_node_id, listing_road_node_id, road_distance_km,\r\n    geofence_radius_m, outcome)\r\n  with targets as (\r\n    select l.listing_id, l.pickup_road_node_id\r\n      from public.listings l\r\n     where l.pickup_road_node_id is not null\r\n       and (l.listing_status = 'AVAILABLE'\r\n            or exists (select 1 from public.donation_claims c\r\n                        where c.listing_id = l.listing_id and c.ngo_user_id = p_ngo\r\n                          and c.claim_status in ('ACTIVE','COMPLETED','RECONCILIATION_REQUIRED')))\r\n       and extensions.ST_DWithin(\r\n             extensions.ST_SetSRID(extensions.ST_MakePoint(v_n.longitude, v_n.latitude), 4326)::extensions.geography,\r\n             extensions.ST_SetSRID(extensions.ST_MakePoint(l.pickup_longitude, l.pickup_latitude), 4326)::extensions.geography,\r\n             v_radius)\r\n  ), costs as materialized (\r\n    select * from public.geolock_road_costs(\r\n      array[v_n.road_node_id::bigint],\r\n      array(select distinct t.pickup_road_node_id::bigint from targets t),\r\n      v_n.latitude, v_n.longitude, v_radius)\r\n  )\r\n  select t.listing_id, p_ngo, v_snapshot, v_n.road_node_id, t.pickup_road_node_id,\r\n         k.road_km, v_radius,\r\n         case when k.road_km is not null and k.road_km * 1000 <= v_radius then 'ELIGIBLE'\r\n              when k.road_km is null and public.geolock_road_component(v_n.road_node_id)\r\n                   is distinct from public.geolock_road_component(t.pickup_road_node_id)\r\n              then 'ROUTE_UNAVAILABLE'\r\n              else 'OUTSIDE_GEOFENCE' end\r\n    from targets t\r\n    left join costs k on k.target_node = t.pickup_road_node_id::bigint\r\n  on conflict (listing_id, ngo_user_id) do update\r\n    set network_snapshot_id = excluded.network_snapshot_id,\r\n        ngo_road_node_id = excluded.ngo_road_node_id,\r\n        listing_road_node_id = excluded.listing_road_node_id,\r\n        road_distance_km = excluded.road_distance_km,\r\n        geofence_radius_m = excluded.geofence_radius_m,\r\n        outcome = excluded.outcome,\r\n        computed_at = clock_timestamp();\r\nend $function$\n",
+          "proacl": "{postgres=X/postgres,service_role=X/postgres}"
+        },
+        {
+          "signature": "get_my_ngo_eligibility_refresh_status()",
+          "definition": "CREATE OR REPLACE FUNCTION public.get_my_ngo_eligibility_refresh_status()\n RETURNS text\n LANGUAGE plpgsql\n STABLE SECURITY DEFINER\n SET search_path TO 'public', 'pg_temp'\nAS $function$\r\ndeclare v_user uuid:=auth.uid(); v_generation bigint; v_status text;\r\nbegin\r\n  if v_user is null then raise exception 'UNAUTHENTICATED'; end if;\r\n  select location_generation into v_generation from public.ngo_profiles\r\n   where user_id=v_user and active_flag and location_verified_at is not null;\r\n  if not found then return 'LOCATION_REQUIRED'; end if;\r\n  if v_generation=0 then return 'READY'; end if;\r\n  if not exists(select 1 from public.ngo_eligibility_refresh_jobs j\r\n    where j.ngo_user_id=v_user and j.location_generation=v_generation) then return 'FAILED'; end if;\r\n  if exists(select 1 from public.ngo_eligibility_refresh_jobs j\r\n    where j.ngo_user_id=v_user and j.location_generation=v_generation\r\n      and (j.job_status in ('PENDING','PROCESSING')\r\n        or (j.job_status='FAILED' and j.attempt_count<3))) then return 'PENDING'; end if;\r\n  if exists(select 1 from public.ngo_eligibility_refresh_jobs j\r\n    where j.ngo_user_id=v_user and j.location_generation=v_generation\r\n      and (j.job_status='SUPERSEDED'\r\n        or (j.job_status='FAILED' and j.attempt_count>=3))) then return 'FAILED'; end if;\r\n  return 'READY';\r\nend;\r\n$function$\n",
+          "proacl": "{postgres=X/postgres,authenticated=X/postgres,service_role=X/postgres}"
+        },
+        {
+          "signature": "process_ngo_eligibility_refresh_jobs()",
+          "definition": "CREATE OR REPLACE FUNCTION public.process_ngo_eligibility_refresh_jobs()\n RETURNS jsonb\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public', 'extensions', 'pg_temp'\n SET statement_timeout TO '10min'\nAS $function$\r\ndeclare\r\n  v_job public.ngo_eligibility_refresh_jobs%rowtype;\r\n  v_ngo public.ngo_profiles%rowtype;\r\n  v_active_snapshot text;\r\n  v_sqlstate text;\r\nbegin\r\n  if session_user <> 'postgres' then raise exception 'TRUSTED_CRON_ONLY'; end if;\r\n\r\n  select * into v_job from public.ngo_eligibility_refresh_jobs j\r\n   where j.job_status in ('PENDING','FAILED') and j.attempt_count<3\r\n   order by j.requested_at desc,j.job_id desc\r\n   limit 1 for update skip locked;\r\n  if not found then return jsonb_build_object('processed',false); end if;\r\n\r\n  update public.ngo_eligibility_refresh_jobs set job_status='PROCESSING',\r\n    attempt_count=attempt_count+1,started_at=clock_timestamp(),last_error_code=null\r\n   where job_id=v_job.job_id;\r\n\r\n  begin\r\n    select c.network_snapshot_id into v_active_snapshot\r\n      from public.road_network_coverage c\r\n     where c.active_flag and c.dataset_kind='OPERATIONAL'\r\n       and c.approved_at is not null and c.max_snap_distance_m=500\r\n     for share;\r\n\r\n    select * into v_ngo from public.ngo_profiles n\r\n     where n.user_id=v_job.ngo_user_id for update;\r\n    if not found or not v_ngo.active_flag or v_ngo.location_verified_at is null then\r\n      update public.ngo_eligibility_refresh_jobs set job_status='SUPERSEDED',\r\n        completed_at=clock_timestamp(),last_error_code='NGO_LOCATION_NO_LONGER_ACTIVE'\r\n       where job_id=v_job.job_id;\r\n      return jsonb_build_object('processed',true,'outcome','SUPERSEDED');\r\n    end if;\r\n\r\n    if v_ngo.location_generation<>v_job.location_generation\r\n       or v_ngo.road_node_id is distinct from v_job.expected_road_node_id then\r\n      update public.ngo_eligibility_refresh_jobs set job_status='SUPERSEDED',\r\n        completed_at=clock_timestamp(),last_error_code='LOCATION_GENERATION_CHANGED'\r\n       where job_id=v_job.job_id;\r\n      return jsonb_build_object('processed',true,'outcome','SUPERSEDED');\r\n    end if;\r\n    if v_active_snapshot is null or v_active_snapshot is distinct from v_job.expected_snapshot_id then\r\n      update public.ngo_eligibility_refresh_jobs set job_status='FAILED',\r\n        completed_at=clock_timestamp(),last_error_code='ROAD_SNAPSHOT_CHANGED'\r\n       where job_id=v_job.job_id;\r\n      return jsonb_build_object('processed',true,'outcome','FAILED','reason_code','ROAD_SNAPSHOT_CHANGED');\r\n    end if;\r\n\r\n    -- Existing refresh uses directed pgRouting distances and re-reads the NGO\r\n    -- row and active snapshot while both are protected by transaction locks.\r\n    perform public.geolock_refresh_ngo_road_eligibility(v_job.ngo_user_id);\r\n\r\n    if exists(select 1 from public.ngo_listing_road_eligibility e\r\n      join public.listings l on l.listing_id=e.listing_id\r\n      where e.ngo_user_id=v_job.ngo_user_id\r\n        and (e.network_snapshot_id<>v_job.expected_snapshot_id\r\n          or e.ngo_road_node_id<>v_job.expected_road_node_id)\r\n        and (l.listing_status='AVAILABLE' or exists(\r\n          select 1 from public.donation_claims c where c.listing_id=l.listing_id\r\n            and c.ngo_user_id=v_job.ngo_user_id\r\n            and c.claim_status in ('ACTIVE','COMPLETED','RECONCILIATION_REQUIRED')))) then\r\n      raise exception 'REFRESH_RESULT_SNAPSHOT_MISMATCH';\r\n    end if;\r\n\r\n    update public.ngo_eligibility_refresh_jobs set job_status='COMPLETED',\r\n      completed_at=clock_timestamp(),last_error_code=null\r\n     where job_id=v_job.job_id;\r\n    return jsonb_build_object('processed',true,'outcome','COMPLETED',\r\n      'location_generation',v_job.location_generation);\r\n  exception when query_canceled then\r\n    update public.ngo_eligibility_refresh_jobs set job_status='FAILED',\r\n      completed_at=clock_timestamp(),last_error_code='SQLSTATE_57014'\r\n     where job_id=v_job.job_id;\r\n    return jsonb_build_object('processed',true,'outcome','FAILED','reason_code','SQLSTATE_57014',\r\n      'attempt_count',v_job.attempt_count+1);\r\n  when others then\r\n    get stacked diagnostics v_sqlstate = returned_sqlstate;\r\n    update public.ngo_eligibility_refresh_jobs set job_status='FAILED',\r\n      completed_at=clock_timestamp(),last_error_code='SQLSTATE_'||v_sqlstate\r\n     where job_id=v_job.job_id;\r\n    return jsonb_build_object('processed',true,'outcome','FAILED','reason_code','SQLSTATE_'||v_sqlstate,\r\n      'attempt_count',v_job.attempt_count+1);\r\n  end;\r\nend;\r\n$function$\n",
+          "proacl": "{postgres=X/postgres}"
+        },
+        {
+          "signature": "set_ngo_operating_location(text,double precision,double precision)",
+          "definition": "CREATE OR REPLACE FUNCTION public.set_ngo_operating_location(p_operating_address text, p_latitude double precision, p_longitude double precision)\n RETURNS jsonb\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public', 'extensions', 'pg_temp'\nAS $function$\r\ndeclare\r\n  v_user uuid := auth.uid();\r\n  v_ngo public.ngo_profiles%rowtype;\r\n  v_snapshot text;\r\n  v_node text;\r\n  v_snap_distance double precision;\r\n  v_resolved_snapshot text;\r\n  v_generation bigint;\r\nbegin\r\n  if v_user is null then raise exception 'UNAUTHENTICATED'; end if;\r\n  if nullif(btrim(p_operating_address),'') is null\r\n     or p_latitude is null or p_longitude is null\r\n     or p_latitude not between -90 and 90\r\n     or p_longitude not between -180 and 180 then\r\n    raise exception 'INVALID_NGO_LOCATION';\r\n  end if;\r\n\r\n  -- Keep the approved snapshot fixed through validation, invalidation and enqueue.\r\n  select c.network_snapshot_id into v_snapshot\r\n    from public.road_network_coverage c\r\n   where c.active_flag and c.dataset_kind='OPERATIONAL'\r\n     and c.approved_at is not null and c.max_snap_distance_m=500\r\n   for share;\r\n  if v_snapshot is null then raise exception 'OPERATIONAL_ROAD_COVERAGE_UNAVAILABLE'; end if;\r\n\r\n  select * into v_ngo from public.ngo_profiles n\r\n   where n.user_id=v_user and n.active_flag for update;\r\n  if not found then raise exception 'ACTIVE_NGO_PROFILE_REQUIRED'; end if;\r\n\r\n  if exists(\r\n    select 1 from public.donation_claims c\r\n     where c.ngo_user_id=v_user and (\r\n       c.claim_status in ('ACTIVE','RECONCILIATION_REQUIRED')\r\n       or exists(select 1 from public.claim_leases le\r\n                  where le.claim_id=c.claim_id\r\n                    and le.lease_status in ('ACTIVE','RECONCILIATION_REQUIRED'))\r\n       or not exists(select 1 from public.claim_leases le where le.claim_id=c.claim_id\r\n          and ((c.claim_status='COMPLETED' and le.lease_status='COMPLETED')\r\n            or (c.claim_status in ('RELEASED','EXPIRED','CANCELLED')\r\n                and le.lease_status in ('RELEASED','EXPIRED'))))\r\n     )\r\n  ) then raise exception 'NGO_HAS_ACTIVE_OR_UNRESOLVED_CLAIMS'; end if;\r\n\r\n  select r.node_id,r.snap_distance_m,r.snapshot_id\r\n    into v_node,v_snap_distance,v_resolved_snapshot\r\n    from public.geolock_resolve_road_node(p_latitude,p_longitude) r;\r\n  if v_node is null or v_snap_distance is null or v_snap_distance < 0\r\n     or v_snap_distance > 500 or v_resolved_snapshot is distinct from v_snapshot then\r\n    raise exception 'NGO_LOCATION_NOT_ROUTABLE';\r\n  end if;\r\n\r\n  v_generation := v_ngo.location_generation + 1;\r\n  update public.ngo_profiles set operating_address=btrim(p_operating_address),\r\n    latitude=p_latitude,longitude=p_longitude,road_node_id=v_node,\r\n    location_verified_at=clock_timestamp(),location_generation=v_generation\r\n   where user_id=v_user;\r\n  -- Existing trigger derives vehicle depots from the trusted NGO node.\r\n  update public.vehicles set depot_road_node_id=null where ngo_user_id=v_user;\r\n\r\n  -- Remove every prior result before committing the new location generation.\r\n  delete from public.ngo_listing_road_eligibility where ngo_user_id=v_user;\r\n  insert into public.ngo_eligibility_refresh_jobs(\r\n    ngo_user_id,location_generation,expected_road_node_id,expected_snapshot_id)\r\n  values(v_user,v_generation,v_node,v_snapshot);\r\n\r\n  insert into public.audit_events(actor_user_id,actor_role,entity_type,entity_id,\r\n    event_type,request_id,correlation_id,previous_state,requested_state,\r\n    resulting_state,reason_code,outcome,details)\r\n  values(v_user,'NGO','NGO',v_user,'SET_NGO_OPERATING_LOCATION',gen_random_uuid(),\r\n    gen_random_uuid(),case when v_ngo.location_verified_at is null then 'INCOMPLETE' else 'VERIFIED' end,\r\n    'VERIFIED','ELIGIBILITY_PENDING','SERVER_ROAD_NODE_VALIDATION','SUCCESS',\r\n    jsonb_build_object('network_snapshot_id',v_snapshot,'road_node_id',v_node,\r\n      'snap_distance_m',round(v_snap_distance::numeric,1),\r\n      'location_generation',v_generation));\r\n\r\n  return jsonb_build_object('location_status','VERIFIED','eligibility_status','PENDING',\r\n    'road_node_id',v_node,'snap_distance_m',round(v_snap_distance::numeric,1),\r\n    'network_snapshot_id',v_snapshot,'location_generation',v_generation);\r\nend;\r\n$function$\n",
+          "proacl": "{postgres=X/postgres,authenticated=X/postgres,service_role=X/postgres}"
+        },
+        {
+          "signature": "start_pickup(uuid)",
+          "definition": "CREATE OR REPLACE FUNCTION public.start_pickup(p_claim uuid)\n RETURNS void\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public', 'extensions', 'pg_temp'\nAS $function$\r\ndeclare v_actor uuid:=auth.uid();v_c public.donation_claims%rowtype;\r\n v_l public.listings%rowtype;v_lease public.claim_leases%rowtype;\r\nbegin\r\n select * into v_c from public.donation_claims where claim_id=p_claim for update;\r\n if not found or v_c.ngo_user_id is distinct from v_actor or v_c.claim_status<>'ACTIVE'\r\n then raise exception 'NOT_ACTIVE_CLAIM_HOLDER'; end if;\r\n select * into v_lease from public.claim_leases where claim_id=p_claim for update;\r\n if not found or v_lease.lease_status<>'ACTIVE' or v_lease.expires_at<=clock_timestamp()\r\n then raise exception 'STALE_OR_EXPIRED_LEASE'; end if;\r\n select * into v_l from public.listings where listing_id=v_c.listing_id for update;\r\n if v_l.listing_status<>'CLAIMED' then raise exception 'LISTING_NOT_CLAIMED'; end if;\r\n update public.pickup_tasks set task_status='DISPATCHED'\r\n where claim_id=p_claim and task_status in ('CONFIRMED','PLANNED');\r\n if not found then raise exception 'PICKUP_TASK_NOT_DISPATCHABLE'; end if;\r\n perform public.geolock_transition_listing_donations(v_l.listing_id,'CLAIMED','PICKUP_IN_PROGRESS');\r\n insert into public.audit_events(actor_user_id,actor_role,entity_type,entity_id,event_type,\r\n claim_id,lease_id,requested_state,resulting_state,outcome)\r\n values(v_actor,'NGO','CLAIM',p_claim,'START_PICKUP',p_claim,v_lease.lease_id,\r\n 'PICKUP_IN_PROGRESS','PICKUP_IN_PROGRESS','SUCCESS');\r\nend $function$\n",
+          "proacl": "{postgres=X/postgres,anon=X/postgres,authenticated=X/postgres,service_role=X/postgres}"
+        },
+        {
+          "signature": "verify_ngo_location(uuid,boolean,text)",
+          "definition": "CREATE OR REPLACE FUNCTION public.verify_ngo_location(p_ngo uuid, p_verified boolean, p_reason text)\n RETURNS jsonb\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public', 'extensions', 'pg_temp'\nAS $function$\r\ndeclare\r\n  v_ngo public.ngo_profiles%rowtype;\r\n  v_node text;\r\n  v_dist double precision;\r\n  v_prev text;\r\n  v_new text;\r\n  v_eligible integer;\r\nbegin\r\n  if coalesce(auth.role(), '') <> 'service_role'\r\n     and session_user not in ('postgres', 'supabase_admin') then\r\n    raise exception 'TRUSTED_VERIFIER_ONLY';\r\n  end if;\r\n  if p_ngo is null or p_verified is null then raise exception 'NGO_AND_DECISION_REQUIRED'; end if;\r\n  if nullif(btrim(p_reason), '') is null then raise exception 'VERIFICATION_REASON_REQUIRED'; end if;\r\n\r\n  select * into v_ngo from public.ngo_profiles where user_id = p_ngo for update;\r\n  if not found then raise exception 'NGO_NOT_FOUND'; end if;\r\n  v_prev := case when v_ngo.location_verified_at is null then 'UNVERIFIED' else 'VERIFIED' end;\r\n\r\n  if p_verified then\r\n    select node_id, snap_distance_m into v_node, v_dist\r\n      from public.geolock_resolve_road_node(v_ngo.latitude, v_ngo.longitude);\r\n    if v_node is null then raise exception 'NGO_LOCATION_NOT_ROUTABLE'; end if;\r\n  end if;\r\n  v_new := case when p_verified then 'VERIFIED' else 'UNVERIFIED' end;\r\n\r\n  update public.ngo_profiles\r\n     set location_verified_at = case when p_verified then clock_timestamp() end,\r\n         road_node_id = v_node\r\n   where user_id = p_ngo;\r\n  update public.vehicles set depot_road_node_id = null where ngo_user_id = p_ngo;\r\n\r\n  perform public.geolock_refresh_ngo_road_eligibility(p_ngo);\r\n  select count(*) into v_eligible from public.ngo_listing_road_eligibility\r\n   where ngo_user_id = p_ngo and outcome = 'ELIGIBLE';\r\n\r\n  insert into public.audit_events(actor_user_id, actor_role, entity_type, entity_id,\r\n    event_type, request_id, previous_state, requested_state, resulting_state,\r\n    reason_code, outcome, details)\r\n  values (null, 'SYSTEM', 'NGO', p_ngo, 'VERIFY_NGO_LOCATION', gen_random_uuid(),\r\n    v_prev, v_new, v_new, p_reason, 'SUCCESS',\r\n    jsonb_build_object('road_node_id', v_node,\r\n                       'snap_distance_m', round(v_dist::numeric, 1),\r\n                       'eligible_open_listings', v_eligible));\r\n\r\n  return jsonb_build_object('ngo_user_id', p_ngo, 'location_status', v_new,\r\n    'road_node_id', v_node, 'snap_distance_m', round(v_dist::numeric, 1),\r\n    'eligible_open_listings', v_eligible);\r\nend $function$\n",
+          "proacl": "{postgres=X/postgres,service_role=X/postgres}"
+        }
+      ]
+    },
+    {
+      "name": "security",
+      "query": "SELECT schemaname,tablename,policyname,roles,cmd,qual,with_check FROM pg_policies WHERE schemaname='public' AND tablename IN ('vehicles','ngo_profiles','profiles','pickup_routes');",
+      "rows": []
+    },
+    {
+      "name": "triggers",
+      "query": "SELECT c.relname,t.tgname,pg_get_triggerdef(t.oid),pg_get_functiondef(t.tgfoid) AS function_definition FROM pg_trigger t JOIN pg_class c ON c.oid=t.tgrelid WHERE NOT t.tgisinternal AND c.relnamespace='public'::regnamespace AND c.relname IN ('vehicles','ngo_profiles','profiles','pickup_routes')",
+      "rows": [
+        {
+          "relname": "vehicles",
+          "tgname": "trg_vehicle_depot_node",
+          "pg_get_triggerdef": "CREATE TRIGGER trg_vehicle_depot_node BEFORE INSERT OR UPDATE OF depot_road_node_id, ngo_user_id ON public.vehicles FOR EACH ROW EXECUTE FUNCTION geolock_assign_vehicle_depot()",
+          "function_definition": "CREATE OR REPLACE FUNCTION public.geolock_assign_vehicle_depot()\n RETURNS trigger\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public', 'pg_temp'\nAS $function$\r\nbegin\r\n  select n.road_node_id into new.depot_road_node_id\r\n    from public.ngo_profiles n\r\n   where n.user_id = new.ngo_user_id and n.location_verified_at is not null;\r\n  return new;\r\nend $function$\n"
+        }
+      ]
+    },
+    {
+      "name": "grants",
+      "query": "SELECT grantee,table_name,privilege_type FROM information_schema.role_table_grants WHERE table_schema='public' AND table_name IN ('vehicles','ngo_profiles','profiles','pickup_routes') ORDER BY table_name,grantee,privilege_type",
+      "rows": [
+        {
+          "grantee": "anon",
+          "table_name": "ngo_profiles",
+          "privilege_type": "DELETE"
+        },
+        {
+          "grantee": "anon",
+          "table_name": "ngo_profiles",
+          "privilege_type": "INSERT"
+        },
+        {
+          "grantee": "anon",
+          "table_name": "ngo_profiles",
+          "privilege_type": "REFERENCES"
+        },
+        {
+          "grantee": "anon",
+          "table_name": "ngo_profiles",
+          "privilege_type": "SELECT"
+        },
+        {
+          "grantee": "anon",
+          "table_name": "ngo_profiles",
+          "privilege_type": "TRIGGER"
+        },
+        {
+          "grantee": "anon",
+          "table_name": "ngo_profiles",
+          "privilege_type": "TRUNCATE"
+        },
+        {
+          "grantee": "anon",
+          "table_name": "ngo_profiles",
+          "privilege_type": "UPDATE"
+        },
+        {
+          "grantee": "authenticated",
+          "table_name": "ngo_profiles",
+          "privilege_type": "DELETE"
+        },
+        {
+          "grantee": "authenticated",
+          "table_name": "ngo_profiles",
+          "privilege_type": "INSERT"
+        },
+        {
+          "grantee": "authenticated",
+          "table_name": "ngo_profiles",
+          "privilege_type": "REFERENCES"
+        },
+        {
+          "grantee": "authenticated",
+          "table_name": "ngo_profiles",
+          "privilege_type": "SELECT"
+        },
+        {
+          "grantee": "authenticated",
+          "table_name": "ngo_profiles",
+          "privilege_type": "TRIGGER"
+        },
+        {
+          "grantee": "authenticated",
+          "table_name": "ngo_profiles",
+          "privilege_type": "TRUNCATE"
+        },
+        {
+          "grantee": "authenticated",
+          "table_name": "ngo_profiles",
+          "privilege_type": "UPDATE"
+        },
+        {
+          "grantee": "postgres",
+          "table_name": "ngo_profiles",
+          "privilege_type": "DELETE"
+        },
+        {
+          "grantee": "postgres",
+          "table_name": "ngo_profiles",
+          "privilege_type": "INSERT"
+        },
+        {
+          "grantee": "postgres",
+          "table_name": "ngo_profiles",
+          "privilege_type": "REFERENCES"
+        },
+        {
+          "grantee": "postgres",
+          "table_name": "ngo_profiles",
+          "privilege_type": "SELECT"
+        },
+        {
+          "grantee": "postgres",
+          "table_name": "ngo_profiles",
+          "privilege_type": "TRIGGER"
+        },
+        {
+          "grantee": "postgres",
+          "table_name": "ngo_profiles",
+          "privilege_type": "TRUNCATE"
+        },
+        {
+          "grantee": "postgres",
+          "table_name": "ngo_profiles",
+          "privilege_type": "UPDATE"
+        },
+        {
+          "grantee": "service_role",
+          "table_name": "ngo_profiles",
+          "privilege_type": "DELETE"
+        },
+        {
+          "grantee": "service_role",
+          "table_name": "ngo_profiles",
+          "privilege_type": "INSERT"
+        },
+        {
+          "grantee": "service_role",
+          "table_name": "ngo_profiles",
+          "privilege_type": "REFERENCES"
+        },
+        {
+          "grantee": "service_role",
+          "table_name": "ngo_profiles",
+          "privilege_type": "SELECT"
+        },
+        {
+          "grantee": "service_role",
+          "table_name": "ngo_profiles",
+          "privilege_type": "TRIGGER"
+        },
+        {
+          "grantee": "service_role",
+          "table_name": "ngo_profiles",
+          "privilege_type": "TRUNCATE"
+        },
+        {
+          "grantee": "service_role",
+          "table_name": "ngo_profiles",
+          "privilege_type": "UPDATE"
+        },
+        {
+          "grantee": "anon",
+          "table_name": "pickup_routes",
+          "privilege_type": "DELETE"
+        },
+        {
+          "grantee": "anon",
+          "table_name": "pickup_routes",
+          "privilege_type": "INSERT"
+        },
+        {
+          "grantee": "anon",
+          "table_name": "pickup_routes",
+          "privilege_type": "REFERENCES"
+        },
+        {
+          "grantee": "anon",
+          "table_name": "pickup_routes",
+          "privilege_type": "SELECT"
+        },
+        {
+          "grantee": "anon",
+          "table_name": "pickup_routes",
+          "privilege_type": "TRIGGER"
+        },
+        {
+          "grantee": "anon",
+          "table_name": "pickup_routes",
+          "privilege_type": "TRUNCATE"
+        },
+        {
+          "grantee": "anon",
+          "table_name": "pickup_routes",
+          "privilege_type": "UPDATE"
+        },
+        {
+          "grantee": "authenticated",
+          "table_name": "pickup_routes",
+          "privilege_type": "DELETE"
+        },
+        {
+          "grantee": "authenticated",
+          "table_name": "pickup_routes",
+          "privilege_type": "INSERT"
+        },
+        {
+          "grantee": "authenticated",
+          "table_name": "pickup_routes",
+          "privilege_type": "REFERENCES"
+        },
+        {
+          "grantee": "authenticated",
+          "table_name": "pickup_routes",
+          "privilege_type": "SELECT"
+        },
+        {
+          "grantee": "authenticated",
+          "table_name": "pickup_routes",
+          "privilege_type": "TRIGGER"
+        },
+        {
+          "grantee": "authenticated",
+          "table_name": "pickup_routes",
+          "privilege_type": "TRUNCATE"
+        },
+        {
+          "grantee": "authenticated",
+          "table_name": "pickup_routes",
+          "privilege_type": "UPDATE"
+        },
+        {
+          "grantee": "postgres",
+          "table_name": "pickup_routes",
+          "privilege_type": "DELETE"
+        },
+        {
+          "grantee": "postgres",
+          "table_name": "pickup_routes",
+          "privilege_type": "INSERT"
+        },
+        {
+          "grantee": "postgres",
+          "table_name": "pickup_routes",
+          "privilege_type": "REFERENCES"
+        },
+        {
+          "grantee": "postgres",
+          "table_name": "pickup_routes",
+          "privilege_type": "SELECT"
+        },
+        {
+          "grantee": "postgres",
+          "table_name": "pickup_routes",
+          "privilege_type": "TRIGGER"
+        },
+        {
+          "grantee": "postgres",
+          "table_name": "pickup_routes",
+          "privilege_type": "TRUNCATE"
+        },
+        {
+          "grantee": "postgres",
+          "table_name": "pickup_routes",
+          "privilege_type": "UPDATE"
+        },
+        {
+          "grantee": "service_role",
+          "table_name": "pickup_routes",
+          "privilege_type": "DELETE"
+        },
+        {
+          "grantee": "service_role",
+          "table_name": "pickup_routes",
+          "privilege_type": "INSERT"
+        },
+        {
+          "grantee": "service_role",
+          "table_name": "pickup_routes",
+          "privilege_type": "REFERENCES"
+        },
+        {
+          "grantee": "service_role",
+          "table_name": "pickup_routes",
+          "privilege_type": "SELECT"
+        },
+        {
+          "grantee": "service_role",
+          "table_name": "pickup_routes",
+          "privilege_type": "TRIGGER"
+        },
+        {
+          "grantee": "service_role",
+          "table_name": "pickup_routes",
+          "privilege_type": "TRUNCATE"
+        },
+        {
+          "grantee": "service_role",
+          "table_name": "pickup_routes",
+          "privilege_type": "UPDATE"
+        },
+        {
+          "grantee": "anon",
+          "table_name": "vehicles",
+          "privilege_type": "DELETE"
+        },
+        {
+          "grantee": "anon",
+          "table_name": "vehicles",
+          "privilege_type": "INSERT"
+        },
+        {
+          "grantee": "anon",
+          "table_name": "vehicles",
+          "privilege_type": "REFERENCES"
+        },
+        {
+          "grantee": "anon",
+          "table_name": "vehicles",
+          "privilege_type": "SELECT"
+        },
+        {
+          "grantee": "anon",
+          "table_name": "vehicles",
+          "privilege_type": "TRIGGER"
+        },
+        {
+          "grantee": "anon",
+          "table_name": "vehicles",
+          "privilege_type": "TRUNCATE"
+        },
+        {
+          "grantee": "anon",
+          "table_name": "vehicles",
+          "privilege_type": "UPDATE"
+        },
+        {
+          "grantee": "authenticated",
+          "table_name": "vehicles",
+          "privilege_type": "DELETE"
+        },
+        {
+          "grantee": "authenticated",
+          "table_name": "vehicles",
+          "privilege_type": "INSERT"
+        },
+        {
+          "grantee": "authenticated",
+          "table_name": "vehicles",
+          "privilege_type": "REFERENCES"
+        },
+        {
+          "grantee": "authenticated",
+          "table_name": "vehicles",
+          "privilege_type": "SELECT"
+        },
+        {
+          "grantee": "authenticated",
+          "table_name": "vehicles",
+          "privilege_type": "TRIGGER"
+        },
+        {
+          "grantee": "authenticated",
+          "table_name": "vehicles",
+          "privilege_type": "TRUNCATE"
+        },
+        {
+          "grantee": "authenticated",
+          "table_name": "vehicles",
+          "privilege_type": "UPDATE"
+        },
+        {
+          "grantee": "postgres",
+          "table_name": "vehicles",
+          "privilege_type": "DELETE"
+        },
+        {
+          "grantee": "postgres",
+          "table_name": "vehicles",
+          "privilege_type": "INSERT"
+        },
+        {
+          "grantee": "postgres",
+          "table_name": "vehicles",
+          "privilege_type": "REFERENCES"
+        },
+        {
+          "grantee": "postgres",
+          "table_name": "vehicles",
+          "privilege_type": "SELECT"
+        },
+        {
+          "grantee": "postgres",
+          "table_name": "vehicles",
+          "privilege_type": "TRIGGER"
+        },
+        {
+          "grantee": "postgres",
+          "table_name": "vehicles",
+          "privilege_type": "TRUNCATE"
+        },
+        {
+          "grantee": "postgres",
+          "table_name": "vehicles",
+          "privilege_type": "UPDATE"
+        },
+        {
+          "grantee": "service_role",
+          "table_name": "vehicles",
+          "privilege_type": "DELETE"
+        },
+        {
+          "grantee": "service_role",
+          "table_name": "vehicles",
+          "privilege_type": "INSERT"
+        },
+        {
+          "grantee": "service_role",
+          "table_name": "vehicles",
+          "privilege_type": "REFERENCES"
+        },
+        {
+          "grantee": "service_role",
+          "table_name": "vehicles",
+          "privilege_type": "SELECT"
+        },
+        {
+          "grantee": "service_role",
+          "table_name": "vehicles",
+          "privilege_type": "TRIGGER"
+        },
+        {
+          "grantee": "service_role",
+          "table_name": "vehicles",
+          "privilege_type": "TRUNCATE"
+        },
+        {
+          "grantee": "service_role",
+          "table_name": "vehicles",
+          "privilege_type": "UPDATE"
+        }
+      ]
+    },
+    {
+      "name": "inventory",
+      "query": "SELECT table_name FROM information_schema.tables WHERE table_schema='public' AND (table_name ILIKE '%ngo%' OR table_name ILIKE '%node%' OR table_name ILIKE '%reserv%' OR table_name ILIKE '%route%');",
+      "rows": [
+        {
+          "table_name": "hub_reservations"
+        },
+        {
+          "table_name": "pickup_route_stops"
+        },
+        {
+          "table_name": "pickup_routes"
+        },
+        {
+          "table_name": "road_network_nodes"
+        },
+        {
+          "table_name": "ngo_listing_road_eligibility"
+        },
+        {
+          "table_name": "active_task_route_assignments"
+        },
+        {
+          "table_name": "ngo_profiles"
+        },
+        {
+          "table_name": "ngo_eligibility_refresh_jobs"
+        }
+      ]
+    },
+    {
+      "name": "counts",
+      "query": "SELECT now() AS inspected_at,(SELECT count(*) FROM public.vehicles) AS vehicles,(SELECT count(*) FROM public.pickup_routes) AS routes",
+      "rows": [
+        {
+          "inspected_at": "2026-10-23 19:56:50.50682+00",
+          "vehicles": 0,
+          "routes": 0
+        }
+      ]
+    },
+    {
+      "name": "identity",
+      "query": "SELECT c.relname,a.attname,format_type(a.atttypid,a.atttypmod) AS type FROM pg_class c JOIN pg_attribute a ON a.attrelid=c.oid AND a.attnum>0 AND NOT a.attisdropped WHERE c.relnamespace='public'::regnamespace AND c.relname IN ('user_profiles','audit_events','road_network_coverage') ORDER BY c.relname,a.attnum",
+      "rows": [
+        {
+          "relname": "audit_events",
+          "attname": "event_id",
+          "type": "uuid"
+        },
+        {
+          "relname": "audit_events",
+          "attname": "actor_user_id",
+          "type": "uuid"
+        },
+        {
+          "relname": "audit_events",
+          "attname": "actor_role",
+          "type": "text"
+        },
+        {
+          "relname": "audit_events",
+          "attname": "entity_type",
+          "type": "text"
+        },
+        {
+          "relname": "audit_events",
+          "attname": "entity_id",
+          "type": "uuid"
+        },
+        {
+          "relname": "audit_events",
+          "attname": "event_type",
+          "type": "text"
+        },
+        {
+          "relname": "audit_events",
+          "attname": "request_id",
+          "type": "uuid"
+        },
+        {
+          "relname": "audit_events",
+          "attname": "claim_id",
+          "type": "uuid"
+        },
+        {
+          "relname": "audit_events",
+          "attname": "lease_id",
+          "type": "uuid"
+        },
+        {
+          "relname": "audit_events",
+          "attname": "correlation_id",
+          "type": "uuid"
+        },
+        {
+          "relname": "audit_events",
+          "attname": "previous_state",
+          "type": "text"
+        },
+        {
+          "relname": "audit_events",
+          "attname": "requested_state",
+          "type": "text"
+        },
+        {
+          "relname": "audit_events",
+          "attname": "resulting_state",
+          "type": "text"
+        },
+        {
+          "relname": "audit_events",
+          "attname": "reason_code",
+          "type": "text"
+        },
+        {
+          "relname": "audit_events",
+          "attname": "outcome",
+          "type": "text"
+        },
+        {
+          "relname": "audit_events",
+          "attname": "details",
+          "type": "jsonb"
+        },
+        {
+          "relname": "audit_events",
+          "attname": "software_version",
+          "type": "text"
+        },
+        {
+          "relname": "audit_events",
+          "attname": "configuration_version",
+          "type": "text"
+        },
+        {
+          "relname": "audit_events",
+          "attname": "occurred_at",
+          "type": "timestamp with time zone"
+        },
+        {
+          "relname": "road_network_coverage",
+          "attname": "network_snapshot_id",
+          "type": "text"
+        },
+        {
+          "relname": "road_network_coverage",
+          "attname": "coverage_area",
+          "type": "geometry(MultiPolygon,4326)"
+        },
+        {
+          "relname": "road_network_coverage",
+          "attname": "max_snap_distance_m",
+          "type": "integer"
+        },
+        {
+          "relname": "road_network_coverage",
+          "attname": "provenance",
+          "type": "text"
+        },
+        {
+          "relname": "road_network_coverage",
+          "attname": "dataset_kind",
+          "type": "text"
+        },
+        {
+          "relname": "road_network_coverage",
+          "attname": "node_count",
+          "type": "integer"
+        },
+        {
+          "relname": "road_network_coverage",
+          "attname": "edge_count",
+          "type": "integer"
+        },
+        {
+          "relname": "road_network_coverage",
+          "attname": "approved_at",
+          "type": "timestamp with time zone"
+        },
+        {
+          "relname": "road_network_coverage",
+          "attname": "active_flag",
+          "type": "boolean"
+        },
+        {
+          "relname": "road_network_coverage",
+          "attname": "created_at",
+          "type": "timestamp with time zone"
+        },
+        {
+          "relname": "user_profiles",
+          "attname": "user_id",
+          "type": "uuid"
+        },
+        {
+          "relname": "user_profiles",
+          "attname": "full_name",
+          "type": "text"
+        },
+        {
+          "relname": "user_profiles",
+          "attname": "phone_number",
+          "type": "text"
+        },
+        {
+          "relname": "user_profiles",
+          "attname": "role",
+          "type": "text"
+        },
+        {
+          "relname": "user_profiles",
+          "attname": "created_at",
+          "type": "timestamp with time zone"
+        }
+      ]
+    },
+    {
+      "name": "checks",
+      "query": "SELECT conrelid::regclass::text AS table_name,conname,pg_get_constraintdef(oid) AS definition FROM pg_constraint WHERE conrelid IN ('public.user_profiles'::regclass,'public.audit_events'::regclass,'public.road_network_coverage'::regclass);",
+      "rows": [
+        {
+          "table_name": "audit_events",
+          "conname": "audit_events_actor_user_id_fkey",
+          "definition": "FOREIGN KEY (actor_user_id) REFERENCES auth.users(id)"
+        },
+        {
+          "table_name": "audit_events",
+          "conname": "audit_events_outcome_check",
+          "definition": "CHECK ((outcome = ANY (ARRAY['SUCCESS'::text, 'REJECTED'::text, 'ERROR'::text])))"
+        },
+        {
+          "table_name": "audit_events",
+          "conname": "audit_events_pkey",
+          "definition": "PRIMARY KEY (event_id)"
+        },
+        {
+          "table_name": "user_profiles",
+          "conname": "user_profiles_pkey",
+          "definition": "PRIMARY KEY (user_id)"
+        },
+        {
+          "table_name": "user_profiles",
+          "conname": "user_profiles_role_check",
+          "definition": "CHECK ((role = ANY (ARRAY['DONOR'::text, 'NGO'::text, 'HUB_ADMIN'::text])))"
+        },
+        {
+          "table_name": "user_profiles",
+          "conname": "user_profiles_user_id_fkey",
+          "definition": "FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE"
+        },
+        {
+          "table_name": "user_profiles",
+          "conname": "user_profiles_user_id_role_key",
+          "definition": "UNIQUE (user_id, role)"
+        },
+        {
+          "table_name": "road_network_coverage",
+          "conname": "road_network_active_requires_approval",
+          "definition": "CHECK (((NOT active_flag) OR (approved_at IS NOT NULL)))"
+        },
+        {
+          "table_name": "road_network_coverage",
+          "conname": "road_network_coverage_dataset_kind_check",
+          "definition": "CHECK ((dataset_kind = ANY (ARRAY['OPERATIONAL'::text, 'BENCHMARK'::text])))"
+        },
+        {
+          "table_name": "road_network_coverage",
+          "conname": "road_network_coverage_edge_count_check",
+          "definition": "CHECK (((edge_count IS NULL) OR (edge_count > 0)))"
+        },
+        {
+          "table_name": "road_network_coverage",
+          "conname": "road_network_coverage_max_snap_distance_m_check",
+          "definition": "CHECK ((max_snap_distance_m = 500))"
+        },
+        {
+          "table_name": "road_network_coverage",
+          "conname": "road_network_coverage_node_count_check",
+          "definition": "CHECK (((node_count IS NULL) OR (node_count > 0)))"
+        },
+        {
+          "table_name": "road_network_coverage",
+          "conname": "road_network_coverage_pkey",
+          "definition": "PRIMARY KEY (network_snapshot_id)"
+        },
+        {
+          "table_name": "road_network_coverage",
+          "conname": "road_network_operational_not_benchmark",
+          "definition": "CHECK (((dataset_kind <> 'OPERATIONAL'::text) OR ((network_snapshot_id ~~ 'OSM-OPS-%'::text) AND (provenance ~~ 'OPERATIONAL;%'::text))))"
+        }
+      ]
+    },
+    {
+      "name": "deps",
+      "query": "SELECT p.oid::regprocedure::text AS signature,pg_get_functiondef(p.oid) AS definition FROM pg_proc p WHERE p.pronamespace='public'::regnamespace AND p.prokind='f' AND (p.prosrc ILIKE '%public.vehicles%' OR p.proname='geolock_active_road_snapshot')",
+      "rows": [
+        {
+          "signature": "geolock_active_road_snapshot()",
+          "definition": "CREATE OR REPLACE FUNCTION public.geolock_active_road_snapshot()\n RETURNS text\n LANGUAGE sql\n STABLE SECURITY DEFINER\n SET search_path TO 'public', 'pg_temp'\nAS $function$\r\n  select network_snapshot_id from public.road_network_coverage\r\n   where active_flag and dataset_kind = 'OPERATIONAL' and approved_at is not null\r\n   limit 1\r\n$function$\n"
+        },
+        {
+          "signature": "verify_ngo_location(uuid,boolean,text)",
+          "definition": "CREATE OR REPLACE FUNCTION public.verify_ngo_location(p_ngo uuid, p_verified boolean, p_reason text)\n RETURNS jsonb\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public', 'extensions', 'pg_temp'\nAS $function$\r\ndeclare\r\n  v_ngo public.ngo_profiles%rowtype;\r\n  v_node text;\r\n  v_dist double precision;\r\n  v_prev text;\r\n  v_new text;\r\n  v_eligible integer;\r\nbegin\r\n  if coalesce(auth.role(), '') <> 'service_role'\r\n     and session_user not in ('postgres', 'supabase_admin') then\r\n    raise exception 'TRUSTED_VERIFIER_ONLY';\r\n  end if;\r\n  if p_ngo is null or p_verified is null then raise exception 'NGO_AND_DECISION_REQUIRED'; end if;\r\n  if nullif(btrim(p_reason), '') is null then raise exception 'VERIFICATION_REASON_REQUIRED'; end if;\r\n\r\n  select * into v_ngo from public.ngo_profiles where user_id = p_ngo for update;\r\n  if not found then raise exception 'NGO_NOT_FOUND'; end if;\r\n  v_prev := case when v_ngo.location_verified_at is null then 'UNVERIFIED' else 'VERIFIED' end;\r\n\r\n  if p_verified then\r\n    select node_id, snap_distance_m into v_node, v_dist\r\n      from public.geolock_resolve_road_node(v_ngo.latitude, v_ngo.longitude);\r\n    if v_node is null then raise exception 'NGO_LOCATION_NOT_ROUTABLE'; end if;\r\n  end if;\r\n  v_new := case when p_verified then 'VERIFIED' else 'UNVERIFIED' end;\r\n\r\n  update public.ngo_profiles\r\n     set location_verified_at = case when p_verified then clock_timestamp() end,\r\n         road_node_id = v_node\r\n   where user_id = p_ngo;\r\n  update public.vehicles set depot_road_node_id = null where ngo_user_id = p_ngo;\r\n\r\n  perform public.geolock_refresh_ngo_road_eligibility(p_ngo);\r\n  select count(*) into v_eligible from public.ngo_listing_road_eligibility\r\n   where ngo_user_id = p_ngo and outcome = 'ELIGIBLE';\r\n\r\n  insert into public.audit_events(actor_user_id, actor_role, entity_type, entity_id,\r\n    event_type, request_id, previous_state, requested_state, resulting_state,\r\n    reason_code, outcome, details)\r\n  values (null, 'SYSTEM', 'NGO', p_ngo, 'VERIFY_NGO_LOCATION', gen_random_uuid(),\r\n    v_prev, v_new, v_new, p_reason, 'SUCCESS',\r\n    jsonb_build_object('road_node_id', v_node,\r\n                       'snap_distance_m', round(v_dist::numeric, 1),\r\n                       'eligible_open_listings', v_eligible));\r\n\r\n  return jsonb_build_object('ngo_user_id', p_ngo, 'location_status', v_new,\r\n    'road_node_id', v_node, 'snap_distance_m', round(v_dist::numeric, 1),\r\n    'eligible_open_listings', v_eligible);\r\nend $function$\n"
+        },
+        {
+          "signature": "geolock_backfill_road_nodes()",
+          "definition": "CREATE OR REPLACE FUNCTION public.geolock_backfill_road_nodes()\n RETURNS jsonb\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public', 'extensions', 'pg_temp'\nAS $function$\r\ndeclare v_hubs integer; v_listings integer; v_donations integer; v_ngos integer := 0;\r\n  v_rows integer; r record;\r\nbegin\r\n  if coalesce(auth.role(), '') <> 'service_role'\r\n     and session_user not in ('postgres', 'supabase_admin') then\r\n    raise exception 'TRUSTED_OPERATOR_ONLY';\r\n  end if;\r\n\r\n  update public.community_hubs set road_node_id = null;   -- trigger re-resolves\r\n  get diagnostics v_hubs = row_count;\r\n\r\n  update public.donations d\r\n     set pickup_road_node_id = r2.node_id\r\n    from public.donations d2\r\n    left join lateral public.geolock_resolve_road_node(d2.latitude, d2.longitude) r2 on true\r\n   where d.donation_id = d2.donation_id\r\n     -- READY_FOR_PICKUP previously included claimed direct donations. Tasks\r\n     -- retain their listing-node snapshot; do not rewrite tasks or route stops.\r\n     and (d.donation_status in ('SUBMITTED','AVAILABLE','HUB_ASSIGNED')\r\n       or (d.donation_status='CLAIMED' and d.collection_path='DIRECT_PICKUP'))\r\n     and d.pickup_road_node_id is distinct from r2.node_id;\r\n  get diagnostics v_donations = row_count;\r\n\r\n  update public.listings l\r\n     set pickup_road_node_id = r2.node_id\r\n    from public.listings l2\r\n    left join lateral public.geolock_resolve_road_node(l2.pickup_latitude, l2.pickup_longitude) r2 on true\r\n   where l.listing_id = l2.listing_id\r\n     and l.listing_status = 'AVAILABLE'\r\n     and l.pickup_road_node_id is distinct from r2.node_id;\r\n  get diagnostics v_listings = row_count;\r\n\r\n  -- Re-check verified NGOs against the new snapshot (verification is kept only\r\n  -- if the stored location still snaps within 500 m).\r\n  for r in select n.user_id, n.latitude, n.longitude from public.ngo_profiles n\r\n            where n.location_verified_at is not null loop\r\n    update public.ngo_profiles\r\n       set road_node_id = (select x.node_id from public.geolock_resolve_road_node(r.latitude, r.longitude) x)\r\n     where user_id = r.user_id;\r\n    update public.vehicles set depot_road_node_id = null where ngo_user_id = r.user_id;\r\n    perform public.geolock_refresh_ngo_road_eligibility(r.user_id);\r\n    v_ngos := v_ngos + 1;\r\n  end loop;\r\n  select count(*) into v_rows from public.ngo_listing_road_eligibility;\r\n\r\n  return jsonb_build_object('hubs_rechecked', v_hubs, 'donations_changed', v_donations,\r\n    'listings_changed', v_listings, 'ngos_rechecked', v_ngos, 'eligibility_rows', v_rows);\r\nend $function$\n"
+        },
+        {
+          "signature": "set_ngo_operating_location(text,double precision,double precision)",
+          "definition": "CREATE OR REPLACE FUNCTION public.set_ngo_operating_location(p_operating_address text, p_latitude double precision, p_longitude double precision)\n RETURNS jsonb\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public', 'extensions', 'pg_temp'\nAS $function$\r\ndeclare\r\n  v_user uuid := auth.uid();\r\n  v_ngo public.ngo_profiles%rowtype;\r\n  v_snapshot text;\r\n  v_node text;\r\n  v_snap_distance double precision;\r\n  v_resolved_snapshot text;\r\n  v_generation bigint;\r\nbegin\r\n  if v_user is null then raise exception 'UNAUTHENTICATED'; end if;\r\n  if nullif(btrim(p_operating_address),'') is null\r\n     or p_latitude is null or p_longitude is null\r\n     or p_latitude not between -90 and 90\r\n     or p_longitude not between -180 and 180 then\r\n    raise exception 'INVALID_NGO_LOCATION';\r\n  end if;\r\n\r\n  -- Keep the approved snapshot fixed through validation, invalidation and enqueue.\r\n  select c.network_snapshot_id into v_snapshot\r\n    from public.road_network_coverage c\r\n   where c.active_flag and c.dataset_kind='OPERATIONAL'\r\n     and c.approved_at is not null and c.max_snap_distance_m=500\r\n   for share;\r\n  if v_snapshot is null then raise exception 'OPERATIONAL_ROAD_COVERAGE_UNAVAILABLE'; end if;\r\n\r\n  select * into v_ngo from public.ngo_profiles n\r\n   where n.user_id=v_user and n.active_flag for update;\r\n  if not found then raise exception 'ACTIVE_NGO_PROFILE_REQUIRED'; end if;\r\n\r\n  if exists(\r\n    select 1 from public.donation_claims c\r\n     where c.ngo_user_id=v_user and (\r\n       c.claim_status in ('ACTIVE','RECONCILIATION_REQUIRED')\r\n       or exists(select 1 from public.claim_leases le\r\n                  where le.claim_id=c.claim_id\r\n                    and le.lease_status in ('ACTIVE','RECONCILIATION_REQUIRED'))\r\n       or not exists(select 1 from public.claim_leases le where le.claim_id=c.claim_id\r\n          and ((c.claim_status='COMPLETED' and le.lease_status='COMPLETED')\r\n            or (c.claim_status in ('RELEASED','EXPIRED','CANCELLED')\r\n                and le.lease_status in ('RELEASED','EXPIRED'))))\r\n     )\r\n  ) then raise exception 'NGO_HAS_ACTIVE_OR_UNRESOLVED_CLAIMS'; end if;\r\n\r\n  select r.node_id,r.snap_distance_m,r.snapshot_id\r\n    into v_node,v_snap_distance,v_resolved_snapshot\r\n    from public.geolock_resolve_road_node(p_latitude,p_longitude) r;\r\n  if v_node is null or v_snap_distance is null or v_snap_distance < 0\r\n     or v_snap_distance > 500 or v_resolved_snapshot is distinct from v_snapshot then\r\n    raise exception 'NGO_LOCATION_NOT_ROUTABLE';\r\n  end if;\r\n\r\n  v_generation := v_ngo.location_generation + 1;\r\n  update public.ngo_profiles set operating_address=btrim(p_operating_address),\r\n    latitude=p_latitude,longitude=p_longitude,road_node_id=v_node,\r\n    location_verified_at=clock_timestamp(),location_generation=v_generation\r\n   where user_id=v_user;\r\n  -- Existing trigger derives vehicle depots from the trusted NGO node.\r\n  update public.vehicles set depot_road_node_id=null where ngo_user_id=v_user;\r\n\r\n  -- Remove every prior result before committing the new location generation.\r\n  delete from public.ngo_listing_road_eligibility where ngo_user_id=v_user;\r\n  insert into public.ngo_eligibility_refresh_jobs(\r\n    ngo_user_id,location_generation,expected_road_node_id,expected_snapshot_id)\r\n  values(v_user,v_generation,v_node,v_snapshot);\r\n\r\n  insert into public.audit_events(actor_user_id,actor_role,entity_type,entity_id,\r\n    event_type,request_id,correlation_id,previous_state,requested_state,\r\n    resulting_state,reason_code,outcome,details)\r\n  values(v_user,'NGO','NGO',v_user,'SET_NGO_OPERATING_LOCATION',gen_random_uuid(),\r\n    gen_random_uuid(),case when v_ngo.location_verified_at is null then 'INCOMPLETE' else 'VERIFIED' end,\r\n    'VERIFIED','ELIGIBILITY_PENDING','SERVER_ROAD_NODE_VALIDATION','SUCCESS',\r\n    jsonb_build_object('network_snapshot_id',v_snapshot,'road_node_id',v_node,\r\n      'snap_distance_m',round(v_snap_distance::numeric,1),\r\n      'location_generation',v_generation));\r\n\r\n  return jsonb_build_object('location_status','VERIFIED','eligibility_status','PENDING',\r\n    'road_node_id',v_node,'snap_distance_m',round(v_snap_distance::numeric,1),\r\n    'network_snapshot_id',v_snapshot,'location_generation',v_generation);\r\nend;\r\n$function$\n"
+        }
+      ]
+    },
+    {
+      "name": "indexes",
+      "query": "SELECT tablename,indexname,indexdef FROM pg_indexes WHERE schemaname='public' AND tablename IN ('vehicles','pickup_routes');",
+      "rows": [
+        {
+          "tablename": "pickup_routes",
+          "indexname": "pickup_routes_pkey",
+          "indexdef": "CREATE UNIQUE INDEX pickup_routes_pkey ON public.pickup_routes USING btree (route_id)"
+        },
+        {
+          "tablename": "pickup_routes",
+          "indexname": "pickup_routes_route_id_ngo_user_id_key",
+          "indexdef": "CREATE UNIQUE INDEX pickup_routes_route_id_ngo_user_id_key ON public.pickup_routes USING btree (route_id, ngo_user_id)"
+        },
+        {
+          "tablename": "vehicles",
+          "indexname": "vehicles_pkey",
+          "indexdef": "CREATE UNIQUE INDEX vehicles_pkey ON public.vehicles USING btree (vehicle_id)"
+        },
+        {
+          "tablename": "vehicles",
+          "indexname": "vehicles_vehicle_id_ngo_user_id_key",
+          "indexdef": "CREATE UNIQUE INDEX vehicles_vehicle_id_ngo_user_id_key ON public.vehicles USING btree (vehicle_id, ngo_user_id)"
+        }
+      ]
+    },
+    {
+      "name": "privileges",
+      "query": "SELECT r.rolname,r.rolbypassrls,has_schema_privilege(r.rolname,'public','CREATE') AS public_create FROM pg_roles r WHERE rolname IN ('anon','authenticated','service_role','postgres');",
+      "rows": [
+        {
+          "rolname": "authenticated",
+          "rolbypassrls": false,
+          "public_create": false
+        },
+        {
+          "rolname": "anon",
+          "rolbypassrls": false,
+          "public_create": false
+        },
+        {
+          "rolname": "service_role",
+          "rolbypassrls": true,
+          "public_create": false
+        },
+        {
+          "rolname": "postgres",
+          "rolbypassrls": true,
+          "public_create": true
+        }
+      ]
+    }
+  ]
+}

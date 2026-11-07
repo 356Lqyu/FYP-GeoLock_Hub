@@ -1,0 +1,207 @@
+{
+  "privileges": {
+    "roles": [
+      {
+        "name": "anon",
+        "login": false,
+        "inherit": true,
+        "bypassrls": false,
+        "superuser": false
+      },
+      {
+        "name": "authenticated",
+        "login": false,
+        "inherit": true,
+        "bypassrls": false,
+        "superuser": false
+      },
+      {
+        "name": "geolock_graph_worker",
+        "login": false,
+        "inherit": true,
+        "bypassrls": false,
+        "superuser": false
+      },
+      {
+        "name": "geolock_planner",
+        "login": false,
+        "inherit": true,
+        "bypassrls": false,
+        "superuser": false
+      },
+      {
+        "name": "geolock_route_resolver",
+        "login": false,
+        "inherit": true,
+        "bypassrls": false,
+        "superuser": false
+      },
+      {
+        "name": "geolock_validator",
+        "login": false,
+        "inherit": true,
+        "bypassrls": false,
+        "superuser": false
+      },
+      {
+        "name": "postgres",
+        "login": true,
+        "inherit": true,
+        "bypassrls": true,
+        "superuser": false
+      },
+      {
+        "name": "service_role",
+        "login": false,
+        "inherit": true,
+        "bypassrls": true,
+        "superuser": false
+      }
+    ],
+    "memberships": [],
+    "inspected_at": "2026-11-05T04:39:15.201544+00:00",
+    "effective_execute": [
+      {
+        "role": "anon",
+        "execute": false,
+        "signature": "cancel_claim(uuid,uuid)"
+      },
+      {
+        "role": "authenticated",
+        "execute": true,
+        "signature": "cancel_claim(uuid,uuid)"
+      },
+      {
+        "role": "geolock_graph_worker",
+        "execute": false,
+        "signature": "cancel_claim(uuid,uuid)"
+      },
+      {
+        "role": "geolock_planner",
+        "execute": false,
+        "signature": "cancel_claim(uuid,uuid)"
+      },
+      {
+        "role": "geolock_route_resolver",
+        "execute": false,
+        "signature": "cancel_claim(uuid,uuid)"
+      },
+      {
+        "role": "geolock_validator",
+        "execute": false,
+        "signature": "cancel_claim(uuid,uuid)"
+      },
+      {
+        "role": "service_role",
+        "execute": true,
+        "signature": "cancel_claim(uuid,uuid)"
+      },
+      {
+        "role": "anon",
+        "execute": false,
+        "signature": "claim_listing(uuid,uuid)"
+      },
+      {
+        "role": "authenticated",
+        "execute": true,
+        "signature": "claim_listing(uuid,uuid)"
+      },
+      {
+        "role": "geolock_graph_worker",
+        "execute": false,
+        "signature": "claim_listing(uuid,uuid)"
+      },
+      {
+        "role": "geolock_planner",
+        "execute": false,
+        "signature": "claim_listing(uuid,uuid)"
+      },
+      {
+        "role": "geolock_route_resolver",
+        "execute": false,
+        "signature": "claim_listing(uuid,uuid)"
+      },
+      {
+        "role": "geolock_validator",
+        "execute": false,
+        "signature": "claim_listing(uuid,uuid)"
+      },
+      {
+        "role": "service_role",
+        "execute": true,
+        "signature": "claim_listing(uuid,uuid)"
+      },
+      {
+        "role": "anon",
+        "execute": false,
+        "signature": "geolock_lock_listing_donations(uuid,text[])"
+      },
+      {
+        "role": "authenticated",
+        "execute": false,
+        "signature": "geolock_lock_listing_donations(uuid,text[])"
+      },
+      {
+        "role": "geolock_graph_worker",
+        "execute": false,
+        "signature": "geolock_lock_listing_donations(uuid,text[])"
+      },
+      {
+        "role": "geolock_planner",
+        "execute": false,
+        "signature": "geolock_lock_listing_donations(uuid,text[])"
+      },
+      {
+        "role": "geolock_route_resolver",
+        "execute": false,
+        "signature": "geolock_lock_listing_donations(uuid,text[])"
+      },
+      {
+        "role": "geolock_validator",
+        "execute": false,
+        "signature": "geolock_lock_listing_donations(uuid,text[])"
+      },
+      {
+        "role": "service_role",
+        "execute": false,
+        "signature": "geolock_lock_listing_donations(uuid,text[])"
+      },
+      {
+        "role": "anon",
+        "execute": false,
+        "signature": "submit_claim_reconciliation(uuid,boolean,uuid)"
+      },
+      {
+        "role": "authenticated",
+        "execute": true,
+        "signature": "submit_claim_reconciliation(uuid,boolean,uuid)"
+      },
+      {
+        "role": "geolock_graph_worker",
+        "execute": false,
+        "signature": "submit_claim_reconciliation(uuid,boolean,uuid)"
+      },
+      {
+        "role": "geolock_planner",
+        "execute": false,
+        "signature": "submit_claim_reconciliation(uuid,boolean,uuid)"
+      },
+      {
+        "role": "geolock_route_resolver",
+        "execute": false,
+        "signature": "submit_claim_reconciliation(uuid,boolean,uuid)"
+      },
+      {
+        "role": "geolock_validator",
+        "execute": false,
+        "signature": "submit_claim_reconciliation(uuid,boolean,uuid)"
+      },
+      {
+        "role": "service_role",
+        "execute": true,
+        "signature": "submit_claim_reconciliation(uuid,boolean,uuid)"
+      }
+    ],
+    "transaction_read_only": "on"
+  }
+}

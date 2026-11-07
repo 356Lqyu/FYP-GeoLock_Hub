@@ -1,0 +1,114 @@
+{
+  "target_checks": [
+    {
+      "signature": "claim_listing(uuid,uuid)",
+      "expected_hash": "c8d324772b12c843fba231e7ea733914",
+      "observed_hash": "c8d324772b12c843fba231e7ea733914",
+      "hash_pass": true,
+      "corrected_anchor_count": 1,
+      "original_anchor_count": 0
+    },
+    {
+      "signature": "geolock_lock_listing_donations(uuid,text[])",
+      "expected_hash": "e97a3fd80673a827465f3eaa79b65903",
+      "observed_hash": "e97a3fd80673a827465f3eaa79b65903",
+      "hash_pass": true,
+      "corrected_anchor_count": 1,
+      "original_anchor_count": 0
+    }
+  ],
+  "all_nonextension_functions_before": 288,
+  "after": 288,
+  "function_changes": [
+    {
+      "signature": "claim_listing(uuid,uuid)",
+      "fields": [
+        "hash"
+      ]
+    },
+    {
+      "signature": "geolock_lock_listing_donations(uuid,text[])",
+      "fields": [
+        "hash"
+      ]
+    }
+  ],
+  "reviewed_functions": 29,
+  "missing_reviewed": [],
+  "schema_differences": {
+    "indexes": false,
+    "constraints": false,
+    "listing_triggers": false,
+    "migration_ledger": false,
+    "history_related_tables": false
+  },
+  "privilege_differences": {
+    "roles": false,
+    "effective_execute": false,
+    "memberships": false
+  },
+  "protected_permissions": [
+    {
+      "role": "anon",
+      "execute": false,
+      "signature": "cancel_claim(uuid,uuid)"
+    },
+    {
+      "role": "authenticated",
+      "execute": true,
+      "signature": "cancel_claim(uuid,uuid)"
+    },
+    {
+      "role": "service_role",
+      "execute": true,
+      "signature": "cancel_claim(uuid,uuid)"
+    },
+    {
+      "role": "anon",
+      "execute": false,
+      "signature": "claim_listing(uuid,uuid)"
+    },
+    {
+      "role": "authenticated",
+      "execute": true,
+      "signature": "claim_listing(uuid,uuid)"
+    },
+    {
+      "role": "service_role",
+      "execute": true,
+      "signature": "claim_listing(uuid,uuid)"
+    },
+    {
+      "role": "anon",
+      "execute": false,
+      "signature": "geolock_lock_listing_donations(uuid,text[])"
+    },
+    {
+      "role": "authenticated",
+      "execute": false,
+      "signature": "geolock_lock_listing_donations(uuid,text[])"
+    },
+    {
+      "role": "service_role",
+      "execute": false,
+      "signature": "geolock_lock_listing_donations(uuid,text[])"
+    },
+    {
+      "role": "anon",
+      "execute": false,
+      "signature": "submit_claim_reconciliation(uuid,boolean,uuid)"
+    },
+    {
+      "role": "authenticated",
+      "execute": true,
+      "signature": "submit_claim_reconciliation(uuid,boolean,uuid)"
+    },
+    {
+      "role": "service_role",
+      "execute": true,
+      "signature": "submit_claim_reconciliation(uuid,boolean,uuid)"
+    }
+  ],
+  "inspection_readonly": "on",
+  "catalog_pass": true
+}

@@ -1,0 +1,17 @@
+{
+  "approved": false,
+  "geofence_km": 20,
+  "lease_minutes": 360,
+  "route_minutes": 240,
+  "service_minutes": 10,
+  "safety_margin_minutes": 0,
+  "mandatory": false,
+  "availability_policy": "BASELINE_ROUTING_WINDOW",
+  "listing_expiry_policy": "COMMON_STAGE8_ADMISSION",
+  "currency": "BENCHMARK_COST_UNIT",
+  "fixed_cost": 5,
+  "distance_cost_per_km": 1,
+  "solver_wall_seconds": 30,
+  "deterministic_seconds_per_pass": 0.25,
+  "seed": 42
+}

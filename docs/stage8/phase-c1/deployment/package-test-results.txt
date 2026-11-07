@@ -1,0 +1,17 @@
+test_extra_helper_grant_detected (__main__.PackageTests.test_extra_helper_grant_detected) ... ok
+test_generated_checks_only_select_statements (__main__.PackageTests.test_generated_checks_only_select_statements) ... ok
+test_invalid_index_detected (__main__.PackageTests.test_invalid_index_detected) ... ok
+test_missing_and_duplicate_checks_fail (__main__.PackageTests.test_missing_and_duplicate_checks_fail) ... ok
+test_package_hashes_and_reviewed_migration (__main__.PackageTests.test_package_hashes_and_reviewed_migration) ... ok
+test_permission_and_runtime_assertion_failure_detected (__main__.PackageTests.test_permission_and_runtime_assertion_failure_detected) ... ok
+test_preflight_capture_complete (__main__.PackageTests.test_preflight_capture_complete) ... ok
+test_protected_lifecycle_drift_detected (__main__.PackageTests.test_protected_lifecycle_drift_detected) ... ok
+test_record_loss_detected (__main__.PackageTests.test_record_loss_detected) ... ok
+test_source_context_change_detected (__main__.PackageTests.test_source_context_change_detected) ... ok
+test_synthetic_expected_delta_passes_comparator_only (__main__.PackageTests.test_synthetic_expected_delta_passes_comparator_only) ... ok
+test_wrong_project_rejected (__main__.PackageTests.test_wrong_project_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 0.079s
+
+OK

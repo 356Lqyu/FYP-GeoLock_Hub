@@ -1,0 +1,17 @@
+{
+  "backend/routing/hosted/README.md": "752c5fae8059221a435b7d995c9a5c947d922e6a1d6bb8af5412ab2dece59098",
+  "backend/routing/README.md": "d18c59c3783935092cda650efd8dfafa06a1836a2f886b40b74cfc542648c7c5",
+  "backend/routing/worker_service/README.md": "de471449a48dced014c8161090df91c4c8173d97a301217f942b094a77e37fee",
+  "backend/routing/worker_service/windows/local_setup_check.py": "ac8087ea6a8e6fddab0170cdd5761d2040725086a8e46edce4345cdc4bfc8626",
+  "backend/routing/worker_service/windows/Test-LocalRoutingSetup.ps1": "bc851fb589642478a8cc2391516c87154115d7cdd2e37cd48d2fb3b7e54a438e",
+  "docs/investigations/local-routing-windows-verification/SOURCE_VERIFICATION.json": "297de773461b9881156e0bfca6dbb23a3962fd20e12d942dd1fd651c9bae2758",
+  "docs/investigations/local-routing-windows-verification/TEST_RESULTS.json": "07de238799d31383bd5b2cc47def67bf53c20a41dc644595a5d79332b7c1648f",
+  "docs/investigations/local-routing-windows-verification/verify_sources.py": "59694df00f3327909a7df1ecbbbc0b1b4888cfca9a8dd6072241f786de8f8323",
+  "docs/investigations/LOCAL_ROUTING_WINDOWS_VERIFICATION.md": "64c710b00ae6fd3aec01b09978554f7ffad0909219b8f11cb12cb91125c0b915",
+  "docs/investigations/ROUTING_GRAPH_MEMORY_AND_FREE_HOSTING_REVIEW.md": "c29a82c251949606354dfca86610fcf9fee88d6cc259d8b294ee55a5a6793f52",
+  "docs/investigations/ROUTING_HOSTING_RECOVERY_OPTIONS.md": "08b0ee9380c77fbf693ca7f1870509c05ad479efd1aa48483fef26b7b8568165",
+  "docs/investigations/ROUTING_RENDER_ARCHITECTURE_REVIEW.md": "aa9696e1dd6751e01be2fab475cff596aca6472efb5e2d1b751320f29325b2a8",
+  "docs/investigations/ROUTING_RENDER_DEPLOYMENT_GUIDE.md": "7b0d963f300a6b173c7bc6fe277f733f4196b393e79bce921f75ceaaa1139fd8",
+  "docs/investigations/ROUTING_RENDER_IMPLEMENTATION_READINESS.md": "af7a5dbf99870521cb8c82e655399327b39b4b53aebc7706b7c364809fd44d9d",
+  "docs/LOCAL_ROUTING_WINDOWS.md": "27fd2f80919678c58b8f208e56577c094abfe400e3e1ebfd30d111e2e68de5df"
+}

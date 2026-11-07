@@ -580,9 +580,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
     if (role == 'NGO') {
       pending.addAll({
         'ngo_name': ngoName.text.trim(),
-        'registration_number': regNo.text.trim().isEmpty
-            ? null
-            : regNo.text.trim(),
       });
     }
     if (role == 'HUB_ADMIN') {
@@ -695,14 +692,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 validator: requiredValue,
                 decoration: const InputDecoration(
                   hintText: 'Organisation name',
-                ),
-              ),
-              const SizedBox(height: 10),
-              const _FieldLabel('Registration / Reference Number (optional)'),
-              TextFormField(
-                controller: regNo,
-                decoration: const InputDecoration(
-                  hintText: 'Registration number',
                 ),
               ),
               const SizedBox(height: 8),

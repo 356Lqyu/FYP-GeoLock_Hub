@@ -522,7 +522,7 @@ class _NgoLocationOnboardingPageState
           ),
           const SizedBox(height: 10),
           const Text(
-            'Choose your operating address after login. Road access is previewed using the approved network, then PostgreSQL validates and saves the trusted road node. This technical check does not verify NGO identity.',
+            'Choose your operating address after login. \n Road access is previewed using the approved network, then PostgreSQL validates and saves the trusted road node.',
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 18),

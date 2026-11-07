@@ -1,6 +1,6 @@
 """Atomic claim acceptance tests for the isolated GeoLock Hub DEV project.
 
-This script is state-changing. It consumes only dedicated, disposable AVAILABLE
+Defaults to read-only preflight; explicit approved execution is state-changing. It consumes only dedicated, disposable AVAILABLE
 listings supplied in the local test env file. The original suite requires ten
 distinct NGO sessions; the Stage 3J runner reuses helpers with exactly two.
 All sessions must be legitimately authenticated and eligible. No fixture
@@ -23,11 +23,12 @@ import urllib.error
 import urllib.parse
 import urllib.request
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from urllib.parse import urlparse
 
 from stage1_dev_env import load_env_file
+import claim_e2e_contract as contract
 
 DEV_PROJECT_REF = "rcgyuwiidqvrgbxswhqj"
 BLOCKED_PROJECT_REF = "mffccmlimmbrgasgfnnq"
@@ -35,6 +36,7 @@ CONFIRMATION = "I_CONFIRM_DISPOSABLE_DEV_PROJECT"
 COUNTS = (2, 10)
 EXPECTED_CLAIM_LEASE_SECONDS = 360 * 60
 DELAY_OBSERVATION_TIMEOUT_SECONDS = 20
+EVENT_SINK = None
 PROTECTED_LISTINGS = {
     '95d6cd51-866b-4eec-8a36-36dc24296aec',  # Retained Stage 3I evidence.
     '2d06b504-d2dd-4121-8840-c8bf893f8a60',
@@ -91,6 +93,8 @@ def safety_gate(actor_count: int = 10, listing_count: int = 4) -> tuple[str, str
     if service_role == publishable:
         raise RuntimeError("Service-role and publishable credentials must be separate values.")
     tokens = parse_json_list("GEOLOCK_TEST_NGO_JWT_TOKENS", actor_count)
+    if len(tokens) != actor_count:
+        raise RuntimeError(f'Provide exactly {actor_count} distinct NGO sessions; extras are not silently ignored.')
     listing_ids = parse_json_list("GEOLOCK_TEST_LISTING_IDS", listing_count)
     try:
         [str(uuid.UUID(value)) for value in listing_ids]
@@ -139,11 +143,18 @@ def http_call(base: str, key: str, token: str, path: str, payload: object | None
         except json.JSONDecodeError:
             parsed = None
         return error.code, parsed
-    except urllib.error.URLError as error:
-        raise RuntimeError(f"Supabase request did not complete ({error.reason}); no credentials or response body logged.") from None
+    except (urllib.error.URLError, TimeoutError, OSError, ValueError):
+        raise RuntimeError('UNCONFIRMED: network/response failure; retain the request UUID and inspect committed state.') from None
 
 
 def rest_rows(base: str, service: str, table_query: str) -> list[dict]:
+    # Stable snapshot ordering avoids falsely attributing row-order changes to replay.
+    table = table_query.split('?')[0]
+    primary_keys = {'donation_claims':'claim_id','claim_leases':'lease_id','pickup_tasks':'task_id',
+                    'claim_requests':'request_id','audit_events':'event_id',
+                    'operation_failure_events':'failure_id','listings':'listing_id','donations':'donation_id'}
+    if table in primary_keys:
+        table_query += ('&' if '?' in table_query else '?') + 'order=' + primary_keys[table] + '.asc'
     status, result = http_call(base, service, service, table_query)
     if status != 200 or not isinstance(result, list):
         raise RuntimeError(f"Read-only DEV verification query failed for {table_query.split('?')[0]} (HTTP {status}).")
@@ -151,12 +162,15 @@ def rest_rows(base: str, service: str, table_query: str) -> list[dict]:
 
 
 def rpc(base: str, key: str, token: str, name: str, payload: dict) -> tuple[int, object | None]:
+    if name not in {'claim_listing','cancel_claim','start_pickup','complete_pickup',
+                    'get_authorized_audit_events','discover_eligible_listing_cards'}:
+        raise RuntimeError('RPC not permitted by this claim harness; live recovery remains disabled.')
     return http_call(base, key, token, f"rpc/{name}", payload)
 
 
 def require_success(status: int, result: object, context: str) -> dict:
     if status != 200 or not isinstance(result, dict):
-        raise RuntimeError(f"{context} did not return an authoritative JSON result (HTTP {status}).")
+        raise RuntimeError(f"UNCONFIRMED: {context} has no authoritative receipt (HTTP {status}); retain request UUID.")
     return result
 
 
@@ -194,12 +208,7 @@ def assert_fresh_fixtures(base: str, service: str, key: str,
 
     # Check authorization and database eligibility through the actual discovery
     # RPC. Do not seed verification, locations, or road-node values here.
-    eligibility = {listing: tokens for listing in listing_ids} if actor_count == 2 else {
-        listing_ids[0]: tokens[:2],
-        listing_ids[1]: tokens[:10],
-        listing_ids[2]: tokens[:2],
-        listing_ids[3]: tokens[:1],
-    }
+    eligibility = {listing: tokens for listing in listing_ids}
     for listing_id, listing_tokens in eligibility.items():
         for token in listing_tokens:
             status, result = rpc(base, key, token, "discover_eligible_listing_cards", {})
@@ -212,10 +221,22 @@ def claim_attempt(base: str, key: str, listing_id: str, token: str,
                   request_id: str, barrier: threading.Barrier | None = None) -> dict:
     if barrier is not None:
         barrier.wait(timeout=30)
+    started_at = datetime.now(timezone.utc).isoformat()
+    started = time.perf_counter()
     status, result = rpc(base, key, token, "claim_listing", {
         "p_listing": listing_id, "p_request": request_id,
     })
-    return require_success(status, result, "claim_listing")
+    result = require_success(status, result, "claim_listing")
+    if result.get('outcome') == 'ERROR':
+        contract.confirmed_receipt(status, result)
+    elif result.get('outcome') not in ('SUCCESS', 'CONFLICT', 'INELIGIBLE'):
+        raise RuntimeError('Unexpected claim result; no success or rollback inferred.')
+    result = dict(result, client_timing=dict(started_at=started_at,
+                  elapsed_ms=(time.perf_counter()-started)*1000))
+    if EVENT_SINK:
+        EVENT_SINK('CLAIM_TIMING', listing=listing_id, request=request_id,
+                   actor=jwt_subject(token), timing=result['client_timing'], outcome=result['outcome'])
+    return result
 
 
 def get_state(base: str, service: str, listing_id: str, request_ids: list[str]) -> dict:
@@ -226,7 +247,7 @@ def get_state(base: str, service: str, listing_id: str, request_ids: list[str]) 
     })
     claims = rest_rows(base, service, f"donation_claims?{claim_q}")
     active_claims = [row for row in claims if row.get("claim_status") in {"ACTIVE", "RECONCILIATION_REQUIRED"}]
-    listing_q = urllib.parse.urlencode({"listing_id": f"eq.{listing_id}", "select": "listing_id,listing_status"})
+    listing_q = urllib.parse.urlencode({"listing_id": f"eq.{listing_id}", "select": "listing_id,listing_status,source_type,donation_id,listing_version"})
     listings = rest_rows(base, service, f"listings?{listing_q}")
     request_q = urllib.parse.urlencode({
         "request_id": f"in.{in_list}",
@@ -235,9 +256,23 @@ def get_state(base: str, service: str, listing_id: str, request_ids: list[str]) 
     requests = rest_rows(base, service, f"claim_requests?{request_q}")
     audit_q = urllib.parse.urlencode({
         "request_id": f"in.{in_list}", "event_type": "eq.CLAIM_ATTEMPT",
-        "select": "event_id,actor_user_id,actor_role,entity_type,entity_id,event_type,request_id,claim_id,lease_id,previous_state,requested_state,resulting_state,reason_code,outcome,configuration_version,occurred_at",
+        "select": "event_id,actor_user_id,actor_role,entity_type,entity_id,event_type,request_id,claim_id,lease_id,previous_state,requested_state,resulting_state,reason_code,outcome,configuration_version,software_version,correlation_id,details,occurred_at",
     })
     audits = rest_rows(base, service, f"audit_events?{audit_q}")
+    transition_q = urllib.parse.urlencode({
+        'request_id': f'in.{in_list}', 'event_type': 'eq.DONATION_STATUS_CHANGED',
+        'select': 'event_id,actor_user_id,actor_role,entity_type,entity_id,event_type,request_id,claim_id,lease_id,previous_state,requested_state,resulting_state,reason_code,outcome,configuration_version,software_version,correlation_id,details,occurred_at'})
+    transitions = rest_rows(base, service, f'audit_events?{transition_q}')
+    failure_q = urllib.parse.urlencode({'request_id': f'in.{in_list}',
+        'select': 'failure_id,request_id,actor_user_id,actor_role,operation_name,donation_id,listing_id,claim_id,reason_code,occurred_at,details'})
+    failures = rest_rows(base, service, f'operation_failure_events?{failure_q}')
+    donations = []
+    for listing in listings:
+        if listing.get('source_type') != 'DIRECT_DONATION' or not listing.get('donation_id'):
+            raise RuntimeError('This live harness requires manifest-approved direct donation fixtures.')
+        q = urllib.parse.urlencode({'donation_id': 'eq.' + listing['donation_id'],
+                                    'select': 'donation_id,donation_status'})
+        donations.extend(rest_rows(base, service, f'donations?{q}'))
     leases: list[dict] = []
     tasks: list[dict] = []
     for claim in claims:
@@ -252,13 +287,21 @@ def get_state(base: str, service: str, listing_id: str, request_ids: list[str]) 
         })
         tasks.extend(rest_rows(base, service, f"pickup_tasks?{task_q}"))
     return {"claims": claims, "active_claims": active_claims, "listings": listings, "requests": requests,
-            "audits": audits, "leases": leases, "tasks": tasks}
+            "audits": audits, "leases": leases, "tasks": tasks,
+            'transitions': transitions, 'failures': failures, 'donations': donations}
 
 
 def assert_committed_round(base: str, service: str, listing_id: str,
                            attempts: list[dict], responses: list[dict],
-                           subjects: list[str], expect_conflicts: bool = True) -> dict:
+                           subjects: list[str], expect_conflicts: bool = True,
+                           expected_failure_ids=()) -> dict:
     state = get_state(base, service, listing_id, [a["request_id"] for a in attempts])
+    for i, response in enumerate(responses):
+        if response.get('outcome') == 'ERROR':
+            receipt = contract.confirmed_receipt(200, response)
+            contract.failure_record(receipt, state['failures'], subjects[i], listing_id,
+                attempts[i]['request_id'], state['listings'][0]['donation_id'])
+            raise RuntimeError('Confirmed rollback in a normal race; preserve evidence, do not count it as a business conflict.')
     winners = [i for i, response in enumerate(responses) if response.get("outcome") == "SUCCESS"]
     if len(winners) != 1:
         raise RuntimeError("Expected exactly one SUCCESS response.")
@@ -315,11 +358,25 @@ def assert_committed_round(base: str, service: str, listing_id: str,
                 raise RuntimeError("Winning request did not persist the successful claim result.")
             if event.get("outcome") != "SUCCESS" or event.get("claim_id") != claim_id or event.get("lease_id") != lease["lease_id"]:
                 raise RuntimeError("Successful claim audit does not reference the committed claim and lease.")
+            if event.get('correlation_id') != attempt['request_id'] or event.get('software_version') != contract.VERSION:
+                raise RuntimeError('Claim audit correlation/software version mismatch.')
         else:
             if request.get("outcome") != "CONFLICT" or request.get("reason_code") != "CLAIM_CONFLICT":
                 raise RuntimeError("Losing request was not durably recorded as CLAIM_CONFLICT.")
             if event.get("outcome") != "REJECTED" or event.get("reason_code") != "CLAIM_CONFLICT":
                 raise RuntimeError("Rejected claim audit is missing or does not show CLAIM_CONFLICT.")
+            if event.get('claim_id') is not None or event.get('lease_id') is not None:
+                raise RuntimeError('Rejected claim must not invent claim or lease linkage.')
+    if len(state['transitions']) != 1 or len(state['donations']) != 1 or state['donations'][0]['donation_status'] != 'CLAIMED':
+        raise RuntimeError('Winning direct donation transition/audit missing or duplicated.')
+    event = state['transitions'][0]
+    contract.donation_link(event, attempts[winner_index], claim_id, lease['lease_id'],
+        subjects[winner_index], listing_id, state['listings'][0]['donation_id'])
+    winner_audit = audits_by_id[attempts[winner_index]['request_id']][0]
+    if winner_audit.get('details', {}).get('transaction_id') != event['details']['transaction_id']:
+        raise RuntimeError('Claim and donation audit transaction IDs differ.')
+    if {f['failure_id'] for f in state['failures']} != set(expected_failure_ids):
+        raise RuntimeError('Unexpected failure events in an initially successful fresh race.')
     return state
 
 
@@ -330,19 +387,46 @@ def assert_unchanged(original: dict, current: dict) -> None:
 
 
 def expect_payload_rejection(base: str, key: str, token: str,
-                             listing_id: str, request_id: str) -> None:
-    status, result = rpc(base, key, token, "claim_listing", {
-        "p_listing": listing_id, "p_request": request_id,
-    })
-    message = result.get("message", "") if isinstance(result, dict) else ""
-    if status < 400 or "IDEMPOTENCY_KEY_REUSED_WITH_DIFFERENT_PAYLOAD" not in str(message):
-        raise RuntimeError("Changed payload was not rejected with IDEMPOTENCY_KEY_REUSED_WITH_DIFFERENT_PAYLOAD.")
+                             listing_id: str, request_id: str) -> dict:
+    result = claim_attempt(base, key, listing_id, token, request_id)
+    return contract.confirmed_receipt(200, result, contract.REUSE_REASON)
+
+
+def verify_payload_rejection(base, key, service, token, listing_id, request_id):
+    before = get_state(base, service, listing_id, [request_id])
+    first = expect_payload_rejection(base, key, token, listing_id, request_id)
+    second = expect_payload_rejection(base, key, token, listing_id, request_id)
+    if first['failure_audit_id'] != second['failure_audit_id']:
+        raise RuntimeError('Repeated payload mismatch duplicated its failure event.')
+    after = get_state(base, service, listing_id, [request_id])
+    contract.failure_record(second, after['failures'], jwt_subject(token), listing_id,
+                             request_id, after['listings'][0]['donation_id'])
+    contract.failure_append(before['failures'], after['failures'], second['failure_audit_id'])
+    assert_unchanged(dict(before, failures=after['failures']), after)
+    return second
+
+
+def verify_receipt_visibility(base, key, token, other_token, listing, receipt):
+    payload = {'p_entity_type': 'LISTING', 'p_entity_id': listing}
+    status, rows = rpc(base, key, token, 'get_authorized_audit_events', payload)
+    contract.check(status == 200 and isinstance(rows, list) and any(
+        r.get('event_id') == receipt['failure_audit_id'] and r.get('event_type') == 'CLAIM_FAILURE'
+        and r.get('actor_user_id') == jwt_subject(token) and r.get('outcome') == 'ERROR' for r in rows),
+        'Own confirmed failure is missing from authorized audit retrieval.')
+    status, rows = rpc(base, key, other_token, 'get_authorized_audit_events', payload)
+    denied = (status >= 400 and isinstance(rows, dict) and rows.get('code') == 'P0001'
+              and rows.get('message') == 'AUDIT_NOT_FOUND_OR_FORBIDDEN')
+    filtered = (status == 200 and isinstance(rows, list)
+                and all(r.get('event_id') != receipt['failure_audit_id'] for r in rows))
+    contract.check(denied or filtered, 'Foreign NGO failure was exposed or access result was unconfirmed.')
 
 
 def run_race(base: str, key: str, service: str, listing_id: str,
              tokens: list[str], subjects: list[str], count: int,
              label: str) -> tuple[list[dict], list[dict], dict]:
     attempts = [{"token": tokens[i], "request_id": str(uuid.uuid4())} for i in range(count)]
+    if len(set(subjects[:count])) != count or len(tokens) < count:
+        raise RuntimeError('Race requires distinct authenticated NGO subjects, not repeated sessions.')
     barrier = threading.Barrier(count)
     def call(attempt: dict) -> dict:
         return claim_attempt(base, key, listing_id, attempt["token"], attempt["request_id"], barrier)
@@ -356,9 +440,16 @@ def run_race(base: str, key: str, service: str, listing_id: str,
 def run_discarded_response_retry(base: str, key: str, service: str, listing_id: str,
                                  token: str, subject: str) -> dict:
     request_id = str(uuid.uuid4())
-    status, _ = http_call(base, key, token, "rpc/claim_listing", {
-        "p_listing": listing_id, "p_request": request_id,
-    }, discard_body=True)
+    if EVENT_SINK:
+        EVENT_SINK('DISCARDED_RESPONSE_START', listing=listing_id, request=request_id, actor=subject)
+    try:
+        status, _ = http_call(base, key, token, "rpc/claim_listing", {
+            "p_listing": listing_id, "p_request": request_id,
+        }, discard_body=True)
+    except Exception:
+        if EVENT_SINK:
+            EVENT_SINK('RPC_UNCONFIRMED', listing=listing_id, request=request_id)
+        raise
     if status != 200:
         raise RuntimeError("Discarded-response case did not receive a successful HTTP response.")
     replay = claim_attempt(base, key, listing_id, token, request_id)
@@ -449,45 +540,67 @@ def run_delayed_race(base: str, key: str, service: str, db_url: str,
     print("PASS delayed concurrency: both claim RPC sessions were confirmed blocked by this test's lock-holder PID; one committed winner verified.")
     return {'holder_pid': holder_pid, 'observed_waiters': count,
             'method': 'transitive pg_blocking_pids chain to own listing-lock holder',
-            'request_ids': [a['request_id'] for a in attempts]}
+            'request_ids': [a['request_id'] for a in attempts],
+            'responses': responses}
 
 
 def main() -> int:
+    # Keep the journal adapter on the same module when invoked as a script.
+    sys.modules['claim_concurrency_test'] = sys.modules[__name__]
+    import claim_two_actor_acceptance as suite
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--env-file", type=Path, default=None,
-                        help="Local secret env file; never commit it. Defaults to GEOLOCK_TEST_ENV_FILE or the stage1 generated env path.")
+    parser.add_argument('--env-file', type=Path, required=True)
+    parser.add_argument('--manifest', type=Path, required=True)
+    parser.add_argument('--output-dir', type=Path, required=True)
+    parser.add_argument('--actors', type=int, choices=(2, 10), default=10)
+    parser.add_argument('--execute', action='store_true')
+    parser.add_argument('--execution-approval')
     args = parser.parse_args()
-    load_env_file(str(args.env_file) if args.env_file else None)
-    base, key, service, _ref, tokens, listing_ids = safety_gate()
-    subjects = assert_fresh_fixtures(base, service, key, tokens, listing_ids)
-
-    attempts2, responses2, state2 = run_race(base, key, service, listing_ids[0], tokens, subjects, 2, "two-NGO race")
-    attempts10, _responses10, _state10 = run_race(base, key, service, listing_ids[1], tokens, subjects, 10, "ten-NGO race")
-
-    # Identical replay must return the committed claim without duplicating any
-    # request, claim, lease, task, listing transition, or audit row.
-    winner_index = next(i for i, response in enumerate(responses2) if response.get("outcome") == "SUCCESS")
-    winner = attempts2[winner_index]
-    winner_response = responses2[winner_index]
-    replay = claim_attempt(base, key, listing_ids[0], winner["token"], winner["request_id"])
-    if replay.get("outcome") != "SUCCESS" or replay.get("claim_id") != winner_response.get("claim_id") or replay.get("replayed") is not True:
-        raise RuntimeError("Identical request replay did not return the original claim.")
-    assert_unchanged(state2, get_state(base, service, listing_ids[0], [a["request_id"] for a in attempts2]))
-    print("PASS identical replay: original claim returned with no duplicate records.")
-
-    # Both changed listing and changed authenticated NGO must fail before any
-    # original result or audit evidence is altered.
-    expect_payload_rejection(base, key, winner["token"], listing_ids[1], winner["request_id"])
-    expect_payload_rejection(base, key, tokens[(winner_index + 1) % 2], listing_ids[0], winner["request_id"])
-    assert_unchanged(state2, get_state(base, service, listing_ids[0], [a["request_id"] for a in attempts2]))
-    print("PASS changed payload: different listing and different NGO rejected; original committed state unchanged.")
-
-    run_delayed_race(base, key, service, required("GEOLOCK_TEST_DATABASE_URL"), listing_ids[2], tokens, subjects)
-    run_discarded_response_retry(base, key, service, listing_ids[3], tokens[0], subjects[0])
-    print(json.dumps({"project_ref": DEV_PROJECT_REF, "normal_race_sizes": list(COUNTS),
-                      "eligible_ngo_count": len(subjects),
-                      "status": "claim concurrency scenarios passed; rollback fault injection remains separately gated"}, indent=2))
-    return 0
+    contract.check((args.execute and args.execution_approval == 'I_APPROVE_DEV_CLAIM_CONCURRENCY')
+        or (not args.execute and args.execution_approval is None), 'Explicit concurrency execution approval required.')
+    purpose = 'two_actor' if args.actors == 2 else 'concurrency_10'
+    ctx = suite.prepare(args, args.actors, 2 if args.actors == 2 else 4, purpose, runner_path=Path(__file__))
+    base, key, service, tokens, subjects, listings, db_url, health, read, journal, baseline = ctx
+    if not args.execute:
+        journal.record('PREFLIGHT_PASS', note='No claim, recovery, concurrency or cleanup executed.')
+        print('PREFLIGHT PASS; execution remains separately gated.')
+        return 0
+    def safe_point():
+        suite.validate_health(health(), baseline)
+    try:
+        with suite.record_rpcs(journal):
+            if args.actors == 2:
+                suite.run_acceptance(base, key, service, tokens, subjects, listings,
+                                     db_url, health, read, journal, baseline)
+            else:
+                safe_point()
+                attempts, responses, state = run_race(base, key, service, listings[0], tokens, subjects, 2, 'two-NGO race')
+                journal.record('RACE_2', responses=responses, state=state)
+                safe_point()
+                _, responses10, state10 = run_race(base, key, service, listings[1], tokens, subjects, 10, 'ten-NGO race')
+                journal.record('RACE_10', responses=responses10, state=state10)
+                winner = next(i for i, r in enumerate(responses) if r['outcome'] == 'SUCCESS')
+                request = attempts[winner]['request_id']
+                replay = claim_attempt(base, key, listings[0], tokens[winner], request)
+                contract.check(replay.get('replayed') is True and replay.get('claim_id') == responses[winner]['claim_id'],
+                               'Successful replay changed the original claim result.')
+                assert_unchanged(state, get_state(base, service, listings[0], [a['request_id'] for a in attempts]))
+                first = verify_payload_rejection(base, key, service, tokens[winner], listings[1], request)
+                verify_receipt_visibility(base, key, tokens[winner], tokens[1-winner], listings[1], first)
+                second = verify_payload_rejection(base, key, service, tokens[1-winner], listings[0], request)
+                verify_receipt_visibility(base, key, tokens[1-winner], tokens[winner], listings[0], second)
+                safe_point()
+                journal.record('DELAY_OBSERVATION', **run_delayed_race(base, key, service, db_url, listings[2], tokens, subjects))
+                safe_point()
+                journal.record('DISCARDED_RESPONSE_VERIFIED', state=run_discarded_response_retry(
+                    base, key, service, listings[3], tokens[0], subjects[0]))
+        safe_point()
+        journal.record('FINAL_FIXTURES', fixtures={l: read(l) for l in listings})
+        print('PASS claim concurrency; retain all business/audit history. No recovery or global cleanup.')
+        return 0
+    except Exception:
+        journal.record('STOP_REVIEW_REQUIRED', note='Inspect journaled request IDs; no automatic retry or cleanup.')
+        raise
 
 
 if __name__ == "__main__":
@@ -495,5 +608,5 @@ if __name__ == "__main__":
         sys.exit(main())
     except Exception as error:
         # Never print JWTs, keys, request bodies, or PostgreSQL connection URLs.
-        print(f"CLAIM TEST BLOCKED/FAILED: {error}", file=sys.stderr)
+        print('CLAIM TEST BLOCKED/FAILED: inspect the private journal and committed state; no blind retry.', file=sys.stderr)
         sys.exit(1)

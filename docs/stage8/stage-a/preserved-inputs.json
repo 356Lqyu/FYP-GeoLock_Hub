@@ -1,0 +1,21 @@
+{
+  "supabase/migrations/20261031_claim_audit_and_failure_capture.sql": "4c11ca6325856406e607b35b451c41fa461e620bf584543a053d2d16f0c222c8",
+  "supabase/migrations/20261027_persisted_donation_lifecycle.sql": "c40bff10daac4a25ea5852cec7d1123ed2a553357bb9f7faae4f1e98ed901b91",
+  "supabase/migrations/20261030_fix_claim_recovery_unresolved_reconciliation.sql": "e70759e708e966bb4bcd4528ba166f40c032c298d24ddc71af434d00c98db7cc",
+  "docs/stage8/integration/001_authority_proposal.sql": "ae4ad5fe603e6d169de42420dbee5f3c59908976a03f95526e46d50e3f0b86f9",
+  "docs/stage8/integration/002_publication_proposal.sql": "b01ce0ce3be66abfef755b81a73aa84dde8a57d8d27400af9ccd19e9b5ddd831",
+  "docs/stage8/integration/003_pickup_enforcement_proposal.sql": "e968ca18e5d70b70c91467dcef567b45ce8cb24aa075b1a6340e1f0c529b5ab7",
+  "docs/stage8/integration/build_legacy.py": "dcb03fe2dd509733232c4312526e2b4326eed14b3902539389a7dc0ac9a13121",
+  "docs/stage8/integration/package-manifest.json": "07696d2c4722aae49769da679836b4b8df63f47610183edd0915c74ee76f03be",
+  "docs/stage8/integration/expected-lifecycle-source-hashes.json": "b3d70a8a92d31a7b8b03946cea08462ffd643a6270d4a118f687d5db46c39ef8",
+  "docs/stage8/integration/dev-preparation-evidence.json": "67014c4c0161e45d7d1bf68084ab2b64959720f7eb84e7e1c5dd826578e9f7ca",
+  "docs/stage8/integration/reconciliation/build_proposal.py": "49c15a0abb08e6ed6d59c6eeec8ec77eb0a66cab79d5183f5b2cb46823611073",
+  "docs/stage8/integration/reconciliation/compatibility_prefix.sql": "8d58d1e99002232d0b5f912100aeb1251a9a9d0ecaee7dd0e6d22a94d5964186",
+  "docs/stage8/integration/reconciliation/003_with_reconciliation_proposal.sql": "235b3fd6436f8e968d3a459767c6c930831bbf8f38935a96f8a68ac85471bf7d",
+  "docs/stage8/integration/reconciliation/003_reconciliation_compatibility_proposal.sql": "90aa5457762c0ed6f85e3c2786e6f45c4fdec1a00295240d4c54c6bda69449c3",
+  "docs/stage8/integration/reconciliation/proposal-manifest.json": "47aa8edd9ce611c67621bb73e3e65a114d27095430ad0be571b000a807543a44",
+  "supabase/tests/claim_e2e_contract.py": "23c5603b78b314ef75a159cef817b554bef48cfaf59c69f77aa3b637ebb9a93a",
+  "supabase/tests/review-only/stage3j/live_evidence.json": "4a177704ae67f44a490c82c63336759b1a0d849e0c3eb6288a4621bda150a81e",
+  "supabase/tests/review-only/stage3j/two_actor/approved_functions.json": "d9a3bb4c215d8607f6a9768c2ee6f06d19f695ddf69845f6f22dc3a051aaba49",
+  "frontend/geolock_hub_app/lib/donation_pages.dart": "9aaaaa4ec96a4dd319842c37353abae6d37f3b59fad5e8a395a0f0af237cd1c5"
+}

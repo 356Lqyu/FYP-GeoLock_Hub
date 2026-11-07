@@ -1,0 +1,24 @@
+{
+  "available": true,
+  "sha256": "e3a101eeed99a7c49158521cf21108daa3696ab011fa4979891cb4459cbcdd93",
+  "members": {
+    "render.yaml": "622a886d23c0dcb720f090da5e4c450aa1d52811130655c609f2be7ceb300e53",
+    "ai hub ranking/api/main.py": "b23f97ca44674eed8eae073a6155b27e46173eb5c0e42ee74e6973c7a4abb5b6",
+    "ai hub ranking/api/Dockerfile": "23c64c27a0a2738a84b8b8b58e112848435d3e82ccd68605446c370f3e6ced1a",
+    "ai hub ranking/api/requirements.txt": "8ed70c18fb83d86258b095e434363ff163b1fa9b83ace67eedfb12fdf060993a",
+    "ai hub ranking/api/README.md": "c6ac365704795875d85b5b33bb3ec92fd35da845b45b922b4edf5cccf0830104"
+  },
+  "endpoints": [
+    [
+      "get",
+      "/health"
+    ],
+    [
+      "post",
+      "/v1/hub-ranking"
+    ]
+  ],
+  "blueprint_free_plan": true,
+  "documented_hub_service_dart_present": false,
+  "secrets_or_models_copied": false
+}

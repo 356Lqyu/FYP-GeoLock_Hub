@@ -1,0 +1,19 @@
+{
+  "project_ref": "rcgyuwiidqvrgbxswhqj",
+  "mode": "SELECT_ONLY",
+  "seal_matches_current_objects": true,
+  "route_constraints": [
+    {
+      "name": "pickup_routes_route_status_check",
+      "definition": "CHECK ((route_status = ANY (ARRAY['DRAFT'::text, 'VALIDATED'::text, 'AUTHORISED'::text, 'IN_PROGRESS'::text, 'COMPLETED'::text, 'CANCELLED'::text, 'STALE'::text])))"
+    },
+    {
+      "name": "pickup_routes_total_distance_km_check",
+      "definition": "CHECK ((total_distance_km >= (0)::numeric))"
+    },
+    {
+      "name": "pickup_routes_total_duration_min_check",
+      "definition": "CHECK ((total_duration_min >= (0)::numeric))"
+    }
+  ]
+}
