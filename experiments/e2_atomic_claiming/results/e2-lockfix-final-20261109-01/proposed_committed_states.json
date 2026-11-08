@@ -1,0 +1,4077 @@
+[
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0001",
+    "listing_uuid": "efc98865-e2a2-40f9-a44e-917f3a7f5eb4",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "571a5d43-cf2b-4d5a-af1a-4914e4ade197",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0002",
+    "listing_uuid": "d513500e-908a-40ea-a4f7-53f3fa954c7f",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "a75b0f9a-e42a-4845-aeaf-761f5ba57263",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0003",
+    "listing_uuid": "15ce8479-8a69-4bb2-b77d-b8e9b4b3391e",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "bb477ee5-e0f6-40ca-958f-78922dacfc40",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0004",
+    "listing_uuid": "20bfd093-dc38-40b4-afc7-3cb0baf7fc06",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "e5aff909-2609-4dc2-9c06-7121c9158f99",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0005",
+    "listing_uuid": "7f99af0c-e033-48fe-959e-373bbb9f492d",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "cbc63267-a70a-41a6-8578-5a1905fca359",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0006",
+    "listing_uuid": "6ec41c98-0e41-46f3-a800-3780a6505ec8",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "e94c5209-2281-4b67-ac2e-907779439fd6",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0007",
+    "listing_uuid": "8bd7871f-f9a4-4ecb-b07c-ae9efe5e2fc2",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "d210915f-e265-4123-bdcb-e5743b79bed6",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0008",
+    "listing_uuid": "298e98ab-f88b-4e56-a15f-57494e8f5f84",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "cbf1747d-f8cc-4a5c-9467-5bbf91e8c209",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0009",
+    "listing_uuid": "a88d95a4-38c8-4806-a46e-1dbccfad62d3",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "5fbe4df2-1777-48d2-91f0-e70a33beb1b3",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0010",
+    "listing_uuid": "7da90acd-e255-4696-99d5-be59bfd1e7b6",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "dfe84e50-5203-456d-9fa4-065e01066ce5",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0011",
+    "listing_uuid": "1ef10597-c392-404b-85c0-c836b9639381",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "763400ef-a2da-4f6e-a43c-3b54ea6a76dd",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0012",
+    "listing_uuid": "9dc7e54c-8bf2-4c69-910c-449afc807ff2",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "dc1fea8c-5fdc-4b88-ba71-605125c0cff7",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0013",
+    "listing_uuid": "7aed02c3-3dd7-4c8c-914d-b17224a6bd01",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "9858db82-d65a-4341-9b02-ca1f367c869b",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0014",
+    "listing_uuid": "8cee7902-3644-4bdf-8cf4-56901d8407f0",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "7366a709-b0cd-4d1b-addd-8cf80751035d",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0015",
+    "listing_uuid": "904514e9-963f-4140-923e-c8c76681be1f",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "3e1d33d1-8bc4-4b55-a3b5-38bac5d5e3bb",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0016",
+    "listing_uuid": "ba10f116-5edd-4a43-a297-c0b7ab1359fa",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "9a49766b-a2e6-472a-adb8-3355e59d5aef",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0017",
+    "listing_uuid": "55e878d3-8df5-4540-9d17-b8ce8e7d2212",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "b575426c-260e-423d-87d2-dd268bff16fc",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0018",
+    "listing_uuid": "61ff2ce7-5076-4c26-9262-d6e9f7986b12",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "69d73960-85b3-4700-91a8-eae14a57e017",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0019",
+    "listing_uuid": "631f2116-e2ed-40d8-bd72-005d191654a4",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "c4601c4f-ac50-4373-ab2d-04ec9601e082",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0020",
+    "listing_uuid": "d4c47ffd-29c8-4e39-80da-7cfc34d6bd51",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "529d4930-e5cb-41e8-bda8-d509dc30de2a",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0021",
+    "listing_uuid": "652db8f9-b3c3-40af-a19f-ec207e46b230",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "2b07ef60-4ad7-4532-b352-9ea10345f66e",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0022",
+    "listing_uuid": "fde1d680-b22d-4347-a286-98ee81ed933f",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "652b9f29-b12c-4578-8816-1ce723550e65",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0023",
+    "listing_uuid": "f1168d49-3085-4e47-ac90-80f36c039a03",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "586bdcfb-41f5-4f84-ab88-98fc28709d3a",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0024",
+    "listing_uuid": "6ce283ac-155f-42e1-8978-6843d8f84a86",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "f0e8f4df-ec1e-47f8-a6a6-1862f27e85f0",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0025",
+    "listing_uuid": "ea4d0b41-d44b-4971-ac39-445ef1f46073",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "3c8e3247-3928-4084-a7b6-35d7d63f4305",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0026",
+    "listing_uuid": "7f286f54-6950-4068-8763-4cc6fe58b2e1",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "d2a3e2cc-e03f-4f60-8ee2-60a241a6302d",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0027",
+    "listing_uuid": "caf269af-aec8-4201-80de-725ad5e8a6de",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "9141983b-0c90-440f-a903-e6bc75532e20",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0028",
+    "listing_uuid": "2efc23d3-f2ff-4dcc-8d39-3a05c87eabe7",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "2c3d044c-2a27-437a-9b31-3db96390aea7",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0029",
+    "listing_uuid": "161d87ef-9231-4801-a4f6-837f6dc84251",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "f844471e-9dad-45d8-9871-cc6d592656f2",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0030",
+    "listing_uuid": "8e1db558-e18b-4065-b35a-c4123843dd65",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "f315562a-7988-4b11-81e6-798202c63306",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0031",
+    "listing_uuid": "acf6cf75-0c75-431d-ac79-b7dfb15455d5",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "5f7610ed-ba62-4e37-b8bd-ef7aa3e58137",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0032",
+    "listing_uuid": "d544faa4-b88d-447a-82eb-70aa9e7b6455",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "11570c0f-3407-487b-a109-d5eb5be9ffe7",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0033",
+    "listing_uuid": "8e566f3d-8e80-4272-8c57-5a19010ff9ed",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "7df861ea-0a1e-448f-b1f9-97f3add8d2af",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0034",
+    "listing_uuid": "651bd193-e012-4646-907f-7f5f334fca20",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "82871090-4fea-483b-b253-475a20d2679f",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0035",
+    "listing_uuid": "389a0915-734d-41e3-97be-f7a5b02f7ecf",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "09513471-cc02-4230-8cec-5c32d238a2e3",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0036",
+    "listing_uuid": "3debfa2c-8fc8-48d9-9823-1e6f23c44a87",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "5c0adbe5-e92d-4fef-a58f-79aa6040744d",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0037",
+    "listing_uuid": "127f03b1-80f5-485c-892b-a7bbbbaa0df4",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "c520a605-ddc0-48b5-9464-b193f84dd5e2",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0038",
+    "listing_uuid": "7021cbf7-4cf8-4fd0-9b44-022cdee65ae8",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "655fe67b-3a01-47c6-a5a7-126452e978c1",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0039",
+    "listing_uuid": "09f4bd32-82cb-4454-9ab2-3e243285b5a9",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "2126d79e-22b7-47b5-8938-2bdcda91e58d",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0040",
+    "listing_uuid": "10edb7e0-bb38-44cc-9604-2989e5bdf672",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "170f5e50-8ba1-4cf0-8893-29901294febb",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0041",
+    "listing_uuid": "df7c6f6d-99da-4903-ac75-6f2895838348",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "f12b911f-ce8b-4369-81b2-71af1c19bfea",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0042",
+    "listing_uuid": "85c86fdc-eacd-48c7-afb5-f3551e2175b7",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "e8b95fc7-cf58-44b7-885d-04a7e9179446",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0043",
+    "listing_uuid": "2ce21ed7-c1a7-4aae-b9c1-408cdaa8eef4",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "81d462b6-5d45-4e29-a420-2ac7e556e358",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0044",
+    "listing_uuid": "8ec6e4cb-2de3-4ed4-b4ec-9486a582cc26",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "a06f3f91-0c5a-4b66-bcf7-ab4ccc144e9f",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0045",
+    "listing_uuid": "9dd4723e-33e6-4296-a05f-3d333823d8f6",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "25d085b2-8be8-4535-9eba-e3c00ec255a9",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0046",
+    "listing_uuid": "1c1c191c-481b-4962-b1a5-d75743dff874",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "50d9f459-8436-4224-ae48-303147d26001",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0047",
+    "listing_uuid": "8ded8594-eb1d-4b3e-a670-bfc738a2ee23",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "e29382d4-382a-4b00-bc1f-727b3e706717",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0048",
+    "listing_uuid": "c052d983-c5ee-4e62-bd2e-d157422ae807",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "253ec5e2-d81c-4261-8999-2ebeedca9e68",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0049",
+    "listing_uuid": "3fceaeb1-431e-492c-873a-42b26755003b",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "c31438dd-8020-4904-a583-2283c5d1c409",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0050",
+    "listing_uuid": "daa16a39-f531-40e1-8b41-531a96405e93",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "f719de71-d0b3-4f17-a376-ae7efac829be",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0051",
+    "listing_uuid": "0b1cdcd2-35af-4993-a1ef-c882dda2ebf3",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "05d20df1-bb6d-4dec-bed1-edb87356b29c",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0052",
+    "listing_uuid": "f30431c8-4f10-4bd0-8c57-a6818ff30932",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "2f0589fd-1a7f-42f3-a7f9-8af481de126a",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0053",
+    "listing_uuid": "34bab818-e921-4dea-951f-0671fff71522",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "c9dd2daf-b8cf-434f-9100-6d64e6bd5c89",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0054",
+    "listing_uuid": "afca2828-f632-4e73-9d90-3ab232b09b79",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "21d7b255-f772-46cc-8ad8-8c2653078914",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0055",
+    "listing_uuid": "c5e24755-0d3d-43b5-8e6a-66d4ecc0507d",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "b5fe0e55-474a-4159-b1b9-82a8e18c422c",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0056",
+    "listing_uuid": "9a60e844-5211-4dcd-a84c-433e7e22f2a7",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "fa682821-0ac6-4ca2-8785-3d747ce9f4a7",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0057",
+    "listing_uuid": "20cfd259-c446-47ad-80e0-0e5451ec2819",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "0120afda-0615-4197-bf1d-134f7bdcb9d1",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0058",
+    "listing_uuid": "fef7d0ac-b5d7-4ca6-a6fc-cdc4f2273115",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "ce8ca8ad-6d94-4fe0-8713-6930bc1ba002",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0059",
+    "listing_uuid": "71d8bf19-b208-4cb5-9844-c20594e006e3",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "df15515f-bd35-4176-b7ab-a7b8ca8ad013",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0060",
+    "listing_uuid": "b324b86b-00ba-4ac1-ace1-41479ba92627",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "6d870c42-9695-4a91-8f72-a24cab690685",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0061",
+    "listing_uuid": "4140a805-b9c6-4f9d-9095-94eca0b0d066",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "b7d5295c-483a-4428-8f1b-ff19dee24e19",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0062",
+    "listing_uuid": "1badccb4-95e4-4481-9396-d897703db038",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "85227d9b-d7e5-43f1-a7ee-219916f106ea",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0063",
+    "listing_uuid": "7c76e1df-2b66-4fbc-997c-2f3595fd5692",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "b0adb827-9dc2-4667-97d5-656ae0175c2d",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0064",
+    "listing_uuid": "2c3291a9-f342-4ecc-a1e5-9132de6766b8",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "860e1f12-a900-4ff8-af5f-dc5b5d5e3a7b",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0065",
+    "listing_uuid": "5e3a55f8-a3bb-4877-b508-e1f53f16b7f2",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "1dc3af1d-79cc-4bfe-972a-c667772f456b",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0066",
+    "listing_uuid": "4a5422d1-ed97-4d9d-8203-ec9017349588",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "593313d7-f16b-4552-8fd5-62ead340ad18",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0067",
+    "listing_uuid": "3b5a9b14-2229-435b-8531-689efe2dfe58",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "e5a3a40d-5809-43c6-b18e-c17351ee4a7a",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0068",
+    "listing_uuid": "c31699cf-abff-4f70-87ee-7fe476534dfb",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "e2cd1e00-f16d-477d-aa9d-7d85c8505ad1",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0069",
+    "listing_uuid": "9c38508f-b5b7-4dc5-8ca9-c21bd9101344",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "8601b02a-c889-4d51-a20c-cc98ebda9fe5",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0070",
+    "listing_uuid": "ae4abf3e-d0e1-4ee5-801c-98f984cc8626",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "7934ebdd-2db2-45c7-ac85-2207d48f190e",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0071",
+    "listing_uuid": "dfa4608f-f297-49fc-b22d-8b76a047927c",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "a1296bb4-bc9e-4800-b55e-f6001754ed22",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0072",
+    "listing_uuid": "7c0acf59-d02c-42ff-8a44-048584f10527",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "73f15008-24b6-4a27-8a49-79a1b4f95fde",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0073",
+    "listing_uuid": "368389fc-7c3c-4bfb-b540-3a814294366b",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "1ac72448-833f-43d3-97ec-ea455083a714",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0074",
+    "listing_uuid": "c82985cc-076f-4656-a9ad-70a204215d1a",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "a3ffb215-f941-4662-93a5-763a5b67d535",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0075",
+    "listing_uuid": "ef8d6fbb-e0b3-43b7-bccb-1a0257be90b8",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "b8b33883-596c-4591-a08b-8795b4873f75",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0076",
+    "listing_uuid": "90d228ba-57a6-4ae6-81a2-dcb56d2343ec",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "622477e4-0aa5-44fb-82ca-3d4d3da22440",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0077",
+    "listing_uuid": "dfe235ea-19fc-491b-94ec-d66f9c2394b5",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "6a2b72b3-feaa-4450-a9f8-019f2c23dcce",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0078",
+    "listing_uuid": "04513e72-f1c1-468c-bf02-3a6535bfc311",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "8c0eb7eb-dc05-43c1-b239-8709d7aa1219",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0079",
+    "listing_uuid": "f9677f2b-9467-43a3-a9b0-dbf03b169ec9",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "45a15d08-2892-4111-bee2-03b150efb825",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0080",
+    "listing_uuid": "6c390a15-7f65-45d5-ad6e-ade29fc60c54",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "86114e47-fb3a-4087-afc7-ec5764d449c2",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0081",
+    "listing_uuid": "043cbd50-d6de-4f25-bb3c-5dbc439d0c13",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "1ff86fa0-8553-4cf6-8331-ad82c0d21140",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0082",
+    "listing_uuid": "33b652bf-439f-494c-a286-1bb2abb03729",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "2c1f2492-17d4-4379-9c07-623518a367fe",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0083",
+    "listing_uuid": "ba7c40dc-ca6d-4d0d-b9c1-383aad67f687",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "84c09c1a-68a6-4fbf-89e6-8157be2af1d4",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0084",
+    "listing_uuid": "5ac3d060-6a86-42b5-8a58-dbd2b207805a",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "4da19adb-74ff-4786-9a29-05b2b1347614",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0085",
+    "listing_uuid": "09f4e015-59b3-44bc-bd1e-25ddd5d4e0e8",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "fe46020b-17ba-435c-8c79-9ce96165a5b0",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0086",
+    "listing_uuid": "71a657d0-20d2-4c9c-a215-11a94aab4bce",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "830046ee-7b2b-47ed-81c0-693f98b96765",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0087",
+    "listing_uuid": "e4c5ad9a-f55a-43d1-9ee0-e0d6e86097e3",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "4edac4cd-b664-4d20-9381-b2f67678ab11",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0088",
+    "listing_uuid": "47087f28-e7cb-41fb-b82d-765cb579244b",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "fb92d370-e933-4983-97f6-beb324685733",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0089",
+    "listing_uuid": "a9abdff2-7423-475c-acc6-e3fb7640f414",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "be233d2b-723d-4d65-b649-c909a4a3e72d",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0090",
+    "listing_uuid": "061a4b7c-af2c-4ec3-badd-623dfc836589",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "eaa24134-5e2e-4ed7-bbd9-e301d40d6e54",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0091",
+    "listing_uuid": "6c1196d7-5e69-4101-82e3-a0d5cc2c05a3",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "c999df47-cd44-4731-8f6a-a0c74d32c6a5",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0092",
+    "listing_uuid": "4774d1ce-300a-4014-9a03-25ccf6572164",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "deb8ef99-9145-480e-8ec7-9309014c71d1",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0093",
+    "listing_uuid": "9a1feffa-8dbd-49cb-a446-412a3c7c26d8",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "61d2cad6-d69d-4de8-a832-a43c63810be4",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0094",
+    "listing_uuid": "77cf9b1d-95e7-4381-ac29-99c84f466010",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "87616666-e0b0-46c4-92ef-0149aa440316",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0095",
+    "listing_uuid": "bdbaa454-eb93-4fed-bffe-b4b22063e569",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "686e6702-10b5-46c9-bb29-1507a286c55e",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0096",
+    "listing_uuid": "c946c69f-25bf-463c-ba17-08874e11168d",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "c947523e-f5d6-440c-a1ba-67c070f92091",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0097",
+    "listing_uuid": "23310ba0-e48e-47b2-a924-7872a024db3e",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "5d3b3305-0b20-4b07-83fb-bc6ebfdf6cb9",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0098",
+    "listing_uuid": "a75c331f-a199-4ec1-b4a3-2406b18e3cc8",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "243f8f70-e3a6-4227-90d0-a9a988706a62",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0099",
+    "listing_uuid": "9fb65862-161e-4db8-b977-419e12092974",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "ca8f93e4-7ca5-49bc-8328-635e8b4b4c9f",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0100",
+    "listing_uuid": "b6933188-1411-409f-88c0-ce9f02780441",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "7b810762-4153-425b-9b1a-b21ceeb38da3",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0101",
+    "listing_uuid": "339d1391-d5ea-4024-8a2d-53534b9e5042",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "1b881b88-5982-48f4-9bba-d8c99da7e341",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0102",
+    "listing_uuid": "de2aaf18-332a-4f0b-bb92-68b8d4148dcc",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "8618208c-8b9d-48af-9c67-f2bc5dfb124b",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0103",
+    "listing_uuid": "bda4f5a7-71cb-413d-b982-334bd7b01aa6",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "c3985df2-0367-4850-9bf9-25e3120cb52e",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0104",
+    "listing_uuid": "eed5648b-f0eb-442c-bf2f-62bfbd77e705",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "f27b3af3-6046-4ce4-bc55-47bfc74153c4",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0105",
+    "listing_uuid": "0f14865b-b5ca-4a6a-95e5-422f074c68d4",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "36408e38-c812-45ff-b549-b8e14632d03b",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0106",
+    "listing_uuid": "66928285-dbd1-47d2-812d-9ea832641ac6",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "3742f54f-89ca-4096-9ca6-f2fd666b4d95",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0107",
+    "listing_uuid": "8b2c18c8-608e-49d0-a605-c14625ffb49d",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "790551a5-55b6-4b9a-a29b-333ac41b0c31",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0108",
+    "listing_uuid": "36eb78b6-be6c-40fe-b7d9-303967309274",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "ac97a102-4737-46f9-bb5a-b7c125768307",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0109",
+    "listing_uuid": "8750bf28-a5a2-4441-8c88-a73c7bcc792f",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "12c539a8-0543-49f6-9397-bcf1eb6ec548",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0110",
+    "listing_uuid": "830c09e8-576b-489a-b28f-5a4f93c8e610",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "ff4d649a-c909-4fc5-99e7-9acc013f1f40",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0111",
+    "listing_uuid": "ce249234-42e9-4a86-8b29-37ae6d16066d",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "cddd5e73-e6b0-44ea-ad65-69321cc3d65d",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0112",
+    "listing_uuid": "1b26e61a-1aa9-4ad5-8ef2-febbdcf7a2df",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "4282de2f-600c-4ddf-88be-1dfcf0d28ee1",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0113",
+    "listing_uuid": "562b86df-0171-4e87-83d8-cfd6c7e1fa82",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "b450e1e0-d537-4318-b03a-344d67bb745f",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0114",
+    "listing_uuid": "03dac53e-7362-46a2-8c9d-e77198a2533e",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "8a457678-e2bf-4fdf-910e-4bb1f88db262",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0115",
+    "listing_uuid": "1d7f2a38-9dc8-450b-afad-3a3d60a86bca",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "160a76bb-133f-43e9-9211-76e7fc77d2f2",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0116",
+    "listing_uuid": "c0dd3259-3157-480d-9f34-77152b506fcb",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "326957ad-cbc4-465a-bf46-bc6c1dcf9c91",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0117",
+    "listing_uuid": "6d761aba-255f-4455-878e-af44489a864e",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "41d83d37-c352-490c-a9d8-2d77a5a034f8",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0118",
+    "listing_uuid": "1fd746f6-612c-4b83-a6af-7a7b0e17980e",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "8c261c35-accf-4543-9b89-d7029984d21d",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0119",
+    "listing_uuid": "be6f3655-2632-45ef-a5c1-76164dd2e7c1",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "193b81fb-1a5f-4f86-aff1-899790d4da5e",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0120",
+    "listing_uuid": "fa801620-3946-40c1-9ab0-00eeb6fcc37f",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "0b966444-1b15-4d95-84ea-bb96523643e1",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0121",
+    "listing_uuid": "55b67577-54d7-4337-ab9a-1f20cd1c8654",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "cf42b5c1-52f1-47b7-b078-0582f56a6d72",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0122",
+    "listing_uuid": "94679c27-a158-4f51-a7ec-ca9ae3a26e97",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "20bb10bd-6ac1-433b-956a-0506a567b763",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0123",
+    "listing_uuid": "8843bce9-518f-43de-8eea-66dbfad4d085",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "0aeb1d3f-5cb6-402b-b265-5a0c2fca1f84",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0124",
+    "listing_uuid": "5e6e80b7-c4ab-4687-b40a-067eb574cb78",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "847bd0b7-0840-4c52-8762-63cbb080e244",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0125",
+    "listing_uuid": "ed9467fc-633a-431a-898a-f3100f64d12d",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "cdb14d04-b3ba-45ef-a7b3-4b43f9d0b15f",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0126",
+    "listing_uuid": "d5b76b54-cd08-407b-be87-41b58c97b14c",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "7910a5f7-0616-4aad-9067-2470a516e4c0",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0127",
+    "listing_uuid": "a81442fb-45ec-4bd2-a84b-9e9063cb4501",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "5281e24a-dc42-4e0c-bc9e-fe66c5ff9bce",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0128",
+    "listing_uuid": "0f6e1f7b-6061-4aa9-90c1-291eeb6eb125",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "0dd69421-1a99-4698-81b2-d7ed1176a63c",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0129",
+    "listing_uuid": "285b50d5-3654-4e26-9c82-369845ff0bda",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "9e8fae01-5862-4319-a857-4a3d8dc95b4f",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0130",
+    "listing_uuid": "c8875804-e423-4848-8904-f2ffe23eceb8",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "f22683a1-f08e-4e5e-ad50-d3ce970f8529",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0131",
+    "listing_uuid": "4f2e404b-174d-4851-bc24-00e990f05fd1",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "b1634410-2286-4c0c-b78b-8dbf2d62f915",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0132",
+    "listing_uuid": "ef318908-081a-45ad-997a-03b30a57650a",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "9082c492-46b6-40c4-a82d-33d3d6dc7325",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0133",
+    "listing_uuid": "54453580-1017-4e5e-bb3b-2d6d84942ac1",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "2c9a593f-2be5-44cb-bd42-f3a05b83b522",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0134",
+    "listing_uuid": "8515354a-6edb-47bd-b699-57277c09f1cb",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "3973c5f0-cfb4-44e6-af20-db9b6d97e187",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0135",
+    "listing_uuid": "a1f49b10-e00e-49f3-8eae-a0015c8d1851",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "98bd70af-3f72-48d8-97b1-03c6b6c69b58",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0136",
+    "listing_uuid": "c33ca7c1-fc91-4d0e-a864-384eac287471",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "a2dea6ff-8995-4e40-9ebb-c9a2419c03b2",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0137",
+    "listing_uuid": "c8aeda20-ecf4-42a3-8ceb-9690b5cbb477",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "f4bb9b9f-9830-495b-8917-c26104dadc82",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0138",
+    "listing_uuid": "c38c464b-8f6a-4808-9bb4-96d621d0bdcd",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "b67a34ad-2143-4e0a-8442-e11ce3fa65d3",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0139",
+    "listing_uuid": "9c22dec4-e8af-4f8b-b6fb-e7631d3f88e6",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "9ceafa05-e2a8-45bd-9106-1b1c1c973441",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0140",
+    "listing_uuid": "49cc3ba2-dc1c-41b1-9812-9fd1836ac996",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "ae721569-c041-4be1-aca6-f8c9e731d3fa",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0141",
+    "listing_uuid": "7fb75727-6f52-438a-b422-dbeeb8be21bd",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "379735a2-5b4f-4868-ae29-7d54a29aa678",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0142",
+    "listing_uuid": "a22a67e7-cffa-48ef-afa3-714fcb93d077",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "e7604b56-e679-4227-8625-8633f1b24899",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0143",
+    "listing_uuid": "45f152a0-f59e-438d-b8f0-4738ce8f3736",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "02a23b2f-e11b-4ee8-b946-2d1f68247a43",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0144",
+    "listing_uuid": "0d3cf20f-1ddd-4177-aba4-cd2fe74ba36d",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "8dd2a1c5-efe7-485a-86de-036ec052dbdf",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0145",
+    "listing_uuid": "6560a08a-773b-4d84-baa6-2be8e0cf2133",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "0cafe055-a99b-4611-b969-c33a78eabd71",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0146",
+    "listing_uuid": "99ff7f83-4115-4520-a4b5-ac5245135aa5",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "270534f6-63e6-4652-a9f5-0a78c8f7c7e2",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0147",
+    "listing_uuid": "cb8b159f-e2ec-48f2-b801-ebc98901da15",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "5c980e4e-6a77-474f-830f-a7378fe5dbd3",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0148",
+    "listing_uuid": "362ab5ff-d510-4989-a7f2-a990f1c8f31c",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "769a5749-4f7c-4896-a683-bb3967577689",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0149",
+    "listing_uuid": "2a533751-e74f-415d-b4ea-3ab39ec596b9",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "044eb0d6-f0cd-4f69-9044-6e586a8cfb04",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-CLAIM_COORDINATION-0150",
+    "listing_uuid": "b9fe0102-9d93-4731-b63d-e495b377badc",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "a1ed6d32-211d-40fb-8882-58bc649f20a2",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_ACTIVE_VERIFICATION-0001",
+    "listing_uuid": "c84bf6f4-07d3-4851-b53e-041fcb7287c2",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "fc58496c-bf03-4193-ace6-3ad821745051",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_ACTIVE_VERIFICATION-0002",
+    "listing_uuid": "9dbf74fc-0277-47d8-8bd2-b23ce951b3fd",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "f54eb2f8-7ae8-4f73-b9fe-104b8e77b40e",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_ACTIVE_VERIFICATION-0003",
+    "listing_uuid": "c9811ffd-a012-4ada-a5bf-0c17e0278eef",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "edaa305a-60a0-446f-9e64-e0ba5e03b029",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_ACTIVE_VERIFICATION-0004",
+    "listing_uuid": "c869e08f-e30a-4a13-a72f-c93b35b55089",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "8a655c8e-2452-4940-843b-b9ed6d00bd9b",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_ACTIVE_VERIFICATION-0005",
+    "listing_uuid": "b55675b1-3744-452e-8f51-6be241a3edfa",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "ea20dc80-6c0b-4171-ae3a-33b4ffa1cbf4",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_ACTIVE_VERIFICATION-0006",
+    "listing_uuid": "a5b566fa-8bb6-4e3d-96ea-5c8c649da544",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "7907969d-c627-4270-bb09-672e079194e8",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_ACTIVE_VERIFICATION-0007",
+    "listing_uuid": "47c379e1-d5e6-4db1-9384-785c8e0d37f7",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "4d516210-62da-42ae-8d67-fb8c73f35992",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_ACTIVE_VERIFICATION-0008",
+    "listing_uuid": "75daea55-6633-43c7-8464-54d3afdbb5d6",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "335a83b3-f8fd-493f-b58a-6efee4ee0313",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_ACTIVE_VERIFICATION-0009",
+    "listing_uuid": "2c30b72f-83eb-4299-a08a-fb010ba6a71e",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "63d62c85-176e-414a-83e2-99530789ffa4",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_ACTIVE_VERIFICATION-0010",
+    "listing_uuid": "0047a15b-e3a5-4a00-a1c1-5b7923772564",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "53611498-cae1-4abd-949b-33f7798152ca",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_ACTIVE_VERIFICATION-0011",
+    "listing_uuid": "baef54a2-284a-4f17-b705-4b90cdba6c25",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "04f2ca0c-167c-4a7d-b4f6-d7be78736068",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_ACTIVE_VERIFICATION-0012",
+    "listing_uuid": "bc97de53-5656-4671-a04b-95367fa824f1",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "baede111-1af5-48f6-8ac1-886a3c3c4146",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_ACTIVE_VERIFICATION-0013",
+    "listing_uuid": "37691404-50f9-4717-9739-a9a5e313ad89",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "4d244302-7c39-4846-a41d-981ddfc3d33f",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_ACTIVE_VERIFICATION-0014",
+    "listing_uuid": "703199f5-ab59-46b2-ad9a-f1d9c76ca70f",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "acd7b52a-43c8-4e61-b424-694ebe86b3da",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_ACTIVE_VERIFICATION-0015",
+    "listing_uuid": "d8949955-c944-46c5-804d-28db53ee80ea",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "18ced973-3208-4e77-9efe-df3080072b3d",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_ACTIVE_VERIFICATION-0016",
+    "listing_uuid": "bd737ee1-27a5-40db-9c55-9f66c3dd97e0",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "0b370f2b-8874-4774-a44e-a2f8ce644e03",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_ACTIVE_VERIFICATION-0017",
+    "listing_uuid": "ca54a66e-5c9b-4fec-a8e2-209c0b1a5d7e",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "e57bb2ab-9fa9-4416-b698-af3605bbb5b2",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_ACTIVE_VERIFICATION-0018",
+    "listing_uuid": "c61c50a1-07d4-4217-8517-72b703002dec",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "fe2610b1-2bd2-4866-825d-71105f633814",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_ACTIVE_VERIFICATION-0019",
+    "listing_uuid": "5ee44ce9-5b42-452c-8212-0191bc22bd38",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "78a9a716-d896-4bbd-b403-951f75c278f5",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_ACTIVE_VERIFICATION-0020",
+    "listing_uuid": "909f1750-0f41-4506-92a1-6502ddc6ad6f",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "8e31add3-7edc-4965-8aef-e97c9681224e",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_ACTIVE_VERIFICATION-0021",
+    "listing_uuid": "1c9de7d7-220f-44d0-aede-3c929f3c8f57",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "57fd6255-0cbe-4c37-a72d-aff6037b66a2",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_ACTIVE_VERIFICATION-0022",
+    "listing_uuid": "8ec197b4-5d19-4421-b686-bad1a57ef607",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "811f9b49-3940-4aa0-a87f-9686aba150eb",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_ACTIVE_VERIFICATION-0023",
+    "listing_uuid": "8e9079b2-7440-4113-9e3a-1553d9606703",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "88a45212-645a-4aa4-a8c9-108b1f0b4474",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_ACTIVE_VERIFICATION-0024",
+    "listing_uuid": "0b0280b9-c23d-4bbe-9cc3-b738805f44ec",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "e1bc7a12-0935-455b-808e-2c14e9e6420d",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_ACTIVE_VERIFICATION-0025",
+    "listing_uuid": "c1378cef-9763-4f43-ba66-98b7b9c66909",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "cb714674-9a70-4a50-a99a-62656e5b0e37",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0001",
+    "listing_uuid": "a537bdb3-b1c8-4c52-9839-cb00fa18d382",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "e95c71ae-1495-43f4-9e8b-be7e7dcaf93f",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "a48d01af-8258-4f61-80ac-799c8d6c4e79",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0002",
+    "listing_uuid": "ced7919b-5120-4719-b640-92ce18317ee7",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "7e67fd4c-48f2-40ba-ba33-41c951234bd6",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "6a7e9eb3-aa83-4060-b3d1-06c29eb56351",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0003",
+    "listing_uuid": "a60e74a3-aad7-4f35-9110-c19a2ce6c955",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "5e596a4b-4f35-4d40-822b-1b42f5ac3c04",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "01c8743e-0f12-4ad3-8080-67f463cf73b0",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0004",
+    "listing_uuid": "f51eff38-ba0a-4505-be9c-71e651d6cdbc",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "6ee09d8e-b78a-45ec-9c83-e6cad3e176a6",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "347487b9-cef1-40d1-b3a0-0c04d5d5b382",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0005",
+    "listing_uuid": "119a29c6-98c6-4338-a51b-1393512cdb2e",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "441385b9-4068-454e-ad62-2cac54c86af9",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "fc81b21b-ffc7-4750-92b5-8cabcd1ccf54",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0006",
+    "listing_uuid": "5b61bef4-cb1f-4c9b-9f1f-8d167a717529",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "e70bbcb5-9533-41e4-ad7f-69911220c55d",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "f8887ebe-58cf-4e80-b476-3e7364f4c356",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0007",
+    "listing_uuid": "5326eedc-d1cd-4331-80fd-b90dc492de7c",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "0b5b8524-8f69-43c1-b7c1-ec260ab17113",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "cb174ef5-6118-4fb0-9168-47f9297d4259",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0008",
+    "listing_uuid": "99bc4455-6522-4909-a2ee-572f3bd037a9",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "0f38356f-d0b8-43e6-a2c5-6d56fb6885fa",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "a0d2f4ef-65ed-42d5-a58e-62fcc1471d80",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0009",
+    "listing_uuid": "24f630b6-50f1-479a-be5f-d053e546e8a4",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "92f15a34-e12e-48b0-a057-4438019bead8",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "c279a78a-57cd-4477-a882-796d5ce6fbf8",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0010",
+    "listing_uuid": "71cc0998-e363-4fee-acce-35bccf039450",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "7bb41cfa-7d1b-4fd3-85a3-590b33889d17",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "be6bb5b0-6365-44ab-a726-e9ced802c4e0",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0011",
+    "listing_uuid": "765bdf22-971f-4d8c-84c7-a0bcba8fa983",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "6604051e-33b9-433f-b890-7593f62f3778",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "48ad2148-5afa-4439-87da-5f50bc3fe7c1",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0012",
+    "listing_uuid": "4de354eb-4c9e-4026-acd6-c068d32890c5",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "0d8772b4-e265-4d84-a5bf-59e3ddc0f154",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "bdc8430b-d019-46cf-98ff-88e22ae0a4d3",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0013",
+    "listing_uuid": "117e4815-acb2-4d44-a1b4-3060a7dff1a3",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "813732ab-16e4-42c5-8df4-f2ae46f99d30",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "b5bf81c3-e388-43b3-98ee-75d4aa46dbc4",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0014",
+    "listing_uuid": "f64f1cd9-38f0-4414-8acf-75bbaa5ca9c0",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "8f5df4a6-46f5-4b7c-bb9b-0bdab793d16a",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "525afc5e-a9d4-4abb-906a-8e65ed4d6d3a",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0015",
+    "listing_uuid": "3d558d39-8a8e-480d-9c99-482bc76f8966",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "868b0457-8e27-4c3b-8ac0-b8f2eff5bce1",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "41164a67-8af2-47c2-b859-2a3a96d8da4f",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0016",
+    "listing_uuid": "ac1b1263-561a-4848-9c44-914853b513de",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "956375c2-e215-45fb-8688-eff16d3a16a2",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "41c21bbf-6b14-4613-840b-d939ecf23827",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0017",
+    "listing_uuid": "48e71b0a-b142-478a-8e4b-8a8066704538",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "b26b083a-bf62-4b41-9063-bc19965e69c1",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "ddebf1f2-6140-40e7-9d0f-63419245fd68",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0018",
+    "listing_uuid": "d49b28f8-a35c-4c62-83c2-65ec33b53adc",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "a75e87ca-3d32-42eb-8a9c-acc0aea69453",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "aa79bd75-9d3f-4f1f-90e0-c918825489ca",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0019",
+    "listing_uuid": "1b808fed-defa-4a04-9448-cd0f8903c295",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "305c9e6f-af41-4863-a469-441acbe54bc5",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "ba9ab144-2d9f-4acd-8e3d-7924fc12ed31",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0020",
+    "listing_uuid": "dd60c3ad-f6b8-4218-9e09-d04853d90b98",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "e0427817-434a-4708-90d0-37a7f36cbb74",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "0b624b3f-7e9a-495a-a86a-7031571044e7",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0021",
+    "listing_uuid": "bbdb6e86-2e6f-40a3-923a-4d1c968d1c9a",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "0804db8e-8979-4d5d-92d3-8fd65ad71e29",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "35db02b9-101e-4a7b-a550-9301d5aca5a7",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0022",
+    "listing_uuid": "aa9f1b39-37f0-43b3-a6a1-4737a39a1627",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "07494cc2-2ff6-4826-b5fd-845082637d26",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "c1d42397-85d3-47f5-b2e8-a4bf9f95f889",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0023",
+    "listing_uuid": "bdc276f9-e96b-4b87-ab79-ca8526f6c707",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "a5901829-1d1f-482b-b94e-efc12b8d06fc",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "e35f6ae1-f7b5-454f-9ba6-0bc41c030a63",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0024",
+    "listing_uuid": "94d837a5-3c77-43a8-b7f1-1dd47f3b42ae",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "12230c17-ca07-420b-92e8-6139c28ff9cf",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "8684d735-826b-4afc-ba5e-1523678afe22",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0025",
+    "listing_uuid": "4e08bace-d8b7-448f-b1c5-59db3ede6157",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "6b2c1c3b-7bb4-4dc7-ac7a-9c50de3ad105",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "6a822d27-cb4f-4f71-aa7a-836287803b68",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0026",
+    "listing_uuid": "4fadfb71-18e5-49f6-acb7-e8cb9b610fee",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "4aa150e5-a316-42e8-b8f3-cc8efc56725b",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "68d5db58-f368-4eb1-abe5-6b5b7db64dc3",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0027",
+    "listing_uuid": "e0119042-6d56-43d0-95b3-53efa9a2cdb8",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "20c2a09a-72de-45d2-a08f-2d446b1422a7",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "1dddd716-ba41-4cd0-99d9-b10834bea899",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0028",
+    "listing_uuid": "3bbc1c08-0340-4788-809c-85bd035563f5",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "ed633e5e-9207-4b60-a9bb-0561fe7e6ca5",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "b7c41f25-705d-43c1-b51d-45a4f1f9590b",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0029",
+    "listing_uuid": "3db2d5e2-2fc9-4f5b-84bf-eaf290b4f071",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "1bddff6f-fddc-43de-8a89-4147f7018547",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "7d55da85-83e3-4ec2-83b0-ccea95160037",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0030",
+    "listing_uuid": "046c22c2-7e53-4e27-9e9b-174c4db8ab73",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "311643ed-369c-4eb8-822a-7e5f0200fd6c",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "69f74cc9-325c-4899-b315-821db0a5ee1b",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0031",
+    "listing_uuid": "50c75659-dd5c-426c-9d2f-fdbd5deb7f8d",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "7339b335-a25f-40cd-9b94-c6999e6f4d23",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "8816185e-d521-4768-8375-ba790a27b19f",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0032",
+    "listing_uuid": "06427680-1135-48e9-ae68-5d95e2644501",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "d028fd96-f7e2-476f-bbe6-4afc5d360f25",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "67ca7949-afe6-458b-a418-81b193ca6245",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0033",
+    "listing_uuid": "31be5d1f-9dc4-4351-9351-fecf4abf9a6e",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "dbf0b146-309d-47ff-8129-83b613ca90d6",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "d21a920c-e629-434e-8dd0-f9d65515af94",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0034",
+    "listing_uuid": "6113e83e-cca1-40ed-872d-5e7f4ad6bbc4",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "d52abc4a-17d4-48be-8454-bc56e9ae9198",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "41eb7258-01ad-49ff-b3ce-03e17e4b183d",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0035",
+    "listing_uuid": "7efba6a7-004b-4cb2-97c3-b9a6b518a119",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "0f84d05e-66bc-4b6e-9f5e-69b45a396e9d",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "eda06012-56d1-4c2c-8572-37ed7a657557",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0036",
+    "listing_uuid": "261c1b5b-63fc-40b9-9bba-ae1860cc84c1",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "7f02bc63-ddfb-47fa-b51c-5365e90ebd27",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "2c00634a-4ed2-4ced-b169-250b6714fed1",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0037",
+    "listing_uuid": "2d42f1b6-2a65-47be-a078-b2ae2981f1a2",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "e1d505ab-0f06-402c-9564-ce541c215f8c",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "7cd2cef8-d202-4624-9a97-af840fc342dc",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0038",
+    "listing_uuid": "a044c309-79ca-4995-bcee-cac84265b127",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "01d3da74-1f7f-429d-b7b1-f4c151f22a87",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "af64ac16-945d-4d96-b6a0-160f5e96a916",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0039",
+    "listing_uuid": "7951b99c-dad5-4203-988a-428ccff80bd1",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "5f6bcf93-b7e8-4e31-a755-704f9ff4cbb0",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "013f97ac-ad4f-4488-9111-3d623598b702",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0040",
+    "listing_uuid": "fdbb44e8-6d2b-484d-9870-3e75e69af79f",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "cbd5209c-9413-436c-9264-9a309ef17905",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "002ee24e-391b-48bb-bdbf-666112fe8287",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0041",
+    "listing_uuid": "f336797c-7408-4b9a-a7ac-5b05e8c68b9a",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "69e861a2-0085-4a15-a2cf-5c59d856b4a1",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "a5377a19-dbd9-471e-8bf3-d555aa2c4ad9",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0042",
+    "listing_uuid": "e95da613-5fd8-4489-b26c-609ff1281375",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "0cf0a797-aa07-443c-8bbc-e4e1f775076e",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "f3ef4fbc-bef8-47db-a0e1-59089f5df675",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0043",
+    "listing_uuid": "46c8cf50-7781-49ab-b9ba-48d6ba3c3a47",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "93198656-2ab4-4f03-a7bb-b37ec816cdea",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "fb338aa9-b5a2-4adc-8095-793843ecce76",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0044",
+    "listing_uuid": "af15d66c-dfba-46dd-8b25-f700d08409f7",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "176cc151-d1c6-452c-911b-d66cb98c11f6",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "c332553c-2537-435e-a7d1-4b9759e08d5e",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0045",
+    "listing_uuid": "b6cc870c-3671-4b3d-b2f4-6d00a5f2b681",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "fecac09b-fc97-4f78-8ccd-5058a8875277",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "e245755e-4ee8-4fb4-ad1f-a5a032da90be",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0046",
+    "listing_uuid": "8330d1f8-6cb3-4399-bb58-49edbb2b8892",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "7a07ffb6-6c46-4d93-b04a-c9162f02bb5d",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "4f3e96ad-1c8e-4f6c-a883-16ac8d6309ae",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0047",
+    "listing_uuid": "0819f265-0c3b-4d54-91cf-2b0ac572ba42",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "283cd669-feda-45d1-8cb9-906536b808c7",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "a575d1c4-3e15-4aef-80ca-18f3a907a5ef",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0048",
+    "listing_uuid": "95ed5ba0-205c-4994-a6d8-7ad3d3f4a96c",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "6fef3179-b803-434b-a1b5-e0aa43162cb0",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "a98dbeca-dd73-42ea-a9df-01450f2a5df1",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0049",
+    "listing_uuid": "fe2a6441-1255-4d2e-930e-ac7651d77972",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "700ea334-cacb-416b-b97e-20595e8d0776",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "0f60b9db-b87d-47fb-a260-f8dd8b1aec20",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0050",
+    "listing_uuid": "1607e1fc-2063-4459-8078-6be065181a70",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "9f5fa8f3-06c5-4cc5-a78b-af5eca42092d",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "f0c83cdb-b084-444d-b637-5279a6e307ab",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0051",
+    "listing_uuid": "7fedefba-036a-4370-aaa9-42bb308a538b",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "c773a244-5a20-4073-bec4-4b2a19f90e33",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "2cde3b7c-5413-41d9-9159-9d1dd1e03ccf",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0052",
+    "listing_uuid": "48376da1-b9ed-49b0-bb9c-5d5f45d1252e",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "a7eb0ff5-82d6-4d99-b2cc-32cd9ecd733c",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "f8c7a596-ada0-44bb-ae0b-8fa90ec0dc60",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0053",
+    "listing_uuid": "4a09b3f2-d633-4761-9d2f-5c4f6870a6d8",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "19a9e782-7aa9-4006-acbb-ad103095123c",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "2c822958-6d8b-4f8c-8886-c9e1a25546b3",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0054",
+    "listing_uuid": "efaf2623-87c2-4254-8e1b-0658d97dbfdd",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "11d9e917-f8ad-4091-a7cc-d1e466613127",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "f7608875-5bef-4d9f-8f0d-9637b3b0c053",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0055",
+    "listing_uuid": "f51044c9-cd07-4861-bd6a-36204a24c254",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "91dc4ec6-d156-43b9-8271-a44cbb0d9eb6",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "53349e63-9f99-4bc9-be46-d3b3b53f5de4",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0056",
+    "listing_uuid": "10384ba8-9afe-4ae4-bffd-7a825cd8867b",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "44df5400-df71-4869-9754-985510320ecc",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "d0bb1fdb-7773-4c7e-a7b4-0877f740b75a",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0057",
+    "listing_uuid": "9087d5e5-2894-4702-976a-0b8b07cf14a1",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "da5d5abf-ffd1-464f-94c1-2073fd7a0816",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "134dcbcc-2245-4714-a220-8ba49dccb6bd",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0058",
+    "listing_uuid": "874d53b6-120f-4349-9331-94482bd5980e",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "40221226-0906-45c2-8b76-3eeeac3bc091",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "9faddf05-632b-49e7-b93f-b625deefc399",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0059",
+    "listing_uuid": "38b30919-2799-4893-936b-8ad7f146ff77",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "43ad2b0c-0ff5-493e-a145-434a9676985d",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "3f7f2555-347b-4747-8089-a15f2b7f165d",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0060",
+    "listing_uuid": "a97afc39-2e28-4ddd-b3aa-55d1805f1280",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "dc7c5d3d-3c84-4ecf-aa49-5bfd47e62379",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "8f5f5059-ca39-4344-a524-c23dba1491a0",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0061",
+    "listing_uuid": "e4f116d5-d059-4e99-88b1-919046a20246",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "91a6b083-a96c-4d32-899d-7050960df587",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "1cf2490c-906f-4bcf-af98-c104ec0bfd0e",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0062",
+    "listing_uuid": "0c58fb69-4403-47f0-9031-4cee89f6471e",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "efefcf0c-9e26-41c9-9723-1b57c1246597",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "6729bd71-bd76-4023-9c96-66fb9953c9c9",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0063",
+    "listing_uuid": "40c47727-1938-41f1-a545-d5f457388694",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "e553d82a-c095-4e93-8e40-2b05278d2ebb",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "2436bb95-9946-47e4-8d0d-99992e9e9627",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0064",
+    "listing_uuid": "fe179524-0faa-446f-a46d-8be94dcec4b5",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "84955b5d-9ad0-4c60-90e1-6ce6cc8d40e2",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "c430f638-4406-4450-8d82-e283209ff770",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0065",
+    "listing_uuid": "f3934178-3954-40f0-ab44-9f144a5c1301",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "7c3f141b-53f6-443a-bfc4-4081da40a9af",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "fc811574-e6e2-43b3-a360-23da464346c3",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0066",
+    "listing_uuid": "f7a61b49-d332-4c56-8d22-533d289d63ef",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "351948d3-ff08-4071-84a5-ff14ab63303b",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "4ab654dd-c0a8-40c3-9d11-26b35a4ce742",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0067",
+    "listing_uuid": "949b0249-5d28-4cb8-bcb9-5e828f627c10",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "629accb1-fde6-47b9-907d-179eba064d1a",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "a5bc9a5a-513f-4d71-bd7a-93cff440b817",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0068",
+    "listing_uuid": "9107b9d1-1b04-41de-942d-b770afad64c2",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "555a661d-2aed-4456-9ceb-5bcdb5a43421",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "7c871907-af78-4bc4-832c-f7eee71dd9f5",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0069",
+    "listing_uuid": "aa588e2d-7e15-4071-973c-00e70b59110d",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "f428c5a3-faf7-48fb-8fb0-930270f9620d",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "ca086b27-df26-4112-ba1f-9f980fd81eed",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0070",
+    "listing_uuid": "7fd85dcd-8e61-42c5-a034-ffd9eb8ba9ca",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "26ded299-49d6-49c5-b712-ea940f385b30",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "d2454c89-91af-4daa-bf9a-466d38a54666",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0071",
+    "listing_uuid": "8a0c6292-9fc9-4385-a5ba-3c4a677cf6f3",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "f21fd973-867e-4334-9830-3632f83b7df2",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "df3e5756-9c9a-498c-a4ed-a86685124aaf",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0072",
+    "listing_uuid": "029ba79d-f545-479c-a4cc-210b3f933f83",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "4b903aee-19f6-41ac-9b29-8f0f0cc70b48",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "065d1196-07df-44da-91e6-3039bf5e1799",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0073",
+    "listing_uuid": "6d6e907e-fa58-4129-8202-f6b1b7aaa88a",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "9db6c4af-adc2-4c31-91ba-25aee17f3f5c",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "aa354894-9660-4686-9ade-d2183575536d",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0074",
+    "listing_uuid": "89a7a41e-2656-4c75-bdc1-002df7dd0fed",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "34b2f196-b54f-48a7-87d1-a2628109d384",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "d3805355-4f52-47d5-af23-69a9bca7dc8b",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0075",
+    "listing_uuid": "af35fbe5-62b4-491c-a82d-8e5352d59bbd",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "97f4570a-2b36-4307-b751-85533e840598",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "2472d8e5-f76b-4fb4-89ca-72540afe25a1",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0076",
+    "listing_uuid": "4318f953-675e-40ae-b1c7-8d35d9ba45f5",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "c4062c4b-8dd9-4658-8a5d-05f945753486",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "e3073934-04d8-4e5e-bee0-f3478bf8e481",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0077",
+    "listing_uuid": "ad56df04-7eae-4b98-a771-b88de5fc041c",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "dfef8a49-7f67-4ea7-bf75-4cf76c2a8758",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "0505da04-d004-406e-ae92-86dd8f2fef01",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0078",
+    "listing_uuid": "6a71e7f1-d500-4a1b-a1f7-ecc8fbc8e840",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "4455c3df-5a6b-41c2-810d-b4250fafd50b",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "52996f54-7da7-49b2-a8b5-ea65877806e3",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0079",
+    "listing_uuid": "755c2f88-e12a-42d1-a9c1-aa74ec8436ec",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "f422aa18-f1d7-4ad9-a140-274fa3979510",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "3b4fba1b-6da4-4cf6-a6db-805922e803eb",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0080",
+    "listing_uuid": "ca34bc96-0615-48af-ad7c-216c5f3d4bd2",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "b4f94099-d90c-4823-bee3-4d323f97c110",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "aa5ea94b-0dc7-4e53-a384-105246650c5f",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0081",
+    "listing_uuid": "f9e1ec4b-af85-41ed-bb7d-e21eb07a671a",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "9e3bc56d-e8ad-4aaf-8c78-d082dcf540e9",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "41c15d13-677f-418f-8860-357843a6a736",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0082",
+    "listing_uuid": "70e0cc7a-1dc5-4ad1-8133-627a6fb1fd80",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "c9630eb5-c157-4110-844c-6276eff027e1",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "6073459b-821c-4f29-952f-8d1ac4c7896e",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0083",
+    "listing_uuid": "7670cc71-6b4b-4a5c-9c85-1562a6c66bbf",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "dce15e9f-fa49-4039-8222-caa7eee41f71",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "147c3071-1b28-4cf4-aaf7-0d9320a0950e",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0084",
+    "listing_uuid": "37923e53-9057-4486-b963-19efdbdb3615",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "db14eb3a-b610-4ff1-bf5a-5ce5a08938f7",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "74b5d3a3-2ae6-4186-959b-e9cbbe96c907",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0085",
+    "listing_uuid": "9e10d09b-332a-4485-bfa6-cf2ba2942599",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "6554a67c-600e-42a3-a404-8f3d23080a32",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "d676ed61-4ac0-45c0-9940-67863aafb3fa",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0086",
+    "listing_uuid": "c77a340c-da12-4a27-aa0d-18dde5ac6d0c",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "aaf777b9-0360-427d-9bcc-b5cc74558830",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "1e1f54cc-7673-4af2-a7f0-b323392c60df",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0087",
+    "listing_uuid": "35b1ad19-05a1-4291-a696-cb042339fca3",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "22bd8578-316c-4464-8734-d19325c83288",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "8a6581bb-747f-446c-9247-6e8eef6dce51",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0088",
+    "listing_uuid": "73042a07-236a-4356-b01d-e9711013cc8b",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "a48aa57c-526a-4615-87fa-c89fb5121cb9",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "751cc3bf-c97d-48aa-9b0f-917696097d21",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0089",
+    "listing_uuid": "f924ebb1-7449-42a5-a559-c7c5483ee68d",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "8df2a572-242d-41d0-a6b1-3c07f077e305",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "eb3d8ad7-0f82-41da-9427-ab6fe595cb82",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0090",
+    "listing_uuid": "cdb6be08-c861-4d18-b22c-559118db2e44",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "a3114fc2-34ed-4402-b797-5b0be49555c4",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "15789fc1-575a-40b9-b46a-dcc6e2eca008",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0091",
+    "listing_uuid": "0847df52-cdb5-49c4-8018-853657ebd25a",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "8d3c3491-2bdd-4046-98fc-eaf1fd528e5c",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "767d36a6-fbb5-4f21-8f9e-01d9c8c6358b",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0092",
+    "listing_uuid": "fc4ccb83-41cf-408a-a311-fc1adef5dab1",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "5ead7c3e-4fb6-48fa-ad51-c57162e8856e",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "8061e247-0ff4-4e3c-af98-bf5e0b340076",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0093",
+    "listing_uuid": "46ed7bec-7cee-4c9c-a0c0-76c7cae3495f",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "1698739e-916a-48d9-89c7-0e93cd742c8e",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "824f823f-bba7-40c4-9ce9-0151f85386e0",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0094",
+    "listing_uuid": "704c9078-4df9-4e92-bf8b-b93a78af0d0d",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "4a92800b-b439-4c9e-b011-5669f1cc27ac",
+        "ngo_uuid": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "a7d7b084-d641-4702-8e2d-9976fe87b7b6",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0095",
+    "listing_uuid": "ef2811d1-a712-48d8-b88f-514dbc8c0e2e",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "efd2bb06-f6a9-4507-9d80-d02a46ba6e89",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "60d73421-bc9b-4102-aa0f-37b585a25a98",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0096",
+    "listing_uuid": "ea48f62e-c575-4bca-84fc-520d4a97242a",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "ad8191fe-ac61-4081-8ca5-7c9c79f8e8e9",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "de34ba1e-06e3-4e12-b606-53a12170c4f5",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0097",
+    "listing_uuid": "9f1f5878-8d6c-49ff-a78d-2e0400ecc532",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "ed45596c-8e8e-48df-8619-2c0debb3668b",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "653a93f0-0913-44ff-bb67-07c96a438407",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0098",
+    "listing_uuid": "9537f782-bf3e-4864-a61d-08344612e348",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "2431eb42-993d-43eb-8095-4556cfec9110",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "43ffec1b-9082-4a08-bebf-459ab78252ef",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0099",
+    "listing_uuid": "fc3a15a3-b5fe-479d-bffa-6777b58cd144",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "3e23b236-48fd-4ff8-8903-0452a6c05187",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "b8a011a6-c43b-49d1-a836-c9340dd31b9b",
+        "ngo_uuid": "a85119f4-603c-5160-8f9e-74c234e4a170",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  },
+  {
+    "scenario_id": "SCN-LEASE_RECOVERY-0100",
+    "listing_uuid": "b123b7e7-1fe1-4457-9e0e-b317c29b4d9f",
+    "listing_status": "CLAIMED",
+    "claims": [
+      {
+        "claim_id": "9983a047-612f-46a0-a4ca-16ac22921f61",
+        "ngo_uuid": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "claim_status": "RELEASED"
+      },
+      {
+        "claim_id": "ab749fb2-ff1a-4fa5-a32f-f917867ae78c",
+        "ngo_uuid": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+        "claim_status": "ACTIVE"
+      }
+    ],
+    "active_owner_count": 1
+  }
+]

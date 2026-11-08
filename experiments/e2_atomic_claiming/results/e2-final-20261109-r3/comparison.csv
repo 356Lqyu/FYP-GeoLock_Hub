@@ -1,0 +1,10 @@
+﻿method,workers,trials,requests,duplicate_trials,extra_committed_claims,exactly_one_committed_claim,exactly_one_success_response,successes,conflicts,ineligible,errors,latency_n,median_ms,p95_ms
+non_atomic_claim,2,50,100,50,50,0,0,100,0,0,0,100,115.2,133.36
+non_atomic_claim,5,50,250,50,200,0,0,250,0,0,0,250,124.1,141.71
+non_atomic_claim,10,50,500,50,450,0,0,500,0,0,0,500,143.05,184.24
+protected_claim_without_lease_recovery,2,50,100,0,0,50,50,50,50,0,0,100,89.05,110.775
+protected_claim_without_lease_recovery,5,50,250,0,0,50,50,50,200,0,0,250,88.45,121.16
+protected_claim_without_lease_recovery,10,50,500,0,0,50,50,50,450,0,0,500,115.3,167.86
+proposed,2,50,100,0,0,50,50,50,15,0,35,100,1049.1,1155.07
+proposed,5,50,250,0,0,50,50,50,0,0,200,250,3059.4,4124.155
+proposed,10,50,500,0,0,50,50,50,2,0,448,500,5108.45,9156.515

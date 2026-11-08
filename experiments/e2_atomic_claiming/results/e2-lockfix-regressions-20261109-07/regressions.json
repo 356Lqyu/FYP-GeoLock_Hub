@@ -1,0 +1,1529 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "name": "both intended listing locks are corrected with metadata preserved",
+      "passed": true,
+      "evidence": [
+        {
+          "signature": "claim_listing(uuid,uuid)",
+          "hash": "0e1954dc17a5d30b81c57a161d99faac",
+          "owner": "postgres",
+          "result_type": "jsonb",
+          "volatility": "v",
+          "prosecdef": true,
+          "acl": "{=X/postgres,postgres=X/postgres,authenticated=X/postgres}",
+          "proconfig": [
+            "search_path=pg_catalog, public, extensions, pg_temp"
+          ]
+        },
+        {
+          "signature": "geolock_lock_listing_donations(uuid,text[])",
+          "hash": "e97a3fd80673a827465f3eaa79b65903",
+          "owner": "postgres",
+          "result_type": "boolean",
+          "volatility": "v",
+          "prosecdef": false,
+          "acl": "{postgres=X/postgres}",
+          "proconfig": [
+            "search_path=pg_catalog, public, pg_temp"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "2 distinct eligible NGO claims: one success, clean losing conflicts, one owner",
+      "passed": true,
+      "evidence": [
+        {
+          "actor": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+          "actor_label": "FROZEN_BENCHMARK:NGO001",
+          "listing": "b8344b3a-0901-4432-89c9-8a5f3d6afcbf",
+          "request": "8c05beb5-03a3-4617-89ce-4171aa46cd8b",
+          "result": {
+            "outcome": "CONFLICT",
+            "claim_id": null,
+            "replayed": false,
+            "reason_code": "ALREADY_CLAIMED"
+          },
+          "sqlstate": null,
+          "latency_ms": 163.348
+        },
+        {
+          "actor": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+          "actor_label": "FROZEN_BENCHMARK:NGO002",
+          "listing": "b8344b3a-0901-4432-89c9-8a5f3d6afcbf",
+          "request": "251cc95a-de5d-415c-8d0f-e4d9dbb19966",
+          "result": {
+            "outcome": "SUCCESS",
+            "claim_id": "53871d96-4eb7-4139-98ed-4af49985cd7a",
+            "replayed": false,
+            "reason_code": null
+          },
+          "sqlstate": null,
+          "latency_ms": 150.018
+        }
+      ]
+    },
+    {
+      "name": "5 distinct eligible NGO claims: one success, clean losing conflicts, one owner",
+      "passed": true,
+      "evidence": [
+        {
+          "actor": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+          "actor_label": "FROZEN_BENCHMARK:NGO001",
+          "listing": "8ccc3bf5-d2dc-4ed5-a1ca-19007998d616",
+          "request": "199538f2-c69f-4cce-b9d0-145dae738c04",
+          "result": {
+            "outcome": "CONFLICT",
+            "claim_id": null,
+            "replayed": false,
+            "reason_code": "ALREADY_CLAIMED"
+          },
+          "sqlstate": null,
+          "latency_ms": 237.636
+        },
+        {
+          "actor": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+          "actor_label": "FROZEN_BENCHMARK:NGO002",
+          "listing": "8ccc3bf5-d2dc-4ed5-a1ca-19007998d616",
+          "request": "5faf2512-6e89-4829-bdc0-314a78f15eb6",
+          "result": {
+            "outcome": "CONFLICT",
+            "claim_id": null,
+            "replayed": false,
+            "reason_code": "ALREADY_CLAIMED"
+          },
+          "sqlstate": null,
+          "latency_ms": 218.903
+        },
+        {
+          "actor": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+          "actor_label": "FROZEN_BENCHMARK:NGO004",
+          "listing": "8ccc3bf5-d2dc-4ed5-a1ca-19007998d616",
+          "request": "10e4c3e2-1a7e-4888-8738-0f3ceef077ee",
+          "result": {
+            "outcome": "CONFLICT",
+            "claim_id": null,
+            "replayed": false,
+            "reason_code": "ALREADY_CLAIMED"
+          },
+          "sqlstate": null,
+          "latency_ms": 267.767
+        },
+        {
+          "actor": "a85119f4-603c-5160-8f9e-74c234e4a170",
+          "actor_label": "FROZEN_BENCHMARK:NGO008",
+          "listing": "8ccc3bf5-d2dc-4ed5-a1ca-19007998d616",
+          "request": "3d11bde5-741f-4bd5-af8b-8b9462d63b93",
+          "result": {
+            "outcome": "SUCCESS",
+            "claim_id": "94ead97c-3344-4b73-9b2d-4ec446c5c61a",
+            "replayed": false,
+            "reason_code": null
+          },
+          "sqlstate": null,
+          "latency_ms": 205.45
+        },
+        {
+          "actor": "21ad19ed-8116-538e-9c08-15feb524860a",
+          "actor_label": "SYNTHETIC_CLONE_OF:NGO001:LOCKFIX_SYNTHETIC_NGO_01",
+          "listing": "8ccc3bf5-d2dc-4ed5-a1ca-19007998d616",
+          "request": "c4d6f614-adb1-443f-9665-0368575ccb2b",
+          "result": {
+            "outcome": "CONFLICT",
+            "claim_id": null,
+            "replayed": false,
+            "reason_code": "ALREADY_CLAIMED"
+          },
+          "sqlstate": null,
+          "latency_ms": 255.206
+        }
+      ]
+    },
+    {
+      "name": "10 distinct eligible NGO claims: one success, clean losing conflicts, one owner",
+      "passed": true,
+      "evidence": [
+        {
+          "actor": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+          "actor_label": "FROZEN_BENCHMARK:NGO001",
+          "listing": "07382181-a2d0-4fb8-90b7-1d66398db83a",
+          "request": "63676436-e7ef-4343-813c-29db786c5f28",
+          "result": {
+            "outcome": "CONFLICT",
+            "claim_id": null,
+            "replayed": false,
+            "reason_code": "ALREADY_CLAIMED"
+          },
+          "sqlstate": null,
+          "latency_ms": 386.532
+        },
+        {
+          "actor": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+          "actor_label": "FROZEN_BENCHMARK:NGO002",
+          "listing": "07382181-a2d0-4fb8-90b7-1d66398db83a",
+          "request": "4410551c-b074-4b69-acf8-57cc0c9e59e2",
+          "result": {
+            "outcome": "CONFLICT",
+            "claim_id": null,
+            "replayed": false,
+            "reason_code": "ALREADY_CLAIMED"
+          },
+          "sqlstate": null,
+          "latency_ms": 366.311
+        },
+        {
+          "actor": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+          "actor_label": "FROZEN_BENCHMARK:NGO004",
+          "listing": "07382181-a2d0-4fb8-90b7-1d66398db83a",
+          "request": "d06e33ee-71b5-464d-971e-e87675d30b01",
+          "result": {
+            "outcome": "CONFLICT",
+            "claim_id": null,
+            "replayed": false,
+            "reason_code": "ALREADY_CLAIMED"
+          },
+          "sqlstate": null,
+          "latency_ms": 313.98
+        },
+        {
+          "actor": "a85119f4-603c-5160-8f9e-74c234e4a170",
+          "actor_label": "FROZEN_BENCHMARK:NGO008",
+          "listing": "07382181-a2d0-4fb8-90b7-1d66398db83a",
+          "request": "8fafe71c-4a77-4f41-bd99-1d8918febdcb",
+          "result": {
+            "outcome": "CONFLICT",
+            "claim_id": null,
+            "replayed": false,
+            "reason_code": "ALREADY_CLAIMED"
+          },
+          "sqlstate": null,
+          "latency_ms": 347.174
+        },
+        {
+          "actor": "cbc252d1-8f28-5ed4-bad4-67523b235c71",
+          "actor_label": "SYNTHETIC_CLONE_OF:NGO001:LOCKFIX_SYNTHETIC_NGO_02",
+          "listing": "07382181-a2d0-4fb8-90b7-1d66398db83a",
+          "request": "e2888994-da01-4ae3-8af2-6ab25a390c9c",
+          "result": {
+            "outcome": "CONFLICT",
+            "claim_id": null,
+            "replayed": false,
+            "reason_code": "ALREADY_CLAIMED"
+          },
+          "sqlstate": null,
+          "latency_ms": 270.398
+        },
+        {
+          "actor": "0d6bc0d7-eb48-5838-a0c1-ac9251e2a613",
+          "actor_label": "SYNTHETIC_CLONE_OF:NGO001:LOCKFIX_SYNTHETIC_NGO_03",
+          "listing": "07382181-a2d0-4fb8-90b7-1d66398db83a",
+          "request": "ed4228c5-4a0e-413b-8449-323e7073ff77",
+          "result": {
+            "outcome": "CONFLICT",
+            "claim_id": null,
+            "replayed": false,
+            "reason_code": "ALREADY_CLAIMED"
+          },
+          "sqlstate": null,
+          "latency_ms": 197.827
+        },
+        {
+          "actor": "d4be369e-6eed-5b36-87a5-a45797e55257",
+          "actor_label": "SYNTHETIC_CLONE_OF:NGO001:LOCKFIX_SYNTHETIC_NGO_04",
+          "listing": "07382181-a2d0-4fb8-90b7-1d66398db83a",
+          "request": "c7aae65e-a986-44fb-8c99-e8a7d78ca037",
+          "result": {
+            "outcome": "SUCCESS",
+            "claim_id": "86ed004e-a631-412a-b497-a7a69f9c66e0",
+            "replayed": false,
+            "reason_code": null
+          },
+          "sqlstate": null,
+          "latency_ms": 180.41
+        },
+        {
+          "actor": "a15490d7-2e07-52d5-bb7f-2446c6520676",
+          "actor_label": "SYNTHETIC_CLONE_OF:NGO001:LOCKFIX_SYNTHETIC_NGO_05",
+          "listing": "07382181-a2d0-4fb8-90b7-1d66398db83a",
+          "request": "fbb1753d-a130-4eb5-b6c0-11436cc4ddc0",
+          "result": {
+            "outcome": "CONFLICT",
+            "claim_id": null,
+            "replayed": false,
+            "reason_code": "ALREADY_CLAIMED"
+          },
+          "sqlstate": null,
+          "latency_ms": 405.634
+        },
+        {
+          "actor": "e8f33359-03c7-5e83-a23f-362782e634fd",
+          "actor_label": "SYNTHETIC_CLONE_OF:NGO001:LOCKFIX_SYNTHETIC_NGO_06",
+          "listing": "07382181-a2d0-4fb8-90b7-1d66398db83a",
+          "request": "0b79462d-2854-4d87-935c-a13ec19b14a2",
+          "result": {
+            "outcome": "CONFLICT",
+            "claim_id": null,
+            "replayed": false,
+            "reason_code": "ALREADY_CLAIMED"
+          },
+          "sqlstate": null,
+          "latency_ms": 428.25
+        },
+        {
+          "actor": "229f156d-fe9c-5e16-bd40-107eca0c88ca",
+          "actor_label": "SYNTHETIC_CLONE_OF:NGO001:LOCKFIX_SYNTHETIC_NGO_07",
+          "listing": "07382181-a2d0-4fb8-90b7-1d66398db83a",
+          "request": "bee13dc9-ea7b-4719-87a2-c6860d671b2f",
+          "result": {
+            "outcome": "CONFLICT",
+            "claim_id": null,
+            "replayed": false,
+            "reason_code": "ALREADY_CLAIMED"
+          },
+          "sqlstate": null,
+          "latency_ms": 223.08
+        }
+      ]
+    },
+    {
+      "name": "same UUID replay returns same claim without another ownership row",
+      "passed": true,
+      "evidence": null
+    },
+    {
+      "name": "different UUID does not create a second claim for existing holder",
+      "passed": true,
+      "evidence": null
+    },
+    {
+      "name": "same UUID different listing returns audited rollback receipt",
+      "passed": true,
+      "evidence": null
+    },
+    {
+      "name": "another NGO cannot reuse a request UUID to gain ownership",
+      "passed": true,
+      "evidence": null
+    },
+    {
+      "name": "success replay preserves one claim-attempt audit",
+      "passed": true,
+      "evidence": 1
+    },
+    {
+      "name": "concurrent same UUID serialized and replayed",
+      "passed": true,
+      "evidence": [
+        {
+          "actor": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+          "actor_label": "FROZEN_BENCHMARK:NGO001",
+          "listing": "274d257d-de92-4fff-8573-280d6b139b5e",
+          "request": "8678047f-6656-4773-9cb2-80baa3990d1b",
+          "result": {
+            "outcome": "SUCCESS",
+            "claim_id": "f56fc0b7-c013-4384-b9a1-d00f0ba124e5",
+            "replayed": true,
+            "reason_code": null
+          },
+          "sqlstate": null,
+          "latency_ms": 229.059
+        },
+        {
+          "actor": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+          "actor_label": "FROZEN_BENCHMARK:NGO001",
+          "listing": "274d257d-de92-4fff-8573-280d6b139b5e",
+          "request": "8678047f-6656-4773-9cb2-80baa3990d1b",
+          "result": {
+            "outcome": "SUCCESS",
+            "claim_id": "f56fc0b7-c013-4384-b9a1-d00f0ba124e5",
+            "replayed": true,
+            "reason_code": null
+          },
+          "sqlstate": null,
+          "latency_ms": 210.386
+        },
+        {
+          "actor": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+          "actor_label": "FROZEN_BENCHMARK:NGO001",
+          "listing": "274d257d-de92-4fff-8573-280d6b139b5e",
+          "request": "8678047f-6656-4773-9cb2-80baa3990d1b",
+          "result": {
+            "outcome": "SUCCESS",
+            "claim_id": "f56fc0b7-c013-4384-b9a1-d00f0ba124e5",
+            "replayed": true,
+            "reason_code": null
+          },
+          "sqlstate": null,
+          "latency_ms": 217.004
+        },
+        {
+          "actor": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+          "actor_label": "FROZEN_BENCHMARK:NGO001",
+          "listing": "274d257d-de92-4fff-8573-280d6b139b5e",
+          "request": "8678047f-6656-4773-9cb2-80baa3990d1b",
+          "result": {
+            "outcome": "SUCCESS",
+            "claim_id": "f56fc0b7-c013-4384-b9a1-d00f0ba124e5",
+            "replayed": true,
+            "reason_code": null
+          },
+          "sqlstate": null,
+          "latency_ms": 221.124
+        },
+        {
+          "actor": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+          "actor_label": "FROZEN_BENCHMARK:NGO001",
+          "listing": "274d257d-de92-4fff-8573-280d6b139b5e",
+          "request": "8678047f-6656-4773-9cb2-80baa3990d1b",
+          "result": {
+            "outcome": "SUCCESS",
+            "claim_id": "f56fc0b7-c013-4384-b9a1-d00f0ba124e5",
+            "replayed": false,
+            "reason_code": null
+          },
+          "sqlstate": null,
+          "latency_ms": 204.625
+        }
+      ]
+    },
+    {
+      "name": "controlled FK key-share upgrade no longer deadlocks",
+      "passed": true,
+      "evidence": [
+        {
+          "result": {
+            "outcome": "SUCCESS",
+            "claim_id": "20acfd1e-bed5-46cf-bdb1-7744b46bf956",
+            "replayed": false,
+            "reason_code": null
+          },
+          "sqlstate": null,
+          "latency_ms": 72.62419999824488
+        },
+        {
+          "result": {
+            "outcome": "CONFLICT",
+            "claim_id": null,
+            "replayed": false,
+            "reason_code": "ALREADY_CLAIMED"
+          },
+          "sqlstate": null,
+          "latency_ms": 89.58020000136457
+        }
+      ]
+    },
+    {
+      "name": "concurrent cancellation/release and claim 0",
+      "passed": true,
+      "evidence": [
+        {
+          "actor": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+          "actor_label": "FROZEN_BENCHMARK:NGO001",
+          "listing": "6c799962-a5a2-43ee-9829-6f0cfad52c02",
+          "request": "dcc7e855-4053-40cf-9a79-326f685a249e",
+          "result": {
+            "outcome": "SUCCESS",
+            "claim_id": "6c799962-a5a2-43ee-9829-6f0cfad52c02",
+            "listing_id": "c3c27341-7682-4ac9-8adb-3eba1485c68d",
+            "reason_code": "NGO_CANCELLED_BEFORE_PICKUP",
+            "claim_status": "RELEASED",
+            "resulting_listing_status": "AVAILABLE"
+          },
+          "sqlstate": null,
+          "latency_ms": 166.171
+        },
+        {
+          "actor": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+          "actor_label": "FROZEN_BENCHMARK:NGO002",
+          "listing": "c3c27341-7682-4ac9-8adb-3eba1485c68d",
+          "request": "8a74ffc0-8e43-4768-a749-316f8c8a8961",
+          "result": {
+            "outcome": "CONFLICT",
+            "claim_id": null,
+            "replayed": false,
+            "reason_code": "ALREADY_CLAIMED"
+          },
+          "sqlstate": null,
+          "latency_ms": 97.876
+        }
+      ]
+    },
+    {
+      "name": "concurrent cancellation/release and claim 1",
+      "passed": true,
+      "evidence": [
+        {
+          "actor": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+          "actor_label": "FROZEN_BENCHMARK:NGO001",
+          "listing": "767d2c9c-ef1a-4d9c-940e-28b066091730",
+          "request": "5f5cba0f-b9f3-43d8-8fdc-3bbfb406a7cd",
+          "result": {
+            "outcome": "SUCCESS",
+            "claim_id": "767d2c9c-ef1a-4d9c-940e-28b066091730",
+            "listing_id": "6e38cc47-41ba-479e-bd8d-ac88b33f052e",
+            "reason_code": "NGO_CANCELLED_BEFORE_PICKUP",
+            "claim_status": "RELEASED",
+            "resulting_listing_status": "AVAILABLE"
+          },
+          "sqlstate": null,
+          "latency_ms": 184.257
+        },
+        {
+          "actor": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+          "actor_label": "FROZEN_BENCHMARK:NGO002",
+          "listing": "6e38cc47-41ba-479e-bd8d-ac88b33f052e",
+          "request": "f64dea7c-8d17-41f1-b4b5-8d89b97a20ba",
+          "result": {
+            "outcome": "CONFLICT",
+            "claim_id": null,
+            "replayed": false,
+            "reason_code": "ALREADY_CLAIMED"
+          },
+          "sqlstate": null,
+          "latency_ms": 101.159
+        }
+      ]
+    },
+    {
+      "name": "concurrent cancellation/release and claim 2",
+      "passed": true,
+      "evidence": [
+        {
+          "actor": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+          "actor_label": "FROZEN_BENCHMARK:NGO001",
+          "listing": "7dc88913-5473-4a57-8c93-7a0f45d61dec",
+          "request": "d6ed7c70-d155-419e-9f78-26056a165ec8",
+          "result": {
+            "outcome": "SUCCESS",
+            "claim_id": "7dc88913-5473-4a57-8c93-7a0f45d61dec",
+            "listing_id": "8553f711-cac4-4d5d-b0ab-34cdee362688",
+            "reason_code": "NGO_CANCELLED_BEFORE_PICKUP",
+            "claim_status": "RELEASED",
+            "resulting_listing_status": "AVAILABLE"
+          },
+          "sqlstate": null,
+          "latency_ms": 249.483
+        },
+        {
+          "actor": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+          "actor_label": "FROZEN_BENCHMARK:NGO002",
+          "listing": "8553f711-cac4-4d5d-b0ab-34cdee362688",
+          "request": "4071f6a6-6ab4-476e-bc0a-854005ba74cd",
+          "result": {
+            "outcome": "CONFLICT",
+            "claim_id": null,
+            "replayed": false,
+            "reason_code": "ALREADY_CLAIMED"
+          },
+          "sqlstate": null,
+          "latency_ms": 121.971
+        }
+      ]
+    },
+    {
+      "name": "concurrent cancellation/release and claim 3",
+      "passed": true,
+      "evidence": [
+        {
+          "actor": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+          "actor_label": "FROZEN_BENCHMARK:NGO001",
+          "listing": "60378c25-6cd2-4c81-8e51-318322fee4df",
+          "request": "4c7e8257-b552-46c8-9598-c6ad9e48321d",
+          "result": {
+            "outcome": "SUCCESS",
+            "claim_id": "60378c25-6cd2-4c81-8e51-318322fee4df",
+            "listing_id": "f14ed437-cfc5-45ee-bb3f-24a1fcbaafb3",
+            "reason_code": "NGO_CANCELLED_BEFORE_PICKUP",
+            "claim_status": "RELEASED",
+            "resulting_listing_status": "AVAILABLE"
+          },
+          "sqlstate": null,
+          "latency_ms": 221.025
+        },
+        {
+          "actor": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+          "actor_label": "FROZEN_BENCHMARK:NGO002",
+          "listing": "f14ed437-cfc5-45ee-bb3f-24a1fcbaafb3",
+          "request": "c05cebaf-341f-4b43-883d-fa6865ec6659",
+          "result": {
+            "outcome": "CONFLICT",
+            "claim_id": null,
+            "replayed": false,
+            "reason_code": "ALREADY_CLAIMED"
+          },
+          "sqlstate": null,
+          "latency_ms": 131.887
+        }
+      ]
+    },
+    {
+      "name": "concurrent cancellation/release and claim 4",
+      "passed": true,
+      "evidence": [
+        {
+          "actor": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+          "actor_label": "FROZEN_BENCHMARK:NGO001",
+          "listing": "49325de3-2283-40f2-b5e4-569196d95328",
+          "request": "3e7c98c9-f9dc-4ff2-977a-57cec8bfb1c3",
+          "result": {
+            "outcome": "SUCCESS",
+            "claim_id": "49325de3-2283-40f2-b5e4-569196d95328",
+            "listing_id": "c517cdaf-7fcb-4664-ab6a-f096503724db",
+            "reason_code": "NGO_CANCELLED_BEFORE_PICKUP",
+            "claim_status": "RELEASED",
+            "resulting_listing_status": "AVAILABLE"
+          },
+          "sqlstate": null,
+          "latency_ms": 173.674
+        },
+        {
+          "actor": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+          "actor_label": "FROZEN_BENCHMARK:NGO002",
+          "listing": "c517cdaf-7fcb-4664-ab6a-f096503724db",
+          "request": "f2c2d309-6a45-4bf0-b222-3a93c7c0740d",
+          "result": {
+            "outcome": "CONFLICT",
+            "claim_id": null,
+            "replayed": false,
+            "reason_code": "ALREADY_CLAIMED"
+          },
+          "sqlstate": null,
+          "latency_ms": 115.514
+        }
+      ]
+    },
+    {
+      "name": "concurrent recovery/release and claim preserves custody and uniqueness",
+      "passed": true,
+      "evidence": [
+        {
+          "actor": null,
+          "actor_label": "SERVICE_ROLE",
+          "listing": "9cf0b284-4915-48ba-a7bc-2694b67ffa04",
+          "request": "5f7903ed-cb6a-41e7-9f7c-1737574553ca",
+          "result": 1,
+          "sqlstate": null,
+          "latency_ms": 194.226
+        },
+        {
+          "actor": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+          "actor_label": "FROZEN_BENCHMARK:NGO002",
+          "listing": "9cf0b284-4915-48ba-a7bc-2694b67ffa04",
+          "request": "06354db4-69f4-4677-af10-e6b19fd745ed",
+          "result": {
+            "outcome": "CONFLICT",
+            "claim_id": null,
+            "replayed": false,
+            "reason_code": "ALREADY_CLAIMED"
+          },
+          "sqlstate": null,
+          "latency_ms": 114.221
+        }
+      ]
+    },
+    {
+      "name": "active lease remains protected from recovery and replacement",
+      "passed": true,
+      "evidence": {
+        "recovery": {
+          "actor": null,
+          "actor_label": "SERVICE_ROLE",
+          "listing": "bfc95d66-45e0-4c9c-a407-b2225729bf34",
+          "request": "41bd8c81-be61-4667-b6f4-5e06656a2020",
+          "result": 0,
+          "sqlstate": null,
+          "latency_ms": 74.883
+        },
+        "loser": {
+          "actor": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+          "actor_label": "FROZEN_BENCHMARK:NGO002",
+          "listing": "bfc95d66-45e0-4c9c-a407-b2225729bf34",
+          "request": "064de3c5-5c1f-467a-8ae3-9d31a7539eb1",
+          "result": {
+            "outcome": "CONFLICT",
+            "claim_id": null,
+            "replayed": false,
+            "reason_code": "ALREADY_CLAIMED"
+          },
+          "sqlstate": null,
+          "latency_ms": 102.964
+        },
+        "old_state": "ACTIVE"
+      }
+    },
+    {
+      "name": "fault rolls back claim/lease/task and persists trusted audit receipt",
+      "passed": true,
+      "evidence": {
+        "actor": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "actor_label": "FROZEN_BENCHMARK:NGO001",
+        "listing": "c8c60b09-297a-44af-ab59-78e2f717cc60",
+        "request": "564a9b3f-43bf-4ff3-9448-58d7f204ef51",
+        "result": {
+          "outcome": "ERROR",
+          "claim_id": null,
+          "replayed": false,
+          "reason_code": "CLAIM_TRANSACTION_ROLLED_BACK",
+          "failure_audit_id": "26f2a01f-a371-4026-8516-0136a4b52615",
+          "rollback_confirmed": true
+        },
+        "sqlstate": null,
+        "latency_ms": 132.904
+      }
+    },
+    {
+      "name": "manual same UUID retry after confirmed rollback succeeds",
+      "passed": true,
+      "evidence": null
+    },
+    {
+      "name": "authenticated application role cannot mutate failure receipts",
+      "passed": true,
+      "evidence": {
+        "operation": "UPDATE public.operation_failure_events SET reason_code=<changed value> WHERE request_id=<fault request>",
+        "role": "authenticated",
+        "sqlstate": "42501",
+        "rowcount": null,
+        "receipt_value_before": "CLAIM_TRANSACTION_ROLLED_BACK",
+        "attempted_reason_code": "REGRESSION_UNAUTHORIZED_MUTATION",
+        "receipt_value_after": "CLAIM_TRANSACTION_ROLLED_BACK",
+        "receipt_unchanged": true,
+        "application_role_denied": true
+      }
+    },
+    {
+      "name": "unauthenticated claim denied",
+      "passed": true,
+      "evidence": {
+        "actor": null,
+        "actor_label": "SERVICE_ROLE",
+        "listing": "084d3e74-085f-49c0-8049-aa4d83d94d37",
+        "request": "a075c8d8-5213-4917-adf5-52812a3ead31",
+        "result": null,
+        "sqlstate": "P0001",
+        "message": "UNAUTHENTICATED",
+        "latency_ms": 79.64
+      }
+    },
+    {
+      "name": "inactive NGO denied",
+      "passed": true,
+      "evidence": {
+        "actor": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "actor_label": "FROZEN_BENCHMARK:NGO001",
+        "listing": "084d3e74-085f-49c0-8049-aa4d83d94d37",
+        "request": "c73e9aea-7001-4606-b941-c3712179d07f",
+        "result": null,
+        "sqlstate": "P0001",
+        "message": "ACTIVE_NGO_ONLY",
+        "latency_ms": 75.998
+      }
+    },
+    {
+      "name": "unverified location fails eligibility",
+      "passed": true,
+      "evidence": {
+        "actor": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+        "actor_label": "FROZEN_BENCHMARK:NGO001",
+        "listing": "084d3e74-085f-49c0-8049-aa4d83d94d37",
+        "request": "8c356501-7ac2-4c17-ac3e-1ed960b6bd11",
+        "result": {
+          "outcome": "CONFLICT",
+          "claim_id": null,
+          "replayed": false,
+          "reason_code": "ELIGIBILITY_UNDETERMINED"
+        },
+        "sqlstate": null,
+        "latency_ms": 111.672
+      }
+    },
+    {
+      "name": "actual frozen road adapter rejects outside/unroutable NGO",
+      "passed": true,
+      "evidence": {
+        "actor": "08f18eda-25a2-5fa4-a77b-e40d96038b8c",
+        "actor_label": "SERVICE_ROLE",
+        "listing": "084d3e74-085f-49c0-8049-aa4d83d94d37",
+        "request": "9a2fde2d-6e3e-46b9-b9bb-2652cdfcf437",
+        "result": {
+          "outcome": "INELIGIBLE",
+          "claim_id": null,
+          "replayed": false,
+          "reason_code": "ROUTE_UNAVAILABLE"
+        },
+        "sqlstate": null,
+        "latency_ms": 106.483
+      }
+    },
+    {
+      "name": "source drift raises and rolls back the transaction",
+      "passed": true,
+      "evidence": "CLAIM_LOCK_PATCH_CLAIM_SOURCE_OR_METADATA_DRIFT"
+    },
+    {
+      "name": "already-corrected source fails safely on patch reapplication",
+      "passed": true,
+      "evidence": null
+    }
+  ],
+  "operations": [
+    {
+      "actor": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+      "actor_label": "FROZEN_BENCHMARK:NGO002",
+      "listing": "b8344b3a-0901-4432-89c9-8a5f3d6afcbf",
+      "request": "251cc95a-de5d-415c-8d0f-e4d9dbb19966",
+      "result": {
+        "outcome": "SUCCESS",
+        "claim_id": "53871d96-4eb7-4139-98ed-4af49985cd7a",
+        "replayed": false,
+        "reason_code": null
+      },
+      "sqlstate": null,
+      "latency_ms": 150.018
+    },
+    {
+      "actor": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+      "actor_label": "FROZEN_BENCHMARK:NGO001",
+      "listing": "b8344b3a-0901-4432-89c9-8a5f3d6afcbf",
+      "request": "8c05beb5-03a3-4617-89ce-4171aa46cd8b",
+      "result": {
+        "outcome": "CONFLICT",
+        "claim_id": null,
+        "replayed": false,
+        "reason_code": "ALREADY_CLAIMED"
+      },
+      "sqlstate": null,
+      "latency_ms": 163.348
+    },
+    {
+      "actor": "a85119f4-603c-5160-8f9e-74c234e4a170",
+      "actor_label": "FROZEN_BENCHMARK:NGO008",
+      "listing": "8ccc3bf5-d2dc-4ed5-a1ca-19007998d616",
+      "request": "3d11bde5-741f-4bd5-af8b-8b9462d63b93",
+      "result": {
+        "outcome": "SUCCESS",
+        "claim_id": "94ead97c-3344-4b73-9b2d-4ec446c5c61a",
+        "replayed": false,
+        "reason_code": null
+      },
+      "sqlstate": null,
+      "latency_ms": 205.45
+    },
+    {
+      "actor": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+      "actor_label": "FROZEN_BENCHMARK:NGO002",
+      "listing": "8ccc3bf5-d2dc-4ed5-a1ca-19007998d616",
+      "request": "5faf2512-6e89-4829-bdc0-314a78f15eb6",
+      "result": {
+        "outcome": "CONFLICT",
+        "claim_id": null,
+        "replayed": false,
+        "reason_code": "ALREADY_CLAIMED"
+      },
+      "sqlstate": null,
+      "latency_ms": 218.903
+    },
+    {
+      "actor": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+      "actor_label": "FROZEN_BENCHMARK:NGO001",
+      "listing": "8ccc3bf5-d2dc-4ed5-a1ca-19007998d616",
+      "request": "199538f2-c69f-4cce-b9d0-145dae738c04",
+      "result": {
+        "outcome": "CONFLICT",
+        "claim_id": null,
+        "replayed": false,
+        "reason_code": "ALREADY_CLAIMED"
+      },
+      "sqlstate": null,
+      "latency_ms": 237.636
+    },
+    {
+      "actor": "21ad19ed-8116-538e-9c08-15feb524860a",
+      "actor_label": "SYNTHETIC_CLONE_OF:NGO001:LOCKFIX_SYNTHETIC_NGO_01",
+      "listing": "8ccc3bf5-d2dc-4ed5-a1ca-19007998d616",
+      "request": "c4d6f614-adb1-443f-9665-0368575ccb2b",
+      "result": {
+        "outcome": "CONFLICT",
+        "claim_id": null,
+        "replayed": false,
+        "reason_code": "ALREADY_CLAIMED"
+      },
+      "sqlstate": null,
+      "latency_ms": 255.206
+    },
+    {
+      "actor": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+      "actor_label": "FROZEN_BENCHMARK:NGO004",
+      "listing": "8ccc3bf5-d2dc-4ed5-a1ca-19007998d616",
+      "request": "10e4c3e2-1a7e-4888-8738-0f3ceef077ee",
+      "result": {
+        "outcome": "CONFLICT",
+        "claim_id": null,
+        "replayed": false,
+        "reason_code": "ALREADY_CLAIMED"
+      },
+      "sqlstate": null,
+      "latency_ms": 267.767
+    },
+    {
+      "actor": "d4be369e-6eed-5b36-87a5-a45797e55257",
+      "actor_label": "SYNTHETIC_CLONE_OF:NGO001:LOCKFIX_SYNTHETIC_NGO_04",
+      "listing": "07382181-a2d0-4fb8-90b7-1d66398db83a",
+      "request": "c7aae65e-a986-44fb-8c99-e8a7d78ca037",
+      "result": {
+        "outcome": "SUCCESS",
+        "claim_id": "86ed004e-a631-412a-b497-a7a69f9c66e0",
+        "replayed": false,
+        "reason_code": null
+      },
+      "sqlstate": null,
+      "latency_ms": 180.41
+    },
+    {
+      "actor": "0d6bc0d7-eb48-5838-a0c1-ac9251e2a613",
+      "actor_label": "SYNTHETIC_CLONE_OF:NGO001:LOCKFIX_SYNTHETIC_NGO_03",
+      "listing": "07382181-a2d0-4fb8-90b7-1d66398db83a",
+      "request": "ed4228c5-4a0e-413b-8449-323e7073ff77",
+      "result": {
+        "outcome": "CONFLICT",
+        "claim_id": null,
+        "replayed": false,
+        "reason_code": "ALREADY_CLAIMED"
+      },
+      "sqlstate": null,
+      "latency_ms": 197.827
+    },
+    {
+      "actor": "229f156d-fe9c-5e16-bd40-107eca0c88ca",
+      "actor_label": "SYNTHETIC_CLONE_OF:NGO001:LOCKFIX_SYNTHETIC_NGO_07",
+      "listing": "07382181-a2d0-4fb8-90b7-1d66398db83a",
+      "request": "bee13dc9-ea7b-4719-87a2-c6860d671b2f",
+      "result": {
+        "outcome": "CONFLICT",
+        "claim_id": null,
+        "replayed": false,
+        "reason_code": "ALREADY_CLAIMED"
+      },
+      "sqlstate": null,
+      "latency_ms": 223.08
+    },
+    {
+      "actor": "cbc252d1-8f28-5ed4-bad4-67523b235c71",
+      "actor_label": "SYNTHETIC_CLONE_OF:NGO001:LOCKFIX_SYNTHETIC_NGO_02",
+      "listing": "07382181-a2d0-4fb8-90b7-1d66398db83a",
+      "request": "e2888994-da01-4ae3-8af2-6ab25a390c9c",
+      "result": {
+        "outcome": "CONFLICT",
+        "claim_id": null,
+        "replayed": false,
+        "reason_code": "ALREADY_CLAIMED"
+      },
+      "sqlstate": null,
+      "latency_ms": 270.398
+    },
+    {
+      "actor": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+      "actor_label": "FROZEN_BENCHMARK:NGO004",
+      "listing": "07382181-a2d0-4fb8-90b7-1d66398db83a",
+      "request": "d06e33ee-71b5-464d-971e-e87675d30b01",
+      "result": {
+        "outcome": "CONFLICT",
+        "claim_id": null,
+        "replayed": false,
+        "reason_code": "ALREADY_CLAIMED"
+      },
+      "sqlstate": null,
+      "latency_ms": 313.98
+    },
+    {
+      "actor": "a85119f4-603c-5160-8f9e-74c234e4a170",
+      "actor_label": "FROZEN_BENCHMARK:NGO008",
+      "listing": "07382181-a2d0-4fb8-90b7-1d66398db83a",
+      "request": "8fafe71c-4a77-4f41-bd99-1d8918febdcb",
+      "result": {
+        "outcome": "CONFLICT",
+        "claim_id": null,
+        "replayed": false,
+        "reason_code": "ALREADY_CLAIMED"
+      },
+      "sqlstate": null,
+      "latency_ms": 347.174
+    },
+    {
+      "actor": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+      "actor_label": "FROZEN_BENCHMARK:NGO002",
+      "listing": "07382181-a2d0-4fb8-90b7-1d66398db83a",
+      "request": "4410551c-b074-4b69-acf8-57cc0c9e59e2",
+      "result": {
+        "outcome": "CONFLICT",
+        "claim_id": null,
+        "replayed": false,
+        "reason_code": "ALREADY_CLAIMED"
+      },
+      "sqlstate": null,
+      "latency_ms": 366.311
+    },
+    {
+      "actor": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+      "actor_label": "FROZEN_BENCHMARK:NGO001",
+      "listing": "07382181-a2d0-4fb8-90b7-1d66398db83a",
+      "request": "63676436-e7ef-4343-813c-29db786c5f28",
+      "result": {
+        "outcome": "CONFLICT",
+        "claim_id": null,
+        "replayed": false,
+        "reason_code": "ALREADY_CLAIMED"
+      },
+      "sqlstate": null,
+      "latency_ms": 386.532
+    },
+    {
+      "actor": "a15490d7-2e07-52d5-bb7f-2446c6520676",
+      "actor_label": "SYNTHETIC_CLONE_OF:NGO001:LOCKFIX_SYNTHETIC_NGO_05",
+      "listing": "07382181-a2d0-4fb8-90b7-1d66398db83a",
+      "request": "fbb1753d-a130-4eb5-b6c0-11436cc4ddc0",
+      "result": {
+        "outcome": "CONFLICT",
+        "claim_id": null,
+        "replayed": false,
+        "reason_code": "ALREADY_CLAIMED"
+      },
+      "sqlstate": null,
+      "latency_ms": 405.634
+    },
+    {
+      "actor": "e8f33359-03c7-5e83-a23f-362782e634fd",
+      "actor_label": "SYNTHETIC_CLONE_OF:NGO001:LOCKFIX_SYNTHETIC_NGO_06",
+      "listing": "07382181-a2d0-4fb8-90b7-1d66398db83a",
+      "request": "0b79462d-2854-4d87-935c-a13ec19b14a2",
+      "result": {
+        "outcome": "CONFLICT",
+        "claim_id": null,
+        "replayed": false,
+        "reason_code": "ALREADY_CLAIMED"
+      },
+      "sqlstate": null,
+      "latency_ms": 428.25
+    },
+    {
+      "actor": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+      "actor_label": "FROZEN_BENCHMARK:NGO001",
+      "listing": "ac2109d6-8a83-4458-a675-bd70c5b2a167",
+      "request": "9052e34a-d341-429b-8ea5-a56a396dff15",
+      "result": {
+        "outcome": "SUCCESS",
+        "claim_id": "efde22c0-94f7-44cf-bf06-537657ee4465",
+        "replayed": false,
+        "reason_code": null
+      },
+      "sqlstate": null,
+      "latency_ms": 169.636
+    },
+    {
+      "actor": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+      "actor_label": "FROZEN_BENCHMARK:NGO001",
+      "listing": "ac2109d6-8a83-4458-a675-bd70c5b2a167",
+      "request": "9052e34a-d341-429b-8ea5-a56a396dff15",
+      "result": {
+        "outcome": "SUCCESS",
+        "claim_id": "efde22c0-94f7-44cf-bf06-537657ee4465",
+        "replayed": true,
+        "reason_code": null
+      },
+      "sqlstate": null,
+      "latency_ms": 79.709
+    },
+    {
+      "actor": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+      "actor_label": "FROZEN_BENCHMARK:NGO001",
+      "listing": "ac2109d6-8a83-4458-a675-bd70c5b2a167",
+      "request": "bdaaffdc-9d96-426a-8955-75fde09270f4",
+      "result": {
+        "outcome": "CONFLICT",
+        "claim_id": null,
+        "replayed": false,
+        "reason_code": "ALREADY_CLAIMED"
+      },
+      "sqlstate": null,
+      "latency_ms": 110.469
+    },
+    {
+      "actor": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+      "actor_label": "FROZEN_BENCHMARK:NGO001",
+      "listing": "2967fcd8-9691-45cf-bece-909764ce4aa9",
+      "request": "9052e34a-d341-429b-8ea5-a56a396dff15",
+      "result": {
+        "outcome": "ERROR",
+        "claim_id": null,
+        "replayed": false,
+        "reason_code": "IDEMPOTENCY_KEY_REUSED_WITH_DIFFERENT_PAYLOAD",
+        "failure_audit_id": "16f2b39d-e376-46aa-9377-774e9fa8b56b",
+        "rollback_confirmed": true
+      },
+      "sqlstate": null,
+      "latency_ms": 104.403
+    },
+    {
+      "actor": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+      "actor_label": "FROZEN_BENCHMARK:NGO002",
+      "listing": "ac2109d6-8a83-4458-a675-bd70c5b2a167",
+      "request": "9052e34a-d341-429b-8ea5-a56a396dff15",
+      "result": {
+        "outcome": "ERROR",
+        "claim_id": null,
+        "replayed": false,
+        "reason_code": "IDEMPOTENCY_KEY_REUSED_WITH_DIFFERENT_PAYLOAD",
+        "failure_audit_id": "ce48dfa1-980d-467e-bb22-8b1cf5f9dccd",
+        "rollback_confirmed": true
+      },
+      "sqlstate": null,
+      "latency_ms": 107.214
+    },
+    {
+      "actor": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+      "actor_label": "FROZEN_BENCHMARK:NGO001",
+      "listing": "274d257d-de92-4fff-8573-280d6b139b5e",
+      "request": "8678047f-6656-4773-9cb2-80baa3990d1b",
+      "result": {
+        "outcome": "SUCCESS",
+        "claim_id": "f56fc0b7-c013-4384-b9a1-d00f0ba124e5",
+        "replayed": false,
+        "reason_code": null
+      },
+      "sqlstate": null,
+      "latency_ms": 204.625
+    },
+    {
+      "actor": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+      "actor_label": "FROZEN_BENCHMARK:NGO001",
+      "listing": "274d257d-de92-4fff-8573-280d6b139b5e",
+      "request": "8678047f-6656-4773-9cb2-80baa3990d1b",
+      "result": {
+        "outcome": "SUCCESS",
+        "claim_id": "f56fc0b7-c013-4384-b9a1-d00f0ba124e5",
+        "replayed": true,
+        "reason_code": null
+      },
+      "sqlstate": null,
+      "latency_ms": 210.386
+    },
+    {
+      "actor": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+      "actor_label": "FROZEN_BENCHMARK:NGO001",
+      "listing": "274d257d-de92-4fff-8573-280d6b139b5e",
+      "request": "8678047f-6656-4773-9cb2-80baa3990d1b",
+      "result": {
+        "outcome": "SUCCESS",
+        "claim_id": "f56fc0b7-c013-4384-b9a1-d00f0ba124e5",
+        "replayed": true,
+        "reason_code": null
+      },
+      "sqlstate": null,
+      "latency_ms": 217.004
+    },
+    {
+      "actor": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+      "actor_label": "FROZEN_BENCHMARK:NGO001",
+      "listing": "274d257d-de92-4fff-8573-280d6b139b5e",
+      "request": "8678047f-6656-4773-9cb2-80baa3990d1b",
+      "result": {
+        "outcome": "SUCCESS",
+        "claim_id": "f56fc0b7-c013-4384-b9a1-d00f0ba124e5",
+        "replayed": true,
+        "reason_code": null
+      },
+      "sqlstate": null,
+      "latency_ms": 221.124
+    },
+    {
+      "actor": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+      "actor_label": "FROZEN_BENCHMARK:NGO001",
+      "listing": "274d257d-de92-4fff-8573-280d6b139b5e",
+      "request": "8678047f-6656-4773-9cb2-80baa3990d1b",
+      "result": {
+        "outcome": "SUCCESS",
+        "claim_id": "f56fc0b7-c013-4384-b9a1-d00f0ba124e5",
+        "replayed": true,
+        "reason_code": null
+      },
+      "sqlstate": null,
+      "latency_ms": 229.059
+    },
+    {
+      "actor": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+      "actor_label": "FROZEN_BENCHMARK:NGO001",
+      "listing": "c3c27341-7682-4ac9-8adb-3eba1485c68d",
+      "request": "10f7acf4-b56c-4382-84fe-37e770d13e1f",
+      "result": {
+        "outcome": "SUCCESS",
+        "claim_id": "6c799962-a5a2-43ee-9829-6f0cfad52c02",
+        "replayed": false,
+        "reason_code": null
+      },
+      "sqlstate": null,
+      "latency_ms": 153.551
+    },
+    {
+      "actor": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+      "actor_label": "FROZEN_BENCHMARK:NGO002",
+      "listing": "c3c27341-7682-4ac9-8adb-3eba1485c68d",
+      "request": "8a74ffc0-8e43-4768-a749-316f8c8a8961",
+      "result": {
+        "outcome": "CONFLICT",
+        "claim_id": null,
+        "replayed": false,
+        "reason_code": "ALREADY_CLAIMED"
+      },
+      "sqlstate": null,
+      "latency_ms": 97.876
+    },
+    {
+      "actor": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+      "actor_label": "FROZEN_BENCHMARK:NGO001",
+      "listing": "6c799962-a5a2-43ee-9829-6f0cfad52c02",
+      "request": "dcc7e855-4053-40cf-9a79-326f685a249e",
+      "result": {
+        "outcome": "SUCCESS",
+        "claim_id": "6c799962-a5a2-43ee-9829-6f0cfad52c02",
+        "listing_id": "c3c27341-7682-4ac9-8adb-3eba1485c68d",
+        "reason_code": "NGO_CANCELLED_BEFORE_PICKUP",
+        "claim_status": "RELEASED",
+        "resulting_listing_status": "AVAILABLE"
+      },
+      "sqlstate": null,
+      "latency_ms": 166.171
+    },
+    {
+      "actor": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+      "actor_label": "FROZEN_BENCHMARK:NGO001",
+      "listing": "6e38cc47-41ba-479e-bd8d-ac88b33f052e",
+      "request": "8fb091e0-69d8-4239-8067-0cbd5eec7b5f",
+      "result": {
+        "outcome": "SUCCESS",
+        "claim_id": "767d2c9c-ef1a-4d9c-940e-28b066091730",
+        "replayed": false,
+        "reason_code": null
+      },
+      "sqlstate": null,
+      "latency_ms": 157.408
+    },
+    {
+      "actor": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+      "actor_label": "FROZEN_BENCHMARK:NGO002",
+      "listing": "6e38cc47-41ba-479e-bd8d-ac88b33f052e",
+      "request": "f64dea7c-8d17-41f1-b4b5-8d89b97a20ba",
+      "result": {
+        "outcome": "CONFLICT",
+        "claim_id": null,
+        "replayed": false,
+        "reason_code": "ALREADY_CLAIMED"
+      },
+      "sqlstate": null,
+      "latency_ms": 101.159
+    },
+    {
+      "actor": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+      "actor_label": "FROZEN_BENCHMARK:NGO001",
+      "listing": "767d2c9c-ef1a-4d9c-940e-28b066091730",
+      "request": "5f5cba0f-b9f3-43d8-8fdc-3bbfb406a7cd",
+      "result": {
+        "outcome": "SUCCESS",
+        "claim_id": "767d2c9c-ef1a-4d9c-940e-28b066091730",
+        "listing_id": "6e38cc47-41ba-479e-bd8d-ac88b33f052e",
+        "reason_code": "NGO_CANCELLED_BEFORE_PICKUP",
+        "claim_status": "RELEASED",
+        "resulting_listing_status": "AVAILABLE"
+      },
+      "sqlstate": null,
+      "latency_ms": 184.257
+    },
+    {
+      "actor": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+      "actor_label": "FROZEN_BENCHMARK:NGO001",
+      "listing": "8553f711-cac4-4d5d-b0ab-34cdee362688",
+      "request": "289620bf-6319-4e50-b183-c041a1f03f48",
+      "result": {
+        "outcome": "SUCCESS",
+        "claim_id": "7dc88913-5473-4a57-8c93-7a0f45d61dec",
+        "replayed": false,
+        "reason_code": null
+      },
+      "sqlstate": null,
+      "latency_ms": 147.721
+    },
+    {
+      "actor": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+      "actor_label": "FROZEN_BENCHMARK:NGO002",
+      "listing": "8553f711-cac4-4d5d-b0ab-34cdee362688",
+      "request": "4071f6a6-6ab4-476e-bc0a-854005ba74cd",
+      "result": {
+        "outcome": "CONFLICT",
+        "claim_id": null,
+        "replayed": false,
+        "reason_code": "ALREADY_CLAIMED"
+      },
+      "sqlstate": null,
+      "latency_ms": 121.971
+    },
+    {
+      "actor": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+      "actor_label": "FROZEN_BENCHMARK:NGO001",
+      "listing": "7dc88913-5473-4a57-8c93-7a0f45d61dec",
+      "request": "d6ed7c70-d155-419e-9f78-26056a165ec8",
+      "result": {
+        "outcome": "SUCCESS",
+        "claim_id": "7dc88913-5473-4a57-8c93-7a0f45d61dec",
+        "listing_id": "8553f711-cac4-4d5d-b0ab-34cdee362688",
+        "reason_code": "NGO_CANCELLED_BEFORE_PICKUP",
+        "claim_status": "RELEASED",
+        "resulting_listing_status": "AVAILABLE"
+      },
+      "sqlstate": null,
+      "latency_ms": 249.483
+    },
+    {
+      "actor": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+      "actor_label": "FROZEN_BENCHMARK:NGO001",
+      "listing": "f14ed437-cfc5-45ee-bb3f-24a1fcbaafb3",
+      "request": "73613f9d-43e0-43e2-bd85-3be40ae97dda",
+      "result": {
+        "outcome": "SUCCESS",
+        "claim_id": "60378c25-6cd2-4c81-8e51-318322fee4df",
+        "replayed": false,
+        "reason_code": null
+      },
+      "sqlstate": null,
+      "latency_ms": 188.399
+    },
+    {
+      "actor": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+      "actor_label": "FROZEN_BENCHMARK:NGO002",
+      "listing": "f14ed437-cfc5-45ee-bb3f-24a1fcbaafb3",
+      "request": "c05cebaf-341f-4b43-883d-fa6865ec6659",
+      "result": {
+        "outcome": "CONFLICT",
+        "claim_id": null,
+        "replayed": false,
+        "reason_code": "ALREADY_CLAIMED"
+      },
+      "sqlstate": null,
+      "latency_ms": 131.887
+    },
+    {
+      "actor": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+      "actor_label": "FROZEN_BENCHMARK:NGO001",
+      "listing": "60378c25-6cd2-4c81-8e51-318322fee4df",
+      "request": "4c7e8257-b552-46c8-9598-c6ad9e48321d",
+      "result": {
+        "outcome": "SUCCESS",
+        "claim_id": "60378c25-6cd2-4c81-8e51-318322fee4df",
+        "listing_id": "f14ed437-cfc5-45ee-bb3f-24a1fcbaafb3",
+        "reason_code": "NGO_CANCELLED_BEFORE_PICKUP",
+        "claim_status": "RELEASED",
+        "resulting_listing_status": "AVAILABLE"
+      },
+      "sqlstate": null,
+      "latency_ms": 221.025
+    },
+    {
+      "actor": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+      "actor_label": "FROZEN_BENCHMARK:NGO001",
+      "listing": "c517cdaf-7fcb-4664-ab6a-f096503724db",
+      "request": "3f9fbe17-4a85-489e-85bc-618d6294b23c",
+      "result": {
+        "outcome": "SUCCESS",
+        "claim_id": "49325de3-2283-40f2-b5e4-569196d95328",
+        "replayed": false,
+        "reason_code": null
+      },
+      "sqlstate": null,
+      "latency_ms": 241.799
+    },
+    {
+      "actor": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+      "actor_label": "FROZEN_BENCHMARK:NGO002",
+      "listing": "c517cdaf-7fcb-4664-ab6a-f096503724db",
+      "request": "f2c2d309-6a45-4bf0-b222-3a93c7c0740d",
+      "result": {
+        "outcome": "CONFLICT",
+        "claim_id": null,
+        "replayed": false,
+        "reason_code": "ALREADY_CLAIMED"
+      },
+      "sqlstate": null,
+      "latency_ms": 115.514
+    },
+    {
+      "actor": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+      "actor_label": "FROZEN_BENCHMARK:NGO001",
+      "listing": "49325de3-2283-40f2-b5e4-569196d95328",
+      "request": "3e7c98c9-f9dc-4ff2-977a-57cec8bfb1c3",
+      "result": {
+        "outcome": "SUCCESS",
+        "claim_id": "49325de3-2283-40f2-b5e4-569196d95328",
+        "listing_id": "c517cdaf-7fcb-4664-ab6a-f096503724db",
+        "reason_code": "NGO_CANCELLED_BEFORE_PICKUP",
+        "claim_status": "RELEASED",
+        "resulting_listing_status": "AVAILABLE"
+      },
+      "sqlstate": null,
+      "latency_ms": 173.674
+    },
+    {
+      "actor": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+      "actor_label": "FROZEN_BENCHMARK:NGO001",
+      "listing": "9cf0b284-4915-48ba-a7bc-2694b67ffa04",
+      "request": "75422fca-b2cb-4c45-860f-b1aa3a0bf016",
+      "result": {
+        "outcome": "SUCCESS",
+        "claim_id": "ea682524-45a3-4f7e-bcd6-bd6caf17807a",
+        "replayed": false,
+        "reason_code": null
+      },
+      "sqlstate": null,
+      "latency_ms": 157.626
+    },
+    {
+      "actor": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+      "actor_label": "FROZEN_BENCHMARK:NGO002",
+      "listing": "9cf0b284-4915-48ba-a7bc-2694b67ffa04",
+      "request": "06354db4-69f4-4677-af10-e6b19fd745ed",
+      "result": {
+        "outcome": "CONFLICT",
+        "claim_id": null,
+        "replayed": false,
+        "reason_code": "ALREADY_CLAIMED"
+      },
+      "sqlstate": null,
+      "latency_ms": 114.221
+    },
+    {
+      "actor": null,
+      "actor_label": "SERVICE_ROLE",
+      "listing": "9cf0b284-4915-48ba-a7bc-2694b67ffa04",
+      "request": "5f7903ed-cb6a-41e7-9f7c-1737574553ca",
+      "result": 1,
+      "sqlstate": null,
+      "latency_ms": 194.226
+    },
+    {
+      "actor": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+      "actor_label": "FROZEN_BENCHMARK:NGO001",
+      "listing": "bfc95d66-45e0-4c9c-a407-b2225729bf34",
+      "request": "cf04b1c0-9652-4ae0-b0e3-eebe499a228f",
+      "result": {
+        "outcome": "SUCCESS",
+        "claim_id": "5745a7a2-6abb-4f15-b75e-58ec7279c46a",
+        "replayed": false,
+        "reason_code": null
+      },
+      "sqlstate": null,
+      "latency_ms": 266.935
+    },
+    {
+      "actor": null,
+      "actor_label": "SERVICE_ROLE",
+      "listing": "bfc95d66-45e0-4c9c-a407-b2225729bf34",
+      "request": "41bd8c81-be61-4667-b6f4-5e06656a2020",
+      "result": 0,
+      "sqlstate": null,
+      "latency_ms": 74.883
+    },
+    {
+      "actor": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+      "actor_label": "FROZEN_BENCHMARK:NGO002",
+      "listing": "bfc95d66-45e0-4c9c-a407-b2225729bf34",
+      "request": "064de3c5-5c1f-467a-8ae3-9d31a7539eb1",
+      "result": {
+        "outcome": "CONFLICT",
+        "claim_id": null,
+        "replayed": false,
+        "reason_code": "ALREADY_CLAIMED"
+      },
+      "sqlstate": null,
+      "latency_ms": 102.964
+    },
+    {
+      "actor": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+      "actor_label": "FROZEN_BENCHMARK:NGO001",
+      "listing": "c8c60b09-297a-44af-ab59-78e2f717cc60",
+      "request": "564a9b3f-43bf-4ff3-9448-58d7f204ef51",
+      "result": {
+        "outcome": "ERROR",
+        "claim_id": null,
+        "replayed": false,
+        "reason_code": "CLAIM_TRANSACTION_ROLLED_BACK",
+        "failure_audit_id": "26f2a01f-a371-4026-8516-0136a4b52615",
+        "rollback_confirmed": true
+      },
+      "sqlstate": null,
+      "latency_ms": 132.904
+    },
+    {
+      "actor": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+      "actor_label": "FROZEN_BENCHMARK:NGO001",
+      "listing": "c8c60b09-297a-44af-ab59-78e2f717cc60",
+      "request": "564a9b3f-43bf-4ff3-9448-58d7f204ef51",
+      "result": {
+        "outcome": "SUCCESS",
+        "claim_id": "8a030473-9172-4026-bfe2-5dd964148db0",
+        "replayed": false,
+        "reason_code": null
+      },
+      "sqlstate": null,
+      "latency_ms": 143.591
+    },
+    {
+      "actor": null,
+      "actor_label": "SERVICE_ROLE",
+      "listing": "084d3e74-085f-49c0-8049-aa4d83d94d37",
+      "request": "a075c8d8-5213-4917-adf5-52812a3ead31",
+      "result": null,
+      "sqlstate": "P0001",
+      "message": "UNAUTHENTICATED",
+      "latency_ms": 79.64
+    },
+    {
+      "actor": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+      "actor_label": "FROZEN_BENCHMARK:NGO001",
+      "listing": "084d3e74-085f-49c0-8049-aa4d83d94d37",
+      "request": "c73e9aea-7001-4606-b941-c3712179d07f",
+      "result": null,
+      "sqlstate": "P0001",
+      "message": "ACTIVE_NGO_ONLY",
+      "latency_ms": 75.998
+    },
+    {
+      "actor": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+      "actor_label": "FROZEN_BENCHMARK:NGO001",
+      "listing": "084d3e74-085f-49c0-8049-aa4d83d94d37",
+      "request": "8c356501-7ac2-4c17-ac3e-1ed960b6bd11",
+      "result": {
+        "outcome": "CONFLICT",
+        "claim_id": null,
+        "replayed": false,
+        "reason_code": "ELIGIBILITY_UNDETERMINED"
+      },
+      "sqlstate": null,
+      "latency_ms": 111.672
+    },
+    {
+      "actor": "08f18eda-25a2-5fa4-a77b-e40d96038b8c",
+      "actor_label": "SERVICE_ROLE",
+      "listing": "084d3e74-085f-49c0-8049-aa4d83d94d37",
+      "request": "9a2fde2d-6e3e-46b9-b9bb-2652cdfcf437",
+      "result": {
+        "outcome": "INELIGIBLE",
+        "claim_id": null,
+        "replayed": false,
+        "reason_code": "ROUTE_UNAVAILABLE"
+      },
+      "sqlstate": null,
+      "latency_ms": 106.483
+    }
+  ],
+  "scope": "Focused lock-fix regressions, not the full frozen 275-scenario benchmark",
+  "expected_errors": "P0001 authorization, key-reuse, deliberate fault and drift tests are negative controls; not contention errors"
+}

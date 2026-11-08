@@ -37,11 +37,12 @@ class Adapter(ExistingAdapter):
         return shared,freeze_scenario(payload)
 
 def run(output,only=None):
+    experiment_started=time.perf_counter()
     clear_remote_env();verified=integrity();adapter=Adapter()
     output=Path(output).resolve();assert output.is_relative_to(ROOT/'experiments/e4_post_claim_routing/results')
     output.mkdir(parents=True,exist_ok=False);(output/'raw').mkdir()
     assert METHODS['proposed'] is proposed and proposed.__module__=='backend.routing.phase_b.optimizers'
-    sources={str(p.relative_to(ROOT)):sha(p) for folder in ['backend/routing/phase_b','backend/routing/phase_c2','backend/routing/integration','backend/routing/worker_service'] for p in (ROOT/folder).glob('*.py')}
+    sources={str(p.relative_to(ROOT)):sha(p) for folder in ['backend/routing/phase_b','backend/routing/optimizers','backend/routing/phase_c2','backend/routing/integration','backend/routing/worker_service'] for p in (ROOT/folder).glob('*.py')}
     for p in [Path(__file__),ROOT/'experiments/repro_benchmark.py',ROOT/'backend/routing/contract.py',ROOT/'backend/routing/benchmark_v32/adapter.py',ROOT/'backend/routing/benchmark_v32/runner.py']:sources[str(p.relative_to(ROOT))]=sha(p)
     manifest=dict(status='RUNNING',integrity=verified,environment=environment(),configuration=SETTINGS,source_sha256=sources,
       actual_proposed='backend.routing.phase_b.optimizers.proposed: same callable used by integration solve_bundle/METHODS',
@@ -66,8 +67,11 @@ def run(output,only=None):
             began=time.perf_counter()
             try:
                 plan=proposed(frozen,ExecutionConfig()) if method=='proposed' else baseline_plan(adapter,shared,frozen,method,ExecutionConfig())
-                planning_ms=(time.perf_counter()-began)*1000
+                method_pipeline_ms=(time.perf_counter()-began)*1000
+                validation_started=time.perf_counter()
                 checked=validate_plan(frozen,plan)
+                independent_validation_ms=(time.perf_counter()-validation_started)*1000
+                end_to_end_evaluation_ms=(time.perf_counter()-began)*1000
                 raw=dict(plan=asdict(plan),independent_validation=asdict(checked))
                 write(output/'raw'/f'{sid}-{method}.json',raw)
                 served=sum(len(r.stops) for r in plan.routes);valid=len(frozen.admitted_task_ids)
@@ -76,14 +80,23 @@ def run(output,only=None):
                   total_distance_km=metrics.get('total_travel_km'),travel_duration_min=metrics.get('driving_minutes'),route_duration_min=metrics.get('total_route_minutes'),
                   capacity_violations=sum('CAPACITY' in x[0] for x in checked.violations),time_window_violations=sum('WINDOW' in x[0] for x in checked.violations),
                   route_duration_violations=sum('DURATION' in x[0] for x in checked.violations),feasibility_pass=checked.valid and checked.feasible,
-                  validation_valid=checked.valid,plan_status=plan.status,timeout=plan.timeout,planner_execution_ms=plan.runtime_seconds*1000,adapter_call_ms=planning_ms,
+                  validation_valid=checked.valid,plan_status=plan.status,timeout=plan.timeout,
+                  method_reported_runtime_ms=plan.runtime_seconds*1000,
+                  solver_runtime_ms=plan.solver_runtime_seconds*1000,
+                  method_pipeline_wall_ms=method_pipeline_ms,
+                  independent_validation_ms=independent_validation_ms,
+                  end_to_end_evaluation_ms=end_to_end_evaluation_ms,
                   frozen_sha256=frozen.sha256,shared_snapshot_sha256=shared['snapshot_id'],error='')
                 # Validator metric names are authoritative; also derive exact
                 # distances/times from independently validated route accounting.
                 row['metrics']=json.dumps(metrics,sort_keys=True)
                 row['semantic_sha256']=hashlib.sha256(json.dumps(semantic(plan),sort_keys=True,default=str).encode()).hexdigest()
             except Exception as e:
-                row=dict(scenario_id=sid,method=method,valid_tasks=len(frozen.admitted_task_ids),served_tasks=None,coverage_percent=None,feasibility_pass=False,validation_valid=False,error=type(e).__name__+':'+str(e))
+                elapsed=(time.perf_counter()-began)*1000
+                row=dict(scenario_id=sid,method=method,valid_tasks=len(frozen.admitted_task_ids),served_tasks=None,coverage_percent=None,
+                    feasibility_pass=False,validation_valid=False,method_reported_runtime_ms=None,solver_runtime_ms=None,
+                    method_pipeline_wall_ms=elapsed,independent_validation_ms=None,end_to_end_evaluation_ms=elapsed,
+                    frozen_sha256=frozen.sha256,shared_snapshot_sha256=shared['snapshot_id'],error=type(e).__name__+':'+str(e))
                 errors.append(row);write(output/'raw'/f'{sid}-{method}-failure.json',row)
             records.append(row)
         csv_write(output/'results_per_scenario.csv',records)
@@ -105,7 +118,7 @@ def run(output,only=None):
          feasibility_passes=sum(r['feasibility_pass'] for r in rr),errors=sum(bool(r.get('error')) for r in rr),
          total_distance_km=sum(r.get('total_distance_km') or 0 for r in rr),total_planner_execution_ms=sum(r.get('planner_execution_ms') or 0 for r in rr)))
     csv_write(output/'summary.csv',summary)
-    write(output/'completion.json',dict(executed=True,scenarios=len(snapshots),evaluations=len(records),errors=len(errors),all_100_completed=len(snapshots)==100,source_unchanged=all(sha(ROOT/k)==v for k,v in sources.items())))
+    write(output/'completion.json',dict(executed=True,scenarios=len(snapshots),evaluations=len(records),errors=len(errors),all_100_completed=len(snapshots)==100,source_unchanged=all(sha(ROOT/k)==v for k,v in sources.items()),experiment_elapsed_seconds=time.perf_counter()-experiment_started))
     print(json.dumps(summary),flush=True)
 
 if __name__=='__main__':

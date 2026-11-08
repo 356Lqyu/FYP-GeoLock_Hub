@@ -2,7 +2,7 @@
 from pathlib import Path
 import csv, hashlib, importlib.util, json, os, platform, subprocess, sys
 ROOT=Path(__file__).resolve().parents[1]
-TEAM=Path(r'C:\Users\User\Downloads\FYP-GeoLock_Hub-ss (1)\FYP-GeoLock_Hub-ss')
+TEAM=ROOT
 SOURCE_DATA=ROOT/'benchmark dataset/dataset'
 DATA=ROOT/'experiments/repro_inputs/v33'
 
@@ -24,7 +24,7 @@ def module(name):
 def clear_remote_env():
     for k in list(os.environ):
         if k.upper().startswith(('PG','SUPABASE','GEOLOCK')) or k.upper() in ('DATABASE_URL','DB_URL'):os.environ.pop(k,None)
-def integrity():
+def integrity(teammate_root=None):
     manifest=json.loads((SOURCE_DATA/'generation_manifest.json').read_text(encoding='utf-8'))
     assert manifest['benchmark_version']=='GEOLOCK-BM-v3.3'
     evidence={};transport=[]
@@ -39,20 +39,23 @@ def integrity():
         p=DATA/original.name
         if not p.exists():p.write_bytes(canonical)
         assert sha(p)==digest and len(rows(p))==manifest['row_counts'][name]
-        t=TEAM/'benchmark dataset/dataset'/p.name
-        assert t.is_file() and sha(t)==sha(original),('TEAM_DATA_DIFFERS',name)
+        if teammate_root is not None:
+            t=Path(teammate_root)/'benchmark dataset/dataset'/p.name
+            assert t.is_file() and sha(t)==sha(original),('TEAM_DATA_DIFFERS',name)
         evidence[str(p.relative_to(ROOT))]=digest
         transport.append(dict(file=name,source_sha256=sha(original),manifest_sha256=digest,repair='CRLF bytes in separate copy only' if supplied!=canonical else 'none'))
     for name in ('fcfs','nearest_next','non_atomic_claim','protected_claim_without_lease_recovery'):
         p=ROOT/'baseline implementation/source code'/f'{name}_baseline.py'
-        assert sha(p)==sha(TEAM/p.relative_to(ROOT)),('TEAM_BASELINE_DIFFERS',name)
+        if teammate_root is not None:
+            assert sha(p)==sha(Path(teammate_root)/p.relative_to(ROOT)),('TEAM_BASELINE_DIFFERS',name)
         evidence[str(p.relative_to(ROOT))]=sha(p)
     evidence['benchmark dataset/dataset/generation_manifest.json']=sha(SOURCE_DATA/'generation_manifest.json')
     scenario_counts={}
     for r in rows(DATA/'scenarios.csv'):scenario_counts[r['scenario_type']]=scenario_counts.get(r['scenario_type'],0)+1
     for kind,n in [('CLAIM_COORDINATION',150),('LEASE_RECOVERY',100),('LEASE_ACTIVE_VERIFICATION',25),('ROUTE_PLANNING',100)]:assert scenario_counts[kind]==n
-    return dict(version=manifest['benchmark_version'],matrix_id=manifest['matrix_id'],dataset_seed=manifest['seed'],scenario_counts=scenario_counts,verified_sha256=evidence,teammate_root=str(TEAM),transport_repairs=transport)
+    return dict(version=manifest['benchmark_version'],matrix_id=manifest['matrix_id'],dataset_seed=manifest['seed'],scenario_counts=scenario_counts,verified_sha256=evidence,baseline_reference='checked-in untouched teammate baseline copies',external_teammate_root_verified=teammate_root is not None,transport_repairs=transport)
 def environment():
     import ortools,psycopg
     g=subprocess.run(['git','rev-parse','HEAD'],cwd=ROOT,capture_output=True,text=True)
-    return dict(python=sys.version,executable=sys.executable,platform=platform.platform(),ortools=ortools.__version__,psycopg=psycopg.__version__,git_commit=g.stdout.strip(),working_tree_dirty=True,remote_access=False)
+    status=subprocess.run(['git','status','--porcelain'],cwd=ROOT,capture_output=True,text=True)
+    return dict(python=sys.version,executable=sys.executable,platform=platform.platform(),ortools=ortools.__version__,psycopg=psycopg.__version__,git_commit=g.stdout.strip(),working_tree_dirty=bool(status.stdout.strip()),remote_access=False)

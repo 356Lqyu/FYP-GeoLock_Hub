@@ -1,8 +1,10 @@
 """Read executed artifacts; never connects to any database or invokes solvers."""
 import argparse,csv,hashlib,json,math,statistics,sys
+from collections import Counter
 from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 from experiments.repro_benchmark import ROOT,rows,write,csv_write,sha
+from experiments.paired_stats import paired_bootstrap
 
 def percentile(values,q):
     if not values:return None
@@ -29,6 +31,9 @@ def e4(run):
         rr=[r for r in data if r['scenario_id']==sid];assert len(rr)==3
         assert len({r['frozen_sha256'] for r in rr})==1
         for r in rr:
+            if r.get('error') or r.get('validation_valid')!='True' or r.get('feasibility_pass')!='True':
+                issues.append(dict(scenario_id=sid,method=r['method'],error=r.get('error') or 'plan invalid or infeasible'))
+                continue
             raw=json.loads((run/'raw'/f'{sid}-{r["method"]}.json').read_text());plan=decode_plan(raw['plan']);check=validate_plan(frozen,plan)
             assert check.valid and check.feasible,(sid,r['method'],check.violations)
             assert frozen.sha256==r['frozen_sha256'] and len(frozen.admitted_task_ids)==int(r['valid_tasks'])
@@ -36,14 +41,21 @@ def e4(run):
     csv_write(run/'additional_admission_exclusions.csv',extra_exclusions)
     for method in ('nearest_next','fcfs','proposed'):
         rr=[r for r in data if r['method']==method];valid=sum(int(r['valid_tasks']) for r in rr);served=sum(int(r['served_tasks']) for r in rr)
-        lat=[float(r['planner_execution_ms']) for r in rr]
-        summaries.append(dict(method=method,scenarios=len(rr),valid_tasks=valid,served_tasks=served,task_weighted_coverage_pct=round(100*served/valid,3),
+        successful=[r for r in rr if not r.get('error') and r.get('method_reported_runtime_ms') not in ('',None)]
+        lat=[float(r['method_reported_runtime_ms']) for r in successful]
+        solver=[float(r.get('solver_runtime_ms') or 0) for r in successful]
+        pipeline=[float(r['method_pipeline_wall_ms']) for r in rr if r.get('method_pipeline_wall_ms') not in ('',None)]
+        total=[float(r['end_to_end_evaluation_ms']) for r in rr if r.get('end_to_end_evaluation_ms') not in ('',None)]
+        summaries.append(dict(method=method,scenarios=len(rr),successful_plans=len(successful),failed_or_invalid=len(rr)-len(successful),timed_plans=len(lat),valid_tasks=valid,served_tasks=served,task_weighted_coverage_pct=round(100*served/valid,3),
           mean_scenario_coverage_pct=round(statistics.mean(float(r['coverage_percent']) for r in rr),3),
           distance_km=round(sum(float(r['total_distance_km']) for r in rr),5),travel_min=round(sum(float(r['travel_duration_min']) for r in rr),5),
           route_duration_min=round(sum(float(r['route_duration_min']) for r in rr),5),capacity_violations=sum(int(r['capacity_violations']) for r in rr),
           window_violations=sum(int(r['time_window_violations']) for r in rr),duration_violations=sum(int(r['route_duration_violations']) for r in rr),
           feasibility_pass=sum(r['feasibility_pass']=='True' for r in rr),timeouts=sum(r['timeout']=='True' for r in rr),
-          median_planner_ms=round(statistics.median(lat),4),p95_planner_ms=round(percentile(lat,.95),4)))
+          median_method_reported_runtime_ms=round(statistics.median(lat),4) if lat else None,p95_method_reported_runtime_ms=round(percentile(lat,.95),4),
+          median_solver_ms=round(statistics.median(solver),4) if solver else None,p95_solver_ms=round(percentile(solver,.95),4),
+          median_method_pipeline_wall_ms=round(statistics.median(pipeline),4) if pipeline else None,p95_method_pipeline_wall_ms=round(percentile(pipeline,.95),4),
+          median_end_to_end_evaluation_ms=round(statistics.median(total),4) if total else None,p95_end_to_end_evaluation_ms=round(percentile(total,.95),4)))
     csv_write(run/'summary_statistics.csv',summaries)
     comparisons=rows(run/'comparison.csv');pairs=[]
     for method in ('nearest_next','fcfs'):
@@ -61,6 +73,29 @@ def e4(run):
           identical_served_task_sets=len(strict),strict_baseline_km=round(strict_base,5),strict_proposed_km=round(strict_prop,5),
           strict_distance_reduction_pct=round(100*(strict_base-strict_prop)/strict_base,3)))
     csv_write(run/'paired_distance_summary.csv',pairs)
+    # Paired bootstrap over fixed scenario IDs; distance uses identical served-task sets.
+    by_method={m:{r['scenario_id']:r for r in data if r['method']==m} for m in ('nearest_next','fcfs','proposed')}
+    uncertainty=[]
+    for baseline in ('nearest_next','fcfs'):
+        all_common=sorted(set(by_method[baseline]) & set(by_method['proposed']))
+        common=[sid for sid in all_common if all(by_method[m][sid].get('error','')=='' and by_method[m][sid]['feasibility_pass']=='True' for m in (baseline,'proposed'))]
+        for metric,extract,eligible in [
+            ('served_tasks',lambda r:float(r['served_tasks']),common),
+            ('method_pipeline_wall_ms',lambda r:float(r['method_pipeline_wall_ms']),common),
+            ('end_to_end_evaluation_ms',lambda r:float(r['end_to_end_evaluation_ms']),common)]:
+            diffs=[extract(by_method['proposed'][sid])-extract(by_method[baseline][sid]) for sid in eligible]
+            uncertainty.append(dict(baseline=baseline,metric=metric,n_scenario_pairs=len(all_common),n_valid_pairs=len(diffs),
+                **paired_bootstrap(diffs,seed=20260915)))
+        same=[]
+        for sid in common:
+            b=by_method[baseline][sid];p=by_method['proposed'][sid]
+            bm=json.loads(b['metrics']);pm=json.loads(p['metrics'])
+            if sorted(bm.get('served_tasks',[]))==sorted(pm.get('served_tasks',[])) and b['feasibility_pass']=='True' and p['feasibility_pass']=='True':
+                same.append(float(p['total_distance_km'])-float(b['total_distance_km']))
+        uncertainty.append(dict(baseline=baseline,metric='distance_km_identical_served_task_set',n_scenario_pairs=len(all_common),n_valid_pairs=len(same),
+            **paired_bootstrap(same,seed=20260915)))
+    csv_write(run/'paired_uncertainty.csv',uncertainty)
+    write(run/'analysis_issues.json',dict(failed_or_invalid_evaluations=issues,issue_count=len(issues)))
     original=[];repro=[]
     for method,folder in [('nearest_next','6_nearest_next'),('fcfs','7_fcfs')]:
         published=rows(ROOT/'baseline implementation/result'/folder/'results_per_scenario.csv')
@@ -99,7 +134,10 @@ def e2(run):
             rr=[r for r in contention if int(r['ngos_competing'])==level];assert len(rr)==50
             rq=[r for r in requests if r['scenario_id'] in {x['scenario_id'] for x in rr}]
             times=[float(r['response_ms']) for r in rq if float(r['response_ms'])>0 and r['answer']!='INELIGIBLE']
-            records.append(dict(method=name,workers=level,trials=50,requests=len(rq),
+            records.append(dict(method=name,concurrent_requests=level,trials=50,requests=len(rq),
+              distinct_ngo_identities_min=min(int(r.get('different_ngos') or 0) for r in rr),
+              distinct_ngo_identities_max=max(int(r.get('different_ngos') or 0) for r in rr),
+              distinct_ngo_identity_distribution=json.dumps(dict(sorted(Counter(int(r.get('different_ngos') or 0) for r in rr).items())),separators=(',',':')),
               duplicate_trials=sum(r['more_than_one_owner']=='YES' for r in rr),extra_committed_claims=sum(max(int(r['claims_stored'])-1,0) for r in rr),
               exactly_one_committed_claim=sum(int(r['claims_stored'])==1 for r in rr),exactly_one_success_response=sum(int(r['told_success'])==1 for r in rr),
               successes=sum(int(r['told_success']) for r in rr),conflicts=sum(int(r['told_already_claimed']) for r in rr),ineligible=sum(int(r['told_not_eligible']) for r in rr),
@@ -115,15 +153,42 @@ def e2(run):
     committed=json.loads((run/'proposed_committed_states.json').read_text());assert len(committed)==275
     assert all(r['active_owner_count']<=1 for r in committed)
     csv_write(run/'comparison.csv',records);csv_write(run/'comparison_per_scenario.csv',scenario_rows);csv_write(run/'lease_comparison.csv',lease_records)
+    by_method={m:{r['scenario_id']:r for r in scenario_rows if r['method']==m} for m in ('non_atomic_claim','protected_claim_without_lease_recovery','proposed')}
+    paired=[]
+    for baseline in ('non_atomic_claim','protected_claim_without_lease_recovery'):
+        common=sorted(set(by_method[baseline]) & set(by_method['proposed']))
+        for metric,field in (('success_responses','told_success'),('database_or_baseline_errors','failed_with_error'),('extra_committed_claims','claims_stored')):
+            diffs=[]
+            for sid in common:
+                b=by_method[baseline][sid];p=by_method['proposed'][sid]
+                bv=float(b.get(field) or 0);pv=float(p.get(field) or 0)
+                if metric=='extra_committed_claims':bv=max(0,bv-1);pv=max(0,pv-1)
+                diffs.append(pv-bv)
+            paired.append(dict(baseline=baseline,metric='proposed_minus_baseline_'+metric,n_pairs=len(diffs),
+                **paired_bootstrap(diffs,seed=20260915)))
+    csv_write(run/'paired_uncertainty.csv',paired)
     errors=rows(run/'database_errors.csv') if (run/'database_errors.csv').exists() else []
     counts={}
     for r in errors:counts[r['sqlstate']]=counts.get(r['sqlstate'],0)+1
-    write(run/'summary_statistics.json',dict(contention=records,lease=lease_records,proposed_database_sqlstates=counts,proposed_committed_states_verified=275))
+    request_by_id={str(r.get('request_uuid') or r.get('request_id')):r for r in raw if r.get('request_uuid') is not None or r.get('request_id') is not None}
+    audit=[]
+    for state in sorted(counts):
+        matching=[r for r in errors if r['sqlstate']==state]
+        retries=[]
+        for err in matching:
+            request=request_by_id.get(str(err.get('request_id')),{})
+            retries.append(int(request.get('retry_count',request.get('retries',0)) or 0))
+        audit.append(dict(sqlstate=state,error_requests=len(matching),rollback_confirmed=sum(str(r.get('rollback_confirmed','')).lower()=='true' for r in matching),rollback_unconfirmed=sum(str(r.get('rollback_confirmed','')).lower()!='true' for r in matching),requests_with_retry=sum(n>0 for n in retries),retry_attempts=sum(retries)))
+    csv_write(run/'database_error_audit.csv',audit)
+    write(run/'summary_statistics.json',dict(contention=records,lease=lease_records,proposed_database_sqlstates=counts,proposed_database_error_audit=audit,proposed_committed_states_verified=275))
     manifest=json.loads((run/'manifest.json').read_text());assert manifest['function_sources_unchanged']
     report='# E2 executed results\n\nReadiness: **PARTIAL for unqualified methodological/functional signoff; all requested scenario counts executed.**\n\n'
     report+='## Contention\n\n'+table(records)+'\n\n## Lease cases\n\n'+table(lease_records)+'\n\n'
     report+='Database failure-audit SQLSTATE counts: `'+json.dumps(counts,sort_keys=True)+'`. Generic GeoLock rollback responses are counted as errors, not claim conflicts. Duplicate counts use committed database records, not only HTTP/RPC success messages.\n\n'
+    report+='Paired scenario bootstrap summaries for success responses, errors and excess committed claims are in `paired_uncertainty.csv`. Resampling units are fixed benchmark scenarios; intervals describe this scenario set and are not population inference. E2 latency distributions are reported with median/P95 but no causal latency claim is made because schema/lifecycle implementations differ.\n\n'
+    report+='Per-SQLSTATE request counts, confirmed rollback counts, and observed retries are in `database_error_audit.csv`. The Python driver retries only transient SQLSTATEs that escape as psycopg exceptions. A function-returned JSON error is not retried by that exception handler; retry counts are taken from each request record rather than inferred from the SQLSTATE.\n\n'
     report+='Original teammate baselines run unchanged on their supplied V3 schema; the actual proposed method runs unchanged claim/recovery bodies plus the current reconciliation package on the full GeoLock schema. Both use the same fresh PG17 cluster, isolation, scenario/NGO order, 2/5/10 request barriers, retry setting, directed matrix eligibility and 360-minute lease. Schema/lifecycle/audit differences are a validity threat: latency is not a causal estimate of atomic locking alone. The older baseline has a FOR NO KEY UPDATE fix; the actual current GeoLock claim body retains its reviewed FOR UPDATE behavior. No production logic was changed to improve results.\n\n'
+    report+='**Actor-count interpretation:** the 2/5/10 levels are simultaneous claim-request counts, not counts of unique NGO identities. The frozen scenarios supply 2-4 potential NGO identities, which the original runners reuse in order when request count exceeds that list. `different_ngos` records the distinct identities actually used per scenario. The separate lock regression adds explicitly labeled synthetic eligible accounts only when testing five or ten distinct NGOs; those checks are excluded from the paper benchmark totals.\n\n'
     report+='Auth/Storage/cron are local adapters; the actual protected claim/recovery SQL and constraints execute in PostgreSQL. Proposal eligibility uses the exact supplied directed matrix, not a new live road extraction. Absolute historical timestamps are replayed against server time with their original relative durations, as the teammate driver specifies. The optional pgcrypto extension load is omitted because core PG17 supplies UUID generation; PostGIS is real in the baseline DB. There are no hosted calls or workers. All tables/raw requests and fixture failures are retained. No unexecuted method/lease cell is marked PASS; non-atomic lease recovery is not implemented by that baseline and is not invented.\n'
     (run/'COMPARISON.md').write_text(report,encoding='utf-8')
     return records

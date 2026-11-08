@@ -1,0 +1,204 @@
+{
+  "checks": [
+    {
+      "name": "both intended listing locks are corrected with metadata preserved",
+      "passed": true,
+      "evidence": [
+        {
+          "signature": "claim_listing(uuid,uuid)",
+          "hash": "0e1954dc17a5d30b81c57a161d99faac",
+          "owner": "postgres",
+          "result_type": "jsonb",
+          "volatility": "v",
+          "prosecdef": true,
+          "acl": "{=X/postgres,postgres=X/postgres,authenticated=X/postgres}",
+          "proconfig": [
+            "search_path=pg_catalog, public, extensions, pg_temp"
+          ]
+        },
+        {
+          "signature": "geolock_lock_listing_donations(uuid,text[])",
+          "hash": "e97a3fd80673a827465f3eaa79b65903",
+          "owner": "postgres",
+          "result_type": "boolean",
+          "volatility": "v",
+          "prosecdef": false,
+          "acl": "{postgres=X/postgres}",
+          "proconfig": [
+            "search_path=pg_catalog, public, pg_temp"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "2 concurrent NGOs: one success, clean losing conflicts, one owner",
+      "passed": true,
+      "evidence": [
+        {
+          "actor": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+          "listing": "7e7f6093-ebe6-4181-9565-d58c30b09d3e",
+          "request": "91cc8c82-d275-420f-91f7-fdcbf16f1c9f",
+          "result": {
+            "outcome": "CONFLICT",
+            "claim_id": null,
+            "replayed": false,
+            "reason_code": "ALREADY_CLAIMED"
+          },
+          "sqlstate": null,
+          "latency_ms": 149.995
+        },
+        {
+          "actor": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+          "listing": "7e7f6093-ebe6-4181-9565-d58c30b09d3e",
+          "request": "d8062f1a-3fe8-495c-8fd5-90837d824fcc",
+          "result": {
+            "outcome": "SUCCESS",
+            "claim_id": "cc9bef3d-40df-436b-a2aa-95dc783e15d5",
+            "replayed": false,
+            "reason_code": null
+          },
+          "sqlstate": null,
+          "latency_ms": 151.832
+        }
+      ]
+    },
+    {
+      "name": "5 concurrent NGOs: one success, clean losing conflicts, one owner",
+      "passed": false,
+      "evidence": [
+        {
+          "actor": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+          "listing": "b4a7049f-861c-4988-9c3a-c4560440270a",
+          "request": "e05cdc96-f5f2-48fd-a8d5-ab2874a99c76",
+          "result": {
+            "outcome": "SUCCESS",
+            "claim_id": "e253cc64-3218-47ad-989b-59fb68f752dd",
+            "replayed": false,
+            "reason_code": null
+          },
+          "sqlstate": null,
+          "latency_ms": 188.053
+        },
+        {
+          "actor": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+          "listing": "b4a7049f-861c-4988-9c3a-c4560440270a",
+          "request": "950c0cde-d1cd-4c64-bf41-4205c4eefeed",
+          "result": {
+            "outcome": "CONFLICT",
+            "claim_id": null,
+            "replayed": false,
+            "reason_code": "ALREADY_CLAIMED"
+          },
+          "sqlstate": null,
+          "latency_ms": 235.894
+        },
+        {
+          "actor": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+          "listing": "b4a7049f-861c-4988-9c3a-c4560440270a",
+          "request": "36e38119-16a5-45c8-89e1-814af3ec3838",
+          "result": {
+            "outcome": "CONFLICT",
+            "claim_id": null,
+            "replayed": false,
+            "reason_code": "ALREADY_CLAIMED"
+          },
+          "sqlstate": null,
+          "latency_ms": 204.372
+        },
+        {
+          "actor": "a85119f4-603c-5160-8f9e-74c234e4a170",
+          "listing": "b4a7049f-861c-4988-9c3a-c4560440270a",
+          "request": "f8e903de-2be6-4ad2-9054-973578b6da3f",
+          "result": {
+            "outcome": "CONFLICT",
+            "claim_id": null,
+            "replayed": false,
+            "reason_code": "ALREADY_CLAIMED"
+          },
+          "sqlstate": null,
+          "latency_ms": 223.293
+        }
+      ]
+    }
+  ],
+  "operations": [
+    {
+      "actor": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+      "listing": "7e7f6093-ebe6-4181-9565-d58c30b09d3e",
+      "request": "d8062f1a-3fe8-495c-8fd5-90837d824fcc",
+      "result": {
+        "outcome": "SUCCESS",
+        "claim_id": "cc9bef3d-40df-436b-a2aa-95dc783e15d5",
+        "replayed": false,
+        "reason_code": null
+      },
+      "sqlstate": null,
+      "latency_ms": 151.832
+    },
+    {
+      "actor": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+      "listing": "7e7f6093-ebe6-4181-9565-d58c30b09d3e",
+      "request": "91cc8c82-d275-420f-91f7-fdcbf16f1c9f",
+      "result": {
+        "outcome": "CONFLICT",
+        "claim_id": null,
+        "replayed": false,
+        "reason_code": "ALREADY_CLAIMED"
+      },
+      "sqlstate": null,
+      "latency_ms": 149.995
+    },
+    {
+      "actor": "1fd1e918-389d-5bce-a52d-8e49126ff72d",
+      "listing": "b4a7049f-861c-4988-9c3a-c4560440270a",
+      "request": "e05cdc96-f5f2-48fd-a8d5-ab2874a99c76",
+      "result": {
+        "outcome": "SUCCESS",
+        "claim_id": "e253cc64-3218-47ad-989b-59fb68f752dd",
+        "replayed": false,
+        "reason_code": null
+      },
+      "sqlstate": null,
+      "latency_ms": 188.053
+    },
+    {
+      "actor": "727dd05e-f3ed-5586-8f6d-fcb282368a8d",
+      "listing": "b4a7049f-861c-4988-9c3a-c4560440270a",
+      "request": "36e38119-16a5-45c8-89e1-814af3ec3838",
+      "result": {
+        "outcome": "CONFLICT",
+        "claim_id": null,
+        "replayed": false,
+        "reason_code": "ALREADY_CLAIMED"
+      },
+      "sqlstate": null,
+      "latency_ms": 204.372
+    },
+    {
+      "actor": "a85119f4-603c-5160-8f9e-74c234e4a170",
+      "listing": "b4a7049f-861c-4988-9c3a-c4560440270a",
+      "request": "f8e903de-2be6-4ad2-9054-973578b6da3f",
+      "result": {
+        "outcome": "CONFLICT",
+        "claim_id": null,
+        "replayed": false,
+        "reason_code": "ALREADY_CLAIMED"
+      },
+      "sqlstate": null,
+      "latency_ms": 223.293
+    },
+    {
+      "actor": "49e89ab2-2518-5321-8552-49c8b797cdf6",
+      "listing": "b4a7049f-861c-4988-9c3a-c4560440270a",
+      "request": "950c0cde-d1cd-4c64-bf41-4205c4eefeed",
+      "result": {
+        "outcome": "CONFLICT",
+        "claim_id": null,
+        "replayed": false,
+        "reason_code": "ALREADY_CLAIMED"
+      },
+      "sqlstate": null,
+      "latency_ms": 235.894
+    }
+  ]
+}

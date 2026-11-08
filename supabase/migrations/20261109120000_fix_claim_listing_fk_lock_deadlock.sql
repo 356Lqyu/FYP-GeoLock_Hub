@@ -1,0 +1,121 @@
+-- Narrow lock-mode correction for claim_requests FK key-share contention.
+-- Changes only those two listing-row lock modes and the already-claimed
+-- rejection reason. Donation, batch, inventory, request, lease, claim,
+-- reconciliation and audit lock/transition behavior remains unchanged.
+BEGIN;
+SET LOCAL lock_timeout = '5s';
+SET LOCAL statement_timeout = '30s';
+
+DO $claim_listing_lock_mode_patch$
+DECLARE
+  claim_oid oid := to_regprocedure('public.claim_listing(uuid,uuid)');
+  helper_oid oid := to_regprocedure('public.geolock_lock_listing_donations(uuid,text[])');
+  claim_old constant text := 'select * into v_l from public.listings where listing_id=p_listing for update;';
+  claim_new constant text := 'select * into v_l from public.listings where listing_id=p_listing for no key update;';
+  claimed_old constant text := $old$elsif v_l.listing_status<>'AVAILABLE' then v_reason:='CLAIM_CONFLICT';$old$;
+  claimed_new constant text := $new$elsif v_l.listing_status='CLAIMED' then v_reason:='ALREADY_CLAIMED';
+  elsif v_l.listing_status<>'AVAILABLE' then v_reason:='CLAIM_CONFLICT';$new$;
+  helper_old constant text := 'select * into v_l from public.listings where listing_id=p_listing for update;';
+  helper_new constant text := 'select * into v_l from public.listings where listing_id=p_listing for no key update;';
+  claim_def text;
+  helper_def text;
+  claim_before jsonb;
+  helper_before jsonb;
+  claim_after jsonb;
+  helper_after jsonb;
+  claim_body text;
+  helper_body text;
+BEGIN
+  IF claim_oid IS NULL OR helper_oid IS NULL THEN
+    RAISE EXCEPTION 'CLAIM_LOCK_PATCH_MISSING_FUNCTION';
+  END IF;
+
+  SELECT pg_get_functiondef(p.oid), replace(p.prosrc, chr(13), ''),
+    jsonb_build_object('owner', p.proowner::regrole::text, 'acl', p.proacl::text,
+      'return_type', pg_get_function_result(p.oid), 'volatility', p.provolatile,
+      'security_definer', p.prosecdef, 'config', p.proconfig)
+  INTO claim_def, claim_body, claim_before
+  FROM pg_proc p WHERE p.oid=claim_oid;
+  SELECT pg_get_functiondef(p.oid), replace(p.prosrc, chr(13), ''),
+    jsonb_build_object('owner', p.proowner::regrole::text, 'acl', p.proacl::text,
+      'return_type', pg_get_function_result(p.oid), 'volatility', p.provolatile,
+      'security_definer', p.prosecdef, 'config', p.proconfig)
+  INTO helper_def, helper_body, helper_before
+  FROM pg_proc p WHERE p.oid=helper_oid;
+
+  IF md5(claim_body) IS DISTINCT FROM '2c1f60c876797c61b44b3cb43591bab8'
+     OR (length(claim_body)-length(replace(claim_body,claim_old,'')))/length(claim_old) <> 1
+     OR (length(claim_body)-length(replace(claim_body,claimed_old,'')))/length(claimed_old) <> 1
+     OR claim_before->>'owner' IS DISTINCT FROM 'postgres'
+     OR claim_before->>'return_type' IS DISTINCT FROM 'jsonb'
+     OR claim_before->>'volatility' IS DISTINCT FROM 'v'
+     OR claim_before->>'security_definer' IS DISTINCT FROM 'true'
+     OR claim_before->'config' IS DISTINCT FROM '["search_path=pg_catalog, public, extensions, pg_temp"]'::jsonb
+     OR claim_before->>'acl' IS DISTINCT FROM '{=X/postgres,postgres=X/postgres,authenticated=X/postgres}' THEN
+    RAISE EXCEPTION 'CLAIM_LOCK_PATCH_CLAIM_SOURCE_OR_METADATA_DRIFT';
+  END IF;
+  IF md5(helper_body) IS DISTINCT FROM '90816e7c6db3606dc8b6451a899d8036'
+     OR (length(helper_body)-length(replace(helper_body,helper_old,'')))/length(helper_old) <> 1
+     OR helper_before->>'owner' IS DISTINCT FROM 'postgres'
+     OR helper_before->>'return_type' IS DISTINCT FROM 'boolean'
+     OR helper_before->>'volatility' IS DISTINCT FROM 'v'
+     OR helper_before->>'security_definer' IS DISTINCT FROM 'false'
+     OR helper_before->'config' IS DISTINCT FROM '["search_path=pg_catalog, public, pg_temp"]'::jsonb
+     OR helper_before->>'acl' IS DISTINCT FROM '{postgres=X/postgres}' THEN
+    RAISE EXCEPTION 'CLAIM_LOCK_PATCH_HELPER_SOURCE_OR_METADATA_DRIFT';
+  END IF;
+
+  -- NO KEY UPDATE remains mutually exclusive between claimers but is
+  -- compatible with the KEY SHARE lock acquired by listing foreign keys.
+  -- listing_status/listing_version are not unique or referenced key columns.
+  IF EXISTS (
+    SELECT 1 FROM pg_index i JOIN pg_attribute a ON a.attrelid=i.indrelid
+      AND a.attnum=ANY(i.indkey::smallint[])
+    WHERE i.indrelid='public.listings'::regclass AND i.indisunique
+      AND a.attname IN ('listing_status','listing_version')
+  ) OR EXISTS (
+    SELECT 1 FROM pg_constraint c JOIN pg_attribute a ON a.attrelid=c.confrelid
+      AND a.attnum=ANY(c.confkey)
+    WHERE c.contype='f' AND c.confrelid='public.listings'::regclass
+      AND a.attname IN ('listing_status','listing_version')
+  ) THEN RAISE EXCEPTION 'CLAIM_LOCK_PATCH_LISTING_KEY_DRIFT'; END IF;
+
+  -- Preserve the reviewed transition guard; unexpected listing triggers stop.
+  IF (SELECT count(*) FROM pg_trigger WHERE tgrelid='public.listings'::regclass
+      AND NOT tgisinternal) <> 1
+    OR NOT EXISTS (
+      SELECT 1 FROM pg_trigger WHERE tgrelid='public.listings'::regclass
+        AND NOT tgisinternal AND tgname='trg_listing_transition'
+        AND tgfoid='public.enforce_listing_transition()'::regprocedure
+        AND tgenabled='O'
+    )
+    OR md5((SELECT replace(prosrc,chr(13),'') FROM pg_proc
+      WHERE oid='public.enforce_listing_transition()'::regprocedure))
+      IS DISTINCT FROM 'c65f4b675734d8c28816066ea9f05603' THEN
+    RAISE EXCEPTION 'CLAIM_LOCK_PATCH_LISTING_TRIGGER_DRIFT';
+  END IF;
+
+  EXECUTE replace(replace(claim_def, claim_old, claim_new), claimed_old, claimed_new);
+  EXECUTE replace(helper_def, helper_old, helper_new);
+
+  SELECT replace(p.prosrc, chr(13), ''),
+    jsonb_build_object('owner', p.proowner::regrole::text, 'acl', p.proacl::text,
+      'return_type', pg_get_function_result(p.oid), 'volatility', p.provolatile,
+      'security_definer', p.prosecdef, 'config', p.proconfig)
+  INTO claim_body, claim_after FROM pg_proc p WHERE p.oid=claim_oid;
+  SELECT replace(p.prosrc, chr(13), ''),
+    jsonb_build_object('owner', p.proowner::regrole::text, 'acl', p.proacl::text,
+      'return_type', pg_get_function_result(p.oid), 'volatility', p.provolatile,
+      'security_definer', p.prosecdef, 'config', p.proconfig)
+  INTO helper_body, helper_after FROM pg_proc p WHERE p.oid=helper_oid;
+
+  IF md5(claim_body) IS DISTINCT FROM '0e1954dc17a5d30b81c57a161d99faac'
+     OR md5(helper_body) IS DISTINCT FROM 'e97a3fd80673a827465f3eaa79b65903'
+     OR claim_after IS DISTINCT FROM claim_before
+     OR helper_after IS DISTINCT FROM helper_before THEN
+    RAISE EXCEPTION 'CLAIM_LOCK_PATCH_POSTCONDITION_FAILED';
+  END IF;
+END
+$claim_listing_lock_mode_patch$;
+
+COMMIT;

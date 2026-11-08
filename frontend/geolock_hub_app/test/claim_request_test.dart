@@ -111,6 +111,47 @@ void main() {
     );
   });
 
+  test('claim response categories stay distinct', () {
+    expect(
+      claimResponseKind({'outcome': 'SUCCESS', 'claim_id': 'claim-1'}),
+      ClaimResponseKind.success,
+    );
+    expect(
+      claimResponseKind({
+        'outcome': 'CONFLICT',
+        'reason_code': 'ALREADY_CLAIMED',
+      }),
+      ClaimResponseKind.alreadyClaimed,
+    );
+    expect(
+      claimResponseKind({
+        'outcome': 'INELIGIBLE',
+        'reason_code': 'OUTSIDE_GEOFENCE',
+      }),
+      ClaimResponseKind.ineligible,
+    );
+    expect(
+      claimResponseKind({
+        'outcome': 'ERROR',
+        'reason_code': 'CLAIM_TRANSACTION_ROLLED_BACK',
+        'rollback_confirmed': true,
+        'failure_audit_id': 'audit-1',
+      }),
+      ClaimResponseKind.confirmedRollback,
+    );
+    expect(
+      claimResponseKind({'outcome': 'ERROR', 'reason_code': 'UNKNOWN'}),
+      ClaimResponseKind.unknown,
+    );
+    expect(
+      claimRejectionMessage({
+        'outcome': 'CONFLICT',
+        'reason_code': 'ALREADY_CLAIMED',
+      }),
+      contains('already been claimed'),
+    );
+  });
+
   test(
     'key reuse stays distinct and contradictory ERROR stays unconfirmed',
     () {

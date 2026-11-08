@@ -1,0 +1,7 @@
+﻿baseline,metric,n_pairs,mean_difference,ci_low,ci_high,resampling_unit,replicates,seed,interpretation
+non_atomic_claim,proposed_minus_baseline_success_responses,150,-4.666666666666667,-5.206666666666667,-4.133333333333334,paired benchmark scenario,10000,20260915,descriptive fixed-benchmark scenario uncertainty; not population inference
+non_atomic_claim,proposed_minus_baseline_database_or_baseline_errors,150,4.553333333333334,4.0,5.1066666666666665,paired benchmark scenario,10000,20260915,descriptive fixed-benchmark scenario uncertainty; not population inference
+non_atomic_claim,proposed_minus_baseline_extra_committed_claims,150,-4.666666666666667,-5.206666666666667,-4.133333333333334,paired benchmark scenario,10000,20260915,descriptive fixed-benchmark scenario uncertainty; not population inference
+protected_claim_without_lease_recovery,proposed_minus_baseline_success_responses,150,0.0,0.0,0.0,paired benchmark scenario,10000,20260915,descriptive fixed-benchmark scenario uncertainty; not population inference
+protected_claim_without_lease_recovery,proposed_minus_baseline_database_or_baseline_errors,150,4.553333333333334,4.0,5.1066666666666665,paired benchmark scenario,10000,20260915,descriptive fixed-benchmark scenario uncertainty; not population inference
+protected_claim_without_lease_recovery,proposed_minus_baseline_extra_committed_claims,150,0.0,0.0,0.0,paired benchmark scenario,10000,20260915,descriptive fixed-benchmark scenario uncertainty; not population inference

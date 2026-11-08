@@ -13,7 +13,7 @@ const listing = <String, dynamic>{
 };
 const conflict = <String, dynamic>{
   'outcome': 'CONFLICT',
-  'reason_code': 'CLAIM_CONFLICT',
+  'reason_code': 'ALREADY_CLAIMED',
 };
 const success = <String, dynamic>{'outcome': 'SUCCESS', 'claim_id': 'claim-1'};
 const key = 'geolock_claim_request_ngo-a_listing-1';
@@ -82,7 +82,7 @@ void main() {
     },
   );
 
-  testWidgets('competing NGO conflict does not invent ownership explanation', (
+  testWidgets('competing NGO gets an explicit already-claimed response', (
     t,
   ) async {
     var owned = false;
@@ -106,8 +106,10 @@ void main() {
     await t.pumpAndSettle();
     expect(b.successes, 0);
     expect(enabled(t), isFalse);
-    expect(find.textContaining('claimed by another NGO'), findsNothing);
-    expect(find.textContaining('CLAIM_CONFLICT'), findsNothing);
+    expect(
+      find.text('This donation has already been claimed by another NGO.'),
+      findsOneWidget,
+    );
   });
 
   testWidgets(

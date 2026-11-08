@@ -1,0 +1,47 @@
+[
+  {
+    "file": "geolock-v3-public-schema.sql",
+    "sha256": "c264c9f25bd31b55a12c5eef04aa7b442d6199b1fc890b9fb65e0e2e9b61496d",
+    "note": "psql restrict directives removed for SQL-file transport"
+  },
+  {
+    "file": "supabase\\migrations\\20261019_stage1_claim_recovery_and_reconciliation.sql",
+    "sha256": "ba8a8418ce5a15820d5daf4a15845545c5c4b400d51a98d42e8e3ad9780891be"
+  },
+  {
+    "file": "supabase\\migrations\\20261027_persisted_donation_lifecycle.sql",
+    "sha256": "c40bff10daac4a25ea5852cec7d1123ed2a553357bb9f7faae4f1e98ed901b91"
+  },
+  {
+    "file": "supabase\\migrations\\20261029_fix_claim_recovery_listing_expiration_race.sql",
+    "sha256": "4d4b2648b13d991177fa9df590c82d1fe77b2de3e9b48825c95cb14468d35583"
+  },
+  {
+    "file": "supabase\\migrations\\20261030_fix_claim_recovery_unresolved_reconciliation.sql",
+    "sha256": "9aa252d1c601c1d965c3cc7ebe47dbcf94824e609e0501b90aa243bdbe86486a"
+  },
+  {
+    "file": "supabase\\migrations\\20261031_claim_audit_and_failure_capture.sql",
+    "sha256": "63d1ce8a78224f2fe2b6fff7b2d0937727bf484603353ea2295d737c78e6fcf8"
+  },
+  {
+    "file": "captured assign_task_to_route prerequisite",
+    "sha256": "0341fd334439b319b0bc78b8910ce2de5e2f51b5803ab4a53d0e0e89b50e11cf"
+  },
+  {
+    "file": "docs/stage8/phase-c1/proposed_migration_v2.sql",
+    "sha256": "f50af9705de117bdd12581f2515605c8e5c548e0fee7ae01d7ea33ecfbb0cb05"
+  },
+  {
+    "file": "docs\\stage8\\stage-a\\forward-migrations\\20261101_routing_authority.sql",
+    "sha256": "46004a0691a3e91576a9d504f836d57f7e19d20827b9289cb4918d961a1e243d"
+  },
+  {
+    "file": "docs\\stage8\\stage-a\\forward-migrations\\20261102_routing_publication.sql",
+    "sha256": "425c91ef9f984664325142dd181902d7afb67aa82ddb42c7fd1872819f05c415"
+  },
+  {
+    "file": "docs\\stage8\\stage-a\\forward-migrations\\20261103_routing_pickup_and_reconciliation.sql",
+    "sha256": "313df6a3087fd3fdf81e7788c1627bf8bcead105009cc8c27ae89cc1a14cfc5d"
+  }
+]

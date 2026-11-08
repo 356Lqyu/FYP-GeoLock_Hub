@@ -1,0 +1,196 @@
+{
+  "status": "STARTING",
+  "integrity": {
+    "version": "GEOLOCK-BM-v3.3",
+    "matrix_id": "OSM-DIRECTED-v3.3",
+    "dataset_seed": 20260915,
+    "scenario_counts": {
+      "HUB_RECOMMENDATION": 2000,
+      "HUB_RECOMMENDATION_VERIFICATION": 19,
+      "CLAIM_COORDINATION": 150,
+      "GEOFENCE_VERIFICATION": 100,
+      "LEASE_RECOVERY": 100,
+      "LEASE_ACTIVE_VERIFICATION": 25,
+      "HUB_AGGREGATION": 100,
+      "ROUTE_PLANNING": 100
+    },
+    "verified_sha256": {
+      "experiments\\repro_inputs\\v33\\road_nodes.csv": "a8905fb29f95b6ba02c099fd60a188f98ae92f01c7586995295b096b673df6ea",
+      "experiments\\repro_inputs\\v33\\road_distance_matrix.csv": "b9a272d2396354695ae2ec6fd744a17510f1b5e7c61989fe7b404d2d0e0133e1",
+      "experiments\\repro_inputs\\v33\\ngos.csv": "ddc14fe9958c272c7d8b7dc32b23ad6bfffd2a066f1b158a05a7cd3e5c535eaa",
+      "experiments\\repro_inputs\\v33\\vehicles.csv": "79be6284565e0f544914bcb6b0fb5a847a0756a6039808bfc03920046f571413",
+      "experiments\\repro_inputs\\v33\\hubs.csv": "1709d42ecdf1aa4dfe7e671315e8620587cebd161099d0f9769da10d77462ade",
+      "experiments\\repro_inputs\\v33\\donors.csv": "aefee7b3fc9b0c955f7ae3d60238dd4ec7cea49885dcd0545706acb797604e63",
+      "experiments\\repro_inputs\\v33\\donations.csv": "057dbd5b9486c79984ae2c64144daad2a4c4db6b8c0fbc233c1bcae9eb9b288b",
+      "experiments\\repro_inputs\\v33\\donation_hub_candidates.csv": "51e68ae42c7b3de39c5016615b29a157d4a0f12693ba356b3f0e005b0d42e7ca",
+      "experiments\\repro_inputs\\v33\\listings.csv": "71f8552af8731ac8b0ddfb205f32c78413088ba3bd3e2a1d4aa9830abe5e532f",
+      "experiments\\repro_inputs\\v33\\hub_batches.csv": "3ce5ceb404a4807f2885f5cbae3392ff309c536fb30181701970c2507ee5c3f4",
+      "experiments\\repro_inputs\\v33\\hub_batch_members.csv": "9c14be844ff948bd0a3c08ef7be7b1697b3cac279b602ba3c0263c23c25e8367",
+      "experiments\\repro_inputs\\v33\\scenarios.csv": "973d91972df90c0e39501a35ca2ae181d1a6af37d5ccb83c56e4b4bf2d5c966c",
+      "experiments\\repro_inputs\\v33\\scenario_members.csv": "7c09e2a9a040726458078c6d23370978a3cba6f155cb2b68aa2bbc356518e6d0",
+      "experiments\\repro_inputs\\v33\\claim_initial_states.csv": "30e5f3bbd933fd3827bcafb9d119d036ece0dbe1e17f0172f66b919cf98d1065",
+      "experiments\\repro_inputs\\v33\\verification_cases.csv": "740d57558291543ab9716188be59d5a96e97d41d5e6d83e26bf2a0027b28cc3a",
+      "baseline implementation\\source code\\fcfs_baseline.py": "f611afd3a4e3e2c2c26fa863b07880c2d9aac0c93942c26c0600bfef00b1fcdd",
+      "baseline implementation\\source code\\nearest_next_baseline.py": "23104306cc38866bfc33fe23a886fb128a89a05ea5d0842c96f0d45351864b70",
+      "baseline implementation\\source code\\non_atomic_claim_baseline.py": "251f5d51c4e3850706ab3390366c9e23f258744f31b1d38d08d1bd9b1b284327",
+      "baseline implementation\\source code\\protected_claim_without_lease_recovery_baseline.py": "edb27ba73208b69d895de0883b5aa594826a570d5c09c60a6095057c2b53e4e6",
+      "benchmark dataset/dataset/generation_manifest.json": "5fdafca9baa69c4e1c84eb843d180ff0e2ea6319fccf02ae033a6d3fb595d16a"
+    },
+    "baseline_reference": "checked-in untouched teammate baseline copies",
+    "external_teammate_root_verified": false,
+    "transport_repairs": [
+      {
+        "file": "road_nodes",
+        "source_sha256": "a8905fb29f95b6ba02c099fd60a188f98ae92f01c7586995295b096b673df6ea",
+        "manifest_sha256": "a8905fb29f95b6ba02c099fd60a188f98ae92f01c7586995295b096b673df6ea",
+        "repair": "none"
+      },
+      {
+        "file": "road_distance_matrix",
+        "source_sha256": "b9a272d2396354695ae2ec6fd744a17510f1b5e7c61989fe7b404d2d0e0133e1",
+        "manifest_sha256": "b9a272d2396354695ae2ec6fd744a17510f1b5e7c61989fe7b404d2d0e0133e1",
+        "repair": "none"
+      },
+      {
+        "file": "ngos",
+        "source_sha256": "ddc14fe9958c272c7d8b7dc32b23ad6bfffd2a066f1b158a05a7cd3e5c535eaa",
+        "manifest_sha256": "ddc14fe9958c272c7d8b7dc32b23ad6bfffd2a066f1b158a05a7cd3e5c535eaa",
+        "repair": "none"
+      },
+      {
+        "file": "vehicles",
+        "source_sha256": "79be6284565e0f544914bcb6b0fb5a847a0756a6039808bfc03920046f571413",
+        "manifest_sha256": "79be6284565e0f544914bcb6b0fb5a847a0756a6039808bfc03920046f571413",
+        "repair": "none"
+      },
+      {
+        "file": "hubs",
+        "source_sha256": "1709d42ecdf1aa4dfe7e671315e8620587cebd161099d0f9769da10d77462ade",
+        "manifest_sha256": "1709d42ecdf1aa4dfe7e671315e8620587cebd161099d0f9769da10d77462ade",
+        "repair": "none"
+      },
+      {
+        "file": "donors",
+        "source_sha256": "aefee7b3fc9b0c955f7ae3d60238dd4ec7cea49885dcd0545706acb797604e63",
+        "manifest_sha256": "aefee7b3fc9b0c955f7ae3d60238dd4ec7cea49885dcd0545706acb797604e63",
+        "repair": "none"
+      },
+      {
+        "file": "donations",
+        "source_sha256": "057dbd5b9486c79984ae2c64144daad2a4c4db6b8c0fbc233c1bcae9eb9b288b",
+        "manifest_sha256": "057dbd5b9486c79984ae2c64144daad2a4c4db6b8c0fbc233c1bcae9eb9b288b",
+        "repair": "none"
+      },
+      {
+        "file": "donation_hub_candidates",
+        "source_sha256": "51e68ae42c7b3de39c5016615b29a157d4a0f12693ba356b3f0e005b0d42e7ca",
+        "manifest_sha256": "51e68ae42c7b3de39c5016615b29a157d4a0f12693ba356b3f0e005b0d42e7ca",
+        "repair": "none"
+      },
+      {
+        "file": "listings",
+        "source_sha256": "71f8552af8731ac8b0ddfb205f32c78413088ba3bd3e2a1d4aa9830abe5e532f",
+        "manifest_sha256": "71f8552af8731ac8b0ddfb205f32c78413088ba3bd3e2a1d4aa9830abe5e532f",
+        "repair": "none"
+      },
+      {
+        "file": "hub_batches",
+        "source_sha256": "3ce5ceb404a4807f2885f5cbae3392ff309c536fb30181701970c2507ee5c3f4",
+        "manifest_sha256": "3ce5ceb404a4807f2885f5cbae3392ff309c536fb30181701970c2507ee5c3f4",
+        "repair": "none"
+      },
+      {
+        "file": "hub_batch_members",
+        "source_sha256": "9c14be844ff948bd0a3c08ef7be7b1697b3cac279b602ba3c0263c23c25e8367",
+        "manifest_sha256": "9c14be844ff948bd0a3c08ef7be7b1697b3cac279b602ba3c0263c23c25e8367",
+        "repair": "none"
+      },
+      {
+        "file": "scenarios",
+        "source_sha256": "973d91972df90c0e39501a35ca2ae181d1a6af37d5ccb83c56e4b4bf2d5c966c",
+        "manifest_sha256": "973d91972df90c0e39501a35ca2ae181d1a6af37d5ccb83c56e4b4bf2d5c966c",
+        "repair": "none"
+      },
+      {
+        "file": "scenario_members",
+        "source_sha256": "7c09e2a9a040726458078c6d23370978a3cba6f155cb2b68aa2bbc356518e6d0",
+        "manifest_sha256": "7c09e2a9a040726458078c6d23370978a3cba6f155cb2b68aa2bbc356518e6d0",
+        "repair": "none"
+      },
+      {
+        "file": "claim_initial_states",
+        "source_sha256": "30e5f3bbd933fd3827bcafb9d119d036ece0dbe1e17f0172f66b919cf98d1065",
+        "manifest_sha256": "30e5f3bbd933fd3827bcafb9d119d036ece0dbe1e17f0172f66b919cf98d1065",
+        "repair": "none"
+      },
+      {
+        "file": "verification_cases",
+        "source_sha256": "740d57558291543ab9716188be59d5a96e97d41d5e6d83e26bf2a0027b28cc3a",
+        "manifest_sha256": "740d57558291543ab9716188be59d5a96e97d41d5e6d83e26bf2a0027b28cc3a",
+        "repair": "none"
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.14 (main, Aug 25 2026, 14:01:42) [MSC v.1944 64 bit (AMD64)]",
+    "executable": "C:\\Users\\User\\Downloads\\FYP-GeoLock_Hub\\.venv-stage8\\Scripts\\python.exe",
+    "platform": "Windows-11-10.0.22621-SP0",
+    "ortools": "9.15.6755",
+    "psycopg": "3.3.6",
+    "git_commit": "3c4a28ef18796239d9b80e83a15e00adb4a9f6b5",
+    "working_tree_dirty": true,
+    "remote_access": false
+  },
+  "source_sha256": {
+    "experiments\\e2_atomic_claiming\\run_claim_lock_regressions.py": "6d8d88aec637345bdaf60a39e820d07acb0fe357ec41d2b4dd9afd242b34443a",
+    "experiments\\repro_benchmark.py": "fd501f6399dbd12dea7d9535793f14a6322bdbe6a4239144fd0e01434e49b244",
+    "experiments\\e2_claiming\\e2_runner.py": "ca3434170bd787b703dbcd9f09949f7275c1b13bd67dd15e642b9fbc2b0f5073",
+    "experiments\\e2_atomic_claiming\\claim_lock_regressions.py": "dff37718444aeec9fe1575317e773bae46a2559594b8e9d517a4cb6d88fe702c",
+    "experiments\\e2_atomic_claiming\\test_claim_lock_migration.py": "ffebd532954d171fb6415a630777a87d6e1f8504e40d918c9f3d91081a3ae15e",
+    "supabase\\migrations\\20261017_donation_state_management.sql": "6b2a33471cff4e6d4ace5255b45ac994f403a25a421e9d2b83671d222a75ed97",
+    "supabase\\migrations\\20261017_registration_compatibility.sql": "e93c13a0dda4bdb5d001082d2b4bdd74b3f52b354df37ab81b87774f6181e0be",
+    "supabase\\migrations\\20261017_role_dashboards_and_images.sql": "a2d21beb35bdf0c2514dbfcde9f3db925e01a3d786f4184c00a9d400f4f5d8ef",
+    "supabase\\migrations\\20261017_stage1_location_and_read_rpcs.sql": "0d6d259a1059c725facfa5b75cf9c787b575afa7e24d6816079440013794a330",
+    "supabase\\migrations\\20261018_donation_photo_and_availability_transition.sql": "df2973849c7645e689b63403c15af7e824837900da27163b0dd507270f3d4707",
+    "supabase\\migrations\\20261018_enforce_required_donation_photos.sql": "2734ef27a1daf28d047167e8b7e1a6b9e43c4cc28f9260ec9051780ebd845403",
+    "supabase\\migrations\\20261018_fix_photo_storage_policy_permissions.sql": "03323e66f42e465c5fa20765681ed9691da8a3a7e8d2d7b999e752146eb3d1f1",
+    "supabase\\migrations\\20261018_hub_reservation_reassignment_and_safe_cancellation.sql": "84aaa2ab1b64a6367bbf8d257eb7ec0525efb71adb31390ee868ceac19113794",
+    "supabase\\migrations\\20261019_fix_cancel_donation_listing_join.sql": "bfb3cfafcfb2377f9f8799f39a11a2594f73c28cc3a4e4d406fab00abce5c0f8",
+    "supabase\\migrations\\20261019_remove_validated_donation_state.sql": "5d5a8d3f7225f4b183e858c8ac0f5e56a88a3226de487970c2a905afc29c2bd0",
+    "supabase\\migrations\\20261019_retire_delivered_state.sql": "4c367776a51c8cd74ccbf53fc260d3fd48d518f14d8c0de30a68abb9758c7922",
+    "supabase\\migrations\\20261019_stage1_claim_recovery_and_reconciliation.sql": "ba8a8418ce5a15820d5daf4a15845545c5c4b400d51a98d42e8e3ad9780891be",
+    "supabase\\migrations\\20261020_operational_road_node_resolution.sql": "a812baae1b9791a7a58ca9d2f2fe2ee435a2c6fa9ab7bb3aa5c501a0ffd978eb",
+    "supabase\\migrations\\20261020_revoke_anon_claim_listing_execute.sql": "35fccfa3c5d931bde7e95d15c1874b217d7760134988dcd99fc47324ca2ff377",
+    "supabase\\migrations\\20261021_auto_validate_ngo_registration_location.sql": "a40e00b8a744783f24f43b7bbc4799192cee0b7e6c9403d817ce3facfd9a31ed",
+    "supabase\\migrations\\20261022_role_onboarding_and_profile_management.sql": "7d825b897d2cf0a085626252b1f33558435b3dae90e0e0e6b05a319370f228e1",
+    "supabase\\migrations\\20261023_async_ngo_eligibility_refresh.sql": "f3048aab561a651f2d7ec666d4dd6531f8ccd0f352c70700c7c7466587a2247c",
+    "supabase\\migrations\\20261023_eligible_ngo_listing_details_and_photos.sql": "ed5e3876a4cd33dfc57ab8a39980c8eb581bdc37937874c8c7d06c8793284450",
+    "supabase\\migrations\\20261024_async_listing_eligibility_refresh.sql": "5939a4f00f6e485fd4c89f70d03c6be50a466559cd0c15a803c681f0313cf25e",
+    "supabase\\migrations\\20261025_fix_cancel_claim_audit_columns.sql": "ea679d0a14e1f6ffc6aef7fb3dd134eab94116b2a6a6b6c4308d04bc2a5b5541",
+    "supabase\\migrations\\20261026_fix_claim_recovery_reconciliation_audit_columns.sql": "747de54924d81c51bf5e3fdea5dd6a9497b4dd6a6d7f5855ebf9978467cf2a1f",
+    "supabase\\migrations\\20261027_persisted_donation_lifecycle.sql": "c40bff10daac4a25ea5852cec7d1123ed2a553357bb9f7faae4f1e98ed901b91",
+    "supabase\\migrations\\20261028_claim_card_expiry_and_paused_recovery.sql": "9d36ae30378ebb25626d1f3ea70bd6e7291a8988574cbd805e4483d18d54f1b3",
+    "supabase\\migrations\\20261029_fix_claim_recovery_listing_expiration_race.sql": "4d4b2648b13d991177fa9df590c82d1fe77b2de3e9b48825c95cb14468d35583",
+    "supabase\\migrations\\20261030_fix_claim_recovery_unresolved_reconciliation.sql": "9aa252d1c601c1d965c3cc7ebe47dbcf94824e609e0501b90aa243bdbe86486a",
+    "supabase\\migrations\\20261031_claim_audit_and_failure_capture.sql": "63d1ce8a78224f2fe2b6fff7b2d0937727bf484603353ea2295d737c78e6fcf8",
+    "supabase\\migrations\\20261103_remove_ngo_registration_number.sql": "4ec82ece51a781c6e0a09ded6e2559a63af0df6e12124300e4c4fa1465190f5c",
+    "supabase\\migrations\\20261104130000_unstarted_released_route_cancellation.sql": "d2a25150aa10358175615594ab44d065309b0ebe773ba416918d8e3df4bf0fdf",
+    "supabase\\migrations\\20261104_released_claim_history_readers.sql": "ee0a007b424b8288373a6b9c8ee24f8dd3dd94a50ec59d94d66f9980fbcdfc03",
+    "supabase\\migrations\\20261108140000_fix_get_my_donation_coordination_listing_join.sql": "84177cc757034c2dda333eda9d624f593ee8d784f72c5565842b3207c83f1c4e",
+    "supabase\\migrations\\20261109120000_fix_claim_listing_fk_lock_deadlock.sql": "a0a35b5dfeab92351c79a240af79e46ad638f57b57f204a6cb54e9eeed3a0433",
+    "docs\\stage8\\stage-a\\forward-migrations\\20261101_routing_authority.sql": "46004a0691a3e91576a9d504f836d57f7e19d20827b9289cb4918d961a1e243d",
+    "docs\\stage8\\stage-a\\forward-migrations\\20261102_routing_publication.sql": "425c91ef9f984664325142dd181902d7afb67aa82ddb42c7fd1872819f05c415",
+    "docs\\stage8\\stage-a\\forward-migrations\\20261103_routing_pickup_and_reconciliation.sql": "313df6a3087fd3fdf81e7788c1627bf8bcead105009cc8c27ae89cc1a14cfc5d",
+    "docs\\stage8\\stage-a\\forward-migrations\\20261104_routing_automatic_departure.sql": "74b098e891c49ee71a9cf1dde7c4e6d2fb9fdf31875ebc94488321fd48557dc4",
+    "docs\\stage8\\stage-a\\forward-migrations\\20261105_routing_receipt_readonly.sql": "26041d435f44e7020999fe801d7732ed8a09b46fe31118dcd2223ee0955c7eea",
+    "docs\\stage8\\stage-a\\forward-migrations\\20261106_route_interruption_resolution.sql": "a9fe7713fe2ffd65816743b52abd43695d63d1ecbb45fd216983c4a952eca557",
+    "docs\\stage8\\stage-a\\forward-migrations\\20261107_donor_route_resolution_read.sql": "be4584be0e31f93a34400b71e148c663e805b89d999e43eb842b1a91f4381ff4",
+    "docs\\stage8\\stage-a\\forward-migrations\\20261108_per_stop_reconciliation.sql": "b6de7bd1f6b95da946dc3638b750cbe8136dfe601a28a3ef349135f687b37428",
+    "docs\\stage8\\stage-a\\forward-migrations\\20261109_claim_scoped_reconciliation.sql": "302fc82c16a9067bbb60a2ab412aaaabb8e951e6adb2c1a4ede0617e2cdab2e3"
+  },
+  "comparisons": "Same cluster/input order/concurrency; original teammate V3 schema versus current full GeoLock schema. Schema/lifecycle differences are explicit validity threats.",
+  "synthetic_auth_storage": true,
+  "eligibility": "Actual frozen matrix lookup adapter; not a fresh pgRouting graph recomputation",
+  "dev_connections": 0,
+  "method_runs": 1
+}

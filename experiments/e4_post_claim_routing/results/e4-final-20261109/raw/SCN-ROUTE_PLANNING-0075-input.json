@@ -1,0 +1,638 @@
+{
+  "shared": {
+    "scenario_id": "SCN-ROUTE_PLANNING-0075",
+    "scenario_type": "ROUTE_PLANNING",
+    "scenario_profile": "GEOGRAPHIC_SPREAD",
+    "condition": "route",
+    "ngo_id": "NGO011",
+    "cutoff": "2025-08-13T13:30:05",
+    "matrix_id": "OSM-DIRECTED-v3.3",
+    "matrix_sha256": "b9a272d2396354695ae2ec6fd744a17510f1b5e7c61989fe7b404d2d0e0133e1",
+    "tasks": [
+      {
+        "task_id": "TASK-LST000559",
+        "source_id": "DON001762",
+        "road_node_id": "4773245334",
+        "weight_kg": 20.21,
+        "created_at": "2025-08-13T13:30:00",
+        "service_minutes": 10,
+        "ngo_id": "NGO011",
+        "claim_id": "CLM-TASK-LST000559",
+        "claim_status": "ACTIVE",
+        "claim_expires_at": "2025-08-13T19:30:00",
+        "task_status": "CONFIRMED",
+        "task_version": 1
+      },
+      {
+        "task_id": "TASK-LST000560",
+        "source_id": "DON001765",
+        "road_node_id": "7655201031",
+        "weight_kg": 18.2,
+        "created_at": "2025-08-13T13:30:01",
+        "service_minutes": 10,
+        "ngo_id": "NGO011",
+        "claim_id": "CLM-TASK-LST000560",
+        "claim_status": "ACTIVE",
+        "claim_expires_at": "2025-08-13T19:30:01",
+        "task_status": "CONFIRMED",
+        "task_version": 1
+      },
+      {
+        "task_id": "TASK-LST000561",
+        "source_id": "DON001766",
+        "road_node_id": "6640432134",
+        "weight_kg": 22.55,
+        "created_at": "2025-08-13T13:30:02",
+        "service_minutes": 10,
+        "ngo_id": "NGO011",
+        "claim_id": "CLM-TASK-LST000561",
+        "claim_status": "ACTIVE",
+        "claim_expires_at": "2025-08-13T19:30:02",
+        "task_status": "CONFIRMED",
+        "task_version": 1
+      },
+      {
+        "task_id": "TASK-LST000562",
+        "source_id": "DON001767",
+        "road_node_id": "6639833253",
+        "weight_kg": 17.55,
+        "created_at": "2025-08-13T13:30:03",
+        "service_minutes": 10,
+        "ngo_id": "NGO011",
+        "claim_id": "CLM-TASK-LST000562",
+        "claim_status": "ACTIVE",
+        "claim_expires_at": "2025-08-13T19:30:03",
+        "task_status": "CONFIRMED",
+        "task_version": 1
+      },
+      {
+        "task_id": "TASK-LST000563",
+        "source_id": "DON001768",
+        "road_node_id": "6659747175",
+        "weight_kg": 15.75,
+        "created_at": "2025-08-13T13:30:04",
+        "service_minutes": 10,
+        "ngo_id": "NGO011",
+        "claim_id": "CLM-TASK-LST000563",
+        "claim_status": "ACTIVE",
+        "claim_expires_at": "2025-08-13T19:30:04",
+        "task_status": "CONFIRMED",
+        "task_version": 1
+      }
+    ],
+    "excluded_tasks": [],
+    "fleet": [
+      {
+        "vehicle_id": "VEH-NGO011-2",
+        "ngo_id": "NGO011",
+        "depot_road_node_id": "7652710478",
+        "capacity_kg": 500.0
+      }
+    ],
+    "claim_model": "SERIAL_PROTECTED_IN_MEMORY_ADMISSION",
+    "dispatch_authority_issued": false,
+    "planning_contract": {
+      "geofence_km": 20.0,
+      "lease_minutes": 360.0,
+      "route_minutes": 240.0,
+      "service_minutes": 10.0,
+      "safety_margin_minutes": 0.0,
+      "vehicle_order": "ASCENDING_VEHICLE_ID",
+      "trips_per_vehicle": 1,
+      "fcfs_infeasible_policy": "SKIP_INFEASIBLE_AND_TRY_NEXT_TASK",
+      "cutoff": "AFTER_FINAL_SCHEDULED_CLAIM",
+      "claim_schedule": "LISTING_CREATED_AT_THEN_LISTING_ID_ONE_SECOND_SPACING"
+    },
+    "snapshot_id": "38929fd96bb12d62362ba1fc5df80a7e99e00176bcd2164e6a82f007c9c6980c"
+  },
+  "worker_input": {
+    "admitted_task_ids": [
+      "TASK-LST000559",
+      "TASK-LST000560",
+      "TASK-LST000561",
+      "TASK-LST000562",
+      "TASK-LST000563"
+    ],
+    "available_vehicle_ids": [
+      "VEH-NGO011-2"
+    ],
+    "dispatch_authority_issued": false,
+    "excluded_tasks": [],
+    "input": {
+      "configuration": {
+        "currency": "BENCHMARK_COST_UNIT",
+        "dispatch_margin_minutes": 0,
+        "objective": "MIN_UNSERVED_THEN_FIXED_PLUS_DISTANCE_COST",
+        "planning_horizon_minutes": 240,
+        "time_window_policy": "SERVICE_COMPLETION_WITHIN_WINDOW",
+        "version": "E4-V33-ACTUAL-WORKER"
+      },
+      "cutoff": "2025-08-13T13:30:05+08:00",
+      "depot": {
+        "latitude": 5.8020847,
+        "location_id": "BENCHMARK-DEPOT-NGO011",
+        "longitude": 100.374182,
+        "network_snapshot_id": "OSM-DIRECTED-v3.3",
+        "road_node_id": "7652710478",
+        "state_token": "7f3a3e0af8f1a3e496e45880b8fe26efd829cd6dd8218183394e645ba24db9cc"
+      },
+      "matrix": {
+        "arc_status": [
+          [
+            "AVAILABLE",
+            "AVAILABLE",
+            "AVAILABLE",
+            "AVAILABLE",
+            "AVAILABLE",
+            "AVAILABLE"
+          ],
+          [
+            "AVAILABLE",
+            "AVAILABLE",
+            "AVAILABLE",
+            "AVAILABLE",
+            "AVAILABLE",
+            "AVAILABLE"
+          ],
+          [
+            "AVAILABLE",
+            "AVAILABLE",
+            "AVAILABLE",
+            "AVAILABLE",
+            "AVAILABLE",
+            "AVAILABLE"
+          ],
+          [
+            "AVAILABLE",
+            "AVAILABLE",
+            "AVAILABLE",
+            "AVAILABLE",
+            "AVAILABLE",
+            "AVAILABLE"
+          ],
+          [
+            "AVAILABLE",
+            "AVAILABLE",
+            "AVAILABLE",
+            "AVAILABLE",
+            "AVAILABLE",
+            "AVAILABLE"
+          ],
+          [
+            "AVAILABLE",
+            "AVAILABLE",
+            "AVAILABLE",
+            "AVAILABLE",
+            "AVAILABLE",
+            "AVAILABLE"
+          ]
+        ],
+        "distance_km": [
+          [
+            0.0,
+            0.94687,
+            0.50364,
+            2.99611,
+            4.59865,
+            8.62822
+          ],
+          [
+            0.94687,
+            0.0,
+            1.29698,
+            3.78045,
+            5.38299,
+            9.41256
+          ],
+          [
+            0.50364,
+            1.29698,
+            0.0,
+            2.5351,
+            4.13764,
+            8.16721
+          ],
+          [
+            2.90251,
+            3.68686,
+            2.44151,
+            0.0,
+            3.52065,
+            7.55022
+          ],
+          [
+            4.60556,
+            5.3899,
+            4.14455,
+            3.52065,
+            0.0,
+            4.21941
+          ],
+          [
+            8.63513,
+            9.41947,
+            8.17412,
+            7.55022,
+            4.21941,
+            0.0
+          ]
+        ],
+        "edge_speed_profile": "Supplied extract speed profile; no live traffic",
+        "matrix_id": "OSM-DIRECTED-v3.3",
+        "method": "SUPPLIED_BENCHMARK_MATRIX",
+        "network_snapshot_id": "OSM-DIRECTED-v3.3",
+        "node_order": [
+          "4773245334",
+          "6639833253",
+          "6640432134",
+          "6659747175",
+          "7652710478",
+          "7655201031"
+        ],
+        "path_policy": "DIRECTED_SHORTEST_DISTANCE_WITH_TIME_ON_SAME_PATH",
+        "provenance": "Supplied OSM-derived benchmark costs retained; synthetic entities, NOT synthetic road distances or DEV measurements",
+        "source_kind": "SYNTHETIC_BENCHMARK",
+        "travel_minutes": [
+          [
+            0.0,
+            1.3681,
+            0.75547,
+            3.3063,
+            3.71408,
+            6.86498
+          ],
+          [
+            1.3681,
+            0.0,
+            1.61497,
+            4.54994,
+            4.95773,
+            8.10863
+          ],
+          [
+            0.75547,
+            1.61497,
+            0.0,
+            3.01242,
+            3.42021,
+            6.5711
+          ],
+          [
+            3.23098,
+            4.47463,
+            2.9371,
+            0.0,
+            4.30115,
+            7.45205
+          ],
+          [
+            3.71917,
+            4.96282,
+            3.4253,
+            4.30115,
+            0.0,
+            3.72945
+          ],
+          [
+            6.87007,
+            8.11371,
+            6.57619,
+            7.45205,
+            3.72945,
+            0.0
+          ]
+        ],
+        "unavailable_policy": "FORBID_ARC",
+        "version": "b9a272d2396354695ae2ec6fd744a17510f1b5e7c61989fe7b404d2d0e0133e1"
+      },
+      "ngo_active": true,
+      "ngo_id": "NGO011",
+      "ngo_location_generation": 1,
+      "ngo_location_verified_at": "2025-08-13T13:30:05+08:00",
+      "planning_run_id": "OFFLINE-38929fd96bb12d62362ba1fc5df80a7e99e00176bcd2164e6a82f007c9c6980c",
+      "route_end_location_id": "BENCHMARK-DEPOT-NGO011",
+      "route_start_location_id": "BENCHMARK-DEPOT-NGO011",
+      "scenario_id": "SCN-ROUTE_PLANNING-0075",
+      "schema_version": "geolock.routing.scenario.v1",
+      "solver": {
+        "engine": "OR_TOOLS",
+        "first_solution": "PATH_CHEAPEST_ARC",
+        "local_search": "GUIDED_LOCAL_SEARCH",
+        "seed": 42,
+        "tie_break": "TASK_ID_THEN_VEHICLE_ID",
+        "time_limit_seconds": 30,
+        "timeout_policy": "VALIDATED_INCUMBENT_ONLY",
+        "version": "9.15.6755",
+        "workers": 1
+      },
+      "source": {
+        "evidence_ref": "benchmark dataset/dataset/generation_manifest.json",
+        "kind": "SYNTHETIC_BENCHMARK",
+        "project_ref": null,
+        "provenance": "Synthetic entities / simulated claims; actual supplied OSM-derived benchmark matrix, not DEV coverage"
+      },
+      "tasks": [
+        {
+          "authorized_pickup": {
+            "latitude": 5.8326665,
+            "location_id": "BENCHMARK-PICKUP-TASK-LST000559",
+            "longitude": 100.3980847,
+            "network_snapshot_id": "OSM-DIRECTED-v3.3",
+            "road_node_id": "4773245334",
+            "state_token": "ae97048912026bca675e9da71e37bbe444d6c5bea5fd8ac2fb3569fe64ec9140"
+          },
+          "batch": null,
+          "claim_id": "CLM-TASK-LST000559",
+          "claim_ngo_id": "NGO011",
+          "claim_state_token": "7d371a6e202d6bbc183604557c7db1cdf6c4cd6c2048eb90a9eb768c470537d8",
+          "claim_status": "ACTIVE",
+          "created_at": "2025-08-13T13:30:00+08:00",
+          "donations": [
+            {
+              "donation_id": "DON001762",
+              "donation_status": "CLAIMED",
+              "state_token": "7efd9791d6d7b689fc3ae4ed7d2f7d185faf6167c77526e3ce06dbcf9519b9f8"
+            }
+          ],
+          "has_route_assignment": false,
+          "lease_expires_at": "2025-08-13T19:30:00+08:00",
+          "lease_id": "BENCHMARK-LEASE-TASK-LST000559",
+          "lease_issued_at": "2025-08-13T13:30:00+08:00",
+          "lease_state_token": "353e57f138c58f3bdefda96dd21c6fcd2cb2abff404cdda23ef21afdafb447d2",
+          "lease_status": "ACTIVE",
+          "listing_expires_at": "2025-08-14T18:00:00+08:00",
+          "listing_id": "LST000559",
+          "listing_status": "CLAIMED",
+          "listing_version": 2,
+          "listing_weight_kg": 20.21,
+          "mandatory": false,
+          "ngo_id": "NGO011",
+          "pickup": {
+            "latitude": 5.8326665,
+            "location_id": "BENCHMARK-PICKUP-TASK-LST000559",
+            "longitude": 100.3980847,
+            "network_snapshot_id": "OSM-DIRECTED-v3.3",
+            "road_node_id": "4773245334",
+            "state_token": "ae97048912026bca675e9da71e37bbe444d6c5bea5fd8ac2fb3569fe64ec9140"
+          },
+          "reconciliation_blocked": false,
+          "service_minutes": 10,
+          "source_type": "DIRECT_DONATION",
+          "task_id": "TASK-LST000559",
+          "task_state_token": "d3321a3586e78eaab8876559785b90b2559e8f99aad1b881b6a6e5fcd1c4653b",
+          "task_status": "CONFIRMED",
+          "time_window": {
+            "end": "2025-08-13T17:30:05+08:00",
+            "provenance": "Explicit baseline-equivalent routing horizon; donor availability NOT evaluated",
+            "start": "2025-08-13T13:30:05+08:00"
+          },
+          "weight_kg": 20.21
+        },
+        {
+          "authorized_pickup": {
+            "latitude": 5.7653731,
+            "location_id": "BENCHMARK-PICKUP-TASK-LST000560",
+            "longitude": 100.3691682,
+            "network_snapshot_id": "OSM-DIRECTED-v3.3",
+            "road_node_id": "7655201031",
+            "state_token": "202da3a0cdc079d3dbbba050734d73840ba6a58270c9cdb8348c4eb3d772ba92"
+          },
+          "batch": null,
+          "claim_id": "CLM-TASK-LST000560",
+          "claim_ngo_id": "NGO011",
+          "claim_state_token": "c962c0cb99b6432f9c9430f8c77bda7a2f7e442140e1f3ba4212c8b2d846f4ea",
+          "claim_status": "ACTIVE",
+          "created_at": "2025-08-13T13:30:01+08:00",
+          "donations": [
+            {
+              "donation_id": "DON001765",
+              "donation_status": "CLAIMED",
+              "state_token": "170e9ee7393352167107b693f509d7c4fbb68629e4381bab3f1551619002bd24"
+            }
+          ],
+          "has_route_assignment": false,
+          "lease_expires_at": "2025-08-13T19:30:01+08:00",
+          "lease_id": "BENCHMARK-LEASE-TASK-LST000560",
+          "lease_issued_at": "2025-08-13T13:30:01+08:00",
+          "lease_state_token": "bbdc1f8d6139b53dadeef1cf31bddb16ec564eb4ec155af958586fc5101eaf22",
+          "lease_status": "ACTIVE",
+          "listing_expires_at": "2025-08-13T20:00:00+08:00",
+          "listing_id": "LST000560",
+          "listing_status": "CLAIMED",
+          "listing_version": 2,
+          "listing_weight_kg": 18.2,
+          "mandatory": false,
+          "ngo_id": "NGO011",
+          "pickup": {
+            "latitude": 5.7653731,
+            "location_id": "BENCHMARK-PICKUP-TASK-LST000560",
+            "longitude": 100.3691682,
+            "network_snapshot_id": "OSM-DIRECTED-v3.3",
+            "road_node_id": "7655201031",
+            "state_token": "202da3a0cdc079d3dbbba050734d73840ba6a58270c9cdb8348c4eb3d772ba92"
+          },
+          "reconciliation_blocked": false,
+          "service_minutes": 10,
+          "source_type": "DIRECT_DONATION",
+          "task_id": "TASK-LST000560",
+          "task_state_token": "66a54402fae992656f60058efbfcb196e5c9d2c170da3228aecaf7bb949c4227",
+          "task_status": "CONFIRMED",
+          "time_window": {
+            "end": "2025-08-13T17:30:05+08:00",
+            "provenance": "Explicit baseline-equivalent routing horizon; donor availability NOT evaluated",
+            "start": "2025-08-13T13:30:05+08:00"
+          },
+          "weight_kg": 18.2
+        },
+        {
+          "authorized_pickup": {
+            "latitude": 5.8310052,
+            "location_id": "BENCHMARK-PICKUP-TASK-LST000561",
+            "longitude": 100.3941229,
+            "network_snapshot_id": "OSM-DIRECTED-v3.3",
+            "road_node_id": "6640432134",
+            "state_token": "58c0f0c89ad655c30448204ccd6ee61d8c50e2367cc85733a6562cf0ddfe2929"
+          },
+          "batch": null,
+          "claim_id": "CLM-TASK-LST000561",
+          "claim_ngo_id": "NGO011",
+          "claim_state_token": "9793c5e09eea3082583171c5d68c1780da109b2fb0133d6ebb9613ab80a2c482",
+          "claim_status": "ACTIVE",
+          "created_at": "2025-08-13T13:30:02+08:00",
+          "donations": [
+            {
+              "donation_id": "DON001766",
+              "donation_status": "CLAIMED",
+              "state_token": "adc2e80539bda73a30a971ebaf2ea9e33d4671d3539b3a8bf17e7b869b6b8fbf"
+            }
+          ],
+          "has_route_assignment": false,
+          "lease_expires_at": "2025-08-13T19:30:02+08:00",
+          "lease_id": "BENCHMARK-LEASE-TASK-LST000561",
+          "lease_issued_at": "2025-08-13T13:30:02+08:00",
+          "lease_state_token": "882bc0f4f5d13034e341126b980368e7f6b244fc849cc45aa2aaefa570c069c4",
+          "lease_status": "ACTIVE",
+          "listing_expires_at": "2025-08-13T21:00:00+08:00",
+          "listing_id": "LST000561",
+          "listing_status": "CLAIMED",
+          "listing_version": 2,
+          "listing_weight_kg": 22.55,
+          "mandatory": false,
+          "ngo_id": "NGO011",
+          "pickup": {
+            "latitude": 5.8310052,
+            "location_id": "BENCHMARK-PICKUP-TASK-LST000561",
+            "longitude": 100.3941229,
+            "network_snapshot_id": "OSM-DIRECTED-v3.3",
+            "road_node_id": "6640432134",
+            "state_token": "58c0f0c89ad655c30448204ccd6ee61d8c50e2367cc85733a6562cf0ddfe2929"
+          },
+          "reconciliation_blocked": false,
+          "service_minutes": 10,
+          "source_type": "DIRECT_DONATION",
+          "task_id": "TASK-LST000561",
+          "task_state_token": "f815cfadf22b91bc481778546e2e8c456f3610c898bff7774c83fcb5ba71cefe",
+          "task_status": "CONFIRMED",
+          "time_window": {
+            "end": "2025-08-13T17:30:05+08:00",
+            "provenance": "Explicit baseline-equivalent routing horizon; donor availability NOT evaluated",
+            "start": "2025-08-13T13:30:05+08:00"
+          },
+          "weight_kg": 22.55
+        },
+        {
+          "authorized_pickup": {
+            "latitude": 5.8278006,
+            "location_id": "BENCHMARK-PICKUP-TASK-LST000562",
+            "longitude": 100.4037193,
+            "network_snapshot_id": "OSM-DIRECTED-v3.3",
+            "road_node_id": "6639833253",
+            "state_token": "b2461ad385d04fb073c73964e13edea9ea8beb9b85448152d1ca17c6cd68c77f"
+          },
+          "batch": null,
+          "claim_id": "CLM-TASK-LST000562",
+          "claim_ngo_id": "NGO011",
+          "claim_state_token": "5abfc0f12c45de3c4d177e84179edfa97456ccd0fc380e6ead2c25e3f9835119",
+          "claim_status": "ACTIVE",
+          "created_at": "2025-08-13T13:30:03+08:00",
+          "donations": [
+            {
+              "donation_id": "DON001767",
+              "donation_status": "CLAIMED",
+              "state_token": "186c82177c430fe1b1e0acf21fcb51729a331748aaef2a78655a66241f209a01"
+            }
+          ],
+          "has_route_assignment": false,
+          "lease_expires_at": "2025-08-13T19:30:03+08:00",
+          "lease_id": "BENCHMARK-LEASE-TASK-LST000562",
+          "lease_issued_at": "2025-08-13T13:30:03+08:00",
+          "lease_state_token": "42bc03867d0ca53085a8a676bbd572e68ea2a5bee6400644f5d1c5fc6ee6c429",
+          "lease_status": "ACTIVE",
+          "listing_expires_at": "2025-08-14T18:00:00+08:00",
+          "listing_id": "LST000562",
+          "listing_status": "CLAIMED",
+          "listing_version": 2,
+          "listing_weight_kg": 17.55,
+          "mandatory": false,
+          "ngo_id": "NGO011",
+          "pickup": {
+            "latitude": 5.8278006,
+            "location_id": "BENCHMARK-PICKUP-TASK-LST000562",
+            "longitude": 100.4037193,
+            "network_snapshot_id": "OSM-DIRECTED-v3.3",
+            "road_node_id": "6639833253",
+            "state_token": "b2461ad385d04fb073c73964e13edea9ea8beb9b85448152d1ca17c6cd68c77f"
+          },
+          "reconciliation_blocked": false,
+          "service_minutes": 10,
+          "source_type": "DIRECT_DONATION",
+          "task_id": "TASK-LST000562",
+          "task_state_token": "a2dbc03d6a4a95ddffb27179532fc9a06d4ae356401bdd9bf40787e5baef1605",
+          "task_status": "CONFIRMED",
+          "time_window": {
+            "end": "2025-08-13T17:30:05+08:00",
+            "provenance": "Explicit baseline-equivalent routing horizon; donor availability NOT evaluated",
+            "start": "2025-08-13T13:30:05+08:00"
+          },
+          "weight_kg": 17.55
+        },
+        {
+          "authorized_pickup": {
+            "latitude": 5.8240349,
+            "location_id": "BENCHMARK-PICKUP-TASK-LST000563",
+            "longitude": 100.3742306,
+            "network_snapshot_id": "OSM-DIRECTED-v3.3",
+            "road_node_id": "6659747175",
+            "state_token": "6ee882f30a6c2cc20509e0821686ba1c4f69bc48eb0aa9ec8dd5aefbc33734a1"
+          },
+          "batch": null,
+          "claim_id": "CLM-TASK-LST000563",
+          "claim_ngo_id": "NGO011",
+          "claim_state_token": "86836be1fc6000aec48bc6e20a309e52fdedd31b17a546c3dd4b6a60fa4f662e",
+          "claim_status": "ACTIVE",
+          "created_at": "2025-08-13T13:30:04+08:00",
+          "donations": [
+            {
+              "donation_id": "DON001768",
+              "donation_status": "CLAIMED",
+              "state_token": "08b0909a6ad4e54918e45e3dafe0213278da60eac8dc0f271ca749bbaef1e9ed"
+            }
+          ],
+          "has_route_assignment": false,
+          "lease_expires_at": "2025-08-13T19:30:04+08:00",
+          "lease_id": "BENCHMARK-LEASE-TASK-LST000563",
+          "lease_issued_at": "2025-08-13T13:30:04+08:00",
+          "lease_state_token": "2a013094d18ac2fc1a9fee8ce5514a60af723361a9937a001584308752c8438b",
+          "lease_status": "ACTIVE",
+          "listing_expires_at": "2025-08-15T18:00:00+08:00",
+          "listing_id": "LST000563",
+          "listing_status": "CLAIMED",
+          "listing_version": 2,
+          "listing_weight_kg": 15.75,
+          "mandatory": false,
+          "ngo_id": "NGO011",
+          "pickup": {
+            "latitude": 5.8240349,
+            "location_id": "BENCHMARK-PICKUP-TASK-LST000563",
+            "longitude": 100.3742306,
+            "network_snapshot_id": "OSM-DIRECTED-v3.3",
+            "road_node_id": "6659747175",
+            "state_token": "6ee882f30a6c2cc20509e0821686ba1c4f69bc48eb0aa9ec8dd5aefbc33734a1"
+          },
+          "reconciliation_blocked": false,
+          "service_minutes": 10,
+          "source_type": "DIRECT_DONATION",
+          "task_id": "TASK-LST000563",
+          "task_state_token": "7005bb9bc6b5fe93bcb951056f3fc6ba9ccae4112d11c59c89a5ec68434e2968",
+          "task_status": "CONFIRMED",
+          "time_window": {
+            "end": "2025-08-13T17:30:05+08:00",
+            "provenance": "Explicit baseline-equivalent routing horizon; donor availability NOT evaluated",
+            "start": "2025-08-13T13:30:05+08:00"
+          },
+          "weight_kg": 15.75
+        }
+      ],
+      "vehicles": [
+        {
+          "active": true,
+          "available_for_planning": true,
+          "capacity_kg": 500.0,
+          "depot_location_id": "BENCHMARK-DEPOT-NGO011",
+          "distance_cost_per_km": 1,
+          "fixed_cost": 5,
+          "max_route_minutes": 240,
+          "ngo_id": "NGO011",
+          "state_token": "7c537acb0d85985849f8f14e4ef4b42fd065d8f3d7321385437a414d3018fc38",
+          "vehicle_id": "VEH-NGO011-2",
+          "vehicle_type": "van"
+        }
+      ]
+    },
+    "matrix_sha256": "7b6a4721d8234ffd26f470494f461666aea93762f18e76debdeea95e18478b65",
+    "readiness": "READY_FOR_PLANNING",
+    "unavailable_arcs": []
+  },
+  "frozen_sha256": "97fbddf9079e89783835af7856b3455cebd44cd4f880cdbc60c318fdd07131b4",
+  "exclusions": []
+}

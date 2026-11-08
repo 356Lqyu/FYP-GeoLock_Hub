@@ -1805,7 +1805,6 @@ class _NgoListingDetailsPageState extends State<NgoListingDetailsPage> {
 
     final outcome = result['outcome']?.toString();
     final reason = result['reason_code']?.toString();
-    final claimId = result['claim_id']?.toString();
     if (isConfirmedClaimFailure(result)) {
       if (mounted) {
         setState(() => _claimBusy = false);
@@ -1815,12 +1814,13 @@ class _NgoListingDetailsPageState extends State<NgoListingDetailsPage> {
       }
       return; // Preserve the request UUID; never report an uncertain RPC as failed.
     }
-    final confirmedSuccess =
-        outcome == 'SUCCESS' && claimId != null && claimId.isNotEmpty;
-    final confirmedRejection =
-        (outcome == 'CONFLICT' || outcome == 'INELIGIBLE') &&
-        reason != null &&
-        reason.isNotEmpty;
+    final responseKind = claimResponseKind(result);
+    final confirmedSuccess = responseKind == ClaimResponseKind.success;
+    final confirmedRejection = const {
+      ClaimResponseKind.alreadyClaimed,
+      ClaimResponseKind.ineligible,
+      ClaimResponseKind.rejected,
+    }.contains(responseKind);
     if (!confirmedSuccess && !confirmedRejection) {
       if (mounted) {
         setState(() => _claimBusy = false);
@@ -1868,11 +1868,7 @@ class _NgoListingDetailsPageState extends State<NgoListingDetailsPage> {
       });
       _refreshAvailability();
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Donation availability changed. This donation is no longer available to claim. Please refresh the donation list.',
-          ),
-        ),
+        SnackBar(content: Text(claimRejectionMessage(result))),
       );
       return;
     }

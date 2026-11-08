@@ -17,6 +17,7 @@ def source_catalog(port,db):
         return c.execute("SELECT jsonb_object_agg(p.oid::regprocedure::text,jsonb_build_object('md5',md5(replace(prosrc,chr(13),'')),'owner',proowner::regrole::text,'definer',prosecdef,'acl',proacl::text)) FROM pg_proc p WHERE p.oid IN(to_regprocedure('public.claim_listing(uuid,uuid)'),to_regprocedure('public.recover_expired_claims(integer)'))").fetchone()[0]
 
 def run(output,only=None):
+    experiment_started=time.perf_counter()
     clear_remote_env();verified=integrity()
     output=Path(output).resolve();assert output.is_relative_to(ROOT/'experiments/e2_atomic_claiming/results')
     output.mkdir(parents=True,exist_ok=False);runtime=output/'runtime';runtime.mkdir();evidence=runtime/'schema-evidence';evidence.mkdir()
@@ -152,7 +153,7 @@ def run(output,only=None):
             audits=c.execute("SELECT request_id,reason_code,details->>'sqlstate' sqlstate,details->>'rollback_confirmed' rollback_confirmed FROM public.operation_failure_events").fetchall()
         csv_write(output/'database_errors.csv',[dict(request_id=str(r[0]),reason_code=r[1],sqlstate=r[2],rollback_confirmed=r[3]) for r in audits])
         db.conn.close();manifest.update(status='EXECUTED',postgresql=observed,postgis_baseline='3.6.2 runtime (query catalog for exact)',proposed_results=len(records),proposed_failures=len(failures),function_sources_unchanged=source_catalog(port,'e2_proposed')==manifest['function_catalog']['e2_proposed'])
-        write(output/'manifest.json',manifest);write(output/'completion.json',dict(executed=True,planned_proposed=len(chosen),completed_proposed=len(records),failures=len(failures),remote_connections=0))
+        write(output/'manifest.json',manifest);write(output/'completion.json',dict(executed=True,planned_proposed=len(chosen),completed_proposed=len(records),failures=len(failures),remote_connections=0,experiment_elapsed_seconds=time.perf_counter()-experiment_started))
     finally:
         if cls is not None:
             proc=subprocess.run([str(BIN/'pg_ctl.exe'),'-D',str(runtime/'data'),'-m','fast','-w','-t','30','stop'],capture_output=True,text=True)

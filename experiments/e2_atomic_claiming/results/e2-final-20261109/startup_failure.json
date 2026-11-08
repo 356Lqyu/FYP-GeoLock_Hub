@@ -1,0 +1,16 @@
+{
+  "run_id": "e2-final-20261109",
+  "stage": "isolated PostgreSQL startup",
+  "status": "FAILED_BEFORE_SCENARIO_EXECUTION",
+  "error": "pg_ctl: could not create restricted token: error code 87; pg_ctl: could not start server: error code 3",
+  "scenario_count_executed": 0,
+  "request_count": 0,
+  "postmaster_pid_present": false,
+  "cluster_stop_marker_written": false,
+  "windows_service_name": "postgresql-x64-17",
+  "windows_service_status": "Running",
+  "methodology_changed": false,
+  "retry_attempted": false,
+  "raw_error_captured_from": "runner stderr",
+  "partial_fixture_retained": true
+}

@@ -1,0 +1,9 @@
+{
+  "executed": true,
+  "planned_proposed": 0,
+  "completed_proposed": 0,
+  "benchmark_scenarios_executed": 0,
+  "regressions_executed": true,
+  "failures": 0,
+  "remote_connections": 0
+}
