@@ -192,9 +192,9 @@ def main() -> int:
     batch_capacity_donation = required("GEOLOCK_DEV_BATCH_CAPACITY_DONATION_ID")
 
     # Expiry is evaluated by SQL. This fixture must already be expired in DB.
-    hubs = require_success(call(url, key, donor, "rpc/get_hub_options",
-                                {"p_donation": expired_donation}), "hub options")
-    if not any(str(row["hub_id"]) == reassignment_hub and row.get("feasible") for row in hubs):
+    hubs = require_success(call(url, key, donor, "rpc/get_eligible_hubs",
+                                {"p_donation": expired_donation}), "eligible hubs")
+    if not any(str(row["hub_id"]) == reassignment_hub for row in hubs):
         raise RuntimeError("Prepared reassignment hub is not currently eligible.")
     new_reservation = require_success(call(
         url, key, donor, "rpc/reserve_hub_capacity",

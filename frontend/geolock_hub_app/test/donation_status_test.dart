@@ -26,8 +26,8 @@ void main() {
 
   test('hub member lifecycle remains distinct from batch publication', () {
     const expected = {
-      'SUBMITTED': 'Choose a hub',
-      'HUB_ASSIGNED': 'Ready to drop off',
+      'SUBMITTED': 'Awaiting Hub Selection',
+      'HUB_ASSIGNED': 'Awaiting Drop-off',
       'AT_HUB': 'At Hub',
       'BATCHED': 'Included in a Batch',
       'CLAIMED': 'Claimed',

@@ -61,7 +61,7 @@ void main() {
         ),
         findsOneWidget,
       );
-      expect(find.textContaining('Under 10 kg'), findsOneWidget);
+      expect(find.textContaining('Preview'), findsOneWidget);
     });
   });
 
@@ -184,8 +184,8 @@ void main() {
         'road_node_status': null,
         'total_weight_kg': 5,
       }, (value) => result = value);
-      expect(find.textContaining('under 10 kg'), findsOneWidget);
-      expect(find.textContaining('choose the hub and the day'), findsOneWidget);
+      expect(find.textContaining('Awaiting Hub Selection'), findsOneWidget);
+      expect(find.textContaining('Community hub'), findsOneWidget);
       await tester.tap(find.text('Choose a community hub'));
       await tester.pumpAndSettle();
       expect(result, isTrue);

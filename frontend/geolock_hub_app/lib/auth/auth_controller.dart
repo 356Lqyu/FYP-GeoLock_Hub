@@ -65,7 +65,7 @@ class AuthController {
         );
       }
       await client.auth.updateUser(
-        UserAttributes(data: _clearPending(pending)),
+        UserAttributes(data: {'geolock_pending_profile': null}),
       );
       _requireCurrentUser(userId);
       return role;
@@ -85,18 +85,12 @@ class AuthController {
       },
     );
     _requireCurrentUser(userId);
-    await client.auth.updateUser(UserAttributes(data: _clearPending(pending)));
+    await client.auth.updateUser(
+      UserAttributes(data: {'geolock_pending_profile': null}),
+    );
     _requireCurrentUser(userId);
     return role;
   }
-
-  // A hub admin's hub details stay saved until the hub itself is registered
-  // (that needs a signed-in admin for the road check).
-  Map<String, dynamic> _clearPending(Map pending) => {
-    'geolock_pending_profile': null,
-    if (pending['role'] == 'HUB_ADMIN' && pending['hub'] is Map)
-      'geolock_pending_hub': pending['hub'],
-  };
 
   bool _isValidPendingProfile(Map pending) {
     final role = pending['role']?.toString();

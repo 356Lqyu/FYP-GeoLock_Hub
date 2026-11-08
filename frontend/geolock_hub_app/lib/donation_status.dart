@@ -11,13 +11,13 @@ String donationStatusLabel({
 }) {
   if (collectionPath == 'HUB_COLLECTION' &&
       (status == 'SUBMITTED' || status == 'VALIDATED')) {
-    return 'Choose a hub';
+    return 'Awaiting Hub Selection';
   }
   if (status == 'HUB_ASSIGNED' && reservationStatus == 'EXPIRED') {
-    return 'Booking ended';
+    return 'Hub Reservation Expired';
   }
   if (status == 'HUB_ASSIGNED' && reservationStatus == 'ACTIVE') {
-    return 'Ready to drop off';
+    return 'Awaiting Drop-off';
   }
   if (status == 'HUB_ASSIGNED') return 'Hub Assignment Needs Review';
   // Persisted donation state takes precedence over listing/inventory records.

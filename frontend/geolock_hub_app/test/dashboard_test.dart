@@ -263,13 +263,14 @@ void main() {
       'Home',
       'Discover',
       'My Claims',
+      'Pickups',
       'Profile',
     ]);
     expect(RoleNavigationBar.labelsForRole('HUB_ADMIN'), [
       'Home',
-      'Drop-offs',
       'Inventory',
-      'Listings',
+      'Receive',
+      'Collections',
       'Profile',
     ]);
   });
@@ -280,7 +281,7 @@ void main() {
         status: 'SUBMITTED',
         collectionPath: 'HUB_COLLECTION',
       ),
-      'Choose a hub',
+      'Awaiting Hub Selection',
     );
     expect(
       donationStatusLabel(
@@ -291,7 +292,7 @@ void main() {
     );
     expect(
       donationStatusLabel(status: 'HUB_ASSIGNED', reservationStatus: 'EXPIRED'),
-      'Booking ended',
+      'Hub Reservation Expired',
     );
     // Legacy rows can be displayed safely during migration rollout, but the
     // application no longer treats VALIDATED as an operational state.
@@ -300,7 +301,7 @@ void main() {
         status: 'VALIDATED',
         collectionPath: 'HUB_COLLECTION',
       ),
-      'Choose a hub',
+      'Awaiting Hub Selection',
     );
   });
 
