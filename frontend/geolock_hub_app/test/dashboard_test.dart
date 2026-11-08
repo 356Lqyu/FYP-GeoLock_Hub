@@ -268,9 +268,9 @@ void main() {
     ]);
     expect(RoleNavigationBar.labelsForRole('HUB_ADMIN'), [
       'Home',
+      'Drop-offs',
       'Inventory',
-      'Receive',
-      'Collections',
+      'Listings',
       'Profile',
     ]);
   });

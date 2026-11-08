@@ -7,6 +7,9 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'auth_controller.dart';
 import 'auth_navigation.dart';
 import '../dashboard_pages.dart';
+import '../hub_admin/hub_widgets.dart';
+import '../hub_admin/hub_service_rules_page.dart';
+import '../hub_admin/hub_service.dart';
 
 const _ink = Color(0xff071a1e);
 const _green = Color(0xff2f806c);
@@ -32,6 +35,20 @@ LocationPickerPage buildNgoLocationPicker({
       : RoadAccessRequirement.none,
   roadAccessCheck: roadAccessCheck,
   hint: ngoLocationHint,
+);
+
+const hubLocationHint = 'Pin the entrance where donors and NGO vehicles stop.';
+
+/// Hub location picker: the entrance must be within reach of a drivable road.
+LocationPickerPage buildHubLocationPicker({
+  LocationResult? initialLocation,
+  RoadAccessCheck? roadAccessCheck,
+}) => LocationPickerPage(
+  title: 'Hub location',
+  initialLocation: initialLocation,
+  roadAccess: RoadAccessRequirement.required,
+  roadAccessCheck: roadAccessCheck,
+  hint: hubLocationHint,
 );
 
 class AuthFrame extends StatelessWidget {
@@ -1119,4 +1136,374 @@ class _SectionTitle extends StatelessWidget {
       ],
     ),
   );
+}
+
+class HubRegistrationPage extends StatefulWidget {
+  final bool completeExisting;
+  final VoidCallback? onRegistered;
+  final Map<String, dynamic>? draft;
+
+  const HubRegistrationPage({
+    super.key,
+    this.completeExisting = false,
+    this.onRegistered,
+    this.draft,
+  });
+
+  @override
+  State<HubRegistrationPage> createState() => _HubRegistrationPageState();
+}
+
+class _HubRegistrationPageState extends State<HubRegistrationPage> {
+  final _form = GlobalKey<FormState>();
+  final _name = TextEditingController();
+  final _capacity = TextEditingController(text: '100');
+  final _phone = TextEditingController();
+  LocationResult? _location;
+  bool _saving = false;
+  String? _draftError;
+
+  @override
+  void initState() {
+    super.initState();
+    final d = widget.draft;
+    if (d == null || widget.completeExisting) return;
+    _name.text = '${d['name'] ?? ''}';
+    _capacity.text = '${d['capacity_kg'] ?? 100}';
+    _phone.text = '${d['contact_phone'] ?? ''}';
+    final lat = double.tryParse('${d['latitude']}');
+    final lon = double.tryParse('${d['longitude']}');
+    if (lat != null && lon != null) {
+      _location = LocationResult(
+        address: '${d['address'] ?? ''}',
+        latitude: lat,
+        longitude: lon,
+        method: LocationSelectionMethod.mapPin,
+      );
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _submit(fromDraft: true);
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    for (final c in [_name, _capacity, _phone]) {
+      c.dispose();
+    }
+    super.dispose();
+  }
+
+  Future<void> _pickLocation() async {
+    final result = await Navigator.push<LocationResult>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => buildHubLocationPicker(initialLocation: _location),
+      ),
+    );
+    if (result != null && mounted) setState(() => _location = result);
+  }
+
+  Future<void> _submit({bool fromDraft = false}) async {
+    if (!(_form.currentState?.validate() ?? false)) return;
+    if (!widget.completeExisting && _location == null) {
+      hubToast(context, 'Choose the hub location.');
+      return;
+    }
+    setState(() {
+      _saving = true;
+      _draftError = null;
+    });
+    try {
+      if (widget.completeExisting) {
+        await HubService.verifyAdmin(_phone.text.trim());
+        if (!mounted) return;
+        hubToast(context, 'Your hub registration is complete.');
+        Navigator.pop(context, true);
+        return;
+      }
+      final hubId = await HubService.registerHub(
+        name: _name.text.trim(),
+        address: _location!.address,
+        latitude: _location!.latitude,
+        longitude: _location!.longitude,
+        capacityKg: double.parse(_capacity.text.trim()),
+        contactPhone: _phone.text.trim(),
+      );
+      final facilities = widget.draft?['facilities'];
+      if (facilities is Map) {
+        try {
+          await HubService.saveFacilities(hubId, HubFacilities.fromJson(facilities));
+        } catch (_) {
+          // Not fatal: the admin can tick them again in Categories, hours & storage.
+        }
+      }
+      await HubService.clearSignUpHubDraft();
+      final hubs = await HubService.myHubs();
+      if (!mounted) return;
+      hubToast(
+        context,
+        'Hub registered. Now set its categories and opening hours.',
+      );
+      final created = hubs.where((h) => h.id == hubId);
+      if (created.isNotEmpty) {
+        await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => HubServiceRulesPage(
+              hub: created.first,
+              initialHours: widget.draft?['operating_hours'] == null
+                  ? null
+                  : HubOperatingHours.fromJson(
+                      widget.draft!['operating_hours'],
+                    ),
+              initialCategoryIds: widget.draft?['category_ids'] is List
+                  ? {
+                      for (final id in widget.draft!['category_ids'] as List)
+                        id.toString(),
+                    }
+                  : null,
+            ),
+          ),
+        );
+      }
+      if (!mounted) return;
+      if (widget.onRegistered != null) {
+        widget.onRegistered!();
+      } else {
+        Navigator.pop(context, true);
+      }
+    } catch (error) {
+      if (!mounted) return;
+      if (fromDraft) {
+        setState(() => _draftError = hubErrorMessage(error));
+      } else {
+        hubToast(context, 'Not registered: ${hubErrorMessage(error)}');
+      }
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final firstScreen = widget.onRegistered != null;
+    return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: !firstScreen,
+        title: Text(
+          widget.completeExisting
+              ? 'Finish hub registration'
+              : 'Register your hub',
+        ),
+        actions: [
+          if (firstScreen)
+            IconButton(
+              tooltip: 'Sign out',
+              onPressed: () => signOutAndReset(context),
+              icon: const Icon(Icons.logout),
+            ),
+        ],
+      ),
+      body: Form(
+        key: _form,
+        child: ListView(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
+          children: [
+            if (_saving && widget.draft != null && _draftError == null)
+              const HubCard(
+                child: Row(
+                  children: [
+                    SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                    SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        'Confirming the hub details you gave at sign-upΓÇª',
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            if (_draftError != null)
+              HubCard(
+                color: HubColors.red.withValues(alpha: .07),
+                borderColor: HubColors.red.withValues(alpha: .4),
+                child: Text(
+                  'Your hub could not be created: $_draftError\n'
+                  'Fix the details below and tap Register hub again.',
+                ),
+              ),
+            if (!widget.completeExisting) ...[
+              const _Checks(),
+              const HubSectionTitle(
+                '1. Hub',
+                subtitle: 'Where donors drop off small donations',
+              ),
+              TextFormField(
+                controller: _name,
+                decoration: const InputDecoration(labelText: 'Hub name'),
+                validator: (v) =>
+                    (v ?? '').trim().isEmpty ? 'Enter the hub name.' : null,
+              ),
+              const SizedBox(height: 10),
+              TextFormField(
+                controller: _capacity,
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
+                decoration: const InputDecoration(
+                  labelText: 'Storage capacity (kg)',
+                  helperText: '50ΓÇô250 kg',
+                  suffixText: 'kg',
+                ),
+                validator: (v) {
+                  final kg = double.tryParse(v?.trim() ?? '');
+                  return kg == null || kg < 50 || kg > 250
+                      ? 'Enter 50 to 250 kg.'
+                      : null;
+                },
+              ),
+              const SizedBox(height: 10),
+              HubCard(
+                onTap: _saving ? null : _pickLocation,
+                child: Row(
+                  children: [
+                    Icon(
+                      _location == null
+                          ? Icons.add_location_alt_outlined
+                          : Icons.location_on,
+                      color: HubColors.green,
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        _location?.address ?? 'Choose the hub location',
+                        style: TextStyle(
+                          fontWeight: _location == null
+                              ? FontWeight.w600
+                              : FontWeight.w400,
+                        ),
+                      ),
+                    ),
+                    const Icon(Icons.chevron_right, color: HubColors.muted),
+                  ],
+                ),
+              ),
+            ],
+            HubSectionTitle(
+              widget.completeExisting ? 'Contact' : '2. Contact',
+              subtitle:
+                  'One phone number can only be used by one hub admin account.',
+            ),
+            TextFormField(
+              controller: _phone,
+              keyboardType: TextInputType.phone,
+              decoration: const InputDecoration(
+                labelText: 'Contact phone',
+                hintText: 'e.g. 012-345 6789',
+              ),
+              validator: (v) {
+                final t = (v ?? '').replaceAll(RegExp(r'[\s()-]'), '');
+                return RegExp(r'^\+?[0-9]{9,15}$').hasMatch(t)
+                    ? null
+                    : 'Enter 9ΓÇô15 digits.';
+              },
+            ),
+            const SizedBox(height: 16),
+            FilledButton.icon(
+              onPressed: _saving ? null : _submit,
+              icon: const Icon(Icons.verified_user_outlined),
+              label: Text(_saving ? 'CheckingΓÇª' : 'Register hub'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _Checks extends StatelessWidget {
+  const _Checks();
+
+  @override
+  Widget build(BuildContext context) => const HubCard(
+    color: HubColors.softGreen,
+    borderColor: Colors.transparent,
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Good to know', style: TextStyle(fontWeight: FontWeight.w800)),
+        SizedBox(height: 6),
+        Text('ΓÇó Each account runs one hub, with its own phone number.'),
+        Text('ΓÇó Your hub should not be right next to another hub.'),
+        Text('ΓÇó Pin the entrance so NGO vehicles can reach it.'),
+        SizedBox(height: 6),
+        Text(
+          'Next you set the accepted categories and opening hours. Donors can only '
+          'choose your hub after both are set.',
+        ),
+      ],
+    ),
+  );
+}
+
+/// Dashboard card for an admin whose hub was created before verification existed.
+/// Shows nothing once the admin is verified.
+class HubAdminStatusCard extends StatelessWidget {
+  final HubAdminStatus status;
+  final VoidCallback onChanged;
+
+  const HubAdminStatusCard({
+    super.key,
+    required this.status,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    if (status.verified) return const SizedBox.shrink();
+    return HubCard(
+      color: HubColors.amber.withValues(alpha: .07),
+      borderColor: HubColors.amber.withValues(alpha: .4),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Row(
+            children: [
+              Icon(Icons.assignment_outlined, color: HubColors.amber),
+              SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  'Finish your hub registration',
+                  style: TextStyle(fontWeight: FontWeight.w800),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          const Text(
+            'Add a contact phone. Donors cannot choose this hub until then.',
+          ),
+          const SizedBox(height: 10),
+          FilledButton(
+            onPressed: () async {
+              final done = await Navigator.push<bool>(
+                context,
+                MaterialPageRoute(
+                  builder: (_) =>
+                      const HubRegistrationPage(completeExisting: true),
+                ),
+              );
+              if (done == true) onChanged();
+            },
+            child: const Text('Finish registration'),
+          ),
+        ],
+      ),
+    );
+  }
 }

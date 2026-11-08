@@ -24,6 +24,8 @@ import 'donation_collection_path.dart';
 import 'donation_photo_rules.dart';
 import 'donation_photo_errors.dart';
 import 'donation_status.dart';
+import 'hub_admin/hub_chooser_page.dart';
+import 'hub_admin/hub_dropoff_pass.dart';
 import 'status_timeline.dart';
 import 'donor_claim_history.dart';
 import 'claim_pickup_detail_reader.dart';
@@ -3799,82 +3801,29 @@ class _DonationDetailPageState extends State<DonationDetailPage> {
   }
 
   Future<void> _reserveHub() async {
+    if (_busy) return;
     setState(() => _busy = true);
+
     try {
-      final response = await _db.rpc(
-        'get_eligible_hubs',
-        params: {'p_donation': widget.donationId},
-      );
-      if (response is! List) {
-        throw const FormatException('Invalid hub list response.');
-      }
-      final hubs = response
-          .map((row) => Map<String, dynamic>.from(row as Map))
-          .toList();
-      if (!mounted) return;
-      if (hubs.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('No compatible hub has available capacity.'),
-          ),
-        );
-        return;
-      }
-      final selected = await showModalBottomSheet<Map<String, dynamic>>(
-        context: context,
-        builder: (context) => SafeArea(
-          child: ListView(
-            shrinkWrap: true,
-            children: [
-              const ListTile(title: Text('Choose a community hub')),
-              ...hubs.map(
-                (hub) => ListTile(
-                  title: Text(hub['hub_name'].toString()),
-                  subtitle: Text(
-                    '${hub['address_text']}\nAvailable: ${hub['available_capacity_kg']} kg',
-                  ),
-                  isThreeLine: true,
-                  onTap: () => Navigator.pop(context, hub),
-                ),
-              ),
-            ],
-          ),
+      final booked = await Navigator.of(context).push<bool>(
+        MaterialPageRoute(
+          builder: (_) => HubChoosePage(donationId: widget.donationId),
         ),
       );
-      if (selected == null || !mounted) return;
-      final reservation = await _db.rpc(
-        'reserve_hub_capacity',
-        params: {'p_donation': widget.donationId, 'p_hub': selected['hub_id']},
-      );
-      final reservationId = reservation?.toString().trim() ?? '';
-      if (reservationId.isEmpty) {
-        throw const FormatException(
-          'The database did not confirm a hub reservation.',
-        );
-      }
+
       if (!mounted) return;
-      setState(() => _detail = _load());
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Hub reservation committed. You may deliver to this hub.',
-          ),
-        ),
-      );
-    } catch (error) {
-      if (mounted) {
-        // A failed RPC may race with expiry, cancellation, or capacity changes.
-        // Refresh authoritative state before inviting the donor to retry.
+
+      if (booked == true) {
         setState(() => _detail = _load());
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Hub reservation failed: '
-              '${'$error'.contains('ROUTE_UNAVAILABLE') ? roadOutcomeMessage('ROUTE_UNAVAILABLE') : error}',
-            ),
-          ),
-        );
       }
+    } catch (error) {
+      if (!mounted) return;
+
+      setState(() => _detail = _load());
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Unable to open hub selection: $error')),
+      );
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -4157,6 +4106,18 @@ class _DonationDetailPageState extends State<DonationDetailPage> {
                         events: donationEvents,
                         auditError: d['audit_error']?.toString(),
                       ),
+                      if (isHubCollection) ...[
+                        const SizedBox(height: 14),
+                        HubDropOffCard(
+                          key: ObjectKey(_detail),
+                          donationId: widget.donationId,
+                          onChanged: () {
+                            if (mounted) {
+                              setState(() => _detail = _load());
+                            }
+                          },
+                        ),
+                      ],
                       if (isHubCollection) ...[
                         const SizedBox(height: 18),
                         _DonorHubReservationSection(

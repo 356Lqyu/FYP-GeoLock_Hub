@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:geolock_hub_app/auth/auth_pages.dart';
+import 'package:geolock_hub_app/auth/auth_pages.dart'
+    hide buildHubLocationPicker, hubLocationHint;
 import 'package:geolock_hub_app/donation_pages.dart';
 import 'package:geolock_hub_app/location/location_result.dart';
 import 'package:geolock_hub_app/location/road_routing.dart';

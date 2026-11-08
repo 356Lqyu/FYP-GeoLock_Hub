@@ -6,7 +6,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'auth/auth_controller.dart';
 import 'auth/auth_navigation.dart';
 import 'auth/auth_pages.dart';
-import 'donation_pages.dart';
+import 'hub_admin/hub_service.dart';
 import 'location/location_result.dart';
 import 'supabase_config.dart';
 
@@ -293,7 +293,12 @@ class _SessionRouterState extends State<SessionRouter> {
       );
     }
     if (role == 'HUB_ADMIN' && _profile?['hub_setup_required'] == true) {
-      return RegisterHubPage(onRegistered: _resolve);
+      return HubRegistrationPage(
+        draft: widget.profileLoader == null
+            ? HubService.signUpHubDraft
+            : null,
+        onRegistered: _resolve,
+      );
     }
     return widget.dashboardBuilder?.call(role!, widget.userId) ??
         RoleDashboardPage(role: role!, userId: widget.userId);

@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:geolock_hub_app/auth/auth_pages.dart';
-import 'package:geolock_hub_app/donation_pages.dart';
 import 'package:geolock_hub_app/main.dart';
 
 void main() {
@@ -138,9 +137,18 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    expect(find.byType(RegisterHubPage), findsOneWidget);
-    expect(find.text('Register Community Hub'), findsOneWidget);
-    expect(find.text('Total capacity (kg)'), findsOneWidget);
+    expect(find.byType(HubRegistrationPage), findsOneWidget);
+    expect(find.text('Register your hub'), findsOneWidget);
+    expect(find.text('Hub name'), findsOneWidget);
+    expect(find.text('Storage capacity (kg)'), findsOneWidget);
+    expect(find.text('Choose the hub location'), findsOneWidget);
+
+    // The contact section is below the initially visible ListView area.
+    await tester.ensureVisible(find.text('Contact phone', skipOffstage: false));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Contact phone'), findsOneWidget);
+    expect(find.text('Register hub'), findsOneWidget);
   });
 
   testWidgets('NGO sees eligibility updating after location validation', (
