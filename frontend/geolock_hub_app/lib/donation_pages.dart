@@ -2213,7 +2213,11 @@ class _ClaimPickupDetailPageState extends State<ClaimPickupDetailPage>
 
   void _refreshDetail() {
     _leaseRefresh?.cancel();
-    if (mounted) setState(() => _detail = _load());
+    if (mounted) {
+      setState(() {
+        _detail = _load();
+      });
+    }
   }
 
   @override

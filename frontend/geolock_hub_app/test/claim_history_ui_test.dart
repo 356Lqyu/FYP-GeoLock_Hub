@@ -14,12 +14,14 @@ class _FakeClaimDetailReader implements ClaimPickupDetailReader {
     this.constituents = const [],
     this.historical,
     this.historyError,
+    this.claimCardsFailures = 0,
   });
 
   final Map<String, dynamic> detail;
   final Object constituents;
   final Map<String, dynamic>? historical;
   final Object? historyError;
+  int claimCardsFailures;
   final calls = <String>[];
   String? actor = 'ngo-a';
 
@@ -31,6 +33,10 @@ class _FakeClaimDetailReader implements ClaimPickupDetailReader {
     calls.add(name);
     switch (name) {
       case 'get_my_claim_cards_v2':
+        if (claimCardsFailures > 0) {
+          claimCardsFailures--;
+          throw StateError('temporary claim cards failure');
+        }
         final status = detail['claim_status']?.toString() ?? 'RELEASED';
         final expiredAt =
             detail['lease_expires_at']?.toString() ??
@@ -513,6 +519,37 @@ void main() {
     expect(find.text('Confirm handover'), findsOneWidget);
     expect(find.text('Confirm no handover'), findsOneWidget);
     expect(find.text('Test address'), findsNothing);
+    await tester.pumpWidget(const SizedBox());
+  });
+
+  testWidgets('claim detail retry refresh uses a synchronous setState callback', (
+    tester,
+  ) async {
+    final reader = _FakeClaimDetailReader(
+      detail: {
+        ...releasedDetail(),
+        'claim_status': 'RECONCILIATION_REQUIRED',
+        'lease_status': 'RECONCILIATION_REQUIRED',
+        'listing_status': 'CLAIMED',
+      },
+      claimCardsFailures: 1,
+    );
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: ClaimPickupDetailPage(claimId: 'claim-released', reader: reader),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Retry'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+
+    await tester.tap(find.text('Retry'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Handover requires reconciliation'), findsOneWidget);
+    expect(reader.calls.where((name) => name == 'get_my_claim_cards_v2'), hasLength(2));
+    expect(tester.takeException(), isNull);
     await tester.pumpWidget(const SizedBox());
   });
 
