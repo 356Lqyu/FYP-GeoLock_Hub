@@ -1,0 +1,11 @@
+# PROPOSED ONLY: use only after explicit operation approval. No password stored.
+# Manual operator psql profile; not the runtime worker DSN configuration.
+[geolock_dev_graph_initializer]
+host=aws-0-ap-northeast-2.pooler.supabase.com
+port=5432
+dbname=postgres
+user=geolock_graph_login.rcgyuwiidqvrgbxswhqj
+sslmode=verify-full
+sslrootcert=C:/Users/User/Downloads/prod-ca-2021.crt
+options=-c default_transaction_read_only=off
+connect_timeout=15
