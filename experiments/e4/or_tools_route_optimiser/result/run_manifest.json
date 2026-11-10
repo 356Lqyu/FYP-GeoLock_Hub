@@ -1,0 +1,42 @@
+{
+  "method": "or_tools_route_optimiser",
+  "settings": {
+    "approved": true,
+    "geofence_km": 20,
+    "lease_minutes": 360,
+    "route_minutes": 240,
+    "service_minutes": 10,
+    "safety_margin_minutes": 0,
+    "mandatory": false,
+    "availability_policy": "BASELINE_ROUTING_WINDOW",
+    "listing_expiry_policy": "COMMON_STAGE8_ADMISSION",
+    "currency": "BENCHMARK_COST_UNIT",
+    "fixed_cost": 5,
+    "distance_cost_per_km": 1,
+    "solver_wall_seconds": 30,
+    "deterministic_seconds_per_pass": 0.25,
+    "seed": 42
+  },
+  "source_sha256": {
+    "backend/routing/phase_b/optimizers.py": "ac025de4028f48733cc135fb0614d4a9cb0525cde57285835db100d4fd5f9cd7",
+    "backend/routing/optimizers/cp_sat.py": "c1cf44b0cc10114ac17d2be700dede6678e235caf98523ffc96c58fe350b5943",
+    "backend/routing/phase_b/validation.py": "44386397dd070ae4e5685b7a510b31487f99e1f04071605e35ac4ed80f8b511a",
+    "backend/routing/contract.py": "a949eab61be944e873309fc999669096b2598eb80b4c881277667311f2d81251",
+    "backend/routing/benchmark_v32/adapter.py": "6e58ac41e492979027271df0743a8ad2a950240822b2f5e492c1a7a2e57d45d5",
+    "backend/routing/benchmark_v32/runner.py": "6b21f001a37ffc4a411893815e9a15d2e87b3bab920771e1a10c0fcd31c1d008",
+    "experiments/e4/test_harness/e4_shared.py": "2f7f4118d9aa9c89c6e08a4cc47ff45e8eb2bcb876e87814ccb97347df4e1d94"
+  },
+  "environment": {
+    "python": "3.13.18",
+    "platform": "Linux-6.18.44-fc-v310-x86_64-with-glibc2.39",
+    "packages": {
+      "numpy": "2.1.3",
+      "scipy": "1.18.1",
+      "sklearn": "1.5.2",
+      "xgboost": "2.1.4",
+      "ortools": "9.15.6755",
+      "matplotlib": "3.11.2"
+    },
+    "run_at": "2026-11-10T03:09:31+08:00"
+  }
+}

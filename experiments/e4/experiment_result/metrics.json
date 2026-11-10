@@ -1,0 +1,172 @@
+{
+  "planned_units": 100,
+  "realised_units": 100,
+  "per_method": {
+    "optimiser": {
+      "name": "OR-Tools route optimiser (proposed)",
+      "valid_tasks": 483,
+      "served": 439,
+      "coverage": 0.9089026915113871,
+      "coverage_ci95": [
+        0.8799130896816929,
+        0.931439339005939
+      ],
+      "full_coverage_snapshots": 73,
+      "full_coverage_ci95": [
+        0.6356788323205499,
+        0.8073041585042365
+      ],
+      "independent_check_passed": 100,
+      "violations": 0,
+      "total_km": 3380.075,
+      "km_per_served_task": 7.699487471526195,
+      "vehicles_used": 100,
+      "timeouts": 0,
+      "median_planning_ms": 15.850000000000001,
+      "max_planning_ms": 2446.0,
+      "unserved_reasons": {
+        "PARTIAL": 44
+      },
+      "coverage_proven_optimal": 100
+    },
+    "nearest_next": {
+      "name": "Nearest-Next (baseline 1)",
+      "valid_tasks": 483,
+      "served": 437,
+      "coverage": 0.9047619047619048,
+      "coverage_ci95": [
+        0.8752980829578373,
+        0.9278381186038441
+      ],
+      "full_coverage_snapshots": 73,
+      "full_coverage_ci95": [
+        0.6356788323205499,
+        0.8073041585042365
+      ],
+      "independent_check_passed": 100,
+      "violations": 0,
+      "total_km": 3732.224,
+      "km_per_served_task": 8.540558352402746,
+      "vehicles_used": 115,
+      "timeouts": 0,
+      "median_planning_ms": 0.8,
+      "max_planning_ms": 1.3,
+      "unserved_reasons": {
+        "ROUTE_UNAVAILABLE": 2,
+        "FLEET_CAPACITY_OR_ROUTE_BUDGET_EXHAUSTED": 44
+      },
+      "coverage_proven_optimal": 0
+    },
+    "fcfs": {
+      "name": "FCFS (baseline 2)",
+      "valid_tasks": 483,
+      "served": 437,
+      "coverage": 0.9047619047619048,
+      "coverage_ci95": [
+        0.8752980829578373,
+        0.9278381186038441
+      ],
+      "full_coverage_snapshots": 73,
+      "full_coverage_ci95": [
+        0.6356788323205499,
+        0.8073041585042365
+      ],
+      "independent_check_passed": 100,
+      "violations": 0,
+      "total_km": 4429.11,
+      "km_per_served_task": 10.135263157894736,
+      "vehicles_used": 115,
+      "timeouts": 0,
+      "median_planning_ms": 0.8,
+      "max_planning_ms": 1.9,
+      "unserved_reasons": {
+        "ROUTE_UNAVAILABLE": 2,
+        "FLEET_CAPACITY_OR_ROUTE_BUDGET_EXHAUSTED": 44
+      },
+      "coverage_proven_optimal": 0
+    }
+  },
+  "baselines_alike": {
+    "same_number_served": 100,
+    "same_plan": 0,
+    "same_pickups": 77,
+    "same_km": 3,
+    "left_out_by_nearest_next": 46,
+    "left_out_no_road": 2,
+    "left_out_that_fit_by_weight": 44
+  },
+  "primary_vs_nearest_next": {
+    "baseline": "nearest_next",
+    "coverage": {
+      "proposed_served": 439,
+      "baseline_served": 437,
+      "snapshots_proposed_serves_more": 2,
+      "snapshots_equal": 98,
+      "snapshots_proposed_serves_fewer": 0,
+      "served_diff_wilcoxon_p": 0.15729920705028502,
+      "full_coverage_only_proposed": 0,
+      "full_coverage_only_baseline": 0,
+      "full_coverage_mcnemar_p": 1.0
+    },
+    "distance_where_equal_coverage": {
+      "snapshots": 98,
+      "proposed_km": 3341.309,
+      "baseline_km": 3708.809,
+      "hl_km": -2.9275000000000038,
+      "ci95": [
+        -3.718999999999998,
+        -2.144487499999999
+      ],
+      "wilcoxon_p": 3.051513570428978e-17,
+      "nonzero": 85,
+      "proposed_shorter": 85,
+      "equal": 13,
+      "proposed_longer": 0,
+      "hl_driving_min": -2.7950000000000017,
+      "driving_ci95": [
+        -3.8200000000000003,
+        -1.8698749999999993
+      ],
+      "driving_wilcoxon_p": 1.0697017240135309e-11
+    }
+  },
+  "descriptive_vs_fcfs": {
+    "baseline": "fcfs",
+    "coverage": {
+      "proposed_served": 439,
+      "baseline_served": 437,
+      "snapshots_proposed_serves_more": 2,
+      "snapshots_equal": 98,
+      "snapshots_proposed_serves_fewer": 0,
+      "served_diff_wilcoxon_p": 0.15729920705028502,
+      "full_coverage_only_proposed": 0,
+      "full_coverage_only_baseline": 0,
+      "full_coverage_mcnemar_p": 1.0
+    },
+    "distance_where_equal_coverage": {
+      "snapshots": 98,
+      "proposed_km": 3341.309,
+      "baseline_km": 4396.792,
+      "hl_km": -10.395500000000002,
+      "ci95": [
+        -12.157000000000004,
+        -8.810500000000001
+      ],
+      "wilcoxon_p": 1.0428883354971346e-17,
+      "nonzero": 93,
+      "proposed_shorter": 93,
+      "equal": 5,
+      "proposed_longer": 0,
+      "hl_driving_min": -10.519999999999996,
+      "driving_ci95": [
+        -12.500125000000004,
+        -8.559999999999999
+      ],
+      "driving_wilcoxon_p": 2.6909054426903754e-17
+    }
+  },
+  "holm_secondary_vs_nearest_next": {
+    "distance": 6.103027140857956e-17,
+    "driving_time": 1.0697017240135309e-11
+  }
+}

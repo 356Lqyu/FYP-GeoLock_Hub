@@ -1,0 +1,302 @@
+{
+  "benchmark": "GEOLOCK-BENCHMARK-DATASET",
+  "database": "separate experiment only Supabase project",
+  "units": {
+    "contention_trials": 150,
+    "lease_expired": 100,
+    "lease_still_running": 25,
+    "geofence_pairs": 1100
+  },
+  "contention": {
+    "b1": {
+      "2": {
+        "trials": 50,
+        "duplicate_trials": 50,
+        "duplicate_rate": 1.0,
+        "duplicate_ci95": [
+          0.9286524008666414,
+          1.0
+        ],
+        "extra_committed_claims": 50,
+        "trials_exactly_one_owner": 0,
+        "requests": 100,
+        "success": 100,
+        "conflict": 0,
+        "ineligible": 0,
+        "error": 0,
+        "answers_match_saved": 50,
+        "inconsistent_trials": 0,
+        "attempts_sent": 100,
+        "attempts_in_audit_log": 0,
+        "median_requests_per_second": 60.7,
+        "median_ms": 31.65,
+        "p95_ms": 38.73999999999999
+      },
+      "5": {
+        "trials": 50,
+        "duplicate_trials": 50,
+        "duplicate_rate": 1.0,
+        "duplicate_ci95": [
+          0.9286524008666414,
+          1.0
+        ],
+        "extra_committed_claims": 200,
+        "trials_exactly_one_owner": 0,
+        "requests": 250,
+        "success": 250,
+        "conflict": 0,
+        "ineligible": 0,
+        "error": 0,
+        "answers_match_saved": 50,
+        "inconsistent_trials": 0,
+        "attempts_sent": 250,
+        "attempts_in_audit_log": 0,
+        "median_requests_per_second": 129.35,
+        "median_ms": 33.95,
+        "p95_ms": 42.72999999999999
+      },
+      "10": {
+        "trials": 50,
+        "duplicate_trials": 50,
+        "duplicate_rate": 1.0,
+        "duplicate_ci95": [
+          0.9286524008666414,
+          1.0
+        ],
+        "extra_committed_claims": 450,
+        "trials_exactly_one_owner": 0,
+        "requests": 500,
+        "success": 500,
+        "conflict": 0,
+        "ineligible": 0,
+        "error": 0,
+        "answers_match_saved": 50,
+        "inconsistent_trials": 0,
+        "attempts_sent": 500,
+        "attempts_in_audit_log": 0,
+        "median_requests_per_second": 186.75,
+        "median_ms": 43.1,
+        "p95_ms": 62.539999999999964
+      },
+      "all": {
+        "trials": 150,
+        "duplicate_trials": 150,
+        "duplicate_rate": 1.0,
+        "duplicate_ci95": [
+          0.9750297556319235,
+          1.0
+        ],
+        "extra_committed_claims": 700,
+        "trials_exactly_one_owner": 0,
+        "requests": 850,
+        "success": 850,
+        "conflict": 0,
+        "ineligible": 0,
+        "error": 0,
+        "answers_match_saved": 150,
+        "inconsistent_trials": 0,
+        "attempts_sent": 850,
+        "attempts_in_audit_log": 0,
+        "median_requests_per_second": 128.5,
+        "median_ms": 38.5,
+        "p95_ms": 58.055
+      }
+    },
+    "p": {
+      "2": {
+        "trials": 50,
+        "duplicate_trials": 0,
+        "duplicate_rate": 0.0,
+        "duplicate_ci95": [
+          6.938893903907228e-18,
+          0.07134759913335872
+        ],
+        "extra_committed_claims": 0,
+        "trials_exactly_one_owner": 50,
+        "requests": 100,
+        "success": 50,
+        "conflict": 50,
+        "ineligible": 0,
+        "error": 0,
+        "answers_match_saved": 50,
+        "inconsistent_trials": 0,
+        "attempts_sent": 100,
+        "attempts_in_audit_log": 100,
+        "median_requests_per_second": 91.1,
+        "median_ms": 20.95,
+        "p95_ms": 28.319999999999993
+      },
+      "5": {
+        "trials": 50,
+        "duplicate_trials": 0,
+        "duplicate_rate": 0.0,
+        "duplicate_ci95": [
+          6.938893903907228e-18,
+          0.07134759913335872
+        ],
+        "extra_committed_claims": 0,
+        "trials_exactly_one_owner": 50,
+        "requests": 250,
+        "success": 50,
+        "conflict": 200,
+        "ineligible": 0,
+        "error": 0,
+        "answers_match_saved": 50,
+        "inconsistent_trials": 0,
+        "attempts_sent": 250,
+        "attempts_in_audit_log": 250,
+        "median_requests_per_second": 166.1,
+        "median_ms": 26.5,
+        "p95_ms": 43.78499999999999
+      },
+      "10": {
+        "trials": 50,
+        "duplicate_trials": 0,
+        "duplicate_rate": 0.0,
+        "duplicate_ci95": [
+          6.938893903907228e-18,
+          0.07134759913335872
+        ],
+        "extra_committed_claims": 0,
+        "trials_exactly_one_owner": 50,
+        "requests": 500,
+        "success": 50,
+        "conflict": 450,
+        "ineligible": 0,
+        "error": 0,
+        "answers_match_saved": 50,
+        "inconsistent_trials": 0,
+        "attempts_sent": 500,
+        "attempts_in_audit_log": 500,
+        "median_requests_per_second": 227.8,
+        "median_ms": 34.95,
+        "p95_ms": 49.2
+      },
+      "all": {
+        "trials": 150,
+        "duplicate_trials": 0,
+        "duplicate_rate": 0.0,
+        "duplicate_ci95": [
+          1.734723475976807e-18,
+          0.0249702443680766
+        ],
+        "extra_committed_claims": 0,
+        "trials_exactly_one_owner": 150,
+        "requests": 850,
+        "success": 150,
+        "conflict": 700,
+        "ineligible": 0,
+        "error": 0,
+        "answers_match_saved": 150,
+        "inconsistent_trials": 0,
+        "attempts_sent": 850,
+        "attempts_in_audit_log": 850,
+        "median_requests_per_second": 162.3,
+        "median_ms": 29.9,
+        "p95_ms": 46.80999999999999
+      }
+    },
+    "mcnemar": {
+      "only_baseline_duplicate": 150,
+      "only_proposed_duplicate": 0,
+      "p_exact": 1.401298464324817e-45
+    }
+  },
+  "lease": {
+    "b2": {
+      "expired_cases": 100,
+      "recovered": 0,
+      "recovery_success": 0.0,
+      "recovery_ci95": [
+        3.469446951953614e-18,
+        0.03699349820698568
+      ],
+      "stranded_listings": 100,
+      "active_cases": 25,
+      "false_release": 0,
+      "false_release_rate": 0.0,
+      "false_release_ci95": [
+        1.3877787807814457e-17,
+        0.13319225093904846
+      ],
+      "listings_with_more_than_one_active_claim": 0
+    },
+    "p": {
+      "expired_cases": 100,
+      "recovered": 100,
+      "recovery_success": 1.0,
+      "recovery_ci95": [
+        0.9630065017930143,
+        1.0
+      ],
+      "stranded_listings": 0,
+      "active_cases": 25,
+      "false_release": 0,
+      "false_release_rate": 0.0,
+      "false_release_ci95": [
+        1.3877787807814457e-17,
+        0.13319225093904846
+      ],
+      "listings_with_more_than_one_active_claim": 0
+    },
+    "mcnemar": {
+      "only_proposed_recovered": 100,
+      "only_baseline_recovered": 0,
+      "p_exact": 1.5777218104420236e-30
+    }
+  },
+  "replay": {
+    "trials": 150,
+    "same_answer": 150
+  },
+  "recovery_checks": {
+    "repeated_recovery_released_nothing": 125,
+    "stale_holder_refused": 100,
+    "stale_holder_cases": 100,
+    "concurrent_recovery": {
+      "expired_claims_prepared": 100,
+      "workers": 2,
+      "released_per_worker": [
+        43,
+        57
+      ],
+      "released_total_reported": 100,
+      "claims_released": 100,
+      "listings_reopened": 100,
+      "claims_with_exactly_one_recovery_audit": 100,
+      "claims_with_more_than_one_recovery_audit": 0,
+      "repeated_run_released": 0,
+      "worker_errors": [],
+      "passed": true
+    },
+    "median_recovery_job_ms": 18.9
+  },
+  "delayed_request_check": {
+    "trials": 50,
+    "passed": 50,
+    "other_ngo_told_conflict": 50,
+    "median_wait_ms": 1017.7
+  },
+  "geofence_check": {
+    "pairs": 1100,
+    "correct": 1100,
+    "by_reference": {
+      "ELIGIBLE": {
+        "pairs": 225,
+        "correct": 225
+      },
+      "OUTSIDE_GEOFENCE": {
+        "pairs": 25,
+        "correct": 25
+      },
+      "ROUTE_UNAVAILABLE": {
+        "pairs": 850,
+        "correct": 850
+      }
+    },
+    "direct_claims": 875,
+    "direct_claims_refused": 875,
+    "claims_saved": 0
+  },
+  "verdict": "SUPPORTED"
+}

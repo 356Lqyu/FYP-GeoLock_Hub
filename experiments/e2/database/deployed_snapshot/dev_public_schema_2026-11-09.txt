@@ -1,0 +1,522 @@
+-- WARNING: This schema is for context only and is not meant to be run.
+-- Table order and constraints may not be valid for execution.
+
+CREATE TABLE public.active_task_route_assignments (
+  task_id uuid NOT NULL,
+  route_id uuid NOT NULL,
+  assigned_at timestamp with time zone NOT NULL DEFAULT now(),
+  CONSTRAINT active_task_route_assignments_pkey PRIMARY KEY (task_id),
+  CONSTRAINT active_task_route_assignments_route_id_fkey FOREIGN KEY (route_id) REFERENCES public.pickup_routes(route_id),
+  CONSTRAINT active_task_route_assignments_task_id_fkey FOREIGN KEY (task_id) REFERENCES public.pickup_tasks(task_id)
+);
+CREATE TABLE public.audit_events (
+  event_id uuid NOT NULL DEFAULT gen_random_uuid(),
+  actor_user_id uuid,
+  actor_role text,
+  entity_type text NOT NULL,
+  entity_id uuid,
+  event_type text NOT NULL,
+  request_id uuid,
+  claim_id uuid,
+  lease_id uuid,
+  correlation_id uuid,
+  previous_state text,
+  requested_state text,
+  resulting_state text,
+  reason_code text,
+  outcome text NOT NULL CHECK (outcome = ANY (ARRAY['SUCCESS'::text, 'REJECTED'::text, 'ERROR'::text])),
+  details jsonb NOT NULL DEFAULT '{}'::jsonb,
+  software_version text,
+  configuration_version text,
+  occurred_at timestamp with time zone NOT NULL DEFAULT clock_timestamp(),
+  CONSTRAINT audit_events_pkey PRIMARY KEY (event_id),
+  CONSTRAINT audit_events_actor_user_id_fkey FOREIGN KEY (actor_user_id) REFERENCES auth.users(id)
+);
+CREATE TABLE public.claim_leases (
+  lease_id uuid NOT NULL DEFAULT gen_random_uuid(),
+  claim_id uuid NOT NULL UNIQUE,
+  lease_status text NOT NULL DEFAULT 'ACTIVE'::text CHECK (lease_status = ANY (ARRAY['ACTIVE'::text, 'EXPIRED'::text, 'RELEASED'::text, 'COMPLETED'::text, 'RECONCILIATION_REQUIRED'::text])),
+  issued_at timestamp with time zone NOT NULL DEFAULT clock_timestamp(),
+  expires_at timestamp with time zone NOT NULL,
+  closed_at timestamp with time zone,
+  release_reason text,
+  CONSTRAINT claim_leases_pkey PRIMARY KEY (lease_id),
+  CONSTRAINT claim_leases_claim_id_fkey FOREIGN KEY (claim_id) REFERENCES public.donation_claims(claim_id)
+);
+CREATE TABLE public.claim_requests (
+  request_id uuid NOT NULL,
+  listing_id uuid NOT NULL,
+  ngo_user_id uuid NOT NULL,
+  request_digest text NOT NULL,
+  outcome text CHECK (outcome = ANY (ARRAY['SUCCESS'::text, 'CONFLICT'::text, 'INELIGIBLE'::text, 'ERROR'::text])),
+  result_claim_id uuid,
+  reason_code text,
+  created_at timestamp with time zone NOT NULL DEFAULT now(),
+  completed_at timestamp with time zone,
+  CONSTRAINT claim_requests_pkey PRIMARY KEY (request_id),
+  CONSTRAINT claim_requests_listing_id_fkey FOREIGN KEY (listing_id) REFERENCES public.listings(listing_id),
+  CONSTRAINT claim_requests_ngo_user_id_fkey FOREIGN KEY (ngo_user_id) REFERENCES public.ngo_profiles(user_id),
+  CONSTRAINT fk_request_result FOREIGN KEY (result_claim_id) REFERENCES public.donation_claims(claim_id)
+);
+CREATE TABLE public.community_hubs (
+  hub_id uuid NOT NULL DEFAULT gen_random_uuid(),
+  admin_user_id uuid NOT NULL,
+  hub_name text NOT NULL,
+  address_text text NOT NULL,
+  latitude double precision NOT NULL CHECK (latitude >= '-90'::integer::double precision AND latitude <= 90::double precision),
+  longitude double precision NOT NULL CHECK (longitude >= '-180'::integer::double precision AND longitude <= 180::double precision),
+  road_node_id text,
+  capacity_kg numeric NOT NULL CHECK (capacity_kg >= 50::numeric AND capacity_kg <= 250::numeric),
+  active_flag boolean NOT NULL DEFAULT true,
+  operating_hours jsonb NOT NULL DEFAULT '{}'::jsonb,
+  created_at timestamp with time zone NOT NULL DEFAULT now(),
+  has_food_safe_storage boolean NOT NULL DEFAULT false,
+  has_fragile_shelving boolean NOT NULL DEFAULT false,
+  has_lockable_storeroom boolean NOT NULL DEFAULT false,
+  has_vehicle_access boolean NOT NULL DEFAULT false,
+  CONSTRAINT community_hubs_pkey PRIMARY KEY (hub_id),
+  CONSTRAINT community_hubs_admin_user_id_fkey FOREIGN KEY (admin_user_id) REFERENCES public.hub_admin_profiles(user_id)
+);
+CREATE TABLE public.coordination_config (
+  singleton boolean NOT NULL DEFAULT true CHECK (singleton),
+  geofence_radius_m integer NOT NULL DEFAULT 20000 CHECK (geofence_radius_m = 20000),
+  donation_direct_min_kg numeric NOT NULL DEFAULT 10.000 CHECK (donation_direct_min_kg = 10.000),
+  claim_lease_minutes integer NOT NULL DEFAULT 360 CHECK (claim_lease_minutes = 360),
+  hub_reservation_minutes integer NOT NULL DEFAULT 120 CHECK (hub_reservation_minutes >= 1 AND hub_reservation_minutes <= 10080),
+  batch_min_donations integer NOT NULL DEFAULT 3 CHECK (batch_min_donations > 0),
+  batch_max_donations integer NOT NULL DEFAULT 5 CHECK (batch_max_donations >= 3),
+  batch_max_weight_kg numeric NOT NULL DEFAULT 30 CHECK (batch_max_weight_kg > 0::numeric),
+  config_version text NOT NULL DEFAULT 'v2.0'::text,
+  updated_at timestamp with time zone NOT NULL DEFAULT now(),
+  CONSTRAINT coordination_config_pkey PRIMARY KEY (singleton)
+);
+CREATE TABLE public.donation_cancellation_requests (
+  request_id uuid NOT NULL,
+  donor_user_id uuid NOT NULL,
+  donation_id uuid NOT NULL,
+  request_fingerprint text NOT NULL,
+  response jsonb CHECK (response IS NULL OR jsonb_typeof(response) = 'object'::text),
+  created_at timestamp with time zone NOT NULL DEFAULT clock_timestamp(),
+  completed_at timestamp with time zone,
+  CONSTRAINT donation_cancellation_requests_pkey PRIMARY KEY (request_id)
+);
+CREATE TABLE public.donation_categories (
+  category_id uuid NOT NULL DEFAULT gen_random_uuid(),
+  category_name text NOT NULL UNIQUE,
+  active_flag boolean NOT NULL DEFAULT true,
+  needs_food_safe_storage boolean NOT NULL DEFAULT false,
+  needs_fragile_shelving boolean NOT NULL DEFAULT false,
+  needs_lockable_storeroom boolean NOT NULL DEFAULT false,
+  needs_vehicle_access boolean NOT NULL DEFAULT false,
+  CONSTRAINT donation_categories_pkey PRIMARY KEY (category_id)
+);
+CREATE TABLE public.donation_claims (
+  claim_id uuid NOT NULL DEFAULT gen_random_uuid(),
+  listing_id uuid NOT NULL,
+  ngo_user_id uuid NOT NULL,
+  request_id uuid NOT NULL UNIQUE,
+  claim_status text NOT NULL DEFAULT 'ACTIVE'::text CHECK (claim_status = ANY (ARRAY['ACTIVE'::text, 'RELEASED'::text, 'EXPIRED'::text, 'COMPLETED'::text, 'CANCELLED'::text, 'RECONCILIATION_REQUIRED'::text])),
+  claimed_at timestamp with time zone NOT NULL DEFAULT now(),
+  closed_at timestamp with time zone,
+  close_reason text,
+  CONSTRAINT donation_claims_pkey PRIMARY KEY (claim_id),
+  CONSTRAINT donation_claims_listing_id_fkey FOREIGN KEY (listing_id) REFERENCES public.listings(listing_id),
+  CONSTRAINT donation_claims_ngo_user_id_fkey FOREIGN KEY (ngo_user_id) REFERENCES public.ngo_profiles(user_id),
+  CONSTRAINT donation_claims_request_id_fkey FOREIGN KEY (request_id) REFERENCES public.claim_requests(request_id)
+);
+CREATE TABLE public.donation_create_requests (
+  request_id uuid NOT NULL,
+  donor_user_id uuid NOT NULL,
+  request_digest text NOT NULL,
+  donation_id uuid UNIQUE,
+  created_at timestamp with time zone NOT NULL DEFAULT clock_timestamp(),
+  CONSTRAINT donation_create_requests_pkey PRIMARY KEY (request_id),
+  CONSTRAINT donation_create_requests_donation_id_fkey FOREIGN KEY (donation_id) REFERENCES public.donations(donation_id),
+  CONSTRAINT donation_create_requests_donor_user_id_fkey FOREIGN KEY (donor_user_id) REFERENCES auth.users(id)
+);
+CREATE TABLE public.donation_images (
+  image_id uuid NOT NULL DEFAULT gen_random_uuid(),
+  donation_id uuid NOT NULL,
+  owner_user_id uuid NOT NULL,
+  storage_path text NOT NULL UNIQUE,
+  content_type text NOT NULL CHECK (content_type = ANY (ARRAY['image/jpeg'::text, 'image/png'::text, 'image/webp'::text])),
+  size_bytes integer NOT NULL CHECK (size_bytes >= 1 AND size_bytes <= 5242880),
+  is_primary boolean NOT NULL DEFAULT false,
+  created_at timestamp with time zone NOT NULL DEFAULT clock_timestamp(),
+  display_order smallint NOT NULL,
+  CONSTRAINT donation_images_pkey PRIMARY KEY (image_id),
+  CONSTRAINT donation_images_donation_id_fkey FOREIGN KEY (donation_id) REFERENCES public.donations(donation_id),
+  CONSTRAINT donation_images_owner_user_id_fkey FOREIGN KEY (owner_user_id) REFERENCES auth.users(id)
+);
+CREATE TABLE public.donation_items (
+  item_id uuid NOT NULL DEFAULT gen_random_uuid(),
+  donation_id uuid NOT NULL,
+  category_id uuid NOT NULL,
+  item_name text NOT NULL,
+  description text,
+  quantity integer NOT NULL CHECK (quantity > 0),
+  unit_label text NOT NULL DEFAULT 'piece'::text,
+  unit_weight_kg numeric NOT NULL CHECK (unit_weight_kg > 0::numeric),
+  item_condition text NOT NULL DEFAULT 'GOOD'::text CHECK (item_condition = ANY (ARRAY['NEW'::text, 'GOOD'::text, 'FAIR'::text])),
+  created_at timestamp with time zone NOT NULL DEFAULT now(),
+  CONSTRAINT donation_items_pkey PRIMARY KEY (item_id),
+  CONSTRAINT donation_items_category_id_fkey FOREIGN KEY (category_id) REFERENCES public.donation_categories(category_id),
+  CONSTRAINT donation_items_donation_id_fkey FOREIGN KEY (donation_id) REFERENCES public.donations(donation_id)
+);
+CREATE TABLE public.donations (
+  donation_id uuid NOT NULL DEFAULT gen_random_uuid(),
+  donor_user_id uuid NOT NULL,
+  title text NOT NULL CHECK (char_length(btrim(title)) >= 1 AND char_length(btrim(title)) <= 80) NOT VALI),
+  description text CHECK (description IS NULL OR char_length(description) <= 1000) NOT VALI),
+  collection_path text CHECK (collection_path = ANY (ARRAY['DIRECT_PICKUP'::text, 'HUB_COLLECTION'::text])),
+  donation_status text NOT NULL DEFAULT 'SUBMITTED'::text CHECK (donation_status = ANY (ARRAY['SUBMITTED'::text, 'AVAILABLE'::text, 'HUB_ASSIGNED'::text, 'AT_HUB'::text, 'BATCHED'::text, 'CLAIMED'::text, 'PICKUP_IN_PROGRESS'::text, 'COLLECTED'::text, 'CANCELLED'::text])),
+  pickup_address text,
+  latitude double precision CHECK (latitude >= '-90'::integer::double precision AND latitude <= 90::double precision),
+  longitude double precision CHECK (longitude >= '-180'::integer::double precision AND longitude <= 180::double precision),
+  pickup_road_node_id text,
+  total_weight_kg numeric CHECK (total_weight_kg > 0::numeric),
+  availability_start timestamp with time zone,
+  availability_end timestamp with time zone,
+  created_at timestamp with time zone NOT NULL DEFAULT now(),
+  updated_at timestamp with time zone NOT NULL DEFAULT now(),
+  CONSTRAINT donations_pkey PRIMARY KEY (donation_id),
+  CONSTRAINT donations_donor_user_id_fkey FOREIGN KEY (donor_user_id) REFERENCES public.donor_profiles(user_id)
+);
+CREATE TABLE public.donor_profiles (
+  user_id uuid NOT NULL,
+  role text NOT NULL DEFAULT 'DONOR'::text CHECK (role = 'DONOR'::text),
+  CONSTRAINT donor_profiles_pkey PRIMARY KEY (user_id),
+  CONSTRAINT donor_profiles_user_id_role_fkey FOREIGN KEY (user_id) REFERENCES public.user_profiles(user_id),
+  CONSTRAINT donor_profiles_user_id_role_fkey FOREIGN KEY (role) REFERENCES public.user_profiles(role)
+);
+CREATE TABLE public.hub_accepted_categories (
+  hub_id uuid NOT NULL,
+  category_id uuid NOT NULL,
+  CONSTRAINT hub_accepted_categories_pkey PRIMARY KEY (hub_id, category_id),
+  CONSTRAINT hub_accepted_categories_category_id_fkey FOREIGN KEY (category_id) REFERENCES public.donation_categories(category_id),
+  CONSTRAINT hub_accepted_categories_hub_id_fkey FOREIGN KEY (hub_id) REFERENCES public.community_hubs(hub_id)
+);
+CREATE TABLE public.hub_admin_profiles (
+  user_id uuid NOT NULL,
+  role text NOT NULL DEFAULT 'HUB_ADMIN'::text CHECK (role = 'HUB_ADMIN'::text),
+  hub_address text,
+  latitude double precision,
+  longitude double precision,
+  verified_at timestamp with time zone,
+  CONSTRAINT hub_admin_profiles_pkey PRIMARY KEY (user_id),
+  CONSTRAINT hub_admin_profiles_user_id_role_fkey FOREIGN KEY (user_id) REFERENCES public.user_profiles(user_id),
+  CONSTRAINT hub_admin_profiles_user_id_role_fkey FOREIGN KEY (role) REFERENCES public.user_profiles(role)
+);
+CREATE TABLE public.hub_batch_images (
+  image_id uuid NOT NULL DEFAULT gen_random_uuid(),
+  batch_id uuid NOT NULL,
+  owner_user_id uuid NOT NULL,
+  storage_path text NOT NULL UNIQUE,
+  content_type text NOT NULL CHECK (content_type = ANY (ARRAY['image/jpeg'::text, 'image/png'::text, 'image/webp'::text])),
+  size_bytes integer NOT NULL CHECK (size_bytes >= 1 AND size_bytes <= 5242880),
+  is_primary boolean NOT NULL DEFAULT false,
+  created_at timestamp with time zone NOT NULL DEFAULT clock_timestamp(),
+  CONSTRAINT hub_batch_images_pkey PRIMARY KEY (image_id),
+  CONSTRAINT hub_batch_images_batch_id_fkey FOREIGN KEY (batch_id) REFERENCES public.hub_batches(batch_id),
+  CONSTRAINT hub_batch_images_owner_user_id_fkey FOREIGN KEY (owner_user_id) REFERENCES auth.users(id)
+);
+CREATE TABLE public.hub_batch_members (
+  batch_id uuid NOT NULL,
+  hub_id uuid NOT NULL,
+  donation_id uuid NOT NULL,
+  membership_status text NOT NULL DEFAULT 'ACTIVE'::text CHECK (membership_status = ANY (ARRAY['ACTIVE'::text, 'RELEASED'::text])),
+  added_at timestamp with time zone NOT NULL DEFAULT now(),
+  CONSTRAINT hub_batch_members_pkey PRIMARY KEY (batch_id, donation_id),
+  CONSTRAINT hub_batch_members_batch_id_hub_id_fkey FOREIGN KEY (batch_id) REFERENCES public.hub_batches(batch_id),
+  CONSTRAINT hub_batch_members_batch_id_hub_id_fkey FOREIGN KEY (hub_id) REFERENCES public.hub_batches(hub_id),
+  CONSTRAINT hub_batch_members_donation_id_hub_id_fkey FOREIGN KEY (donation_id) REFERENCES public.hub_inventory(donation_id),
+  CONSTRAINT hub_batch_members_donation_id_hub_id_fkey FOREIGN KEY (hub_id) REFERENCES public.hub_inventory(hub_id)
+);
+CREATE TABLE public.hub_batches (
+  batch_id uuid NOT NULL DEFAULT gen_random_uuid(),
+  hub_id uuid NOT NULL,
+  batch_category_id uuid,
+  batch_status text NOT NULL DEFAULT 'DRAFT'::text CHECK (batch_status = ANY (ARRAY['DRAFT'::text, 'PUBLISHED'::text, 'CLAIMED'::text, 'COLLECTED'::text, 'CANCELLED'::text])),
+  batch_weight_kg numeric NOT NULL DEFAULT 0 CHECK (batch_weight_kg >= 0::numeric),
+  batch_donation_count integer NOT NULL DEFAULT 0 CHECK (batch_donation_count >= 0),
+  batch_version bigint NOT NULL DEFAULT 1 CHECK (batch_version > 0),
+  created_by uuid NOT NULL,
+  created_at timestamp with time zone NOT NULL DEFAULT now(),
+  published_at timestamp with time zone,
+  CONSTRAINT hub_batches_pkey PRIMARY KEY (batch_id),
+  CONSTRAINT hub_batches_batch_category_id_fkey FOREIGN KEY (batch_category_id) REFERENCES public.donation_categories(category_id),
+  CONSTRAINT hub_batches_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.hub_admin_profiles(user_id),
+  CONSTRAINT hub_batches_hub_id_fkey FOREIGN KEY (hub_id) REFERENCES public.community_hubs(hub_id)
+);
+CREATE TABLE public.hub_inventory (
+  donation_id uuid NOT NULL,
+  hub_id uuid NOT NULL,
+  inventory_status text NOT NULL DEFAULT 'STORED'::text CHECK (inventory_status = ANY (ARRAY['STORED'::text, 'BATCHED'::text, 'COLLECTED'::text, 'RECONCILIATION_REQUIRED'::text])),
+  recorded_at timestamp with time zone NOT NULL DEFAULT now(),
+  CONSTRAINT hub_inventory_pkey PRIMARY KEY (donation_id),
+  CONSTRAINT hub_inventory_donation_id_hub_id_fkey FOREIGN KEY (donation_id) REFERENCES public.hub_receipts(donation_id),
+  CONSTRAINT hub_inventory_donation_id_hub_id_fkey FOREIGN KEY (hub_id) REFERENCES public.hub_receipts(hub_id)
+);
+CREATE TABLE public.hub_receipts (
+  receipt_id uuid NOT NULL DEFAULT gen_random_uuid(),
+  reservation_id uuid NOT NULL UNIQUE,
+  donation_id uuid NOT NULL UNIQUE,
+  hub_id uuid NOT NULL,
+  received_by uuid NOT NULL,
+  receipt_status text NOT NULL DEFAULT 'CONFIRMED'::text CHECK (receipt_status = ANY (ARRAY['CONFIRMED'::text, 'RECONCILIATION_REQUIRED'::text])),
+  received_weight_kg numeric NOT NULL CHECK (received_weight_kg > 0::numeric),
+  received_at timestamp with time zone NOT NULL DEFAULT now(),
+  CONSTRAINT hub_receipts_pkey PRIMARY KEY (receipt_id),
+  CONSTRAINT hub_receipts_received_by_fkey FOREIGN KEY (received_by) REFERENCES public.hub_admin_profiles(user_id),
+  CONSTRAINT hub_receipts_reservation_id_donation_id_hub_id_fkey FOREIGN KEY (reservation_id) REFERENCES public.hub_reservations(reservation_id),
+  CONSTRAINT hub_receipts_reservation_id_donation_id_hub_id_fkey FOREIGN KEY (donation_id) REFERENCES public.hub_reservations(donation_id),
+  CONSTRAINT hub_receipts_reservation_id_donation_id_hub_id_fkey FOREIGN KEY (hub_id) REFERENCES public.hub_reservations(hub_id)
+);
+CREATE TABLE public.hub_reservations (
+  reservation_id uuid NOT NULL DEFAULT gen_random_uuid(),
+  donation_id uuid NOT NULL,
+  hub_id uuid NOT NULL,
+  reserved_weight_kg numeric NOT NULL CHECK (reserved_weight_kg > 0::numeric),
+  reservation_status text NOT NULL DEFAULT 'ACTIVE'::text CHECK (reservation_status = ANY (ARRAY['ACTIVE'::text, 'CONSUMED'::text, 'RELEASED'::text, 'EXPIRED'::text])),
+  reserved_at timestamp with time zone NOT NULL DEFAULT now(),
+  expires_at timestamp with time zone NOT NULL,
+  CONSTRAINT hub_reservations_pkey PRIMARY KEY (reservation_id),
+  CONSTRAINT hub_reservations_donation_id_fkey FOREIGN KEY (donation_id) REFERENCES public.donations(donation_id),
+  CONSTRAINT hub_reservations_hub_id_fkey FOREIGN KEY (hub_id) REFERENCES public.community_hubs(hub_id)
+);
+CREATE TABLE public.listings (
+  listing_id uuid NOT NULL DEFAULT gen_random_uuid(),
+  source_type text NOT NULL CHECK (source_type = ANY (ARRAY['DIRECT_DONATION'::text, 'HUB_BATCH'::text])),
+  donation_id uuid,
+  batch_id uuid,
+  listing_status text NOT NULL DEFAULT 'AVAILABLE'::text CHECK (listing_status = ANY (ARRAY['AVAILABLE'::text, 'CLAIMED'::text, 'CLOSED'::text, 'CANCELLED'::text])),
+  listing_weight_kg numeric NOT NULL CHECK (listing_weight_kg > 0::numeric),
+  pickup_latitude double precision NOT NULL CHECK (pickup_latitude >= '-90'::integer::double precision AND pickup_latitude <= 90::double precision),
+  pickup_longitude double precision NOT NULL CHECK (pickup_longitude >= '-180'::integer::double precision AND pickup_longitude <= 180::double precision),
+  pickup_road_node_id text,
+  listing_version bigint NOT NULL DEFAULT 1 CHECK (listing_version > 0),
+  created_at timestamp with time zone NOT NULL DEFAULT now(),
+  listing_expires_at timestamp with time zone,
+  eligibility_generation bigint NOT NULL DEFAULT 0,
+  CONSTRAINT listings_pkey PRIMARY KEY (listing_id),
+  CONSTRAINT listings_batch_id_fkey FOREIGN KEY (batch_id) REFERENCES public.hub_batches(batch_id),
+  CONSTRAINT listings_donation_id_fkey FOREIGN KEY (donation_id) REFERENCES public.donations(donation_id)
+);
+CREATE TABLE public.ngo_profiles (
+  user_id uuid NOT NULL,
+  role text NOT NULL DEFAULT 'NGO'::text CHECK (role = 'NGO'::text),
+  ngo_name text NOT NULL,
+  operating_address text CHECK (btrim(operating_address) <> ''::text),
+  latitude double precision CHECK (latitude >= '-90'::integer::double precision AND latitude <= 90::double precision),
+  longitude double precision CHECK (longitude >= '-180'::integer::double precision AND longitude <= 180::double precision),
+  road_node_id text,
+  active_flag boolean NOT NULL DEFAULT true,
+  location_verified_at timestamp with time zone,
+  location_generation bigint NOT NULL DEFAULT 0,
+  CONSTRAINT ngo_profiles_pkey PRIMARY KEY (user_id),
+  CONSTRAINT ngo_profiles_user_id_role_fkey FOREIGN KEY (user_id) REFERENCES public.user_profiles(user_id),
+  CONSTRAINT ngo_profiles_user_id_role_fkey FOREIGN KEY (role) REFERENCES public.user_profiles(role)
+);
+CREATE TABLE public.pickup_route_stops (
+  route_id uuid NOT NULL,
+  ngo_user_id uuid NOT NULL,
+  stop_order integer NOT NULL CHECK (stop_order > 0),
+  task_id uuid NOT NULL,
+  planned_arrival timestamp with time zone,
+  CONSTRAINT pickup_route_stops_pkey PRIMARY KEY (route_id, stop_order),
+  CONSTRAINT pickup_route_stops_route_id_ngo_user_id_fkey FOREIGN KEY (route_id) REFERENCES public.pickup_routes(route_id),
+  CONSTRAINT pickup_route_stops_route_id_ngo_user_id_fkey FOREIGN KEY (ngo_user_id) REFERENCES public.pickup_routes(ngo_user_id),
+  CONSTRAINT pickup_route_stops_task_id_fkey FOREIGN KEY (task_id) REFERENCES public.pickup_tasks(task_id)
+);
+CREATE TABLE public.pickup_routes (
+  route_id uuid NOT NULL DEFAULT gen_random_uuid(),
+  ngo_user_id uuid NOT NULL,
+  vehicle_id uuid NOT NULL,
+  route_status text NOT NULL DEFAULT 'DRAFT'::text CHECK (route_status = ANY (ARRAY['DRAFT'::text, 'VALIDATED'::text, 'AUTHORISED'::text, 'IN_PROGRESS'::text, 'COMPLETED'::text, 'CANCELLED'::text, 'STALE'::text, 'ABANDONED'::text])),
+  matrix_id text,
+  total_distance_km numeric CHECK (total_distance_km >= 0::numeric),
+  total_duration_min numeric CHECK (total_duration_min >= 0::numeric),
+  planned_at timestamp with time zone NOT NULL DEFAULT now(),
+  authorised_at timestamp with time zone,
+  validation_reference text,
+  CONSTRAINT pickup_routes_pkey PRIMARY KEY (route_id),
+  CONSTRAINT pickup_routes_ngo_user_id_fkey FOREIGN KEY (ngo_user_id) REFERENCES public.ngo_profiles(user_id),
+  CONSTRAINT pickup_routes_vehicle_id_ngo_user_id_fkey FOREIGN KEY (vehicle_id) REFERENCES public.vehicles(vehicle_id),
+  CONSTRAINT pickup_routes_vehicle_id_ngo_user_id_fkey FOREIGN KEY (ngo_user_id) REFERENCES public.vehicles(ngo_user_id)
+);
+CREATE TABLE public.pickup_tasks (
+  task_id uuid NOT NULL DEFAULT gen_random_uuid(),
+  claim_id uuid NOT NULL UNIQUE,
+  listing_id uuid NOT NULL,
+  ngo_user_id uuid NOT NULL,
+  pickup_road_node_id text NOT NULL,
+  load_kg numeric NOT NULL CHECK (load_kg > 0::numeric),
+  task_status text NOT NULL DEFAULT 'CONFIRMED'::text CHECK (task_status = ANY (ARRAY['CONFIRMED'::text, 'PLANNED'::text, 'DISPATCHED'::text, 'COLLECTED'::text, 'CANCELLED'::text, 'STALE'::text])),
+  created_at timestamp with time zone NOT NULL DEFAULT now(),
+  CONSTRAINT pickup_tasks_pkey PRIMARY KEY (task_id),
+  CONSTRAINT pickup_tasks_claim_id_listing_id_ngo_user_id_fkey FOREIGN KEY (claim_id) REFERENCES public.donation_claims(claim_id),
+  CONSTRAINT pickup_tasks_claim_id_listing_id_ngo_user_id_fkey FOREIGN KEY (listing_id) REFERENCES public.donation_claims(listing_id),
+  CONSTRAINT pickup_tasks_claim_id_listing_id_ngo_user_id_fkey FOREIGN KEY (ngo_user_id) REFERENCES public.donation_claims(ngo_user_id)
+);
+CREATE TABLE public.user_profiles (
+  user_id uuid NOT NULL,
+  full_name text NOT NULL,
+  phone_number text,
+  role text NOT NULL CHECK (role = ANY (ARRAY['DONOR'::text, 'NGO'::text, 'HUB_ADMIN'::text])),
+  created_at timestamp with time zone NOT NULL DEFAULT now(),
+  CONSTRAINT user_profiles_pkey PRIMARY KEY (user_id),
+  CONSTRAINT user_profiles_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id)
+);
+CREATE TABLE public.vehicles (
+  vehicle_id uuid NOT NULL DEFAULT gen_random_uuid(),
+  ngo_user_id uuid NOT NULL,
+  vehicle_label text NOT NULL,
+  payload_capacity_kg numeric NOT NULL CHECK (payload_capacity_kg > 0::numeric),
+  depot_road_node_id text,
+  active_flag boolean NOT NULL DEFAULT true,
+  vehicle_type text,
+  fixed_cost_rm numeric,
+  distance_cost_rm_per_km numeric,
+  max_route_duration_min numeric,
+  available_for_planning boolean NOT NULL DEFAULT false,
+  vehicle_version bigint NOT NULL DEFAULT 1,
+  updated_at timestamp with time zone NOT NULL DEFAULT clock_timestamp(),
+  registration_request_id uuid,
+  registration_payload jsonb,
+  CONSTRAINT vehicles_pkey PRIMARY KEY (vehicle_id),
+  CONSTRAINT vehicles_ngo_user_id_fkey FOREIGN KEY (ngo_user_id) REFERENCES public.ngo_profiles(user_id)
+);
+CREATE TABLE public.claim_cancellation_requests (
+  request_id uuid NOT NULL,
+  claim_id uuid NOT NULL,
+  actor_user_id uuid NOT NULL,
+  request_fingerprint text NOT NULL,
+  response jsonb CHECK (response IS NULL OR jsonb_typeof(response) = 'object'::text),
+  created_at timestamp with time zone NOT NULL DEFAULT clock_timestamp(),
+  completed_at timestamp with time zone,
+  CONSTRAINT claim_cancellation_requests_pkey PRIMARY KEY (request_id),
+  CONSTRAINT claim_cancellation_requests_claim_id_fkey FOREIGN KEY (claim_id) REFERENCES public.donation_claims(claim_id)
+);
+CREATE TABLE public.claim_reconciliation_cases (
+  case_id uuid NOT NULL DEFAULT gen_random_uuid(),
+  claim_id uuid NOT NULL UNIQUE,
+  listing_id uuid NOT NULL,
+  donation_id uuid,
+  source_type text NOT NULL CHECK (source_type = ANY (ARRAY['DIRECT_DONATION'::text, 'HUB_BATCH'::text])),
+  case_status text NOT NULL DEFAULT 'OPEN'::text CHECK (case_status = ANY (ARRAY['OPEN'::text, 'RESOLVED_COLLECTED'::text, 'RESOLVED_RELEASED'::text, 'MANUAL_REVIEW'::text])),
+  opened_at timestamp with time zone NOT NULL DEFAULT clock_timestamp(),
+  resolved_at timestamp with time zone,
+  resolution_reason text,
+  evidence_round integer NOT NULL DEFAULT 1 CHECK (evidence_round > 0),
+  evidence_version bigint NOT NULL DEFAULT 1 CHECK (evidence_version > 0),
+  review_requested_by uuid,
+  review_context text,
+  CONSTRAINT claim_reconciliation_cases_pkey PRIMARY KEY (case_id),
+  CONSTRAINT claim_reconciliation_cases_claim_id_fkey FOREIGN KEY (claim_id) REFERENCES public.donation_claims(claim_id),
+  CONSTRAINT claim_reconciliation_cases_listing_id_fkey FOREIGN KEY (listing_id) REFERENCES public.listings(listing_id)
+);
+CREATE TABLE public.claim_reconciliation_evidence (
+  request_id uuid NOT NULL,
+  case_id uuid NOT NULL,
+  actor_user_id uuid NOT NULL,
+  handover_confirmed boolean NOT NULL,
+  response jsonb CHECK (response IS NULL OR jsonb_typeof(response) = 'object'::text),
+  submitted_at timestamp with time zone NOT NULL DEFAULT clock_timestamp(),
+  evidence_round integer NOT NULL DEFAULT 1 CHECK (evidence_round > 0),
+  CONSTRAINT claim_reconciliation_evidence_pkey PRIMARY KEY (request_id),
+  CONSTRAINT claim_reconciliation_evidence_case_id_fkey FOREIGN KEY (case_id) REFERENCES public.claim_reconciliation_cases(case_id)
+);
+CREATE TABLE public.road_network_coverage (
+  network_snapshot_id text NOT NULL,
+  coverage_area USER-DEFINED NOT NULL,
+  max_snap_distance_m integer NOT NULL DEFAULT 500 CHECK (max_snap_distance_m = 500),
+  provenance text NOT NULL,
+  dataset_kind text NOT NULL DEFAULT 'OPERATIONAL'::text CHECK (dataset_kind = ANY (ARRAY['OPERATIONAL'::text, 'BENCHMARK'::text])),
+  node_count integer CHECK (node_count IS NULL OR node_count > 0),
+  edge_count integer CHECK (edge_count IS NULL OR edge_count > 0),
+  approved_at timestamp with time zone,
+  active_flag boolean NOT NULL DEFAULT false,
+  created_at timestamp with time zone NOT NULL DEFAULT clock_timestamp(),
+  CONSTRAINT road_network_coverage_pkey PRIMARY KEY (network_snapshot_id)
+);
+CREATE TABLE public.road_network_nodes (
+  osm_node_id bigint NOT NULL CHECK (osm_node_id > 0),
+  network_snapshot_id text NOT NULL,
+  latitude double precision NOT NULL CHECK (latitude >= '-90'::integer::double precision AND latitude <= 90::double precision),
+  longitude double precision NOT NULL CHECK (longitude >= '-180'::integer::double precision AND longitude <= 180::double precision),
+  geog USER-DEFINED DEFAULT (st_setsrid(st_makepoint(longitude, latitude), 4326))::geography,
+  component_id integer NOT NULL,
+  active_flag boolean NOT NULL DEFAULT true,
+  CONSTRAINT road_network_nodes_pkey PRIMARY KEY (osm_node_id),
+  CONSTRAINT road_network_nodes_network_snapshot_id_fkey FOREIGN KEY (network_snapshot_id) REFERENCES public.road_network_coverage(network_snapshot_id)
+);
+CREATE TABLE public.road_network_edges (
+  edge_id integer GENERATED ALWAYS AS IDENTITY NOT NULL,
+  source_node bigint NOT NULL,
+  target_node bigint NOT NULL,
+  road_km real NOT NULL CHECK (road_km > 0::double precision),
+  travel_minutes real NOT NULL CHECK (travel_minutes > 0::double precision),
+  CONSTRAINT road_network_edges_pkey PRIMARY KEY (source_node, target_node),
+  CONSTRAINT road_network_edges_source_node_fkey FOREIGN KEY (source_node) REFERENCES public.road_network_nodes(osm_node_id)
+);
+CREATE TABLE public.ngo_listing_road_eligibility (
+  listing_id uuid NOT NULL,
+  ngo_user_id uuid NOT NULL,
+  network_snapshot_id text NOT NULL,
+  ngo_road_node_id text NOT NULL,
+  listing_road_node_id text NOT NULL,
+  road_distance_km double precision,
+  geofence_radius_m integer NOT NULL,
+  outcome text NOT NULL CHECK (outcome = ANY (ARRAY['ELIGIBLE'::text, 'OUTSIDE_GEOFENCE'::text, 'ROUTE_UNAVAILABLE'::text])),
+  computed_at timestamp with time zone NOT NULL DEFAULT clock_timestamp(),
+  CONSTRAINT ngo_listing_road_eligibility_pkey PRIMARY KEY (listing_id, ngo_user_id),
+  CONSTRAINT ngo_listing_road_eligibility_listing_id_fkey FOREIGN KEY (listing_id) REFERENCES public.listings(listing_id),
+  CONSTRAINT ngo_listing_road_eligibility_ngo_user_id_fkey FOREIGN KEY (ngo_user_id) REFERENCES public.ngo_profiles(user_id),
+  CONSTRAINT ngo_listing_road_eligibility_network_snapshot_id_fkey FOREIGN KEY (network_snapshot_id) REFERENCES public.road_network_coverage(network_snapshot_id)
+);
+CREATE TABLE public.ngo_eligibility_refresh_jobs (
+  job_id bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
+  ngo_user_id uuid NOT NULL,
+  location_generation bigint NOT NULL,
+  expected_road_node_id text NOT NULL,
+  expected_snapshot_id text NOT NULL,
+  job_status text NOT NULL DEFAULT 'PENDING'::text CHECK (job_status = ANY (ARRAY['PENDING'::text, 'PROCESSING'::text, 'COMPLETED'::text, 'FAILED'::text, 'SUPERSEDED'::text])),
+  attempt_count integer NOT NULL DEFAULT 0 CHECK (attempt_count >= 0),
+  requested_at timestamp with time zone NOT NULL DEFAULT clock_timestamp(),
+  started_at timestamp with time zone,
+  completed_at timestamp with time zone,
+  last_error_code text,
+  CONSTRAINT ngo_eligibility_refresh_jobs_pkey PRIMARY KEY (job_id),
+  CONSTRAINT ngo_eligibility_refresh_jobs_ngo_user_id_fkey FOREIGN KEY (ngo_user_id) REFERENCES public.ngo_profiles(user_id),
+  CONSTRAINT ngo_eligibility_refresh_jobs_expected_snapshot_id_fkey FOREIGN KEY (expected_snapshot_id) REFERENCES public.road_network_coverage(network_snapshot_id)
+);
+CREATE TABLE public.listing_eligibility_refresh_jobs (
+  job_id bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
+  listing_id uuid NOT NULL,
+  eligibility_generation bigint NOT NULL,
+  expected_road_node_id text NOT NULL,
+  expected_snapshot_id text NOT NULL,
+  job_status text NOT NULL DEFAULT 'PENDING'::text CHECK (job_status = ANY (ARRAY['PENDING'::text, 'PROCESSING'::text, 'COMPLETED'::text, 'FAILED'::text, 'SUPERSEDED'::text])),
+  attempt_count integer NOT NULL DEFAULT 0 CHECK (attempt_count >= 0),
+  requested_at timestamp with time zone NOT NULL DEFAULT clock_timestamp(),
+  started_at timestamp with time zone,
+  completed_at timestamp with time zone,
+  last_error_code text,
+  CONSTRAINT listing_eligibility_refresh_jobs_pkey PRIMARY KEY (job_id),
+  CONSTRAINT listing_eligibility_refresh_jobs_listing_id_fkey FOREIGN KEY (listing_id) REFERENCES public.listings(listing_id),
+  CONSTRAINT listing_eligibility_refresh_jobs_expected_snapshot_id_fkey FOREIGN KEY (expected_snapshot_id) REFERENCES public.road_network_coverage(network_snapshot_id)
+);
+CREATE TABLE public.operation_failure_events (
+  failure_id uuid NOT NULL DEFAULT gen_random_uuid(),
+  request_id uuid,
+  actor_user_id uuid,
+  actor_role text,
+  operation_name text NOT NULL,
+  donation_id uuid,
+  listing_id uuid,
+  claim_id uuid,
+  reason_code text NOT NULL,
+  occurred_at timestamp with time zone NOT NULL DEFAULT clock_timestamp(),
+  details jsonb NOT NULL DEFAULT '{}'::jsonb,
+  CONSTRAINT operation_failure_events_pkey PRIMARY KEY (failure_id)
+);

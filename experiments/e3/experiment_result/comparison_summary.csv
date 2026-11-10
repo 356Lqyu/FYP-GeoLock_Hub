@@ -1,0 +1,8 @@
+﻿measure,proposed_hub_aggregation,baseline_direct_household_pickup,change_percent,better_when,paired_test
+"NGO road km, total of 100 scenarios",1376.2,2689.4,-48.8,lower,Wilcoxon p = 6.7e-18
+"NGO vehicle trips, total of 100 scenarios",100.0,100.0,0.0,lower,Wilcoxon p = 1.0e+00
+"NGO stops, total of 100 scenarios",100.0,438.0,-77.2,lower,Wilcoxon p = 6.3e-19
+"Donor travel km, total of 100 scenarios",4197.1,0.0,,not a target,Wilcoxon p = 3.9e-18
+"Total travel km (NGO + donors), total of 100 scenarios",5573.3,2689.4,107.2,not a target,Wilcoxon p = 3.9e-18
+"Benchmark cost (units), total of 100 scenarios",2095.2,3189.4,-34.3,lower,Wilcoxon p = 2.4e-17
+Donations collected,438,438,0.0,higher,

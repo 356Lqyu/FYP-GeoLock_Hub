@@ -1,0 +1,145 @@
+{
+  "planned_units": 100,
+  "realised_units": 100,
+  "primary_ngo_km": {
+    "measure": "NGO road km",
+    "baseline_total": 2689.407,
+    "proposed_total": 1376.181,
+    "baseline_median": 26.5365,
+    "proposed_median": 10.9185,
+    "hl_difference": -13.103,
+    "ci95": [
+      -14.663999999999998,
+      -11.5405
+    ],
+    "wilcoxon_p": 6.702409068617996e-18,
+    "nonzero_pairs": 100,
+    "scenarios_proposed_lower": 97,
+    "scenarios_equal": 0,
+    "scenarios_proposed_higher": 3
+  },
+  "supporting": [
+    {
+      "measure": "NGO vehicle trips",
+      "baseline_total": 100.0,
+      "proposed_total": 100.0,
+      "baseline_median": 1.0,
+      "proposed_median": 1.0,
+      "hl_difference": 0.0,
+      "ci95": [
+        0.0,
+        0.0
+      ],
+      "wilcoxon_p": 1.0,
+      "nonzero_pairs": 0,
+      "scenarios_proposed_lower": 0,
+      "scenarios_equal": 100,
+      "scenarios_proposed_higher": 0,
+      "holm_p": 1.0
+    },
+    {
+      "measure": "NGO stops",
+      "baseline_total": 438.0,
+      "proposed_total": 100.0,
+      "baseline_median": 5.0,
+      "proposed_median": 1.0,
+      "hl_difference": -3.5,
+      "ci95": [
+        -3.5,
+        -3.5
+      ],
+      "wilcoxon_p": 6.306739193733447e-19,
+      "nonzero_pairs": 100,
+      "scenarios_proposed_lower": 100,
+      "scenarios_equal": 0,
+      "scenarios_proposed_higher": 0,
+      "holm_p": 3.1533695968667235e-18
+    },
+    {
+      "measure": "Donor travel km",
+      "baseline_total": 0.0,
+      "proposed_total": 4197.083,
+      "baseline_median": 0.0,
+      "proposed_median": 40.186,
+      "hl_difference": 41.05175,
+      "ci95": [
+        38.149068750000005,
+        43.960499999999996
+      ],
+      "wilcoxon_p": 3.896559845095909e-18,
+      "nonzero_pairs": 100,
+      "scenarios_proposed_lower": 0,
+      "scenarios_equal": 0,
+      "scenarios_proposed_higher": 100,
+      "holm_p": 1.5586239380383637e-17
+    },
+    {
+      "measure": "Total travel km (NGO + donors)",
+      "baseline_total": 2689.407,
+      "proposed_total": 5573.264,
+      "baseline_median": 26.5365,
+      "proposed_median": 54.99,
+      "hl_difference": 26.787,
+      "ci95": [
+        24.43873125,
+        29.518
+      ],
+      "wilcoxon_p": 3.896559845095909e-18,
+      "nonzero_pairs": 100,
+      "scenarios_proposed_lower": 0,
+      "scenarios_equal": 0,
+      "scenarios_proposed_higher": 100,
+      "holm_p": 1.5586239380383637e-17
+    },
+    {
+      "measure": "Benchmark cost (units)",
+      "baseline_total": 3189.38,
+      "proposed_total": 2095.22,
+      "baseline_median": 31.535,
+      "proposed_median": 18.17,
+      "hl_difference": -10.872500000000002,
+      "ci95": [
+        -12.444999999999999,
+        -9.419875000000001
+      ],
+      "wilcoxon_p": 2.447208346919587e-17,
+      "nonzero_pairs": 100,
+      "scenarios_proposed_lower": 94,
+      "scenarios_equal": 0,
+      "scenarios_proposed_higher": 6,
+      "holm_p": 4.894416693839174e-17
+    }
+  ],
+  "coverage": {
+    "baseline": 438,
+    "proposed": 438,
+    "donations": 438
+  },
+  "aggregated_scenarios": 100,
+  "all_routes_valid": {
+    "baseline": 100,
+    "proposed": 100
+  },
+  "batch_integrity": {
+    "hub_passes_five_rules_for_every_donation": 100,
+    "reservations_fit_free_capacity": 100,
+    "hub_active": 100,
+    "drop_off_inside_donor_window": 100,
+    "drop_off_inside_hub_opening_hours": 100,
+    "members_equal_batch_template": 100,
+    "batch_size_3_to_5": 100,
+    "batch_weight_at_most_30kg": 100,
+    "one_category": 100,
+    "batch_weight_matches_template": 100,
+    "all_small_donations": 100,
+    "ngo_within_20km_road_of_hub": 100
+  },
+  "scenarios_total_travel_lower_with_hub": {
+    "count": 0,
+    "rate": [
+      0.0,
+      3.469446951953614e-18,
+      0.03699349820698568
+    ]
+  }
+}

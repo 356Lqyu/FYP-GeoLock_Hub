@@ -1,0 +1,14 @@
+﻿part,measure,baseline,proposed,better_when,test
+1. Contention: baseline 1 against proposed,Trials with more than one owner (of 150),150,0,lower,exact McNemar p = 1.4e-45
+1. Contention: baseline 1 against proposed,2 NGOs at once (of 50),50,0,lower,
+1. Contention: baseline 1 against proposed,5 NGOs at once (of 50),50,0,lower,
+1. Contention: baseline 1 against proposed,10 NGOs at once (of 50),50,0,lower,
+1. Contention: baseline 1 against proposed,Extra claims saved beyond one owner,700,0,lower,
+1. Contention: baseline 1 against proposed,"Requests told ""you got it"" (of 850)",850,150,150 (one per trial),
+1. Contention: baseline 1 against proposed,"Requests told ""already claimed"" (of 850)",0,700,700 (the others),
+1. Contention: baseline 1 against proposed,Requests that failed with an error,0,0,lower,
+1. Contention: baseline 1 against proposed,Attempts recorded in the audit log (of 850),0,850,higher,
+1. Contention: baseline 1 against proposed,"Response time, median (ms)",38.5,29.9,lower,
+2. Lease: baseline 2 against proposed,Expired leases taken over by another NGO (of 100),0,100,higher,exact McNemar p = 1.6e-30
+2. Lease: baseline 2 against proposed,Donations left blocked by an expired lease (of 100),100,0,lower,
+2. Lease: baseline 2 against proposed,Valid leases wrongly released (of 25),0,0,lower,

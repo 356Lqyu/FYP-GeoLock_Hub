@@ -1,0 +1,31 @@
+table_name,trigger_name,function_name,definition
+audit_events,resolution_audit_provenance,audit_provenance,CREATE TRIGGER resolution_audit_provenance BEFORE INSERT ON audit_events FOR EACH ROW EXECUTE FUNCTION resolution_private.audit_provenance();
+audit_events,trg_audit_append_only,prevent_audit_mutation,CREATE TRIGGER trg_audit_append_only BEFORE DELETE OR UPDATE ON audit_events FOR EACH ROW EXECUTE FUNCTION prevent_audit_mutation();
+claim_reconciliation_evidence,coordination_evidence_immutable,coord_immutable_evidence,CREATE TRIGGER coordination_evidence_immutable BEFORE DELETE OR UPDATE ON claim_reconciliation_evidence FOR EACH ROW EXECUTE FUNCTION routing_private.coord_immutable_evidence();
+community_hubs,trg_hub_location_sync,geolock_hub_location_sync,CREATE TRIGGER trg_hub_location_sync AFTER UPDATE ON community_hubs FOR EACH ROW EXECUTE FUNCTION geolock_hub_location_sync();
+community_hubs,trg_hub_road_node,geolock_assign_road_node,"CREATE TRIGGER trg_hub_road_node BEFORE INSERT OR UPDATE OF latitude, longitude, road_node_id ON community_hubs FOR EACH ROW EXECUTE FUNCTION geolock_assign_road_node();"
+donation_items,trg_items_guard,guard_donation_items,CREATE TRIGGER trg_items_guard BEFORE INSERT OR DELETE OR UPDATE ON donation_items FOR EACH ROW EXECUTE FUNCTION guard_donation_items();
+donations,donations_lifecycle_at_commit,geolock_validate_donation_at_commit,CREATE CONSTRAINT TRIGGER donations_lifecycle_at_commit AFTER INSERT OR UPDATE ON donations DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION geolock_validate_donation_at_commit();
+donations,donations_require_photo_at_commit,require_donation_photo_before_commit,CREATE CONSTRAINT TRIGGER donations_require_photo_at_commit AFTER INSERT ON donations DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION require_donation_photo_before_commit();
+donations,trg_donation_road_node,geolock_assign_road_node,CREATE TRIGGER trg_donation_road_node BEFORE INSERT ON donations FOR EACH ROW EXECUTE FUNCTION geolock_assign_road_node();
+donations,trg_donation_transition,enforce_donation_transition,CREATE TRIGGER trg_donation_transition BEFORE UPDATE ON donations FOR EACH ROW EXECUTE FUNCTION enforce_donation_transition();
+hub_batch_members,trg_members_guard,guard_batch_immutability,CREATE TRIGGER trg_members_guard BEFORE INSERT OR DELETE OR UPDATE ON hub_batch_members FOR EACH ROW EXECUTE FUNCTION guard_batch_immutability();
+hub_batches,trg_batch_guard,guard_batch_immutability,CREATE TRIGGER trg_batch_guard BEFORE DELETE OR UPDATE ON hub_batches FOR EACH ROW EXECUTE FUNCTION guard_batch_immutability();
+hub_reservations,trg_hub_reservation_opening_hours,geolock_require_hub_open,CREATE TRIGGER trg_hub_reservation_opening_hours BEFORE INSERT ON hub_reservations FOR EACH ROW EXECUTE FUNCTION geolock_require_hub_open();
+hub_reservations,trg_hub_reservation_route,geolock_require_hub_route,CREATE TRIGGER trg_hub_reservation_route BEFORE INSERT ON hub_reservations FOR EACH ROW EXECUTE FUNCTION geolock_require_hub_route();
+listings,trg_listing_road_eligibility,geolock_listing_eligibility_trigger,CREATE TRIGGER trg_listing_road_eligibility AFTER INSERT OR UPDATE ON listings FOR EACH ROW EXECUTE FUNCTION geolock_listing_eligibility_trigger();
+listings,trg_listing_transition,enforce_listing_transition,CREATE TRIGGER trg_listing_transition BEFORE UPDATE ON listings FOR EACH ROW EXECUTE FUNCTION enforce_listing_transition();
+listings,zz_listing_eligibility_generation,geolock_prepare_listing_eligibility,CREATE TRIGGER zz_listing_eligibility_generation BEFORE INSERT OR UPDATE ON listings FOR EACH ROW EXECUTE FUNCTION geolock_prepare_listing_eligibility();
+pickup_routes,c1_route_vehicle_guard,route_vehicle_guard,CREATE TRIGGER c1_route_vehicle_guard BEFORE INSERT OR DELETE OR UPDATE ON pickup_routes FOR EACH ROW EXECUTE FUNCTION fleet_private.route_vehicle_guard();
+pickup_tasks,resolution_test_scope,test_scope_guard,CREATE TRIGGER resolution_test_scope BEFORE UPDATE OF task_status ON pickup_tasks FOR EACH ROW EXECUTE FUNCTION resolution_private.test_scope_guard();
+pickup_tasks,routing_task_authority,task_guard,CREATE TRIGGER routing_task_authority BEFORE UPDATE OF task_status ON pickup_tasks FOR EACH ROW EXECUTE FUNCTION routing_private.task_guard();
+road_network_coverage,routing_graph_freeze,freeze_network,CREATE TRIGGER routing_graph_freeze BEFORE INSERT OR DELETE OR UPDATE ON road_network_coverage FOR EACH ROW EXECUTE FUNCTION routing_private.freeze_network();
+road_network_coverage,routing_graph_truncate,freeze_network,CREATE TRIGGER routing_graph_truncate BEFORE TRUNCATE ON road_network_coverage FOR EACH STATEMENT EXECUTE FUNCTION routing_private.freeze_network();
+road_network_edges,routing_graph_freeze,freeze_network,CREATE TRIGGER routing_graph_freeze BEFORE INSERT OR DELETE OR UPDATE ON road_network_edges FOR EACH ROW EXECUTE FUNCTION routing_private.freeze_network();
+road_network_edges,routing_graph_truncate,freeze_network,CREATE TRIGGER routing_graph_truncate BEFORE TRUNCATE ON road_network_edges FOR EACH STATEMENT EXECUTE FUNCTION routing_private.freeze_network();
+road_network_nodes,routing_graph_freeze,freeze_network,CREATE TRIGGER routing_graph_freeze BEFORE INSERT OR DELETE OR UPDATE ON road_network_nodes FOR EACH ROW EXECUTE FUNCTION routing_private.freeze_network();
+road_network_nodes,routing_graph_truncate,freeze_network,CREATE TRIGGER routing_graph_truncate BEFORE TRUNCATE ON road_network_nodes FOR EACH STATEMENT EXECUTE FUNCTION routing_private.freeze_network();
+user_profiles,trg_role_immutable,prevent_role_change,CREATE TRIGGER trg_role_immutable BEFORE UPDATE ON user_profiles FOR EACH ROW EXECUTE FUNCTION prevent_role_change();
+vehicles,c1_vehicle_audit,audit_vehicle,CREATE TRIGGER c1_vehicle_audit AFTER INSERT OR UPDATE ON vehicles FOR EACH ROW EXECUTE FUNCTION fleet_private.audit_vehicle();
+vehicles,trg_vehicle_depot_node,geolock_assign_vehicle_depot,"CREATE TRIGGER trg_vehicle_depot_node BEFORE INSERT OR UPDATE OF depot_road_node_id, ngo_user_id ON vehicles FOR EACH ROW EXECUTE FUNCTION geolock_assign_vehicle_depot();"
+vehicles,zz_c1_vehicle_guard,vehicle_guard,CREATE TRIGGER zz_c1_vehicle_guard BEFORE INSERT OR DELETE OR UPDATE ON vehicles FOR EACH ROW EXECUTE FUNCTION fleet_private.vehicle_guard();

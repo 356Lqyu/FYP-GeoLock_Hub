@@ -1,0 +1,16 @@
+{
+  "expired_claims_prepared": 100,
+  "workers": 2,
+  "released_per_worker": [
+    43,
+    57
+  ],
+  "released_total_reported": 100,
+  "claims_released": 100,
+  "listings_reopened": 100,
+  "claims_with_exactly_one_recovery_audit": 100,
+  "claims_with_more_than_one_recovery_audit": 0,
+  "repeated_run_released": 0,
+  "worker_errors": [],
+  "passed": true
+}

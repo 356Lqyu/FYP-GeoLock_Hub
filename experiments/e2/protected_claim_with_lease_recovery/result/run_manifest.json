@@ -1,0 +1,24 @@
+{
+  "method": "protected_claim_with_lease_recovery",
+  "run_id": "d0e99ab3b54a",
+  "input_sha256": {
+    "scenarios.csv": "973d91972df90c0e39501a35ca2ae181d1a6af37d5ccb83c56e4b4bf2d5c966c",
+    "scenario_members.csv": "7c09e2a9a040726458078c6d23370978a3cba6f155cb2b68aa2bbc356518e6d0",
+    "ngos.csv": "ddc14fe9958c272c7d8b7dc32b23ad6bfffd2a066f1b158a05a7cd3e5c535eaa",
+    "donations.csv": "057dbd5b9486c79984ae2c64144daad2a4c4db6b8c0fbc233c1bcae9eb9b288b",
+    "donors.csv": "aefee7b3fc9b0c955f7ae3d60238dd4ec7cea49885dcd0545706acb797604e63",
+    "listings.csv": "71f8552af8731ac8b0ddfb205f32c78413088ba3bd3e2a1d4aa9830abe5e532f",
+    "claim_initial_states.csv": "30e5f3bbd933fd3827bcafb9d119d036ece0dbe1e17f0172f66b919cf98d1065",
+    "road_distance_matrix.csv": "b9a272d2396354695ae2ec6fd744a17510f1b5e7c61989fe7b404d2d0e0133e1"
+  },
+  "environment": {
+    "python": "3.12.10",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "psycopg": "3.3.6",
+    "run_at": "2026-11-10T14:37:46+08:00"
+  },
+  "database": "separate experiment only Supabase project",
+  "server_version": "PostgreSQL 17.11",
+  "trials": 150,
+  "lease_cases": 125
+}

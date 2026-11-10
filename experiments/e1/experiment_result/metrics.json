@@ -1,0 +1,112 @@
+{
+  "ai": {
+    "units": 349,
+    "top1": 287,
+    "top1_rate": 0.8223495702005731,
+    "top1_ci95": [
+      0.7788046345812328,
+      0.8588755313267643
+    ],
+    "top3": 346,
+    "top3_rate": 0.9914040114613181,
+    "top3_ci95": [
+      0.9750356195712673,
+      0.9970723666795906
+    ],
+    "ndcg3_mean": 0.9957738135975085,
+    "ndcg3_groups": 349,
+    "regret_mean": 0.0016098027220630372,
+    "regret_median": 0.0,
+    "km_median": 4.14714,
+    "km_mean": 4.717912893982808
+  },
+  "nearest": {
+    "units": 349,
+    "top1": 146,
+    "top1_rate": 0.4183381088825215,
+    "top1_ci95": [
+      0.36774912899301526,
+      0.47070522897695866
+    ],
+    "top3": 287,
+    "top3_rate": 0.8223495702005731,
+    "top3_ci95": [
+      0.7788046345812328,
+      0.8588755313267643
+    ],
+    "ndcg3_mean": 0.9310702377756039,
+    "ndcg3_groups": 349,
+    "regret_mean": 0.031198785358166187,
+    "regret_median": 0.00835145,
+    "km_median": 2.786,
+    "km_mean": 3.5673616618911175
+  },
+  "random": {
+    "units": 349,
+    "top1": 16,
+    "top1_rate": 0.045845272206303724,
+    "top1_ci95": [
+      0.028413594693714773,
+      0.07316590489368469
+    ],
+    "top3": 35,
+    "top3_rate": 0.10028653295128939,
+    "top3_ci95": [
+      0.07299526579844973,
+      0.13628132847563368
+    ],
+    "ndcg3_mean": 0.5200817371666069,
+    "ndcg3_groups": 349,
+    "regret_mean": 0.23601380736389685,
+    "regret_median": 0.22040992,
+    "km_median": 12.60079,
+    "km_mean": 13.545838194842407
+  },
+  "feasible_hubs_median": 36,
+  "divergence": {
+    "ai_differs_from_reference": 62,
+    "units": 349,
+    "regret_median_when_different": 0.00481011,
+    "extra_km_median_when_different": 1.1944250000000003,
+    "reference_in_ai_top3_when_different": 59,
+    "ai_same_hub_as_nearest": 128,
+    "hubs_outside_feasible_set": 0
+  },
+  "reference_km_median": 3.83039,
+  "tests": {
+    "nearest": {
+      "only_ai_correct": 164,
+      "only_baseline_correct": 23,
+      "mcnemar_p": 1.9964587521570028e-27,
+      "ndcg3_diff_hl": 0.06010772118047325,
+      "ndcg3_diff_ci95": [
+        0.05328649288790747,
+        0.06701140864695987
+      ],
+      "ndcg3_wilcoxon_p": 2.9552128795432003e-55
+    },
+    "random": {
+      "only_ai_correct": 276,
+      "only_baseline_correct": 5,
+      "mcnemar_p": 7.384046234232491e-75,
+      "ndcg3_diff_hl": 0.4765869147214552,
+      "ndcg3_diff_ci95": [
+        0.45656364521872506,
+        0.4968605921998331
+      ],
+      "ndcg3_wilcoxon_p": 5.908006057470862e-59
+    },
+    "holm": {
+      "top1_vs_random": 2.2152138702697474e-74,
+      "ndcg3_vs_nearest": 2.9552128795432003e-55,
+      "ndcg3_vs_random": 1.1816012114941725e-58
+    }
+  },
+  "ten_kg_precheck": {
+    "cases": 8,
+    "passed": 8,
+    "checked": 8
+  },
+  "planned_units": "about 300 held out groups (Table 3.9)",
+  "realised_units": 349
+}

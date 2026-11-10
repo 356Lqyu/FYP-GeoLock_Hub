@@ -1,0 +1,6 @@
+﻿measure,proposed_ai_hub_ranking,baseline_1_nearest_hub,baseline_2_random_hub,better_when,test_against_baseline_1
+Top-1 agreement with the reference hub (%),82.2,41.8,4.6,higher,exact McNemar p = 2.0e-27
+Reference hub in the top 3 (%),99.1,82.2,10.0,higher,
+"NDCG@3, mean",0.996,0.931,0.52,higher,Wilcoxon p = 3.0e-55
+"Regret of the recommended hub, mean",0.0016,0.0312,0.236,lower,
+"Road distance to the recommended hub, median (km)",4.15,2.79,12.6,not a target,
