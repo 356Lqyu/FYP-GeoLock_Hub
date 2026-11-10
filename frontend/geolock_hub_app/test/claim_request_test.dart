@@ -123,6 +123,16 @@ void main() {
       }),
       ClaimResponseKind.alreadyClaimed,
     );
+    // Older/current DEV RPC definitions may still return the broader
+    // CLAIM_CONFLICT code. Keep it a generic unavailable rejection; only the
+    // explicit ALREADY_CLAIMED code may claim another NGO owns the listing.
+    expect(
+      claimResponseKind({
+        'outcome': 'CONFLICT',
+        'reason_code': 'CLAIM_CONFLICT',
+      }),
+      ClaimResponseKind.rejected,
+    );
     expect(
       claimResponseKind({
         'outcome': 'INELIGIBLE',
@@ -149,6 +159,13 @@ void main() {
         'reason_code': 'ALREADY_CLAIMED',
       }),
       contains('already been claimed'),
+    );
+    expect(
+      claimRejectionMessage({
+        'outcome': 'CONFLICT',
+        'reason_code': 'CLAIM_CONFLICT',
+      }),
+      contains('not currently available'),
     );
   });
 

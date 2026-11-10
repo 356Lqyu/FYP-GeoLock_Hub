@@ -1,0 +1,28 @@
+family,request_concurrency,method_a,method_b,n_pairs,a_only,b_only,paired_rate_difference_b_minus_a,p_exact_two_sided,p_holm_within_family,mean_difference_b_minus_a,median_difference_b_minus_a,hodges_lehmann_paired_location,hl_bootstrap_95_ci_low,hl_bootstrap_95_ci_high,nonzero_pairs,w_plus,interpretation
+duplicate_owner_trial,2,non_atomic,atomic_no_recovery,50,50,0,-1.0,1.7763568394002505e-15,1.5987211554602254e-14,,,,,,,,
+exactly_one_success_trial,2,non_atomic,atomic_no_recovery,50,0,50,1.0,1.7763568394002505e-15,1.5987211554602254e-14,,,,,,,,
+latency_median_ms,2,non_atomic,atomic_no_recovery,50,,,,8.881784197001252e-15,6.217248937900877e-14,-27.322,-27.799999999999997,-27.650000000000006,-31.800000000000004,-23.198750000000015,50,3.0,Descriptive paired timing only; function/schema differences confound causal attribution.
+duplicate_owner_trial,2,non_atomic,atomic_recovery_corrected,50,50,0,-1.0,1.7763568394002505e-15,1.5987211554602254e-14,,,,,,,,
+exactly_one_success_trial,2,non_atomic,atomic_recovery_corrected,50,0,50,1.0,1.7763568394002505e-15,1.5987211554602254e-14,,,,,,,,
+latency_median_ms,2,non_atomic,atomic_recovery_corrected,50,,,,0.009531481708080491,0.028594445124241474,-14.752,-24.050000000000004,-20.150000000000006,-31.902500000000003,-5.75,49,371.0,Descriptive paired timing only; function/schema differences confound causal attribution.
+duplicate_owner_trial,2,atomic_no_recovery,atomic_recovery_corrected,50,0,0,0.0,1.0,1.0,,,,,,,,
+exactly_one_success_trial,2,atomic_no_recovery,atomic_recovery_corrected,50,0,0,0.0,1.0,1.0,,,,,,,,
+latency_median_ms,2,atomic_no_recovery,atomic_recovery_corrected,50,,,,0.24513084584396871,0.49026169168793743,12.57,5.899999999999999,6.399999999999999,-5.602499999999999,20.4,50,759.0,Descriptive paired timing only; function/schema differences confound causal attribution.
+duplicate_owner_trial,5,non_atomic,atomic_no_recovery,50,50,0,-1.0,1.7763568394002505e-15,1.5987211554602254e-14,,,,,,,,
+exactly_one_success_trial,5,non_atomic,atomic_no_recovery,50,0,50,1.0,1.7763568394002505e-15,1.5987211554602254e-14,,,,,,,,
+latency_median_ms,5,non_atomic,atomic_no_recovery,50,,,,8.066331602663013e-09,3.226532641065205e-08,-31.194000000000003,-36.300000000000004,-35.2,-39.25,-31.349999999999987,50,99.0,Descriptive paired timing only; function/schema differences confound causal attribution.
+duplicate_owner_trial,5,non_atomic,atomic_recovery_corrected,50,50,0,-1.0,1.7763568394002505e-15,1.5987211554602254e-14,,,,,,,,
+exactly_one_success_trial,5,non_atomic,atomic_recovery_corrected,50,0,50,1.0,1.7763568394002505e-15,1.5987211554602254e-14,,,,,,,,
+latency_median_ms,5,non_atomic,atomic_recovery_corrected,50,,,,0.9332844053063507,0.9332844053063507,4.150000000000001,-0.4999999999999858,0.3500000000000014,-4.399999999999999,8.300000000000011,50,646.5,Descriptive paired timing only; function/schema differences confound causal attribution.
+duplicate_owner_trial,5,atomic_no_recovery,atomic_recovery_corrected,50,0,0,0.0,1.0,1.0,,,,,,,,
+exactly_one_success_trial,5,atomic_no_recovery,atomic_recovery_corrected,50,0,0,0.0,1.0,1.0,,,,,,,,
+latency_median_ms,5,atomic_no_recovery,atomic_recovery_corrected,50,,,,3.6463436714484487e-09,1.8231718357242244e-08,35.344,35.099999999999994,36.6,29.35,44.650000000000006,50,1185.0,Descriptive paired timing only; function/schema differences confound causal attribution.
+duplicate_owner_trial,10,non_atomic,atomic_no_recovery,50,50,0,-1.0,1.7763568394002505e-15,1.5987211554602254e-14,,,,,,,,
+exactly_one_success_trial,10,non_atomic,atomic_no_recovery,50,0,50,1.0,1.7763568394002505e-15,1.5987211554602254e-14,,,,,,,,
+latency_median_ms,10,non_atomic,atomic_no_recovery,50,,,,3.552713678800501e-15,3.197442310920451e-14,-28.688000000000002,-27.10000000000001,-28.0,-32.95,-22.75,50,1.0,Descriptive paired timing only; function/schema differences confound causal attribution.
+duplicate_owner_trial,10,non_atomic,atomic_recovery_corrected,50,50,0,-1.0,1.7763568394002505e-15,1.5987211554602254e-14,,,,,,,,
+exactly_one_success_trial,10,non_atomic,atomic_recovery_corrected,50,0,50,1.0,1.7763568394002505e-15,1.5987211554602254e-14,,,,,,,,
+latency_median_ms,10,non_atomic,atomic_recovery_corrected,50,,,,1.574740338128322e-11,9.448442028769932e-11,50.606,36.5,41.80000000000001,32.05000000000001,55.099999999999994,50,1234.5,Descriptive paired timing only; function/schema differences confound causal attribution.
+duplicate_owner_trial,10,atomic_no_recovery,atomic_recovery_corrected,50,0,0,0.0,1.0,1.0,,,,,,,,
+exactly_one_success_trial,10,atomic_no_recovery,atomic_recovery_corrected,50,0,0,0.0,1.0,1.0,,,,,,,,
+latency_median_ms,10,atomic_no_recovery,atomic_recovery_corrected,50,,,,3.552713678800501e-15,3.197442310920451e-14,79.29400000000001,65.19999999999999,69.35000000000001,60.300000000000004,80.9,50,1274.0,Descriptive paired timing only; function/schema differences confound causal attribution.

@@ -1,0 +1,62 @@
+%PDF-1.4
+%‚„œ”
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 432 300] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>
+endobj
+4 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>
+endobj
+5 0 obj
+<< /Length 2116 >>
+stream
+0.100 0.160 0.220 rg BT /F1 11.5 Tf 1 0 0 1 18.00 274.00 Tm (E4: road-distance savings for identical served tasks) Tj ET
+0.890 0.900 0.910 RG 0.55 w 168.00 72.00 m 168.00 220.00 l S
+0.380 0.410 0.440 rg BT /F1 8.0 Tf 1 0 0 1 165.00 58.00 Tm (0) Tj ET
+0.890 0.900 0.910 RG 0.55 w 216.80 72.00 m 216.80 220.00 l S
+0.380 0.410 0.440 rg BT /F1 8.0 Tf 1 0 0 1 213.80 58.00 Tm (3) Tj ET
+0.890 0.900 0.910 RG 0.55 w 265.60 72.00 m 265.60 220.00 l S
+0.380 0.410 0.440 rg BT /F1 8.0 Tf 1 0 0 1 262.60 58.00 Tm (6) Tj ET
+0.890 0.900 0.910 RG 0.55 w 314.40 72.00 m 314.40 220.00 l S
+0.380 0.410 0.440 rg BT /F1 8.0 Tf 1 0 0 1 311.40 58.00 Tm (9) Tj ET
+0.890 0.900 0.910 RG 0.55 w 363.20 72.00 m 363.20 220.00 l S
+0.380 0.410 0.440 rg BT /F1 8.0 Tf 1 0 0 1 357.20 58.00 Tm (12) Tj ET
+0.890 0.900 0.910 RG 0.55 w 412.00 72.00 m 412.00 220.00 l S
+0.380 0.410 0.440 rg BT /F1 8.0 Tf 1 0 0 1 406.00 58.00 Tm (15) Tj ET
+0.350 0.380 0.410 RG 0.80 w 168.00 72.00 m 412.00 72.00 l S
+0.120 0.150 0.190 rg BT /F1 9.0 Tf 1 0 0 1 18.00 178.00 Tm (Nearest-Next) Tj ET
+0.380 0.410 0.440 rg BT /F1 8.0 Tf 1 0 0 1 18.00 164.00 Tm (91 matched snapshots) Tj ET
+0.200 0.390 0.570 RG 2.10 w 201.24 174.00 m 228.98 174.00 l S
+0.200 0.390 0.570 RG 1.10 w 201.24 169.00 m 201.24 179.00 l S
+0.200 0.390 0.570 RG 1.10 w 228.98 169.00 m 228.98 179.00 l S
+0.200 0.390 0.570 rg 208.66 170.80 6.40 6.40 re f
+0.200 0.390 0.570 rg BT /F1 8.0 Tf 1 0 0 1 216.86 180.00 Tm (2.70) Tj ET
+0.120 0.150 0.190 rg BT /F1 9.0 Tf 1 0 0 1 18.00 122.00 Tm (FCFS) Tj ET
+0.380 0.410 0.440 rg BT /F1 8.0 Tf 1 0 0 1 18.00 108.00 Tm (79 matched snapshots) Tj ET
+0.200 0.390 0.570 RG 2.10 w 321.20 118.00 m 383.70 118.00 l S
+0.200 0.390 0.570 RG 1.10 w 321.20 113.00 m 321.20 123.00 l S
+0.200 0.390 0.570 RG 1.10 w 383.70 113.00 m 383.70 123.00 l S
+0.200 0.390 0.570 rg 349.90 114.80 6.40 6.40 re f
+0.200 0.390 0.570 rg BT /F1 8.0 Tf 1 0 0 1 358.10 124.00 Tm (11.38) Tj ET
+0.200 0.230 0.260 rg BT /F1 8.5 Tf 1 0 0 1 104.00 39.00 Tm (Matched-task road-distance savings \(km\)) Tj ET
+0.380 0.410 0.440 rg BT /F1 8.0 Tf 1 0 0 1 18.00 19.00 Tm (Positive values favour CP-SAT.) Tj ET
+endstream
+endobj
+xref
+0 6
+0000000000 65535 f 
+0000000015 00000 n 
+0000000064 00000 n 
+0000000121 00000 n 
+0000000247 00000 n 
+0000000344 00000 n 
+trailer
+<< /Size 6 /Root 1 0 R >>
+startxref
+2511
+%%EOF

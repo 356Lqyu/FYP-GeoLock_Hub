@@ -1,0 +1,27 @@
+{
+  "files": {
+    "geofence/g19_concurrency_test.py": "25559b61d2d7d4708a5983b8e8b307f39d4e904af08a7ec0dbfdf9ebbdb63b7b",
+    "geofence/g16_authenticated_stress_test.py": "f65d6525065f8a2b5dc3341f09f534bfc130cca5caced771b06252c39ff292b3",
+    "geofence/geofenced_concurrency_summary.csv": "2b84dc6dcdcba03e26ffd7b455501bf2d75ae2408cd654a79bfae2a429932105",
+    "geofence/geofenced_concurrency_test.py": "65bf5507023d54919b99b4ddff741d390d1eafe76b9268e143f8d0e3536978b5",
+    "geofence/g19_recovery_first.py": "3fbe128e7cc64f6605d1b019242a00e4264662c52a8d8e147e4730146a93847a",
+    "atomic_claim/concurrency_requests.csv": "1e606684af21ccfcb6d824df8fc215c5ea3096e4be5e1c16833c89dcdc5091f1",
+    "geofence/authenticated_ngo_test.py": "172d560f76787882e521d99d3723ed7cadbfe2660038691430434cfd4e81cc37",
+    "geofence/g17_authenticated_claim.py": "39dcba89cc57b5425206e2147fe6f0738757a83f012d265ee556ad05b27e2d10",
+    "geofence/g16_results/g16_requests.csv": "d4300bf99b5be6f927208bcb072bf077a7448b9c9f2917dd367b0cfa7061f214",
+    "geofence/g19_b_setup.py": "0c0310fa98ff450f8c3247ba1ea268fb65a8e0520dcc3479eebd5b56d5007754",
+    "geofence/geofence_test.py": "5c37e005a0c0a304681bf0ea025db5b10521e79a29402093800be827e5ad7b42",
+    "geofence/g17_ngo2_reclaim.py": "8efad537f6a86fb40354f84949775a116f5c08465fad67e901ec22565db5bbb9",
+    "geofence/geofenced_concurrency_requests.csv": "5ebe62ab14192773250594d7ef0a70abb268b12872be921e5dcbf82947c0e8bd",
+    "geofence/authenticated_concurrency_test.py": "c225eea8ecafa15c91bfdc9d103a07e2cee8febdc1c6a34810534748cab6dc1f",
+    "atomic_claim/concurrency_test.py": "1dea82043be39d149e2513606917fc579d259d59acac3ed0ba3580694f906f70",
+    "geofence/g18_ngo2_blocked_claim.py": "3befffa25d3a27dcfd56a085fb325544f5af2ab1720fb6b58fa0f23f1e86da27",
+    "geofence/authenticated_claim_test.py": "e307696d047dbd8176fa63e309b91a71855af7ee6508d2577fbafd1a70d7fe8a",
+    "atomic_claim/test_connection.py": "bade7a85a594dfbcb54a14898d358848d041bcf8e4a22e8b8fdff9012f671386",
+    "geofence/g19_authenticated_claim.py": "2155a89491b224c67b8892dd5d091fb41b5a08f058a1e6362e61beeaff622851",
+    "geofence/geofence_supabase_test.py": "a9937e44452eea5099257d2a0b57e462917b7d7205e25dee962d8b00f6b64da6",
+    "geofence/g16_results/g16_summary.csv": "e1609721bca89e3ef202d8e8b3d27fd788128fa25d447216a49223b656cb0729",
+    "atomic_claim/concurrency_summary.csv": "e586e2b53ba1df424cbbac4f1cb4a22e85b5a8a662b9d3cb5773575aa20e0651"
+  },
+  "description": "SHA-256 of the 22 relocated historical scripts and CSVs; their paths are relative to this directory."
+}

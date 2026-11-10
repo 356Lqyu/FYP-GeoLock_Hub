@@ -115,7 +115,15 @@ class Adapter:
         if len(self.scenarios) != 100:
             raise ValueError('EXPECTED_100_SCENARIOS')
 
-    def convert(self, scenario):
+    def convert(self, scenario, *, ignore_listing_expiry=False):
+        """Convert a benchmark scenario into a routing snapshot.
+
+        ``ignore_listing_expiry`` is an explicit benchmark adaptation option.
+        Its default preserves the historical adapter behavior for every
+        existing consumer. E4 opts in because its frozen synthetic expiry
+        values mirror donor availability_end, which the current donor workflow
+        does not collect and which is not an independent post-claim deadline.
+        """
         shared = self.base.build_snapshot(self.data, scenario, self.args)
         s = self.settings
         cutoff = aware(shared['cutoff'])
@@ -135,7 +143,8 @@ class Adapter:
                 lease_id='BENCHMARK-LEASE-'+t['task_id'], listing_id=listing['listing_id'], source_type='DIRECT_DONATION',
                 task_status='CONFIRMED', claim_status='ACTIVE', lease_status='ACTIVE', listing_status='CLAIMED',
                 created_at=aware(t['created_at']), lease_issued_at=aware(t['created_at']),
-                lease_expires_at=aware(t['claim_expires_at']), listing_expires_at=aware(listing['listing_expires_at']),
+                lease_expires_at=aware(t['claim_expires_at']),
+                listing_expires_at=None if ignore_listing_expiry else aware(listing['listing_expires_at']),
                 listing_version=2, task_state_token=token(t['task_id']), claim_state_token=token(t['claim_id']),
                 lease_state_token=token('lease-'+t['task_id']), pickup=pickup, authorized_pickup=dict(pickup),
                 weight_kg=t['weight_kg'], listing_weight_kg=t['weight_kg'],

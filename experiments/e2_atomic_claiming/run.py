@@ -1,4 +1,4 @@
-"""Frozen E2: original PG baselines and actual GeoLock claim/recovery, loopback only."""
+"""Frozen E2: non-atomic and protected baselines plus corrected GeoLock claim/recovery, loopback only."""
 import argparse,csv,hashlib,json,os,re,subprocess,sys,time,traceback,uuid
 from pathlib import Path
 from datetime import timedelta
@@ -6,17 +6,51 @@ sys.path.insert(0,str(Path(__file__).resolve().parents[2]))
 from experiments.repro_benchmark import ROOT,DATA,sha,write,rows,csv_write,module,integrity,environment,clear_remote_env
 import psycopg
 from psycopg.conninfo import conninfo_to_dict
-from experiments.e2_claiming import e2_runner as old
+from experiments.e2_claiming import e2_runner as old  # fixture builder/constants only; its legacy main is not invoked
 
 BIN=ROOT/'.tmp/geolock-spatial-runtime-safe-cancel/pgsql/bin'
 SCHEMA=ROOT/'baseline implementation/postgresql'
+LOCK_PATCH=ROOT/'supabase/migrations/20261109120000_fix_claim_listing_fk_lock_deadlock.sql'
+LOCK_PATCH_SHA256='a0a35b5dfeab92351c79a240af79e46ad638f57b57f204a6cb54e9eeed3a0433'
+CORRECTED_CLAIM_MD5='0e1954dc17a5d30b81c57a161d99faac'
+CORRECTED_LOCK_HELPER_MD5='e97a3fd80673a827465f3eaa79b65903'
 
 def connect(port,db,**kw):return psycopg.connect(host='127.0.0.1',port=port,dbname=db,user='postgres',connect_timeout=5,**kw)
 def source_catalog(port,db):
     with connect(port,db) as c:
-        return c.execute("SELECT jsonb_object_agg(p.oid::regprocedure::text,jsonb_build_object('md5',md5(replace(prosrc,chr(13),'')),'owner',proowner::regrole::text,'definer',prosecdef,'acl',proacl::text)) FROM pg_proc p WHERE p.oid IN(to_regprocedure('public.claim_listing(uuid,uuid)'),to_regprocedure('public.recover_expired_claims(integer)'))").fetchone()[0]
+        return c.execute("""SELECT jsonb_object_agg(p.oid::regprocedure::text,jsonb_build_object(
+          'md5',md5(replace(p.prosrc,chr(13),'')),'owner',p.proowner::regrole::text,
+          'result_type',pg_get_function_result(p.oid),'volatility',p.provolatile,
+          'definer',p.prosecdef,'acl',p.proacl::text,'config',p.proconfig))
+          FROM pg_proc p WHERE p.oid IN(
+            to_regprocedure('public.claim_listing(uuid,uuid)'),
+            to_regprocedure('public.recover_expired_claims(integer)'),
+            to_regprocedure('public.geolock_lock_listing_donations(uuid,text[])'))""").fetchone()[0]
+
+def verified_lock_patch():
+    if not LOCK_PATCH.is_file():
+        raise RuntimeError(f"Required corrected claim-lock migration is missing: {LOCK_PATCH}")
+    actual=sha(LOCK_PATCH)
+    if actual!=LOCK_PATCH_SHA256:
+        raise RuntimeError(f"Corrected claim-lock migration SHA-256 mismatch: {actual}")
+    return LOCK_PATCH.read_text(encoding='utf-8'),actual
+
+def verify_corrected_catalog(catalog):
+    expected={
+      'claim_listing(uuid,uuid)':dict(md5=CORRECTED_CLAIM_MD5,owner='postgres',result_type='jsonb',volatility='v',definer=True,acl='{=X/postgres,postgres=X/postgres,authenticated=X/postgres}',config=['search_path=pg_catalog, public, extensions, pg_temp']),
+      'geolock_lock_listing_donations(uuid,text[])':dict(md5=CORRECTED_LOCK_HELPER_MD5,owner='postgres',result_type='boolean',volatility='v',definer=False,acl='{postgres=X/postgres}',config=['search_path=pg_catalog, public, pg_temp']),
+      'recover_expired_claims(integer)':dict(md5=old.RECOVERY_HASH,owner='postgres',definer=True,acl='{postgres=X/postgres,service_role=X/postgres}',config=['search_path=pg_catalog, public, extensions, pg_temp']),
+    }
+    for signature,fields in expected.items():
+        actual=catalog.get(signature) if catalog else None
+        if actual is None:
+            raise RuntimeError(f"Corrected proposed fixture is missing {signature}")
+        for field,value in fields.items():
+            if actual.get(field)!=value:
+                raise RuntimeError(f"Corrected proposed fixture {signature} {field} mismatch: {actual.get(field)!r}")
 
 def run(output,only=None):
+    patch_sql,patch_sha256=verified_lock_patch()
     experiment_started=time.perf_counter()
     clear_remote_env();verified=integrity()
     output=Path(output).resolve();assert output.is_relative_to(ROOT/'experiments/e2_atomic_claiming/results')
@@ -28,7 +62,9 @@ def run(output,only=None):
     source_files+=list((ROOT/'supabase/migrations').glob('*.sql'))+list((ROOT/'docs/stage8/stage-a/forward-migrations').glob('*.sql'))
     manifest=dict(status='STARTING',integrity=verified,environment=environment(),source_sha256={str(p.relative_to(ROOT)):sha(p) for p in source_files},
       comparisons='Same cluster/input order/concurrency; original teammate V3 schema versus current full GeoLock schema. Schema/lifecycle differences are explicit validity threats.',
-      synthetic_auth_storage=True,eligibility='Actual frozen matrix lookup adapter; not a fresh pgRouting graph recomputation',dev_connections=0,method_runs=1)
+      synthetic_auth_storage=True,eligibility='Actual frozen matrix lookup adapter; not a fresh pgRouting graph recomputation',dev_connections=0,
+      primary_methods=['non_atomic_claim','protected_claim_without_lease_recovery','corrected_atomic_claim_with_lease_recovery'],method_runs=3,
+      proposed_implementation='corrected atomic claim with lease recovery; local lock patch verified before proposed scenarios')
     write(output/'manifest.json',manifest)
     try:
         cls,observed=old.bootstrap_from_current_isolated_fixture(runtime,evidence,BIN)
@@ -75,10 +111,15 @@ def run(output,only=None):
             try:m.main()
             finally:sys.argv=saved
             print('E2 original baseline finished',name,flush=True)
+        # Apply the reviewed lock correction only to the disposable proposed
+        # database, after both unchanged baseline methods have completed.
+        with connect(port,'e2_proposed') as c:
+            c.execute(patch_sql)
+        manifest['correction_patch_sha256']=patch_sha256
         manifest['function_catalog']={db:source_catalog(port,db) for db in ('e2_baselines','e2_proposed')}
         expected=manifest['function_catalog']['e2_proposed']
-        assert expected['claim_listing(uuid,uuid)']['md5']==old.CLAIM_HASH
-        assert expected['recover_expired_claims(integer)']['md5']==old.RECOVERY_HASH
+        verify_corrected_catalog(expected)
+        write(output/'manifest.json',manifest)
         with connect(port,'e2_proposed') as c:
             c.execute("CREATE OR REPLACE FUNCTION auth.uid() RETURNS uuid LANGUAGE sql STABLE AS $$SELECT coalesce(nullif(current_setting('request.jwt.claim.sub',true),''),nullif(current_setting('request.jwt.claims',true),'')::jsonb->>'sub')::uuid$$")
             c.execute("CREATE SCHEMA e2_benchmark; CREATE TABLE e2_benchmark.road_costs(a text,b text,km double precision);")

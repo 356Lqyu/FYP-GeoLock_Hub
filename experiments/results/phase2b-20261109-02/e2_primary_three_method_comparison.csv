@@ -1,0 +1,10 @@
+method,concurrent_requests,scenarios,claim_requests,successful_requests,already_claimed_conflicts,ineligible_responses,surfaced_request_errors,sqlstate_40P01,duplicate_claim_trials,identity_distribution,median_latency_ms,p95_latency_ms,p99_latency_ms
+non_atomic_baseline,2,50,100,100,0,0,0,N/A (no per-method SQLSTATE audit),50,2 distinct NGOs:50 scenarios,115.2,133.36,N/A
+non_atomic_baseline,5,50,250,250,0,0,0,N/A (no per-method SQLSTATE audit),50,2 distinct NGOs:6 scenarios;3 distinct NGOs:18 scenarios;4 distinct NGOs:26 scenarios,124.1,141.71,N/A
+non_atomic_baseline,10,50,500,500,0,0,0,N/A (no per-method SQLSTATE audit),50,2 distinct NGOs:6 scenarios;3 distinct NGOs:10 scenarios;4 distinct NGOs:34 scenarios,143.05,184.24,N/A
+atomic_without_lease_recovery,2,50,100,50,50,0,0,N/A (no per-method SQLSTATE audit),0,2 distinct NGOs:50 scenarios,89.05,110.775,N/A
+atomic_without_lease_recovery,5,50,250,50,200,0,0,N/A (no per-method SQLSTATE audit),0,2 distinct NGOs:6 scenarios;3 distinct NGOs:18 scenarios;4 distinct NGOs:26 scenarios,88.45,121.16,N/A
+atomic_without_lease_recovery,10,50,500,50,450,0,0,N/A (no per-method SQLSTATE audit),0,2 distinct NGOs:6 scenarios;3 distinct NGOs:10 scenarios;4 distinct NGOs:34 scenarios,115.3,167.86,N/A
+atomic_with_lease_recovery_corrected,2,50,100,50,50,0,0,N/A (no SQLSTATE failure audit in this run),0,2 distinct NGOs:50 scenarios,108.7,141.35,160.563
+atomic_with_lease_recovery_corrected,5,50,250,50,200,0,0,N/A (no SQLSTATE failure audit in this run),0,2 distinct NGOs:6 scenarios;3 distinct NGOs:18 scenarios;4 distinct NGOs:26 scenarios,143.45,270.02,553.426
+atomic_with_lease_recovery_corrected,10,50,500,50,450,0,0,N/A (no SQLSTATE failure audit in this run),0,2 distinct NGOs:6 scenarios;3 distinct NGOs:10 scenarios;4 distinct NGOs:34 scenarios,221.4,366.405,445.053

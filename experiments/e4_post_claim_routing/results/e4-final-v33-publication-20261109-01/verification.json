@@ -1,0 +1,18 @@
+{
+  "status": "PASS_ARTIFACT_CHECKS_NOT_FORMAL_PARITY",
+  "analysis_source_sha256": "63af2cc701373947d2dfb21c178d4d68556cc83fbcd4fca7be9f87baa62febe0",
+  "saved_routes_independently_revalidated": 300,
+  "additional_admission_exclusions": 0,
+  "original_baseline_reproduction": [
+    {
+      "method": "nearest_next",
+      "scenarios": 100,
+      "semantic_differences": []
+    },
+    {
+      "method": "fcfs",
+      "scenarios": 100,
+      "semantic_differences": []
+    }
+  ]
+}

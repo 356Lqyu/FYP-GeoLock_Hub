@@ -1,0 +1,11 @@
+domain,method,outcome,successes,n_independent_units,proportion,wilson_95_ci_low,wilson_95_ci_high,note
+E2,non_atomic,duplicate_owner_trial,150,150,1.0,0.9750297556319235,1.0,"Independent unit is one scenario, not each request."
+E2,non_atomic,exactly_one_success_trial,0,150,0.0,1.734723475976807e-18,0.0249702443680766,Independent unit is one scenario.
+E2,atomic_no_recovery,duplicate_owner_trial,0,150,0.0,1.734723475976807e-18,0.0249702443680766,"Independent unit is one scenario, not each request."
+E2,atomic_no_recovery,exactly_one_success_trial,150,150,1.0,0.9750297556319235,1.0,Independent unit is one scenario.
+E2,atomic_recovery_corrected,duplicate_owner_trial,0,150,0.0,1.734723475976807e-18,0.0249702443680766,"Independent unit is one scenario, not each request."
+E2,atomic_recovery_corrected,exactly_one_success_trial,150,150,1.0,0.9750297556319235,1.0,Independent unit is one scenario.
+E2 lease,atomic_no_recovery,expired_lease_recovered_and_reassigned,0,100,0.0,3.469446951953614e-18,0.03699349820698568,Scenario-level independent units.
+E2 lease,atomic_recovery_corrected,expired_lease_recovered_and_reassigned,100,100,1.0,0.9630065017930143,1.0,Scenario-level independent units.
+E2 lease,atomic_no_recovery,active_lease_protected,25,25,1.0,0.8668077490609515,0.9999999999999999,Scenario-level independent units.
+E2 lease,atomic_recovery_corrected,active_lease_protected,25,25,1.0,0.8668077490609515,0.9999999999999999,Scenario-level independent units.

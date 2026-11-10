@@ -1,5 +1,7 @@
 # Reproduce the coordinated E2 correction locally
 
+> **Historical runbook:** these diagnostic commands record the original source layout and are retained as provenance. Their scripts remain recoverable from Git history but are outside the maintained workflow. Use `experiments/README.md` for supported reproduction instructions.
+
 Use the existing reviewed source package, extracted teammate package and frozen GEOLOCK-BM-v3.3 inputs. This procedure accepts no remote DSN. Do not use shared DEV, Python `-O`, `PYTHONOPTIMIZE`, the upstream unwrapped E2 CLI, or an existing run ID.
 
 Recorded environment: Windows, Python 3.12.14 (`.venv-stage8`), psycopg 3.3.6, PostgreSQL 17.11. Custody fixture setup also uses the installed OR-Tools 9.15.6755 and an isolated synthetic graph/local validator. It does not activate a hosted worker. Package/native hashes remain in `experiments/repro_environment.json` and `experiments/repro_runtime_checksums.json`. Native binaries are expected at `.tmp/geolock-spatial-runtime-safe-cancel/pgsql/bin`. No extension catalog is fabricated. Primary E2 eligibility uses the frozen directed matrix through the same documented local adapter as the original run.

@@ -1,0 +1,4 @@
+﻿method,scenarios,valid_tasks,served_tasks,feasibility_passes,errors,total_distance_km,total_planner_execution_ms
+nearest_next,100,500,453,100,0,3849.88966,0
+fcfs,100,500,453,100,0,4575.15709,0
+proposed,100,500,455,100,0,3462.21381,0

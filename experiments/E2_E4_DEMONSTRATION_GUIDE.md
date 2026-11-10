@@ -10,11 +10,11 @@ $py = Join-Path (Get-Location) '.venv-stage8\Scripts\python.exe'
 & $py experiments/run_repro_benchmarks.py --experiment E4 --run-id demo-check --check-only
 ```
 
-Expected: `INPUT_CHECK_ONLY_NOT_EXPERIMENT_RESULTS`, GEOLOCK-BM-v3.3, 150/100/25/100 scenario counts and manifest-matching canonical CSV hashes. The original LF inputs remain unchanged. Runtime dependencies and paths are described in `REPRODUCIBLE_E2_E4_README.md`.
+Expected: `INPUT_CHECK_ONLY_NOT_EXPERIMENT_RESULTS`, GEOLOCK-BM-v3.3, 150/100/25/100 scenario counts and manifest-matching canonical CSV hashes. The original LF inputs remain unchanged. Runtime dependencies and paths are described in `README.md`.
 
 ## E2: concurrent ownership and recovery
 
-Opening explanation: “The non-atomic baseline checks then writes without serializing ownership. GeoLock's actual PostgreSQL function uses transactions and uniqueness protection. We inspect committed owner records, not only returned success messages. The current implementation also produces rollback errors under contention; those errors are retained and reported.”
+Opening explanation: “The non-atomic baseline checks then writes without serializing ownership. We inspect committed owner records, not only returned success messages. The normal E2 launcher runs the two baselines and the corrected atomic-with-lease method. The original proposed version’s deadlocks remain separate historical debugging evidence and are not rerun in the normal workflow or counted as another method.”
 
 ```powershell
 # One live frozen contention scenario, two concurrent requests per method.
@@ -35,18 +35,20 @@ $lease = 'experiments/e2_atomic_claiming/results/demo-e2-lease-01'
 Import-Csv "$lease/proposed_results_per_scenario.csv" | Format-Table scenario_id,second_ngo_answer,first_claim_still_active,recovery_affected_rows
 ```
 
-The executed smoke evidence for these exact scenarios shows duplicate naive claims, one committed GeoLock owner, successful expired-lease release/reclaim and zero active-lease release. A new demo is an actual execution with its own results; do not promise which concurrent NGO wins or an exact latency/error count in advance. A nonzero failed_with_error is not a clean conflict, and `database_errors.csv` preserves the proposed failure-audit SQLSTATEs. Do not delete an old run to reuse its name.
+The normal E2 launcher applies the hash-verified lock correction to its isolated proposed database after both baselines finish. The executed historical smoke evidence shows duplicate naive claims; the corrected method is checked for one committed owner, successful expired-lease recovery and active-lease protection. A new demo is an actual execution with its own results; do not promise which concurrent NGO wins or an exact latency/error count in advance. A nonzero failed_with_error is not a clean conflict, and `database_errors.csv` preserves any proposed-method failure audit. Do not delete an old run to reuse its name.
 
 Show the full run:
 
 ```powershell
-$e2 = 'experiments/e2_atomic_claiming/results/e2-20261105-v33-actual-01'
-Import-Csv "$e2/comparison.csv" | Format-Table method,workers,trials,duplicate_trials,exactly_one_committed_claim,errors,median_ms
-Import-Csv "$e2/lease_comparison.csv" | Format-Table
-Get-Content "$e2/COMPARISON.md"
+$e2Baseline = 'experiments/e2_atomic_claiming/results/e2-final-20261109-055816'
+$e2Corrected = 'experiments/e2_atomic_claiming/results/e2-lockfix-final-20261109-061706'
+Import-Csv "$e2Baseline/non_atomic_claim/results_per_scenario.csv" | Group-Object ngos_competing | Select-Object Name,Count
+Import-Csv "$e2Baseline/protected_claim_without_lease_recovery/results_per_scenario.csv" | Group-Object ngos_competing | Select-Object Name,Count
+Get-Content "$e2Corrected/completion.json"
+Get-Content "$e2Corrected/regressions.json" -Raw | ConvertFrom-Json | Select-Object passed,checks
 ```
 
-These tables distinguish original teammate schema/baseline versions from current GeoLock's complete schema. Do not describe their latency difference as the isolated causal effect of one lock keyword. The actual claim/recovery bodies were not changed for the demonstration.
+The baseline results and corrected results above are preserved split-run evidence. A new normal full E2 run now writes both baselines and the corrected proposed method into one unique output directory. The `e2-final-20261109-r3` and `e2-final-20261109-055816` proposed-method records are historical deadlock evidence; do not include them as the final Method 3 results. Do not describe timing differences across these runs as the isolated causal effect of one lock keyword.
 
 ## E4: route order, validation and the full benchmark
 
@@ -69,20 +71,22 @@ $proposal = Get-Content "$demo/raw/SCN-ROUTE_PLANNING-0003-proposed.json" -Raw |
 $proposal.plan.routes | ForEach-Object { $_.stops | Select-Object task_id,arrival_us,departure_us,cumulative_load_kg }
 $proposal.independent_validation | Format-List valid,feasible,violations
 
-# Full executed 100-scenario evidence, not the one-case demo:
-$e4 = 'experiments/e4_post_claim_routing/results/e4-20261105-v33-actual-02'
-Import-Csv "$e4/original_baseline_summary.csv" | Format-Table
+# Full final E4 rerun is pending. Use a fresh ID and inspect only that new run:
+$e4RunId = 'e4-final-' + (Get-Date -Format 'yyyyMMdd-HHmmss')
+& $py experiments/run_repro_benchmarks.py --experiment E4 --run-id $e4RunId
+if ($LASTEXITCODE -ne 0) { throw 'E4 stopped; preserve partial evidence' }
+$e4 = "experiments/e4_post_claim_routing/results/$e4RunId"
+& $py experiments/summarize_repro_benchmarks.py --e4 $e4
 Import-Csv "$e4/summary_statistics.csv" | Format-Table method,scenarios,valid_tasks,served_tasks,task_weighted_coverage_pct,feasibility_pass
-Import-Csv "$e4/paired_distance_summary.csv" | Format-Table baseline,equal_served_task_count,coverage_differs,identical_served_task_sets,strict_distance_reduction_pct
 Get-Content "$e4/verification.json"
 ```
 
-Say explicitly: “The original 500-task baselines reproduce their published outputs. Current GeoLock admission rejects 17 short-lived listings. The separately labelled common-admission comparison has 483 tasks across the same 100 scenarios. Its routes all pass independent validation, but that does not erase the formal admission-policy mismatch. We have not weakened the application or changed the frozen dataset.”
+Say explicitly: “The corrected E4 experiment is awaiting its final rerun. Its E4-only adapter treats synthetic listing expiry timestamps as NULL, while claim-lease, ownership, task, pickup-window, route and independent validation checks remain active. No current final E4 metrics are being reported.”
 
 Do not compare all-scenario distance totals as a saving when task coverage differs. The summary distinguishes 98 equal-count scenarios and stricter identical-task subsets. Do not claim zero unserved tasks just because constraints pass. An offline feasible plan is not database dispatch authorization or proof of physical pickup.
 
 ## Closing explanation
 
-“The experiment exercises the real PostgreSQL claim/recovery functions and the real routing worker optimizer on the existing frozen benchmark. It also exposes engineering and protocol limitations: current claim contention can return rollback errors, the original baseline schema differs from the live implementation, and routing admission differs for 17 tasks. We retain those outcomes rather than patch the product or remove difficult cases to obtain a PASS.”
+“The original proposed E2 run records claim deadlock rollback errors as historical debugging evidence. The normal E2 workflow compares exactly three methods and applies the corrected lock migration only to its isolated proposed database. The original baseline schema differs from the current implementation. E4 source, baselines and frozen inputs remain available, but the corrected final E4 run is pending. Older 483-task figures are historical and must not be presented as current results.”
 
 All disposable E2 servers should stop automatically and leave `cluster-stop.json`; retain runtime evidence instead of deleting request history. If startup fails before a normal completion, inspect only that new run's runtime/server log and PostgreSQL status—never substitute a hosted DSN, reset shared data or kill unrelated workers. Existing Flutter/planner/validator sessions are not required for this benchmark demonstration.

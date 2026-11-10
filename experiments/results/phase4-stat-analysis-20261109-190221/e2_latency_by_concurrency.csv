@@ -1,0 +1,10 @@
+method,concurrent_requests,scenarios,median_scenario_median_ms,p95_scenario_median_ms,p99_scenario_median_ms,warning
+non_atomic,2,50,116.1,134.6,136.626,Descriptive scenario medians; not request-level independent observations.
+non_atomic,5,50,124.1,136.785,143.546,Descriptive scenario medians; not request-level independent observations.
+non_atomic,10,50,143.5,169.285,175.94499999999996,Descriptive scenario medians; not request-level independent observations.
+atomic_no_recovery,2,50,90.1,111.29999999999997,123.279,Descriptive scenario medians; not request-level independent observations.
+atomic_no_recovery,5,50,91.05,102.065,217.40199999999996,Descriptive scenario medians; not request-level independent observations.
+atomic_no_recovery,10,50,115.75,135.71,140.414,Descriptive scenario medians; not request-level independent observations.
+atomic_recovery_corrected,2,50,90.30000000000001,183.56999999999994,237.57999999999998,Descriptive scenario medians; not request-level independent observations.
+atomic_recovery_corrected,5,50,121.85,174.085,181.21599999999998,Descriptive scenario medians; not request-level independent observations.
+atomic_recovery_corrected,10,50,179.1,290.3999999999999,408.738,Descriptive scenario medians; not request-level independent observations.

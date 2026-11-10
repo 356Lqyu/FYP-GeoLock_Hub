@@ -1,0 +1,58 @@
+{
+  "status": "ANALYSIS_COMPLETE",
+  "analysis_only": true,
+  "remote_access": false,
+  "database_connections": 0,
+  "benchmarks_rerun": false,
+  "random_seed": 20260915,
+  "bootstrap_replicates": 10000,
+  "methodology": {
+    "independent_unit": "scenario/trial; requests within contention scenarios are not independent units",
+    "paired_binary": "exact two-sided McNemar test",
+    "paired_continuous": "exact Wilcoxon signed-rank using Pratt zero ranking and midranks",
+    "effect_estimate": "Hodges-Lehmann paired location estimate with paired bootstrap percentile CI",
+    "proportions": "Wilson score 95% confidence intervals",
+    "multiplicity": "Holm within E2 outcome families, lease family, and E4 secondary-confirmatory family",
+    "distance": "paired only when served task sets match exactly",
+    "causal_limit": "E2 latency comparisons are descriptive because methods use different function/schema implementations",
+    "population_limit": "bootstrap intervals describe this frozen scenario set, not a sampled population"
+  },
+  "python": "3.12.14 (main, Aug 25 2026, 14:01:42) [MSC v.1944 64 bit (AMD64)]",
+  "numpy": "2.5.4",
+  "source_script_sha256": "6a01f8ffd6eb4eb34158e1800151717df91a57aeeb6b4c61df2ad785532db7b5",
+  "input_artifacts": {
+    "e2_non_atomic": {
+      "path": "experiments\\e2_atomic_claiming\\results\\e2-final-20261109-r3\\non_atomic_claim\\results_per_scenario.csv",
+      "sha256": "992511dbc30fa9f88c1fe807c4e813de89fafc81a50097543affa0cb34e4f810"
+    },
+    "e2_no_recovery": {
+      "path": "experiments\\e2_atomic_claiming\\results\\e2-final-20261109-r3\\protected_claim_without_lease_recovery\\results_per_scenario.csv",
+      "sha256": "75d53f6d38e96e5433c74e97618e9e3d8a40ca1c3507529ea68ba985d1c122b8"
+    },
+    "e2_no_recovery_leases": {
+      "path": "experiments\\e2_atomic_claiming\\results\\e2-final-20261109-r3\\protected_claim_without_lease_recovery\\lease_results_per_scenario.csv",
+      "sha256": "ebcaa663d8afe17c10a19c7611a6c756cff0fe1ed88b208b78442dbbe72a9c40"
+    },
+    "e2_corrected": {
+      "path": "experiments\\e2_atomic_claiming\\results\\e2-three-method-20261109-164724\\proposed_results_per_scenario.csv",
+      "sha256": "c5faaf4639fb8e98eaaaf587693a52b4090872e4863c6cf4aff157b1003aa5ed"
+    },
+    "e2_corrected_requests": {
+      "path": "experiments\\e2_atomic_claiming\\results\\e2-three-method-20261109-164724\\proposed_requests.json",
+      "sha256": "2132be8197a26e16e24dd00707489f71c68792e2d4055f85aab24f0919c10290"
+    },
+    "e4_common": {
+      "path": "experiments\\e4_post_claim_routing\\results\\e4-final-20261109\\results_per_scenario.csv",
+      "sha256": "1fbf7b58ffbf066ceb58bf939ca31022b13a85ce23d7fe7cd9715436090caa16"
+    },
+    "e4_original_nn": {
+      "path": "experiments\\e4_post_claim_routing\\results\\e4-final-20261109\\original_nearest_next\\results_per_scenario.csv",
+      "sha256": "63d544d32be88201dd9b3c1a1efa97be7cc8fa2d039f41122a8b231f65c0562c"
+    },
+    "e4_original_fcfs": {
+      "path": "experiments\\e4_post_claim_routing\\results\\e4-final-20261109\\original_fcfs\\results_per_scenario.csv",
+      "sha256": "151073e03f0f72df959bc876aa6f0b73a342e31edd228efd187bfc58a83ca4bc"
+    }
+  },
+  "historical_original_proposed": "e2-final-20261109-r3 remains development-history evidence only; not a primary method in this analysis"
+}

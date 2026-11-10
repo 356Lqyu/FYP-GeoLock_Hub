@@ -1,0 +1,44 @@
+{
+  "source_runs": {
+    "baseline_and_original_history_e2": "e2-final-20261109-r3",
+    "corrected_final_proposed_e2": "e2-lockfix-final-20261109-01",
+    "final_e4": "e4-final-20261109"
+  },
+  "source_sha256": {
+    "experiments\\e2_atomic_claiming\\results\\e2-final-20261109-r3\\non_atomic_claim\\results_per_scenario.csv": "992511dbc30fa9f88c1fe807c4e813de89fafc81a50097543affa0cb34e4f810",
+    "experiments\\e2_atomic_claiming\\results\\e2-final-20261109-r3\\non_atomic_claim\\details\\requests.csv": "e38601295536de4f1e06218d3b1802417c42165a6aebf0499ba2fb8c751f2a14",
+    "experiments\\e2_atomic_claiming\\results\\e2-final-20261109-r3\\protected_claim_without_lease_recovery\\results_per_scenario.csv": "75d53f6d38e96e5433c74e97618e9e3d8a40ca1c3507529ea68ba985d1c122b8",
+    "experiments\\e2_atomic_claiming\\results\\e2-final-20261109-r3\\protected_claim_without_lease_recovery\\details\\requests.csv": "b541567b8188af3d7f75b3d7300b7de28f1dc8539066954ad46a2a06be2e1a60",
+    "experiments\\e2_atomic_claiming\\results\\e2-final-20261109-r3\\protected_claim_without_lease_recovery\\lease_results_per_scenario.csv": "ebcaa663d8afe17c10a19c7611a6c756cff0fe1ed88b208b78442dbbe72a9c40",
+    "experiments\\e2_atomic_claiming\\results\\e2-final-20261109-r3\\comparison.csv": "1c81fb2b9a434bbe2274ea31c52c2ce1c80a9ace84e4be72401bc37c6fa90beb",
+    "experiments\\e2_atomic_claiming\\results\\e2-final-20261109-r3\\lease_comparison.csv": "6bba0aff2321e870dc52e7bc0b6d2b850ff8ce581374cfab4cf50ab4db68c346",
+    "experiments\\e2_atomic_claiming\\results\\e2-final-20261109-r3\\proposed_results_per_scenario.csv": "2885e36ff4dcb73066b7e3f6a3fee4ad4e05d0bd211faf0b38dd42e6e2ebdd88",
+    "experiments\\e2_atomic_claiming\\results\\e2-final-20261109-r3\\proposed_requests.json": "c920e140e771ba5a4e365eb2720ec84cde20f11662d57108752a6d5cf5c3a4ea",
+    "experiments\\e2_atomic_claiming\\results\\e2-final-20261109-r3\\database_errors.csv": "826d779ba3ae8bf0f76d27de849a753e8e1963879991260657612bddc8228f84",
+    "experiments\\e2_atomic_claiming\\results\\e2-final-20261109-r3\\proposed_committed_states.json": "2c2db26a9d261247ab87f8fec8fba46e2bbc5c6fbf8ae0be5a29b3cb884db616",
+    "experiments\\e2_atomic_claiming\\results\\e2-lockfix-final-20261109-01\\proposed_results_per_scenario.csv": "77453c4370d3ddb657d5ebbc976842c85642be1b8245d09597aec2b8175c3859",
+    "experiments\\e2_atomic_claiming\\results\\e2-lockfix-final-20261109-01\\proposed_requests.json": "a7d3f32367e1b63b9e723ffaf0e705f7b8b9fb5da4b88b8dddcc246a3511c860",
+    "experiments\\e2_atomic_claiming\\results\\e2-lockfix-final-20261109-01\\proposed_committed_states.json": "7d7d2013a50dbd5f70c9cf254292368dc2dd2efb93ad4a6803e625b939bd8d5d",
+    "experiments\\e2_atomic_claiming\\results\\e2-lockfix-final-20261109-01\\completion.json": "bd74549b278f812acefd187757b04cdec4a20d7679214076869d91b0aa7a95f7",
+    "experiments\\e2_atomic_claiming\\results\\e2-lockfix-final-20261109-01\\regressions.json": "67d704d6430f7caaf33a94d029c16c83ce500f0bd9685a9d1ce4af11888fa19c",
+    "experiments\\e2_atomic_claiming\\results\\e2-lockfix-final-20261109-01\\manifest.json": "6aa617e7237b58fccb1cbf06b3c6329fdc8185a2b7d7583073988a75ab999dcb",
+    "experiments\\e4_post_claim_routing\\results\\e4-final-20261109\\results_per_scenario.csv": "1fbf7b58ffbf066ceb58bf939ca31022b13a85ce23d7fe7cd9715436090caa16",
+    "experiments\\e4_post_claim_routing\\results\\e4-final-20261109\\summary_statistics.csv": "c2ef5e5eab27e6b07a6c20af3be5ce56203bb04fcf45eda5c8ddf51f477d8ea0",
+    "experiments\\e4_post_claim_routing\\results\\e4-final-20261109\\original_baseline_summary.csv": "373a934f61ff1a7245f2eab7518947000ba092c065d133ce398092c5905e7fdf",
+    "experiments\\e4_post_claim_routing\\results\\e4-final-20261109\\paired_distance_summary.csv": "7e3f169312c945b5e092cbb50ad45fca9593be40024730bcd77d711643c6877a",
+    "experiments\\e4_post_claim_routing\\results\\e4-final-20261109\\paired_uncertainty.csv": "cf70947f072ed3fbfaeba5d692db5136d73f33826524cf6d9d1ad6d81dd66da1",
+    "experiments\\e4_post_claim_routing\\results\\e4-final-20261109\\verification.json": "a3a91d04c9b30983e5848bea6b882c522c1f3f8ee43060b489dd8dd589ea0779"
+  },
+  "primary_e2_methods": [
+    "non_atomic_baseline",
+    "atomic_without_lease_recovery",
+    "atomic_with_lease_recovery_corrected"
+  ],
+  "historical_original_proposed": "Separate development evidence only; excluded from primary three-method E2 comparison.",
+  "e2_level_semantics": "2/5/10 are concurrent requests. Frozen NGO identities can repeat; per-method identity_distribution records the exact distinct eligible NGO count per scenario.",
+  "e4_lanes": {
+    "original_baseline": "500 tasks, Nearest-Next/FCFS",
+    "common_admission": "483 tasks, Nearest-Next/FCFS/CP-SAT"
+  },
+  "independently_revalidated_e4_routes": 300
+}

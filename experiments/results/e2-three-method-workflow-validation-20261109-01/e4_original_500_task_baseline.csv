@@ -1,0 +1,3 @@
+method,scenarios,valid_tasks,served_tasks,distance_km,feasibility_pass
+nearest_next,100,500,453,3849.889,100
+fcfs,100,500,453,4575.154,100

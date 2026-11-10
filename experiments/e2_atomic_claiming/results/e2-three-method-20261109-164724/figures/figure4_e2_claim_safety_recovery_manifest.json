@@ -1,0 +1,78 @@
+{
+  "status": "FIGURES_GENERATED_FROM_SAVED_E2_EVIDENCE",
+  "source_run": "C:\\Users\\User\\Downloads\\FYP-GeoLock_Hub\\experiments\\e2_atomic_claiming\\results\\e2-three-method-20261109-164724",
+  "table7_crosscheck": "C:\\Users\\User\\Downloads\\FYP-GeoLock_Hub\\experiments\\results\\phase4-stat-analysis-20261109-191130\\e2_scenario_proportions.csv",
+  "metrics": {
+    "duplicate_ownership": {
+      "non_atomic": {
+        "successes": 150,
+        "n": 150,
+        "rate": 1.0,
+        "low": 0.9750297556319235,
+        "high": 1.0
+      },
+      "no_recovery": {
+        "successes": 0,
+        "n": 150,
+        "rate": 0.0,
+        "low": 0.0,
+        "high": 0.0249702443680766
+      },
+      "with_recovery": {
+        "successes": 0,
+        "n": 150,
+        "rate": 0.0,
+        "low": 0.0,
+        "high": 0.0249702443680766
+      }
+    },
+    "expired_lease_recovery": {
+      "no_recovery": {
+        "successes": 0,
+        "n": 100,
+        "rate": 0.0,
+        "low": 0.0,
+        "high": 0.03699349820698568
+      },
+      "with_recovery": {
+        "successes": 100,
+        "n": 100,
+        "rate": 1.0,
+        "low": 0.9630065017930143,
+        "high": 1.0
+      }
+    }
+  },
+  "wilson_confidence_level": 0.95,
+  "png_resolution_dpi": 300,
+  "vector_format": "PDF",
+  "source_sha256": "b40d62160deaf6f6a61b7a8e185fb5987887a3f559e7ddc59a750804d00dacb9",
+  "input_sha256": {
+    "completion": "1a57db12f705b47b33f17e860b49aeef209ede0362972bf763c2c85e57f15f6c",
+    "manifest": "acf0c4f89c1e83c3b8eb8dfcc4bf251eb4679c9fbd3d27721c2840046395a9d6",
+    "non_atomic": "d7c3aca59afea50771663f0bd3bd30ab340cd1021ec585ce970729f5965c4c46",
+    "no_recovery": "5414ad4af0cc1694339aace32029c44bd452621f740dfb2247b97b2db798083b",
+    "no_recovery_lease": "2a56e2e829af8e7758f6f13e9a5fbb52621ef1fc973ff4b0129c664ca32ab3ec",
+    "proposed": "c5faaf4639fb8e98eaaaf587693a52b4090872e4863c6cf4aff157b1003aa5ed",
+    "lease_table7_comparison": "7cf3d420c94738e8c30f48ab0e3b281a4f8e4b3a93e4bbd08f321aa17dc040cd"
+  },
+  "outputs_sha256": {
+    "figure4_e2_claim_safety_recovery": {
+      "pdf": "82846b6a6a6a51110460db9d5abf2d2606549619ad86af6e90ca5120c67dd9b2",
+      "png": "a2e66878ed183fd7c6ba2fb43a77b16d0ff6456a3f5051da9a7e5c813898d6a9"
+    },
+    "figure4a_e2_duplicate_ownership": {
+      "pdf": "2e69d9390fb820f7231821397d02556a673d60265d6b814ee981301e8905abf2",
+      "png": "b62541da0a79a09305df622e04c688a11f13ac63c255ab8534a0155d5bc1ed06"
+    },
+    "figure4b_e2_expired_lease_recovery": {
+      "pdf": "0d9d90b983897c54b132649cf013be1890e1908990452a076e7989052117b315",
+      "png": "4968cbabb403d7e897a785533df0e1fdef342abc1f383155e8d285155766e132"
+    }
+  },
+  "figure_data_rules": {
+    "duplicate_ownership": "Independent units are contention scenarios; numerator is more_than_one_owner.",
+    "expired_lease_recovery": "Independent units are expired-lease scenarios; success requires reassignment and old claim no longer active.",
+    "active_lease_controls": "All saved controls checked as protected before plotting."
+  }
+}

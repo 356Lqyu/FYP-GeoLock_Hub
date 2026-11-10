@@ -9,7 +9,7 @@ import psycopg
 from psycopg.conninfo import conninfo_to_dict
 from experiments.e2_claiming import e2_runner as old
 
-BIN=ROOT/'.tmp/geolock-spatial-runtime-safe-cancel/pgsql/bin'
+DEFAULT_BIN=ROOT/'.tmp/geolock-spatial-runtime-safe-cancel/pgsql/bin'
 PATCH=ROOT/'supabase/migrations/20261109120000_fix_claim_listing_fk_lock_deadlock.sql'
 CORRECTED_HASH='0e1954dc17a5d30b81c57a161d99faac'
 
@@ -18,7 +18,17 @@ def source_catalog(port,db):
     with connect(port,db) as c:
         return c.execute("SELECT jsonb_object_agg(p.oid::regprocedure::text,jsonb_build_object('md5',md5(replace(prosrc,chr(13),'')),'owner',proowner::regrole::text,'definer',prosecdef,'acl',proacl::text)) FROM pg_proc p WHERE p.oid IN(to_regprocedure('public.claim_listing(uuid,uuid)'),to_regprocedure('public.geolock_lock_listing_donations(uuid,text[])'),to_regprocedure('public.recover_expired_claims(integer)'))").fetchone()[0]
 
-def run(output,only=None):
+def configured_pg_bin(value=None):
+    """Use an explicit bin path, env override, then the historical Windows default."""
+    configured=value or os.environ.get('GEOLOCK_E2_PG_BIN')
+    pg_bin=Path(configured).expanduser().resolve() if configured else DEFAULT_BIN.resolve()
+    missing=[name+'.exe' for name in ('initdb','pg_ctl','psql') if not (pg_bin/(name+'.exe')).is_file()]
+    if missing:
+        raise RuntimeError(f"PostgreSQL 17 binaries missing from {pg_bin}: {', '.join(missing)}")
+    return pg_bin
+
+def run(output,only=None,pg_bin=None):
+    selected_bin=configured_pg_bin(pg_bin)
     clear_remote_env();verified=integrity()
     output=Path(output).resolve();assert output.is_relative_to(ROOT/'experiments/e2_atomic_claiming/results')
     output.mkdir(parents=True,exist_ok=False);runtime=output/'runtime';runtime.mkdir();evidence=runtime/'schema-evidence';evidence.mkdir()
@@ -33,7 +43,7 @@ def run(output,only=None):
       synthetic_auth_storage=True,eligibility='Actual frozen matrix lookup adapter; not a fresh pgRouting graph recomputation',dev_connections=0,method_runs=1)
     write(output/'manifest.json',manifest)
     try:
-        cls,observed=old.bootstrap_from_current_isolated_fixture(runtime,evidence,BIN)
+        cls,observed=old.bootstrap_from_current_isolated_fixture(runtime,evidence,selected_bin)
         port=cls.port;write(runtime/'local-marker.json',dict(port=port,data=str(runtime/'data'),target='NEW LOOPBACK ONLY'))
         with connect(port,'postgres') as c:
             # The older reusable fixture intentionally omits this later reader.
@@ -133,9 +143,9 @@ def run(output,only=None):
         write(output/'manifest.json',manifest);write(output/'completion.json',dict(executed=True,planned_proposed=len(chosen),completed_proposed=len(records),benchmark_scenarios_executed=len(records) if benchmark_ran else 0,regressions_executed=True,failures=len(failures),remote_connections=0))
     finally:
         if cls is not None:
-            proc=subprocess.run([str(BIN/'pg_ctl.exe'),'-D',str(runtime/'data'),'-m','fast','-w','-t','30','stop'],capture_output=True,text=True)
+            proc=subprocess.run([str(selected_bin/'pg_ctl.exe'),'-D',str(runtime/'data'),'-m','fast','-w','-t','30','stop'],capture_output=True,text=True)
             write(output/'cluster-stop.json',dict(stopped=proc.returncode==0,port=port,remote_connections=0))
         # Retain the disposable data/evidence; never recursively delete a path.
 
 if __name__=='__main__':
-    p=argparse.ArgumentParser();p.add_argument('--output',required=True);p.add_argument('--full-benchmark',action='store_true',help='also run the 275 frozen proposed-method scenarios');a=p.parse_args();run(a.output,None if a.full_benchmark else '__regressions_only__')
+    p=argparse.ArgumentParser();p.add_argument('--output',required=True);p.add_argument('--pg-bin',help='PostgreSQL 17 bin directory (default: GEOLOCK_E2_PG_BIN, then the existing repository-local runtime path)');p.add_argument('--full-benchmark',action='store_true',help='also run the 275 frozen proposed-method scenarios');a=p.parse_args();run(a.output,None if a.full_benchmark else '__regressions_only__',a.pg_bin)

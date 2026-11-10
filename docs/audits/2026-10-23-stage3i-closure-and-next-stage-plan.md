@@ -71,7 +71,7 @@ verification. Original Word/PDF sources remain untouched in this closure.
 | Hub/routing benchmarks | nearest/random hub, non-atomic/protected-without-recovery, direct pickup, nearest-next and FCFS source/results exist | Inspect manifests and reuse frozen cases/results. In-memory simulations are not live PostgreSQL transaction evidence; do not rebuild existing baselines or claim AI value without comparison |
 | Donor timeline | Recorded audit mapping plus generated current/pending rows exists in status_timeline.dart and donation_pages.dart | Legacy READY_FOR_PICKUP and DONATION_STATUS_BACKFILL remain visible, potentially repeating the current state. A small future Flutter-only display refinement is justified; retain raw history. No change made now |
 
-Historical experiment files reviewed include experiments/geofence/g16_results/g16_summary.csv
+Historical experiment files reviewed included `experiments/geofence/g16_results/g16_summary.csv`, now preserved unchanged at `docs/audits/legacy-claim-geofence/geofence/g16_results/g16_summary.csv`.
 and geofenced_concurrency_summary.csv. They are existing evidence to reconcile,
 not permission to execute legacy scripts or assume their project/schema matches
 current DEV. No experiment runner or Flutter workflow was executed by this task.

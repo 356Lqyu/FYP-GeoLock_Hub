@@ -1,0 +1,67 @@
+{
+  "source_runs": {
+    "baseline_e2": "e2-three-method-20261109-164724",
+    "historical_original_proposed_e2": "e2-final-20261109-r3",
+    "corrected_proposed_e2": "e2-three-method-20261109-164724",
+    "corrected_reference_e2": "e2-lockfix-final-20261109-061706",
+    "final_e4": "e4-final-20261109"
+  },
+  "source_sha256": {
+    "experiments\\e2_atomic_claiming\\results\\e2-three-method-20261109-164724\\non_atomic_claim\\results_per_scenario.csv": "d7c3aca59afea50771663f0bd3bd30ab340cd1021ec585ce970729f5965c4c46",
+    "experiments\\e2_atomic_claiming\\results\\e2-three-method-20261109-164724\\non_atomic_claim\\details\\requests.csv": "809b811f8e5d620bb01a1ab362de3f02b609ec55ac60f91e938312dec4d73da9",
+    "experiments\\e2_atomic_claiming\\results\\e2-three-method-20261109-164724\\protected_claim_without_lease_recovery\\results_per_scenario.csv": "5414ad4af0cc1694339aace32029c44bd452621f740dfb2247b97b2db798083b",
+    "experiments\\e2_atomic_claiming\\results\\e2-three-method-20261109-164724\\protected_claim_without_lease_recovery\\details\\requests.csv": "584970c05fdaea4bbd2331a44c36ff4be93fab1888caa4e84b24309268914895",
+    "experiments\\e2_atomic_claiming\\results\\e2-three-method-20261109-164724\\protected_claim_without_lease_recovery\\lease_results_per_scenario.csv": "2a56e2e829af8e7758f6f13e9a5fbb52621ef1fc973ff4b0129c664ca32ab3ec",
+    "experiments\\e2_atomic_claiming\\results\\e2-final-20261109-r3\\proposed_results_per_scenario.csv": "2885e36ff4dcb73066b7e3f6a3fee4ad4e05d0bd211faf0b38dd42e6e2ebdd88",
+    "experiments\\e2_atomic_claiming\\results\\e2-final-20261109-r3\\proposed_requests.json": "c920e140e771ba5a4e365eb2720ec84cde20f11662d57108752a6d5cf5c3a4ea",
+    "experiments\\e2_atomic_claiming\\results\\e2-final-20261109-r3\\database_errors.csv": "826d779ba3ae8bf0f76d27de849a753e8e1963879991260657612bddc8228f84",
+    "experiments\\e2_atomic_claiming\\results\\e2-three-method-20261109-164724\\proposed_results_per_scenario.csv": "c5faaf4639fb8e98eaaaf587693a52b4090872e4863c6cf4aff157b1003aa5ed",
+    "experiments\\e2_atomic_claiming\\results\\e2-three-method-20261109-164724\\proposed_requests.json": "2132be8197a26e16e24dd00707489f71c68792e2d4055f85aab24f0919c10290",
+    "experiments\\e2_atomic_claiming\\results\\e2-three-method-20261109-164724\\proposed_committed_states.json": "8d4e96437da727066fc805900132ef693121028543d16cd2fe68deeff01a55ee",
+    "experiments\\e2_atomic_claiming\\results\\e2-three-method-20261109-164724\\completion.json": "1a57db12f705b47b33f17e860b49aeef209ede0362972bf763c2c85e57f15f6c",
+    "experiments\\e2_atomic_claiming\\results\\e2-three-method-20261109-164724\\manifest.json": "acf0c4f89c1e83c3b8eb8dfcc4bf251eb4679c9fbd3d27721c2840046395a9d6",
+    "experiments\\e4_post_claim_routing\\results\\e4-final-20261109\\results_per_scenario.csv": "1fbf7b58ffbf066ceb58bf939ca31022b13a85ce23d7fe7cd9715436090caa16",
+    "experiments\\e4_post_claim_routing\\results\\e4-final-20261109\\summary_statistics.csv": "c2ef5e5eab27e6b07a6c20af3be5ce56203bb04fcf45eda5c8ddf51f477d8ea0",
+    "experiments\\e4_post_claim_routing\\results\\e4-final-20261109\\original_baseline_summary.csv": "373a934f61ff1a7245f2eab7518947000ba092c065d133ce398092c5905e7fdf",
+    "experiments\\e4_post_claim_routing\\results\\e4-final-20261109\\paired_distance_summary.csv": "7e3f169312c945b5e092cbb50ad45fca9593be40024730bcd77d711643c6877a",
+    "experiments\\e4_post_claim_routing\\results\\e4-final-20261109\\paired_uncertainty.csv": "cf70947f072ed3fbfaeba5d692db5136d73f33826524cf6d9d1ad6d81dd66da1",
+    "experiments\\e4_post_claim_routing\\results\\e4-final-20261109\\verification.json": "a3a91d04c9b30983e5848bea6b882c522c1f3f8ee43060b489dd8dd589ea0779",
+    "experiments\\e2_atomic_claiming\\results\\e2-three-method-20261109-164724\\failures.json": "a5338d955b09046ec0b16f3a9625b7955c763aae07dc722e474e6078745f932f",
+    "experiments\\e2_atomic_claiming\\results\\e2-lockfix-final-20261109-061706\\proposed_results_per_scenario.csv": "ef7f52bb5d34f44cf5ddfbe8516a2f8796e13b5a4f38e32aa085fe2c780c4426",
+    "experiments\\e2_atomic_claiming\\results\\e2-lockfix-final-20261109-061706\\proposed_requests.json": "de451f27aa72eff7f8401d50e0d3c675e0d1143c85f6db9de4261a943c0dcdcb",
+    "experiments\\e2_atomic_claiming\\results\\e2-lockfix-final-20261109-061706\\proposed_committed_states.json": "451a6928ba8f72afa63d3e569b29e5fd18dbf6061232c10f4c393dfe63219c25",
+    "experiments\\e2_atomic_claiming\\results\\e2-lockfix-final-20261109-061706\\completion.json": "bd74549b278f812acefd187757b04cdec4a20d7679214076869d91b0aa7a95f7",
+    "experiments\\e2_atomic_claiming\\results\\e2-lockfix-final-20261109-061706\\manifest.json": "c746c1eef8073815147f25ce1a4bbe3d260cde6d89b28895fce16d71ae95a587",
+    "experiments\\e2_atomic_claiming\\results\\e2-lockfix-final-20261109-061706\\failures.json": "a5338d955b09046ec0b16f3a9625b7955c763aae07dc722e474e6078745f932f"
+  },
+  "primary_e2_methods": [
+    "non_atomic_baseline",
+    "atomic_without_lease_recovery",
+    "atomic_with_lease_recovery_corrected"
+  ],
+  "historical_original_proposed": "Separate development evidence only; excluded from primary three-method E2 comparison.",
+  "e2_level_semantics": "2/5/10 are concurrent requests. Frozen NGO identities can repeat; per-method identity_distribution records the exact distinct eligible NGO count per scenario.",
+  "e4_lanes": {
+    "original_baseline": "500 tasks, Nearest-Next/FCFS",
+    "common_admission": "483 tasks, Nearest-Next/FCFS/CP-SAT"
+  },
+  "independently_revalidated_e4_routes": 300,
+  "corrected_reference_behavior_match": true,
+  "corrected_reference_comparison": {
+    "scenario_count_each_run": 275,
+    "request_count_each_run": 975,
+    "candidate_vs_reference_request_uuid_differences": 975,
+    "request_outcome_reason_retry_sqlstate_record_differences": 196,
+    "scenarios_with_winner_request_ordinal_change": 98,
+    "scenarios_with_winner_ngo_identity_change": 79,
+    "candidate_sqlstate_error_rows": 0,
+    "reference_sqlstate_error_rows": 0,
+    "interpretation": "Run-scoped request UUIDs and winner ordering may differ; both runs independently passed identical frozen-scenario correctness and lease invariants.",
+    "level_2_candidate_latency_median_ms": 93.2,
+    "level_2_reference_latency_median_ms": 110.75,
+    "level_5_candidate_latency_median_ms": 127.4,
+    "level_5_reference_latency_median_ms": 141.75,
+    "level_10_candidate_latency_median_ms": 186.2,
+    "level_10_reference_latency_median_ms": 186.8
+  }
+}

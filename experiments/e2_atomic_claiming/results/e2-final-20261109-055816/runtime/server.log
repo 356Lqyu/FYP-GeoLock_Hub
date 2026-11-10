@@ -1,0 +1,18 @@
+2026-11-09 05:58:41.806 +08 [2724] LOG:  starting PostgreSQL 17.11 on x86_64-windows, compiled by msvc-19.44.35229, 64-bit
+2026-11-09 05:58:41.808 +08 [2724] LOG:  listening on IPv4 address "127.0.0.1", port 62471
+2026-11-09 05:58:41.924 +08 [3764] LOG:  database system was shut down at 2026-11-09 05:58:34 +08
+2026-11-09 05:58:41.985 +08 [2724] LOG:  database system is ready to accept connections
+2026-11-09 05:58:49.346 +08 [9036] WARNING:  there is already a transaction in progress
+2026-11-09 06:03:42.016 +08 [4160] LOG:  checkpoint starting: time
+2026-11-09 06:08:12.899 +08 [4160] LOG:  checkpoint complete: wrote 5168 buffers (31.5%); 0 WAL file(s) added, 0 removed, 2 recycled; write=270.019 s, sync=0.835 s, total=270.883 s; sync files=1487, longest=0.022 s, average=0.001 s; distance=38075 kB, estimate=38075 kB; lsn=0/3C14BD8, redo lsn=0/3A9DEB0
+2026-11-09 06:08:42.059 +08 [4160] LOG:  checkpoint starting: time
+2026-11-09 06:09:02.098 +08 [4160] LOG:  checkpoint complete: wrote 186 buffers (1.1%); 0 WAL file(s) added, 0 removed, 0 recycled; write=19.998 s, sync=0.027 s, total=20.040 s; sync files=70, longest=0.011 s, average=0.001 s; distance=1580 kB, estimate=34425 kB; lsn=0/3C7C4F8, redo lsn=0/3C28F88
+2026-11-09 06:13:42.111 +08 [4160] LOG:  checkpoint starting: time
+2026-11-09 06:14:05.850 +08 [4160] LOG:  checkpoint complete: wrote 220 buffers (1.3%); 0 WAL file(s) added, 0 removed, 0 recycled; write=23.714 s, sync=0.016 s, total=23.739 s; sync files=74, longest=0.002 s, average=0.001 s; distance=1481 kB, estimate=31131 kB; lsn=0/3E1A128, redo lsn=0/3D9B450
+2026-11-09 06:15:53.703 +08 [2724] LOG:  received fast shutdown request
+2026-11-09 06:15:53.703 +08 [2724] LOG:  aborting any active transactions
+2026-11-09 06:15:53.723 +08 [2724] LOG:  background worker "logical replication launcher" (PID 20280) exited with exit code 1
+2026-11-09 06:15:53.739 +08 [4160] LOG:  shutting down
+2026-11-09 06:15:53.739 +08 [4160] LOG:  checkpoint starting: shutdown immediate
+2026-11-09 06:15:53.974 +08 [4160] LOG:  checkpoint complete: wrote 392 buffers (2.4%); 0 WAL file(s) added, 0 removed, 1 recycled; write=0.115 s, sync=0.102 s, total=0.236 s; sync files=84, longest=0.028 s, average=0.002 s; distance=3023 kB, estimate=28320 kB; lsn=0/408F2A8, redo lsn=0/408F2A8
+2026-11-09 06:15:54.480 +08 [2724] LOG:  database system is shut down

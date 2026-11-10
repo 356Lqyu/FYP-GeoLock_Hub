@@ -1,0 +1,3 @@
+method,scenario_records,valid_tasks_total,served_tasks_total,distance_km_total,note
+nearest_next,100,500,453,3849.889,Original 500-task lane; no CP-SAT plan exists in this lane.
+fcfs,100,500,453,4575.154,Original 500-task lane; no CP-SAT plan exists in this lane.

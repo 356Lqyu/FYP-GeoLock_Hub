@@ -1,5 +1,7 @@
 # DEV-compatible candidate: local reproduction only
 
+> **Historical runbook:** these diagnostic commands record the original source layout and are retained as provenance. Their scripts remain recoverable from Git history but are outside the maintained workflow. Use `experiments/README.md` for supported reproduction instructions.
+
 Use the existing frozen v3.3 package and recorded Python 3.12.14/psycopg 3.3.6/PG17.11 runtime. Custody setup uses the existing local synthetic routing fixture and OR-Tools; no hosted worker is activated. Paths/dependencies are detailed in ../e2-shared-lock-review/REPRODUCE_LOCAL_E2.md. No remote DSN argument is accepted.
 
 `acl-fixture.sql` is **disposable test setup only**, never a DEV deployment script. The controllers apply it only in newly created loopback databases to reproduce the captured three DEV ACLs. The forward/rollback candidates themselves contain no permission-changing statements; only their three metadata expectations differ from the original SQL.

@@ -1,0 +1,7 @@
+method,case,scenarios,successful_recovery_or_reassignment,active_lease_protected,surfaced_request_errors
+non_atomic_baseline,lease expired,N/A,N/A (not tested),N/A (not tested),N/A
+non_atomic_baseline,lease still running,N/A,N/A (not tested),N/A (not tested),N/A
+atomic_without_lease_recovery,lease expired,100,0,100,0
+atomic_without_lease_recovery,lease still running,25,0,25,0
+atomic_with_lease_recovery_corrected,lease expired,100,100,0,0
+atomic_with_lease_recovery_corrected,lease still running,25,0,25,0

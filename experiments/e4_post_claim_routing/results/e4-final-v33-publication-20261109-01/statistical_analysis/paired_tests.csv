@@ -1,0 +1,17 @@
+family,baseline,proposed,metric,n_pairs,a_only,b_only,paired_rate_difference_b_minus_a,p_exact_two_sided,p_holm_e4_secondary,analysis_scope,mean_difference_b_minus_a,median_difference_b_minus_a,hodges_lehmann_paired_location,hl_bootstrap_95_ci_low,hl_bootstrap_95_ci_high,nonzero_pairs,w_plus,matched_scenarios
+paired_binary,nearest_next,proposed,all_admitted_tasks_served,100,0,0,0.0,1.0,,,,,,,,,,
+paired_binary,nearest_next,proposed,independent_feasibility_pass,100,0,0,0.0,1.0,,,,,,,,,,
+paired_continuous,nearest_next,proposed,served_tasks,100,,,,0.5,,primary_coverage,0.02,0.0,0.0,0.0,0.0,2,199.0,
+paired_continuous,nearest_next,proposed,coverage_percent,100,,,,0.5,,primary_coverage,0.4,0.0,0.0,0.0,0.0,2,199.0,
+paired_continuous,nearest_next,proposed,method_pipeline_wall_ms,100,,,,1.5777218104420236e-30,1.262177448353619e-29,secondary,94.70824200019706,67.97510000069451,78.89589999922464,68.49998937682358,91.21337249962379,100,5050.0,
+paired_continuous,nearest_next,proposed,end_to_end_evaluation_ms,100,,,,1.5777218104420236e-30,1.262177448353619e-29,secondary,94.87188099996274,68.53484999919601,78.79254999988916,68.37770937509049,91.421299997819,100,5050.0,
+paired_continuous,nearest_next,proposed,distance_km_identical_served_task_set,91,,,,3.308722450212111e-24,1.3234889800848443e-23,identical_served_task_sets_only,-3.877406043956044,-2.1759900000000005,-2.6960150000000014,-3.7486096249999994,-2.0435899999999982,79,0.0,91
+paired_continuous,nearest_next,proposed,driving_minutes_identical_served_task_set,91,,,,1.5962719091028733e-13,1.5962719091028733e-13,identical_served_task_sets_only,-4.207672087912088,-2.0850400000000064,-2.7992700000000017,-4.222354999999997,-1.8554700000000004,79,363.0,91
+paired_binary,fcfs,proposed,all_admitted_tasks_served,100,0,0,0.0,1.0,,,,,,,,,,
+paired_binary,fcfs,proposed,independent_feasibility_pass,100,0,0,0.0,1.0,,,,,,,,,,
+paired_continuous,fcfs,proposed,served_tasks,100,,,,0.5,,primary_coverage,0.02,0.0,0.0,0.0,0.0,2,199.0,
+paired_continuous,fcfs,proposed,coverage_percent,100,,,,0.5,,primary_coverage,0.4,0.0,0.0,0.0,0.0,2,199.0,
+paired_continuous,fcfs,proposed,method_pipeline_wall_ms,100,,,,1.5777218104420236e-30,1.262177448353619e-29,secondary,94.84711600031005,67.82784999995783,78.93650000005437,68.3648381260582,91.51043687479614,100,5050.0,
+paired_continuous,fcfs,proposed,end_to_end_evaluation_ms,100,,,,1.5777218104420236e-30,1.262177448353619e-29,secondary,95.03767699981836,68.89189999674272,78.60072499988746,68.3960750006463,91.43415312553314,100,5050.0,
+paired_continuous,fcfs,proposed,distance_km_identical_served_task_set,79,,,,2.6469779601696886e-23,7.940933880509066e-23,identical_served_task_sets_only,-11.745246962025316,-10.336759999999998,-11.379147500000002,-13.25996725,-9.418033625000001,76,0.0,79
+paired_continuous,fcfs,proposed,driving_minutes_identical_served_task_set,79,,,,2.6469779601696886e-22,5.293955920339377e-22,identical_served_task_sets_only,-12.113816455696202,-10.83905,-11.398835,-13.781857125000002,-9.2591775,76,10.0,79

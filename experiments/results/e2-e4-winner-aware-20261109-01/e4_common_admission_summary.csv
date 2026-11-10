@@ -1,0 +1,4 @@
+method,scenarios,successful_plans,failed_or_invalid,timed_plans,valid_tasks,served_tasks,task_weighted_coverage_pct,mean_scenario_coverage_pct,distance_km,travel_min,route_duration_min,capacity_violations,window_violations,duration_violations,feasibility_pass,timeouts,median_method_reported_runtime_ms,p95_method_reported_runtime_ms,median_solver_ms,p95_solver_ms,median_method_pipeline_wall_ms,p95_method_pipeline_wall_ms,median_end_to_end_evaluation_ms,p95_end_to_end_evaluation_ms
+nearest_next,100,100,0,100,483,437,90.476,90.75,3732.22677,4445.80953,8815.80953,0,0,0,100,0,0.2571,0.5152,0.0,0.0,5.8073,10.142,12.017,16.6979
+fcfs,100,100,0,100,483,437,90.476,90.75,4429.11178,5152.83116,9522.83116,0,0,0,100,0,0.2567,0.6571,0.0,0.0,5.7724,11.4779,11.7617,20.7026
+proposed,100,100,0,100,483,439,90.89,91.15,3380.07299,4070.70276,8460.70276,0,0,0,100,0,124.3823,238.4851,105.3716,210.2334,126.4843,238.8003,132.9958,245.2016

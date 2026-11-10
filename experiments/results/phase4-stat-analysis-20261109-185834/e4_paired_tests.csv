@@ -1,0 +1,17 @@
+family,method_a,method_b,metric,n_pairs,a_only,b_only,paired_rate_difference_b_minus_a,p_exact_two_sided,multiplicity,analysis_scope,mean_difference_b_minus_a,median_difference_b_minus_a,hodges_lehmann_paired_location,hl_bootstrap_95_ci_low,hl_bootstrap_95_ci_high,nonzero_pairs,w_plus,p_holm_within_E4_secondary_family
+paired_binary,nearest_next,proposed,all_admitted_tasks_served,100,0,0,0.0,1.0,primary binary outcome reported with exact paired test; no adjustment applied,,,,,,,,,
+paired_binary,nearest_next,proposed,independent_feasibility_pass,100,0,0,0.0,1.0,primary binary outcome reported with exact paired test; no adjustment applied,,,,,,,,,
+paired_continuous,nearest_next,proposed,served_tasks,100,,,,0.5,,primary coverage comparison,0.02,0.0,0.0,0.0,0.0,2,199.0,
+paired_continuous,nearest_next,proposed,coverage_percent,100,,,,0.5,,primary coverage comparison,0.4,0.0,0.0,0.0,0.0,2,199.0,
+paired_continuous,nearest_next,proposed,method_pipeline_wall_ms,100,,,,1.5777218104420236e-30,,secondary timing,217.08130300019548,120.66969999978028,135.36499999918306,121.1901000006037,147.46544812530828,100,5050.0,1.262177448353619e-29
+paired_continuous,nearest_next,proposed,end_to_end_evaluation_ms,100,,,,1.5777218104420236e-30,,secondary timing,217.66160099970875,120.87449999853561,135.99839999915275,122.25879500192605,148.18435000051977,100,5050.0,1.262177448353619e-29
+paired_continuous,nearest_next,proposed,distance_km_identical_served_set,91,,,,6.617444900424222e-24,,identical served-task sets only,-3.4870536263736267,-2.113530000000001,-2.49226,-3.259629999999998,-1.8381550000000022,78,0.0,2.6469779601696886e-23
+paired_continuous,nearest_next,proposed,travel_duration_identical_served_set_min,91,,,,1.568593804126452e-12,,identical served-task sets only,-3.7688092307692305,-1.3874899999999997,-2.451100000000001,-3.274650000000001,-1.5919745625000046,78,413.0,1.568593804126452e-12
+paired_binary,fcfs,proposed,all_admitted_tasks_served,100,0,0,0.0,1.0,primary binary outcome reported with exact paired test; no adjustment applied,,,,,,,,,
+paired_binary,fcfs,proposed,independent_feasibility_pass,100,0,0,0.0,1.0,primary binary outcome reported with exact paired test; no adjustment applied,,,,,,,,,
+paired_continuous,fcfs,proposed,served_tasks,100,,,,0.5,,primary coverage comparison,0.02,0.0,0.0,0.0,0.0,2,199.0,
+paired_continuous,fcfs,proposed,coverage_percent,100,,,,0.5,,primary coverage comparison,0.4,0.0,0.0,0.0,0.0,2,199.0,
+paired_continuous,fcfs,proposed,method_pipeline_wall_ms,100,,,,1.5777218104420236e-30,,secondary timing,216.60578600010922,119.85409999942931,135.05075000011857,121.27234500071609,147.0377481251262,100,5050.0,1.262177448353619e-29
+paired_continuous,fcfs,proposed,end_to_end_evaluation_ms,100,,,,1.5777218104420236e-30,,secondary timing,216.75549399984448,118.79609999959939,135.1293750003606,121.46675000258256,147.63879999918572,100,5050.0,1.262177448353619e-29
+paired_continuous,fcfs,proposed,distance_km_identical_served_set,79,,,,1.0587911840678754e-22,,identical served-task sets only,-10.871936455696204,-10.174199999999999,-10.567255,-12.513174999999999,-8.699924500000002,74,0.0,3.1763735522036263e-22
+paired_continuous,fcfs,proposed,travel_duration_identical_served_set_min,79,,,,1.7999450129153882e-20,,identical served-task sets only,-11.281465189873417,-10.132340000000003,-10.590495,-12.923625000000001,-8.258354375000001,74,30.0,3.5998900258307764e-20

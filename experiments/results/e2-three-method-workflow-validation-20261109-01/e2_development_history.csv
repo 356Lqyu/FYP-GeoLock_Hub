@@ -1,0 +1,7 @@
+implementation_version,concurrent_requests,scenarios,claim_requests,successful_requests,controlled_conflicts,surfaced_request_errors,sqlstate_40P01,duplicate_claim_trials
+original_proposed_historical,2,50,100,50,15,35,35,0
+original_proposed_historical,5,50,250,50,0,200,200,0
+original_proposed_historical,10,50,500,50,2,448,448,0
+corrected_proposed_final,2,50,100,50,50,0,N/A (no request errors to audit),0
+corrected_proposed_final,5,50,250,50,200,0,N/A (no request errors to audit),0
+corrected_proposed_final,10,50,500,50,450,0,N/A (no request errors to audit),0

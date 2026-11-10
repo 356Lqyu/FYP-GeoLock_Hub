@@ -1,0 +1,58 @@
+%PDF-1.4
+%‚„œ”
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 720 504] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>
+endobj
+4 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>
+endobj
+5 0 obj
+<< /Length 1902 >>
+stream
+0.100 0.160 0.220 rg BT /F1 16.0 Tf 1 0 0 1 58.00 460.00 Tm (Figure 6\(a\). Valid-task coverage by routing method) Tj ET
+0.280 0.320 0.360 rg BT /F1 10.0 Tf 1 0 0 1 20.00 270.00 Tm (Coverage \(%\)) Tj ET
+0.870 0.880 0.890 RG 0.55 w 92.00 108.00 m 680.00 108.00 l S
+0.350 0.380 0.410 rg BT /F1 9.0 Tf 1 0 0 1 48.00 105.00 Tm (0) Tj ET
+0.870 0.880 0.890 RG 0.55 w 92.00 170.40 m 680.00 170.40 l S
+0.350 0.380 0.410 rg BT /F1 9.0 Tf 1 0 0 1 48.00 167.40 Tm (20) Tj ET
+0.870 0.880 0.890 RG 0.55 w 92.00 232.80 m 680.00 232.80 l S
+0.350 0.380 0.410 rg BT /F1 9.0 Tf 1 0 0 1 48.00 229.80 Tm (40) Tj ET
+0.870 0.880 0.890 RG 0.55 w 92.00 295.20 m 680.00 295.20 l S
+0.350 0.380 0.410 rg BT /F1 9.0 Tf 1 0 0 1 48.00 292.20 Tm (60) Tj ET
+0.870 0.880 0.890 RG 0.55 w 92.00 357.60 m 680.00 357.60 l S
+0.350 0.380 0.410 rg BT /F1 9.0 Tf 1 0 0 1 48.00 354.60 Tm (80) Tj ET
+0.870 0.880 0.890 RG 0.55 w 92.00 420.00 m 680.00 420.00 l S
+0.350 0.380 0.410 rg BT /F1 9.0 Tf 1 0 0 1 48.00 417.00 Tm (100) Tj ET
+0.350 0.380 0.410 RG 0.80 w 92.00 108.00 m 92.00 420.00 l S
+0.350 0.380 0.410 RG 0.80 w 92.00 108.00 m 680.00 108.00 l S
+0.200 0.390 0.570 rg 146.00 108.00 88.00 282.67 re f
+0.120 0.150 0.190 rg BT /F1 10.0 Tf 1 0 0 1 144.00 399.67 Tm (453/500 \(90.6%\)) Tj ET
+0.120 0.150 0.190 rg BT /F1 10.0 Tf 1 0 0 1 156.00 78.00 Tm (Nearest-Next) Tj ET
+0.780 0.490 0.200 rg 342.00 108.00 88.00 282.67 re f
+0.120 0.150 0.190 rg BT /F1 10.0 Tf 1 0 0 1 340.00 399.67 Tm (453/500 \(90.6%\)) Tj ET
+0.120 0.150 0.190 rg BT /F1 10.0 Tf 1 0 0 1 352.00 78.00 Tm (FCFS) Tj ET
+0.240 0.520 0.400 rg 538.00 108.00 88.00 283.92 re f
+0.120 0.150 0.190 rg BT /F1 10.0 Tf 1 0 0 1 536.00 400.92 Tm (455/500 \(91.0%\)) Tj ET
+0.120 0.150 0.190 rg BT /F1 10.0 Tf 1 0 0 1 548.00 78.00 Tm (CP-SAT) Tj ET
+0.350 0.380 0.410 rg BT /F1 9.0 Tf 1 0 0 1 92.00 37.00 Tm (Task-weighted counts aggregated across 100 snapshots; descriptive coverage.) Tj ET
+endstream
+endobj
+xref
+0 6
+0000000000 65535 f 
+0000000015 00000 n 
+0000000064 00000 n 
+0000000121 00000 n 
+0000000247 00000 n 
+0000000344 00000 n 
+trailer
+<< /Size 6 /Root 1 0 R >>
+startxref
+2297
+%%EOF

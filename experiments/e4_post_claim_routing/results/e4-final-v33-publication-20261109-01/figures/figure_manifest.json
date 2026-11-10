@@ -1,0 +1,45 @@
+{
+  "status": "FIGURES_GENERATED_FROM_VERIFIED_RUN",
+  "source_run": "C:\\Users\\User\\Downloads\\FYP-GeoLock_Hub\\experiments\\e4_post_claim_routing\\results\\e4-final-v33-publication-20261109-01",
+  "candidate_tasks": 500,
+  "admitted_tasks": 500,
+  "scenarios": 100,
+  "independently_validated_plans": 300,
+  "png_resolution_dpi": 300,
+  "vector_format": "PDF",
+  "renderer": "C:\\Users\\User\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\poppler\\Library\\bin\\pdftoppm.EXE",
+  "figure_source_sha256": "2057faa7277a367a3400824578821a094302f0bada42eaa4ec5819e52c4faa02",
+  "input_sha256": {
+    "completion.json": "c534a5c1337e4b047fd8c5862cd492d86ada9119b775abf1090f9c43d8684cab",
+    "verification.json": "58821ce439bdbb8938ee3ce607b54efbffd73606fe1e0616cfee8cddce461a61",
+    "manifest.json": "8b94669c800ba2c10789edc9ef4a1f40b66b060821a45c92aa8cb9e977176857",
+    "summary_statistics.csv": "bf8dab373bd190e639e91b7a91869fb7feb9b806d4e8c0a60f6336abca3f47f7",
+    "results_per_scenario.csv": "128157740af165f61313aa4d9c9e61d14e292b0fc4357e801c0154d9ebac003c",
+    "statistical_analysis/paired_tests.csv": "f21551a181f251c7332f2a287b67acd0a2444ecceb424233d075d083657752a9"
+  },
+  "figures": {
+    "figure6a_valid_task_coverage": {
+      "pdf_sha256": "0d1b5a67b645eb3a15394fecf44875ad25738630c0ad772965e4c724ee1a81e4",
+      "png_sha256": "4dab953be67e619f5acf2237d6a1a85cefab3b992458618c2647b2836526af0c"
+    },
+    "figure6b_total_road_distance": {
+      "pdf_sha256": "d88b660610f1767fe129d4fcbe73148e36eb8a90d03aa873cb891c4e2d270d04",
+      "png_sha256": "75ed1764211ebc8911a684ba29cef4443e4bd373e36b73420d3bb7a501ccdd04"
+    },
+    "figureS1_matched_task_distance_savings": {
+      "pdf_sha256": "00c5840d5f8a8f02d478b356d510fc85776c93a50f7dc4b604d8ec73ac20b625",
+      "png_sha256": "c9eb13896afaa086be30513cfbb4e03860906e80e1db100c9267a24360e9387f"
+    },
+    "figure6_e4_matched_task_savings": {
+      "pdf_sha256": "cca618e3743d786ae3c743319a404cb74d160c6d8f5a7c1e64f58e496becbc83",
+      "png_sha256": "93f6170926679521d6f6d242937662c3a6cc1bdec1a60063a867c4d03938ae06",
+      "data_source": "statistical_analysis/paired_tests.csv; identical served-task sets only",
+      "axis": "Matched-task road-distance savings (km); positive values favour CP-SAT"
+    }
+  },
+  "data_rules": {
+    "coverage": "served_tasks / valid_tasks, aggregated across 100 scenario results; counts are labelled",
+    "aggregate_distance": "descriptive total; served task identities differ across methods",
+    "paired_savings": "Hodges-Lehmann and bootstrap interval from the verified paired analysis; identical served-task sets only"
+  }
+}

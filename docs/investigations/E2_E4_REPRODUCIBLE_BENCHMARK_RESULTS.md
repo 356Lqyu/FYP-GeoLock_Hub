@@ -1,5 +1,7 @@
 # E2 and E4 reproducible benchmark results
 
+> **Historical snapshot:** this report records the former E4 runs, including a 483-task comparison. The superseded 483-task directory and later corrected result directory have both been removed at the owner's request. A fresh corrected E4 final rerun is pending. The original text and figures below are retained as historical provenance and must not be cited as current final E4 results.
+
 Executed locally on 5 November 2026. **E2 readiness: PARTIAL. E4 readiness: PARTIAL.** The actual proposed implementations execute in isolation and all requested scenario counts completed. These labels reflect observed errors and methodology differences, not missing runs. No shared Supabase connection, hosted worker, deployment, production change or push was used.
 
 ## Requirements and provenance
@@ -77,11 +79,13 @@ All use benchmark 240-minute routes, 10-minute service, zero exploratory safety 
 
 Six focused artifact/launcher tests passed (`.venv-stage8/Scripts/python.exe -m unittest experiments.test_repro_benchmarks -v`): canonical hash/value integrity; 300 E4 shared-input/validation records; complete E2 ownership/function evidence; error-to-audit matching; unsafe run-ID rejection; overwrite refusal. Offline summary verification independently revalidated 300 E4 plans and both original baselines. All five newly owned E2 setup/smoke/full clusters have `stopped: true`, `remote_connections: 0`; logs/data remain available. Setup failures are not counted as completed benchmarks.
 
-Exact PowerShell setup, full commands, dependencies and portability prerequisites: `experiments/REPRODUCIBLE_E2_E4_README.md`. Use `experiments/run_repro_benchmarks.py --experiment E2 --run-id NEW-ID --teammate-root PATH` or `--experiment E4` under the recorded Python environment; never invoke the original E2 CLI directly because it contains a remote default DSN. The local wrapper restricts connection resolution to its generated loopback port/database. Output overwrite is refused.
+Exact PowerShell setup, full commands, dependencies and portability prerequisites: `experiments/README.md`. Use `experiments/run_repro_benchmarks.py --experiment E2 --run-id NEW-ID --teammate-root PATH` or `--experiment E4` under the recorded Python environment; never invoke the original E2 CLI directly because it contains a remote default DSN. The local wrapper restricts connection resolution to its generated loopback port/database. Output overwrite is refused.
 
 Tomorrow's executable single-case demonstration and expected files: `experiments/E2_E4_DEMONSTRATION_GUIDE.md`. Routing case `SCN-ROUTE_PLANNING-0003` serves the same four tasks: Nearest-Next 47.55281 km, proposed 42.94797 km; saved routes and independent feasibility evidence are included. A single-case rerun is a demonstration, not a new full benchmark.
 
-Before presenting an unqualified PASS: disclose/review the actual deadlock robustness gap, resolve the formal 500-versus-483 admission policy mismatch, align the thesis method description with current CP-SAT, and review the specified paired uncertainty protocol. Do not imply new supervisor approval. A product correction would require separately authorized work and new measurements. The current outputs support an honest demonstration of single ownership, protected recovery and offline optimization with these limitations.
+At the time of these original result records, the proposed claim path still had the documented deadlock robustness gap. A later, separately authorized local correction is recorded in `experiments/e2_atomic_claiming/results/e2-lockfix-final-20261109-061706/`; it does not rewrite these earlier measurements or prove a hosted deployment. The formal 500-versus-483 E4 admission-policy distinction, current CP-SAT method description, and paired uncertainty limits remain relevant to paper interpretation.
+
+**Current E2 launcher update (2026-11-09):** the normal `run_repro_benchmarks.py --experiment E2` path runs the non-atomic baseline, protected baseline, and corrected proposed method. It applies the hash-verified lock migration only in the fresh local proposed-method fixture, after both baseline runs, and verifies the corrected claim/helper function catalog before proposed scenarios. The original 683-deadlock records remain historical debugging evidence, not a fourth method. Use `--combined-e2` with the final summarizer for a newly completed three-method run; see `experiments/README.md` for the PowerShell procedure.
 
 ## Created files and evidence inventory
 
@@ -95,7 +99,7 @@ No production algorithm, original baseline or original frozen input was edited f
 - `experiments/test_repro_benchmarks.py`: six focused artifact/guard checks.
 - `experiments/repro_environment.json`, `experiments/repro_runtime_checksums.json`: dependencies/native evidence.
 - `experiments/repro_inputs/v33/`: exact manifest-matching transport mirror.
-- `experiments/REPRODUCIBLE_E2_E4_README.md`, `experiments/E2_E4_DEMONSTRATION_GUIDE.md`, this report.
+- `experiments/README.md`, `experiments/E2_E4_DEMONSTRATION_GUIDE.md`, this report.
 - Both final result directories named above: raw scenarios/requests/plans, manifests, completion records, comparison CSVs, statistics, presentation-ready `COMPARISON.md`, audit/ownership/validation evidence. E2 additionally retains stopped private runtime data; E4 additionally retains original full-input baseline outputs.
 - Retained exploratory/setup directories under the same result roots; these are explicitly excluded from final sample counts.
 - `experiments/REPRODUCIBILITY_MANIFEST.json`: final source/artifact inventory with SHA256, excluding disposable database binaries/data and itself.

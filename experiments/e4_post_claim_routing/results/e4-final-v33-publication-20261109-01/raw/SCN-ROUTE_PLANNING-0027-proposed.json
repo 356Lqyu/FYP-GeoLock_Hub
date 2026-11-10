@@ -1,0 +1,141 @@
+{
+  "plan": {
+    "method": "proposed",
+    "snapshot_sha256": "3ffd0ab5e87a7949ca45e213c80e9f349630ce5e6c8a130d487d5fabcf4da853",
+    "matrix_sha256": "92f6f0e987261dd7b57709c8ffa05bc89cfd562685f29717bb8d1d5a0fb9e3b3",
+    "routes": [
+      {
+        "vehicle_id": "VEH-NGO005-2",
+        "ngo_id": "NGO005",
+        "start_location_id": "BENCHMARK-DEPOT-NGO005",
+        "start_node_id": "7847167733",
+        "end_location_id": "BENCHMARK-DEPOT-NGO005",
+        "end_node_id": "7847167733",
+        "departure_us": 0,
+        "stops": [
+          {
+            "task_id": "TASK-LST000077",
+            "location_id": "BENCHMARK-PICKUP-TASK-LST000077",
+            "road_node_id": "6039192882",
+            "arrival_us": 723525000,
+            "service_start_us": 723525000,
+            "departure_us": 1323525000,
+            "cumulative_load_kg": 24.64
+          },
+          {
+            "task_id": "TASK-LST000073",
+            "location_id": "BENCHMARK-PICKUP-TASK-LST000073",
+            "road_node_id": "8824083359",
+            "arrival_us": 1682504400,
+            "service_start_us": 1682504400,
+            "departure_us": 2282504400,
+            "cumulative_load_kg": 40.38
+          },
+          {
+            "task_id": "TASK-LST000076",
+            "location_id": "BENCHMARK-PICKUP-TASK-LST000076",
+            "road_node_id": "7070983294",
+            "arrival_us": 2640403800,
+            "service_start_us": 2640403800,
+            "departure_us": 3240403800,
+            "cumulative_load_kg": 59.15
+          },
+          {
+            "task_id": "TASK-LST000075",
+            "location_id": "BENCHMARK-PICKUP-TASK-LST000075",
+            "road_node_id": "347436537",
+            "arrival_us": 3621968400,
+            "service_start_us": 3621968400,
+            "departure_us": 4221968400,
+            "cumulative_load_kg": 79.28
+          },
+          {
+            "task_id": "TASK-LST000074",
+            "location_id": "BENCHMARK-PICKUP-TASK-LST000074",
+            "road_node_id": "6012587196",
+            "arrival_us": 4882935600,
+            "service_start_us": 4882935600,
+            "departure_us": 5482935600,
+            "cumulative_load_kg": 96.87
+          }
+        ],
+        "return_us": 5925612000
+      }
+    ],
+    "unserved_tasks": [],
+    "unserved_reasons": [],
+    "status": "COMPLETE",
+    "feasible": true,
+    "config": {
+      "fixed_cost_weight": 1.0,
+      "distance_cost_weight": 1.0,
+      "deterministic_seconds_per_pass": 0.25
+    },
+    "runtime_seconds": 0.0588246999977855,
+    "solver_runtime_seconds": 0.045830300000000004,
+    "solver_statuses": [
+      "OPTIMAL",
+      "OPTIMAL"
+    ],
+    "solver_version": "9.15.6755",
+    "timeout": false,
+    "infeasibility_proven": false,
+    "coverage_optimal": true,
+    "secondary_optimal": true,
+    "optimization_objective": "MAX_PICKUP_TASKS_THEN_MIN_DIRECTED_ROAD_KM",
+    "optimization_status": "OPTIMAL",
+    "pickup_task_objective_value": 5,
+    "pickup_task_objective_bound": 5.0,
+    "optimality_gap": 0.0,
+    "gap_scope": "FIXED_PICKUP_TASK_COUNT_DIRECTED_DISTANCE",
+    "secondary_objective_scaled": 38555250.0,
+    "secondary_bound_scaled": 38555250.0,
+    "dispatch_authority_issued": false
+  },
+  "independent_validation": {
+    "valid": true,
+    "feasible": true,
+    "violations": [],
+    "mandatory_unserved": [],
+    "metrics": {
+      "total_travel_km": 38.55525,
+      "total_route_minutes": 98.7602,
+      "driving_minutes": 48.7602,
+      "service_minutes": 50.0,
+      "waiting_minutes": 0.0,
+      "routes_used": 1,
+      "vehicles_used": 1,
+      "served_tasks": [
+        "TASK-LST000073",
+        "TASK-LST000074",
+        "TASK-LST000075",
+        "TASK-LST000076",
+        "TASK-LST000077"
+      ],
+      "unserved_tasks": [],
+      "served_count": 5,
+      "served_pickup_task_count": 5,
+      "total_travel_distance_scaled": 38555250,
+      "served_pickup_tasks": [
+        "TASK-LST000073",
+        "TASK-LST000074",
+        "TASK-LST000075",
+        "TASK-LST000076",
+        "TASK-LST000077"
+      ],
+      "unserved_pickup_task_count": 0,
+      "unserved_count": 0,
+      "excluded_count": 0,
+      "mandatory_unserved_count": 0,
+      "fixed_cost": 5.0,
+      "distance_cost": 38.55525,
+      "total_cost": 43.55525,
+      "weighted_secondary_cost": 43.55525,
+      "capacity_violations": 0,
+      "time_window_violations": 0,
+      "duration_violations": 0,
+      "arc_violations": 0,
+      "hard_violation_count": 0
+    }
+  }
+}

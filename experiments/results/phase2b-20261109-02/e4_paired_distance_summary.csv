@@ -1,0 +1,3 @@
+baseline,paired_scenarios,equal_served_task_count,coverage_differs,baseline_equal_coverage_km,proposed_equal_coverage_km,distance_reduction_pct,identical_served_task_sets,strict_baseline_km,strict_proposed_km,strict_distance_reduction_pct
+nearest_next,100,98,2,3708.81162,3341.30672,9.909,91,3457.59928,3140.2774,9.178
+fcfs,100,98,2,4396.79341,3341.30672,24.006,79,3776.64111,2917.75813,22.742

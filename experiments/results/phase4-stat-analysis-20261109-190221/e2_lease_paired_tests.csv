@@ -1,0 +1,3 @@
+case,metric,n_scenarios,no_recovery_successes,corrected_successes,n_pairs,a_only,b_only,paired_rate_difference_b_minus_a,p_exact_two_sided,p_holm_within_lease_family
+lease expired,expired_lease_recovered_and_reassigned,100,0,100,100,0,100,1.0,1.5777218104420236e-30,3.1554436208840472e-30
+lease still running,active_lease_protected,25,25,25,25,0,0,0.0,1.0,1.0

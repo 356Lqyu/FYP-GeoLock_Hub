@@ -1,0 +1,224 @@
+{
+  "generated_utc": "2026-11-08T20:42:30.4554682Z",
+  "branch": "lqy2",
+  "note": "Pre-cleanup hashes and exact paths for approved Phase 3A moves/deletions. No credentials included.",
+  "moves": [
+    {
+      "to": "experiments/README.md",
+      "from": "experiments/REPRODUCIBLE_E2_E4_README.md"
+    },
+    {
+      "to": "experiments/results/phase2b-20261109-02",
+      "from": "experiments/final_summaries/phase2b-20261109-02"
+    }
+  ],
+  "deletion_directories": [
+    "experiments/final_summaries/phase2b-20261109-01",
+    "experiments/final_summaries/phase2b-20261109-03",
+    "experiments/archive/legacy_e2_diagnostics",
+    "experiments/e2_atomic_claiming/results/e2-lockfix-regressions-20261109-01"
+  ],
+  "empty_directory_file_count": 0,
+  "files": [
+    {
+      "sha256": "c273d7f42db584c31078f407428760f74217b145f6ff5aa1a71de909ec528c08",
+      "size_bytes": 8097,
+      "path": "experiments/archive/legacy_e2_diagnostics/diagnose_claim_deadlock.py"
+    },
+    {
+      "sha256": "03b9f163e7781af6ab8a11923abd5fb4c9df491b2d79b9fc6e9f3002a09c1792",
+      "size_bytes": 13678,
+      "path": "experiments/archive/legacy_e2_diagnostics/e2_atomic_claiming/corrected_regressions.py"
+    },
+    {
+      "sha256": "75cc833bb3966bdddf9c306fb77aced836596f1722b634164331aa23f36a304b",
+      "size_bytes": 4100,
+      "path": "experiments/archive/legacy_e2_diagnostics/e2_atomic_claiming/dev_acl_custody_tests.py"
+    },
+    {
+      "sha256": "fe2d6d9492f27dda50bb6644241d3d0b9a8049323bc83c8018ddf28b24a1e146",
+      "size_bytes": 18105,
+      "path": "experiments/archive/legacy_e2_diagnostics/e2_atomic_claiming/dev_acl_regressions.py"
+    },
+    {
+      "sha256": "29450ef25e1d580d3f8fa0e2aa82d495dbbd72f0b7d68e8c2e25852425b64938",
+      "size_bytes": 9116,
+      "path": "experiments/archive/legacy_e2_diagnostics/e2_atomic_claiming/reproduce_shared_original.py"
+    },
+    {
+      "sha256": "f249637defdf0988a55c0468ad8363e9e75a6cd2c0be62a7fa79b2fdb53311a6",
+      "size_bytes": 14761,
+      "path": "experiments/archive/legacy_e2_diagnostics/e2_atomic_claiming/run_corrected.py"
+    },
+    {
+      "sha256": "f272c269976f520d018722af0da6f38e5ee6cdc26df13407ac7b04f958a68396",
+      "size_bytes": 17735,
+      "path": "experiments/archive/legacy_e2_diagnostics/e2_atomic_claiming/run_dev_acl_full.py"
+    },
+    {
+      "sha256": "60753ce4981dc545b9840d0ca84c3a5d4376ab8b815c5de0d6cf824432a34415",
+      "size_bytes": 16862,
+      "path": "experiments/archive/legacy_e2_diagnostics/e2_atomic_claiming/run_dev_acl.py"
+    },
+    {
+      "sha256": "ab644b39451dd8dbc212fe382e1637bbfd56f1d86d9700c8511a7aff5b834165",
+      "size_bytes": 15917,
+      "path": "experiments/archive/legacy_e2_diagnostics/e2_atomic_claiming/run_shared.py"
+    },
+    {
+      "sha256": "bb6babaeb654fbbfa7987893e9ae9ab05eb7a7b7e607a8085d681deeeebdcbac",
+      "size_bytes": 4096,
+      "path": "experiments/archive/legacy_e2_diagnostics/e2_atomic_claiming/shared_custody_tests.py"
+    },
+    {
+      "sha256": "a75324f1d7380ba964eeffe01ffe36ea71a1a9d3d5c9d7da485e275db7ec4e3c",
+      "size_bytes": 17008,
+      "path": "experiments/archive/legacy_e2_diagnostics/e2_atomic_claiming/shared_regressions.py"
+    },
+    {
+      "sha256": "53ae9f71f673d28eebb359608f24df0397a57dea5b6ed1ad553a2e73c2edee92",
+      "size_bytes": 5654,
+      "path": "experiments/archive/legacy_e2_diagnostics/e2_atomic_claiming/summarize_corrected.py"
+    },
+    {
+      "sha256": "fe4507da15a613439dd2053b6954533d2aacdd2945e12fdb792f1967a9c45d26",
+      "size_bytes": 7486,
+      "path": "experiments/archive/legacy_e2_diagnostics/README.md"
+    },
+    {
+      "sha256": "a454dc67378096763d7d75a0522283f17cb2482c8000a23406e47e0aab16ece4",
+      "size_bytes": 1483,
+      "path": "experiments/final_summaries/phase2b-20261109-01/COMPARISON.md"
+    },
+    {
+      "sha256": "94426f9128463694747d7cf270a7b2d27959c2583211070c68c9743fe9012a93",
+      "size_bytes": 1521,
+      "path": "experiments/final_summaries/phase2b-20261109-01/e2_contention_comparison.csv"
+    },
+    {
+      "sha256": "e133dd1e605ec48ddd0307a84e9954162fcc1ad0bead001548f03f47491044f9",
+      "size_bytes": 435,
+      "path": "experiments/final_summaries/phase2b-20261109-01/e2_lease_comparison.csv"
+    },
+    {
+      "sha256": "ac51c70864e3c67f645689abec8757abddfd097867b514c5e8388a280f721691",
+      "size_bytes": 931,
+      "path": "experiments/final_summaries/phase2b-20261109-01/e4_common_admission_summary.csv"
+    },
+    {
+      "sha256": "437c2e97bfe8e70e45fa17abccf99792b4a6f97c336853f29ed05cf24e753ff5",
+      "size_bytes": 142,
+      "path": "experiments/final_summaries/phase2b-20261109-01/e4_original_500_task_baseline.csv"
+    },
+    {
+      "sha256": "6a0585b1af274d70a37b3cb5e65c1fbd252dad8ad6aa368f8bcd74fc10d70f54",
+      "size_bytes": 397,
+      "path": "experiments/final_summaries/phase2b-20261109-01/e4_paired_distance_summary.csv"
+    },
+    {
+      "sha256": "30ef19741535c56aca89ef6231ed71965599c71a111e0cff0cc49d28baec6399",
+      "size_bytes": 1769,
+      "path": "experiments/final_summaries/phase2b-20261109-01/e4_paired_uncertainty.csv"
+    },
+    {
+      "sha256": "86986d8e6c5d2509cf5322fc9b105a942eec3039c8e3a167fc56cf8cff122a89",
+      "size_bytes": 2372,
+      "path": "experiments/final_summaries/phase2b-20261109-01/manifest.json"
+    },
+    {
+      "sha256": "f482cb8c7c88fd82758b70a0d47ea9d9b250ec93a4fccf58a4933004b25e9191",
+      "size_bytes": 2289,
+      "path": "experiments/final_summaries/phase2b-20261109-02/COMPARISON.md"
+    },
+    {
+      "sha256": "fc4690aad914f14636d64fc8709996e0611d8989f650a070d5dfc9a88ac65750",
+      "size_bytes": 571,
+      "path": "experiments/final_summaries/phase2b-20261109-02/e2_development_history.csv"
+    },
+    {
+      "sha256": "4f2d24e9c3bcdcc40ff6495cfe2b431d100c2395f4a4f2da63b315c8ae2ba7a6",
+      "size_bytes": 516,
+      "path": "experiments/final_summaries/phase2b-20261109-02/e2_lease_comparison.csv"
+    },
+    {
+      "sha256": "752a0e359f8ca2c29b517e0757de8e7ff60265f824f91121bd45fbaf06644581",
+      "size_bytes": 1835,
+      "path": "experiments/final_summaries/phase2b-20261109-02/e2_primary_three_method_comparison.csv"
+    },
+    {
+      "sha256": "ac51c70864e3c67f645689abec8757abddfd097867b514c5e8388a280f721691",
+      "size_bytes": 931,
+      "path": "experiments/final_summaries/phase2b-20261109-02/e4_common_admission_summary.csv"
+    },
+    {
+      "sha256": "437c2e97bfe8e70e45fa17abccf99792b4a6f97c336853f29ed05cf24e753ff5",
+      "size_bytes": 142,
+      "path": "experiments/final_summaries/phase2b-20261109-02/e4_original_500_task_baseline.csv"
+    },
+    {
+      "sha256": "6a0585b1af274d70a37b3cb5e65c1fbd252dad8ad6aa368f8bcd74fc10d70f54",
+      "size_bytes": 397,
+      "path": "experiments/final_summaries/phase2b-20261109-02/e4_paired_distance_summary.csv"
+    },
+    {
+      "sha256": "30ef19741535c56aca89ef6231ed71965599c71a111e0cff0cc49d28baec6399",
+      "size_bytes": 1769,
+      "path": "experiments/final_summaries/phase2b-20261109-02/e4_paired_uncertainty.csv"
+    },
+    {
+      "sha256": "7fdb76ccad7304a0550368fbb8264eb0b17d68a65fb50ed4416db709d709bedc",
+      "size_bytes": 4848,
+      "path": "experiments/final_summaries/phase2b-20261109-02/manifest.json"
+    },
+    {
+      "sha256": "f482cb8c7c88fd82758b70a0d47ea9d9b250ec93a4fccf58a4933004b25e9191",
+      "size_bytes": 2289,
+      "path": "experiments/final_summaries/phase2b-20261109-03/COMPARISON.md"
+    },
+    {
+      "sha256": "fc4690aad914f14636d64fc8709996e0611d8989f650a070d5dfc9a88ac65750",
+      "size_bytes": 571,
+      "path": "experiments/final_summaries/phase2b-20261109-03/e2_development_history.csv"
+    },
+    {
+      "sha256": "4f2d24e9c3bcdcc40ff6495cfe2b431d100c2395f4a4f2da63b315c8ae2ba7a6",
+      "size_bytes": 516,
+      "path": "experiments/final_summaries/phase2b-20261109-03/e2_lease_comparison.csv"
+    },
+    {
+      "sha256": "752a0e359f8ca2c29b517e0757de8e7ff60265f824f91121bd45fbaf06644581",
+      "size_bytes": 1835,
+      "path": "experiments/final_summaries/phase2b-20261109-03/e2_primary_three_method_comparison.csv"
+    },
+    {
+      "sha256": "ac51c70864e3c67f645689abec8757abddfd097867b514c5e8388a280f721691",
+      "size_bytes": 931,
+      "path": "experiments/final_summaries/phase2b-20261109-03/e4_common_admission_summary.csv"
+    },
+    {
+      "sha256": "437c2e97bfe8e70e45fa17abccf99792b4a6f97c336853f29ed05cf24e753ff5",
+      "size_bytes": 142,
+      "path": "experiments/final_summaries/phase2b-20261109-03/e4_original_500_task_baseline.csv"
+    },
+    {
+      "sha256": "6a0585b1af274d70a37b3cb5e65c1fbd252dad8ad6aa368f8bcd74fc10d70f54",
+      "size_bytes": 397,
+      "path": "experiments/final_summaries/phase2b-20261109-03/e4_paired_distance_summary.csv"
+    },
+    {
+      "sha256": "30ef19741535c56aca89ef6231ed71965599c71a111e0cff0cc49d28baec6399",
+      "size_bytes": 1769,
+      "path": "experiments/final_summaries/phase2b-20261109-03/e4_paired_uncertainty.csv"
+    },
+    {
+      "sha256": "7fdb76ccad7304a0550368fbb8264eb0b17d68a65fb50ed4416db709d709bedc",
+      "size_bytes": 4848,
+      "path": "experiments/final_summaries/phase2b-20261109-03/manifest.json"
+    },
+    {
+      "sha256": "265828bd23aee678a124aeec0fdc529c576fbd163912010de00ec095ea529624",
+      "size_bytes": 11509,
+      "path": "experiments/REPRODUCIBLE_E2_E4_README.md"
+    }
+  ]
+}

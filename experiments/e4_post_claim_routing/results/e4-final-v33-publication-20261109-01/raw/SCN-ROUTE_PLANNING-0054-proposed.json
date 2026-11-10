@@ -1,0 +1,134 @@
+{
+  "plan": {
+    "method": "proposed",
+    "snapshot_sha256": "ababdd8ca9a8cab39c8f8b47d1418c86a076b78dc9775bf2c4f2037bf04e994f",
+    "matrix_sha256": "c3602414acb53acafabd454d16b5737c29271e775c0200fa6101388c00f4f579",
+    "routes": [
+      {
+        "vehicle_id": "VEH-NGO010-1",
+        "ngo_id": "NGO010",
+        "start_location_id": "BENCHMARK-DEPOT-NGO010",
+        "start_node_id": "3883275870",
+        "end_location_id": "BENCHMARK-DEPOT-NGO010",
+        "end_node_id": "3883275870",
+        "departure_us": 0,
+        "stops": [
+          {
+            "task_id": "TASK-LST000944",
+            "location_id": "BENCHMARK-PICKUP-TASK-LST000944",
+            "road_node_id": "1563284921",
+            "arrival_us": 301365000,
+            "service_start_us": 301365000,
+            "departure_us": 901365000,
+            "cumulative_load_kg": 27.94
+          },
+          {
+            "task_id": "TASK-LST000945",
+            "location_id": "BENCHMARK-PICKUP-TASK-LST000945",
+            "road_node_id": "11768979103",
+            "arrival_us": 1024194000,
+            "service_start_us": 1024194000,
+            "departure_us": 1624194000,
+            "cumulative_load_kg": 57.47
+          },
+          {
+            "task_id": "TASK-LST000940",
+            "location_id": "BENCHMARK-PICKUP-TASK-LST000940",
+            "road_node_id": "7594142930",
+            "arrival_us": 1924314600,
+            "service_start_us": 1924314600,
+            "departure_us": 2524314600,
+            "cumulative_load_kg": 85.2
+          }
+        ],
+        "return_us": 2920288200
+      }
+    ],
+    "unserved_tasks": [
+      "TASK-LST000939",
+      "TASK-LST000943"
+    ],
+    "unserved_reasons": [
+      [
+        "TASK-LST000939",
+        "PARTIAL"
+      ],
+      [
+        "TASK-LST000943",
+        "PARTIAL"
+      ]
+    ],
+    "status": "PARTIAL",
+    "feasible": true,
+    "config": {
+      "fixed_cost_weight": 1.0,
+      "distance_cost_weight": 1.0,
+      "deterministic_seconds_per_pass": 0.25
+    },
+    "runtime_seconds": 0.04911029999857419,
+    "solver_runtime_seconds": 0.041196500000000004,
+    "solver_statuses": [
+      "OPTIMAL",
+      "OPTIMAL"
+    ],
+    "solver_version": "9.15.6755",
+    "timeout": false,
+    "infeasibility_proven": false,
+    "coverage_optimal": true,
+    "secondary_optimal": true,
+    "optimization_objective": "MAX_PICKUP_TASKS_THEN_MIN_DIRECTED_ROAD_KM",
+    "optimization_status": "OPTIMAL",
+    "pickup_task_objective_value": 3,
+    "pickup_task_objective_bound": 3.0,
+    "optimality_gap": 0.0,
+    "gap_scope": "FIXED_PICKUP_TASK_COUNT_DIRECTED_DISTANCE",
+    "secondary_objective_scaled": 13820620.0,
+    "secondary_bound_scaled": 13820620.0,
+    "dispatch_authority_issued": false
+  },
+  "independent_validation": {
+    "valid": true,
+    "feasible": true,
+    "violations": [],
+    "mandatory_unserved": [],
+    "metrics": {
+      "total_travel_km": 13.82062,
+      "total_route_minutes": 48.67147,
+      "driving_minutes": 18.67147,
+      "service_minutes": 30.0,
+      "waiting_minutes": 0.0,
+      "routes_used": 1,
+      "vehicles_used": 1,
+      "served_tasks": [
+        "TASK-LST000940",
+        "TASK-LST000944",
+        "TASK-LST000945"
+      ],
+      "unserved_tasks": [
+        "TASK-LST000939",
+        "TASK-LST000943"
+      ],
+      "served_count": 3,
+      "served_pickup_task_count": 3,
+      "total_travel_distance_scaled": 13820620,
+      "served_pickup_tasks": [
+        "TASK-LST000940",
+        "TASK-LST000944",
+        "TASK-LST000945"
+      ],
+      "unserved_pickup_task_count": 2,
+      "unserved_count": 2,
+      "excluded_count": 0,
+      "mandatory_unserved_count": 0,
+      "fixed_cost": 5.0,
+      "distance_cost": 13.82062,
+      "total_cost": 18.82062,
+      "weighted_secondary_cost": 18.82062,
+      "capacity_violations": 0,
+      "time_window_violations": 0,
+      "duration_violations": 0,
+      "arc_violations": 0,
+      "hard_violation_count": 0
+    }
+  }
+}

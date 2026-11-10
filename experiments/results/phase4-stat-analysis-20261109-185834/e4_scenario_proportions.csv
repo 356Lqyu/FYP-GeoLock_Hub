@@ -1,0 +1,7 @@
+domain,method,outcome,successes,n_independent_units,proportion,wilson_95_ci_low,wilson_95_ci_high,note
+E4 common admission,nearest_next,independent_validation_and_feasibility_pass,100,100,1.0,0.9630065017930143,1.0,
+E4 common admission,nearest_next,all_admitted_tasks_served,73,100,0.73,0.6356788323205499,0.8073041585042365,
+E4 common admission,fcfs,independent_validation_and_feasibility_pass,100,100,1.0,0.9630065017930143,1.0,
+E4 common admission,fcfs,all_admitted_tasks_served,73,100,0.73,0.6356788323205499,0.8073041585042365,
+E4 common admission,proposed,independent_validation_and_feasibility_pass,100,100,1.0,0.9630065017930143,1.0,
+E4 common admission,proposed,all_admitted_tasks_served,73,100,0.73,0.6356788323205499,0.8073041585042365,

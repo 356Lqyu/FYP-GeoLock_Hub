@@ -1,0 +1,9 @@
+﻿baseline,metric,n_scenario_pairs,n_valid_pairs,mean_difference,ci_low,ci_high,resampling_unit,replicates,seed,interpretation
+nearest_next,served_tasks,100,100,0.02,0.0,0.05,paired benchmark scenario,10000,20260915,descriptive fixed-benchmark scenario uncertainty; not population inference
+nearest_next,method_pipeline_wall_ms,100,100,94.70824200019706,76.49977000019135,122.65636799995264,paired benchmark scenario,10000,20260915,descriptive fixed-benchmark scenario uncertainty; not population inference
+nearest_next,end_to_end_evaluation_ms,100,100,94.87188099996274,76.65608699975564,122.76423799976328,paired benchmark scenario,10000,20260915,descriptive fixed-benchmark scenario uncertainty; not population inference
+nearest_next,distance_km_identical_served_task_set,100,91,-3.8774060439560443,-4.966176373626374,-2.911595934065934,paired benchmark scenario,10000,20260915,descriptive fixed-benchmark scenario uncertainty; not population inference
+fcfs,served_tasks,100,100,0.02,0.0,0.05,paired benchmark scenario,10000,20260915,descriptive fixed-benchmark scenario uncertainty; not population inference
+fcfs,method_pipeline_wall_ms,100,100,94.84711600031005,76.62853800000448,122.82699200048228,paired benchmark scenario,10000,20260915,descriptive fixed-benchmark scenario uncertainty; not population inference
+fcfs,end_to_end_evaluation_ms,100,100,95.03767699981836,76.77363099981449,122.93010599958507,paired benchmark scenario,10000,20260915,descriptive fixed-benchmark scenario uncertainty; not population inference
+fcfs,distance_km_identical_served_task_set,100,79,-11.745246962025316,-13.54918582278481,-9.946015696202533,paired benchmark scenario,10000,20260915,descriptive fixed-benchmark scenario uncertainty; not population inference

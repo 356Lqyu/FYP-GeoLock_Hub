@@ -1,5 +1,7 @@
 # Claim-conflict UI and E2/E4 evidence review
 
+> **Historical E4 note:** this review's E4 figures describe the superseded 483-task run. The subsequent corrected result directory has also been removed; a fresh corrected final E4 rerun is pending. Historical analyses below remain unchanged as provenance and must not be cited as current final E4 results.
+
 5 November 2026. **Part A: IMPLEMENTED locally. Part B E2: CONFIRMED reproducible lock mechanism. Part B E4: CONFIRMED admission mismatch.** Existing benchmark readiness remains **PARTIAL** for both experiments. No backend SQL/function, routing algorithm, frozen input or existing result was changed. No DEV connection, migration deployment, hosted worker operation, APK installation or push was performed.
 
 ## A. Claim conflict: source findings and local UI changes

@@ -26,7 +26,11 @@ class Adapter(ExistingAdapter):
         self.scenarios=self.base.select_scenarios(self.data,('ROUTE_PLANNING',),None)
         assert len(self.scenarios)==100
     def convert(self,scenario):
-        shared,frozen=super().convert(scenario)
+        # Ignore only the frozen synthetic listing deadline. Current app-created
+        # direct listings have no donor-supplied expiry; claim lease checks,
+        # ownership, task status, time windows, road/capacity/duration rules,
+        # and independent plan validation remain enforced by the shared contract.
+        shared,frozen=super().convert(scenario,ignore_listing_expiry=True)
         # Version labels only; never regenerate/rewrite source data or costs.
         payload=frozen.to_dict()['input']
         def version(v):
@@ -45,6 +49,11 @@ def run(output,only=None):
     sources={str(p.relative_to(ROOT)):sha(p) for folder in ['backend/routing/phase_b','backend/routing/optimizers','backend/routing/phase_c2','backend/routing/integration','backend/routing/worker_service'] for p in (ROOT/folder).glob('*.py')}
     for p in [Path(__file__),ROOT/'experiments/repro_benchmark.py',ROOT/'backend/routing/contract.py',ROOT/'backend/routing/benchmark_v32/adapter.py',ROOT/'backend/routing/benchmark_v32/runner.py']:sources[str(p.relative_to(ROOT))]=sha(p)
     manifest=dict(status='RUNNING',integrity=verified,environment=environment(),configuration=SETTINGS,source_sha256=sources,
+      e4_admission_correction=dict(
+        option='ignore_listing_expiry=True',
+        scope='E4 benchmark adapter only',
+        effect='Synthetic listing_expires_at values copied from availability_end are adapted to NULL; original GEOLOCK-BM-v3.3 files remain unchanged.',
+        preserved_checks=['CONFIRMED task','ACTIVE claim and lease','claim lease horizon','NGO ownership','pickup window and service time','directed-road connectivity','vehicle capacity','route duration and depot return','independent validation']),
       actual_proposed='backend.routing.phase_b.optimizers.proposed: same callable used by integration solve_bundle/METHODS',
       runs_per_method_per_scenario=1,formal_supervisor_approval_not_inferred=True)
     write(output/'manifest.json',manifest)
@@ -118,7 +127,10 @@ def run(output,only=None):
          feasibility_passes=sum(r['feasibility_pass'] for r in rr),errors=sum(bool(r.get('error')) for r in rr),
          total_distance_km=sum(r.get('total_distance_km') or 0 for r in rr),total_planner_execution_ms=sum(r.get('planner_execution_ms') or 0 for r in rr)))
     csv_write(output/'summary.csv',summary)
-    write(output/'completion.json',dict(executed=True,scenarios=len(snapshots),evaluations=len(records),errors=len(errors),all_100_completed=len(snapshots)==100,source_unchanged=all(sha(ROOT/k)==v for k,v in sources.items()),experiment_elapsed_seconds=time.perf_counter()-experiment_started))
+    completion=dict(executed=True,scenarios=len(snapshots),evaluations=len(records),errors=len(errors),all_100_completed=len(snapshots)==100,source_unchanged=all(sha(ROOT/k)==v for k,v in sources.items()),experiment_elapsed_seconds=time.perf_counter()-experiment_started)
+    write(output/'completion.json',completion)
+    manifest['status']='COMPLETE' if completion['all_100_completed'] and completion['evaluations']==300 and not errors and completion['source_unchanged'] else 'COMPLETED_WITH_ERRORS_OR_INCOMPLETE_VALIDATION'
+    write(output/'manifest.json',manifest)
     print(json.dumps(summary),flush=True)
 
 if __name__=='__main__':
