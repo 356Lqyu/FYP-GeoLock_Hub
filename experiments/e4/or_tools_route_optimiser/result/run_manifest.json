@@ -1,5 +1,6 @@
 {
   "method": "or_tools_route_optimiser",
+  "run_id": "4b03c152c6224c9fa5f3321fc8d31d78",
   "settings": {
     "approved": true,
     "geofence_km": 20,
@@ -17,18 +18,36 @@
     "deterministic_seconds_per_pass": 0.25,
     "seed": 42
   },
+  "input_sha256": {
+    "road_nodes.csv": "a8905fb29f95b6ba02c099fd60a188f98ae92f01c7586995295b096b673df6ea",
+    "road_distance_matrix.csv": "b9a272d2396354695ae2ec6fd744a17510f1b5e7c61989fe7b404d2d0e0133e1",
+    "listings.csv": "71f8552af8731ac8b0ddfb205f32c78413088ba3bd3e2a1d4aa9830abe5e532f",
+    "vehicles.csv": "79be6284565e0f544914bcb6b0fb5a847a0756a6039808bfc03920046f571413",
+    "ngos.csv": "ddc14fe9958c272c7d8b7dc32b23ad6bfffd2a066f1b158a05a7cd3e5c535eaa",
+    "scenarios.csv": "973d91972df90c0e39501a35ca2ae181d1a6af37d5ccb83c56e4b4bf2d5c966c",
+    "scenario_members.csv": "7c09e2a9a040726458078c6d23370978a3cba6f155cb2b68aa2bbc356518e6d0",
+    "generation_manifest.json": "5fdafca9baa69c4e1c84eb843d180ff0e2ea6319fccf02ae033a6d3fb595d16a"
+  },
   "source_sha256": {
-    "backend/routing/phase_b/optimizers.py": "ac025de4028f48733cc135fb0614d4a9cb0525cde57285835db100d4fd5f9cd7",
-    "backend/routing/optimizers/cp_sat.py": "c1cf44b0cc10114ac17d2be700dede6678e235caf98523ffc96c58fe350b5943",
-    "backend/routing/phase_b/validation.py": "44386397dd070ae4e5685b7a510b31487f99e1f04071605e35ac4ed80f8b511a",
-    "backend/routing/contract.py": "a949eab61be944e873309fc999669096b2598eb80b4c881277667311f2d81251",
-    "backend/routing/benchmark_v32/adapter.py": "6e58ac41e492979027271df0743a8ad2a950240822b2f5e492c1a7a2e57d45d5",
-    "backend/routing/benchmark_v32/runner.py": "6b21f001a37ffc4a411893815e9a15d2e87b3bab920771e1a10c0fcd31c1d008",
-    "experiments/e4/test_harness/e4_shared.py": "2f7f4118d9aa9c89c6e08a4cc47ff45e8eb2bcb876e87814ccb97347df4e1d94"
+    "backend\\routing\\phase_b\\optimizers.py": "dcd396243fa176209f4c37adc00f6aa5233dcecb81422688f6e0f8907fc11e85",
+    "backend\\routing\\optimizers\\cp_sat.py": "8ddc8092321439473a9aa09280ffc959e7ecab08750d3fbf585ad3a5db27432f",
+    "backend\\routing\\phase_b\\validation.py": "3788a5aee2d5758b26bc04c7299215ff5bae6810f95b0264f8ddfa3c4f59a37d",
+    "backend\\routing\\contract.py": "47ed1d97ba249ac50f3462babeb932f4d91c863899ea4297ddcb1a3ce4efa3fb",
+    "backend\\routing\\benchmark_v32\\adapter.py": "edcc3ebc357d1b99dcde847eee037787844a6262648ba6f4f048784828b5deb7",
+    "backend\\routing\\benchmark_v32\\runner.py": "4166fef16c7f682ec1fe056f1e77f3d1b797cd758714290c676f183db4f11178",
+    "experiments\\e4\\baseline\\source_code\\nearest_next_baseline.py": "72f1a295994adf810d8974bf21f5886d87774aa4cd27d5784c60e635fbe20709",
+    "experiments\\e4\\baseline\\source_code\\fcfs_baseline.py": "70305ffbc9e79a6c0d7c6d10dd3d7f21f0639dbfd1af3b3b4e3b5537daba99fc",
+    "experiments\\e4\\experiment_result\\source_code\\e4_compare.py": "d407713fa728a964001860d6f374be7668dec9045536c584b4cd54e2decb1d05",
+    "experiments\\e4\\test_harness\\e4_shared.py": "4b6250a3f7291674431de33322300061f574dca592ee51cc684ebc9c95fecc33"
+  },
+  "artifact_sha256": {
+    "results_per_scenario.csv": "5ed0cbb9fb5f0698f94ee5ec2aa457eeec4dadf3b9e1d3ff580370955bea9ed4",
+    "details/routes.csv": "f5907e692b9b488f406f12aae20e2b4ed1493f99dcf8d12e704254d6473094f8",
+    "run_info.md": "fba8d35642cf414674eaaaeac289c85e4d436433115165d4b6895de37039b919"
   },
   "environment": {
-    "python": "3.13.18",
-    "platform": "Linux-6.18.44-fc-v310-x86_64-with-glibc2.39",
+    "python": "3.13.9",
+    "platform": "Windows-11-10.0.22621-SP0",
     "packages": {
       "numpy": "2.1.3",
       "scipy": "1.18.1",
@@ -37,6 +56,6 @@
       "ortools": "9.15.6755",
       "matplotlib": "3.11.2"
     },
-    "run_at": "2026-11-10T03:09:31+08:00"
+    "run_at": "2026-11-10T21:52:50+08:00"
   }
 }

@@ -8,8 +8,10 @@ import csv
 import hashlib
 import importlib.util
 import json
+import os
 import sys
 import time
+import uuid
 from pathlib import Path
 from types import SimpleNamespace
 import platform
@@ -111,7 +113,7 @@ def _module(name):
 class Adapter(TeamAdapter):
     """The team's routing adapter, pointed at the frozen benchmark and the E4 settings."""
     def __init__(self):
-        check_inputs(['road_nodes', 'road_distance_matrix', 'listings', 'vehicles', 'ngos', 'scenarios', 'scenario_members'])
+        self.input_sha256 = check_inputs(['road_nodes', 'road_distance_matrix', 'listings', 'vehicles', 'ngos', 'scenarios', 'scenario_members'])
         self.settings = dict(SETTINGS)
         self.root = ROOT
         self.modules = {n: _module(n) for n in ('nearest_next', 'fcfs')}
@@ -124,8 +126,27 @@ class Adapter(TeamAdapter):
         assert len(self.scenarios) == 100
 
     def convert(self, scenario):
-        shared, frozen = super().convert(scenario)
+        # This is an E4-only adaptation: the benchmark expiry is copied from
+        # legacy availability data, not supplied as a post-claim deadline by
+        # the current donor workflow. The shared routing contract and its
+        # lease, ownership, status, window, capacity and route checks remain on.
+        # The shared v3.2 adapter admits tasks before returning, so provide an
+        # in-memory non-expiring value while it builds the common snapshot.
+        # Then set only this synthetic field to null and refreeze through the
+        # normal contract. Restore the source dataset objects even on failure.
+        original_expiries = {key: listing['listing_expires_at']
+                             for key, listing in self.data.listings.items()}
+        try:
+            for listing in self.data.listings.values():
+                listing['listing_expires_at'] = '9999-12-31T23:59:59'
+            shared, frozen = super().convert(scenario)
+        finally:
+            for key, expiry in original_expiries.items():
+                self.data.listings[key]['listing_expires_at'] = expiry
         payload = frozen.to_dict()['input']
+        for task in payload['tasks']:
+            task['listing_expires_at'] = None
+        frozen = freeze_scenario(payload)
 
         def relabel(v):  # only the version label changes; data and costs stay the same
             if isinstance(v, dict):
@@ -188,7 +209,10 @@ def source_fingerprints():
     """Hashes of the routing code used, for the run record."""
     files = [ROOT / 'backend/routing/phase_b/optimizers.py', ROOT / 'backend/routing/optimizers/cp_sat.py',
              ROOT / 'backend/routing/phase_b/validation.py', ROOT / 'backend/routing/contract.py',
-             ROOT / 'backend/routing/benchmark_v32/adapter.py', ROOT / 'backend/routing/benchmark_v32/runner.py', Path(__file__)]
+             ROOT / 'backend/routing/benchmark_v32/adapter.py', ROOT / 'backend/routing/benchmark_v32/runner.py',
+             E4 / 'baseline/source_code/nearest_next_baseline.py',
+             E4 / 'baseline/source_code/fcfs_baseline.py',
+             E4 / 'experiment_result/source_code/e4_compare.py', Path(__file__)]
     return {str(p.relative_to(ROOT)): sha256(p) for p in files if p.exists()}
 
 
@@ -203,11 +227,14 @@ HOW = dict(nearest_next="its own plan_routes(): each vehicle in turn drives to t
 def run_and_save(method, out):
     """Run one method and write its result folder."""
     out = Path(out)
-    rows, _ = evaluate(method)
+    run_id = os.environ.get('GEOLOCK_E4_RUN_ID', '').strip() or uuid.uuid4().hex
+    if any(ch.isspace() for ch in run_id):
+        raise ValueError('GEOLOCK_E4_RUN_ID must not contain whitespace')
+    rows, adapter = evaluate(method)
     write_csv(out / 'details' / 'routes.csv', [r for x in rows for r in x.pop('_routes')])
     write_csv(out / 'results_per_scenario.csv', rows)
     env = environment()
-    info = [('Run at', env['run_at']), ('Scenarios', f'{len(rows)} ROUTE_PLANNING snapshots (sealed, shared by all E4 methods)'),
+    info = [('Run ID', run_id), ('Run at', env['run_at']), ('Scenarios', f'{len(rows)} ROUTE_PLANNING snapshots (sealed, shared by all E4 methods)'),
             ('Method', HOW[method]), ('Execution policy', f'{CONFIG}'),
             ('Settings', '240 minute route, 10 min per stop, 360 minute lease, fixed cost 5 + 1 per km'),
             ('Validator', 'backend.routing.phase_b.validate_plan (independent recomputation)')]
@@ -215,7 +242,13 @@ def run_and_save(method, out):
         info.append(('OR-Tools', env['packages'].get('ortools')))
     info.append(('Python', env['python']))
     run_info(out / 'run_info.md', TITLES[method], info)
-    write_json(out / 'run_manifest.json', dict(method=method, settings=SETTINGS, source_sha256=source_fingerprints(), environment=env))
+    write_json(out / 'run_manifest.json', dict(method=method, run_id=run_id, settings=SETTINGS,
+        input_sha256=adapter.input_sha256,
+        source_sha256=source_fingerprints(),
+        artifact_sha256={'results_per_scenario.csv': sha256(out / 'results_per_scenario.csv'),
+                         'details/routes.csv': sha256(out / 'details' / 'routes.csv'),
+                         'run_info.md': sha256(out / 'run_info.md')},
+        environment=env))
     print(f"{TITLES[method]}: {sum(r.get('served_tasks') or 0 for r in rows)}/{sum(r['valid_tasks'] for r in rows)} pickups served, "
           f"{sum(r.get('total_distance_km') or 0 for r in rows):,.1f} km, "
           f"{sum(r['independent_check_passed'] == 'YES' for r in rows)}/100 plans valid -> {out}")

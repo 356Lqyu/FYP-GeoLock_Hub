@@ -7,8 +7,10 @@ than simple routing rules? And where they serve the same pickups, does it drive 
 ## Data (frozen benchmark GEOLOCK-BENCHMARK-DATASET)
 * 100 `ROUTE_PLANNING` scenarios, each with 5 claimed donations of one NGO and its two vehicles (car 100 kg, van
   500 kg). Road distances and times from the benchmark road network.
-* Each scenario becomes one sealed planning snapshot (fixed SHA-256). The app's admission checks are applied once,
-  so every method plans exactly the same valid pickups.
+* Each scenario becomes one sealed planning snapshot (fixed SHA-256). The experiment adapter ignores the synthetic
+  `listing_expires_at` copied from legacy availability data, because the current post-claim workflow has no separate
+  listing expiry. Claim lease, owner, status, pickup windows, capacity, route duration, depot return and directed-road
+  checks remain active. The adapter admits 5 tasks per snapshot (500 total), and all three methods use the same task IDs.
 * Every input file is checked against its SHA-256 in `generation_manifest.json`.
 
 ## Methods
@@ -24,10 +26,12 @@ plus 10 minutes per stop). The app's routing code is used without any change.
 ## Measures (in this order)
 1. Every plan must pass an independent check (capacity, 240 minutes, each pickup served once or reported unserved).
 2. **Main:** pickups served.
-3. Distance and driving time, compared only where both methods serve the same number of pickups.
+3. Aggregate coverage and distance use all 100 snapshots. Paired distance and driving-time comparisons include only
+   independently validated snapshots where both methods served the exact same task-ID set.
 
-Uncertainty: Wilson 95 % intervals, exact McNemar test (every pickup served), Wilcoxon signed rank test and Hodges
-Lehmann estimate with a 10,000 resample bootstrap 95 % interval for distance.
+Uncertainty: Wilson 95 % intervals, exact McNemar test (every pickup served), Wilcoxon–Pratt paired tests and Hodges–Lehmann
+estimates with 10,000-resample bootstrap 95 % intervals for identical-task distance and driving time. Holm adjustment
+is applied across the four secondary baseline-by-measure tests.
 
 ## Steps
 1. Run the two baselines on the shared sealed snapshots.

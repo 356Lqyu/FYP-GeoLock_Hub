@@ -1,12 +1,12 @@
 ﻿measure,proposed_or_tools,baseline_1_nearest_next,baseline_2_fcfs,better_when
 Plans passing the independent check (of 100),100,100,100,higher
-Valid pickups served (of 483),439,437,437,higher
+Valid pickups served (of 500),455,453,453,higher
 Scenarios with every pickup served (of 100),73,73,73,higher
-"Total distance, all scenarios (km)",3380.1,3732.2,4429.1,lower
-Distance per pickup served (km),7.7,8.54,10.14,lower
-Vehicles used,100,115,115,lower
+"Total distance, all scenarios (km)",3462.2,3849.9,4575.2,lower
+Distance per pickup served (km),7.61,8.5,10.1,lower
+Vehicles used,100,116,116,lower
 "Capacity, duration or time window violations",0,0,0,lower
 Solver timeouts,0,0,0,lower
-"Planning time per scenario, median (ms)",15.9,0.8,0.8,lower
-"Distance where served pickups are equal to baseline 1 (98 scenarios, km)",3341.3,3708.8,,lower
-"Distance where served pickups are equal to baseline 2 (98 scenarios, km)",3341.3,,4396.8,lower
+"Planning time per scenario, median (ms)",43.8,1.7,3.7,lower
+"Matched-task distance (identical task IDs), Nearest-Next (n=91, km)",3222.4,3575.3,,lower
+"Matched-task distance (identical task IDs), FCFS (n=79, km)",3003.3,,3931.2,lower
