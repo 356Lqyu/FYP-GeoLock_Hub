@@ -1,5 +1,7 @@
 # E2 coordinated shared-helper correction — LOCAL PASS
 
+> The historical E2 runner and both deadlock reproducers are retired. The [legacy E2 source archive](e2-e4-review-evidence/legacy-e2-claiming.zip) preserves the runner and the experiment-directory reproducer at their original paths. The shared-helper reproducer remains with its original investigation evidence. Running either historical procedure requires restoring the archive into its original repository-relative paths and providing the original isolated runtime prerequisites. For the current experiment, use the [E2 README](../../experiments/e2/README.md).
+
 5 November 2026 (Asia/Kuala_Lumpur). **LOCAL PASS for the requested corrected E2 correctness/robustness scope. Ready for a separate DEV deployment review, not deployed or production verified.** No DEV/production access or writes, deployment, Flutter edit, routing-worker source change, E4 rerun, frozen-input change or GitHub push occurred.
 
 ## Resumed checkpoint and outcome

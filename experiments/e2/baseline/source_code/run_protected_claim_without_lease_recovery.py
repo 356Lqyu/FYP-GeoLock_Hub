@@ -1,7 +1,4 @@
-"""E2 Baseline 2: Protected Claim without Lease Recovery.
-Rebuilds the experiment database, then runs this condition. The test logic is in test_harness/e2_harness.py.
-Run from the repository root: python experiments/e2/baseline/source_code/run_protected_claim_without_lease_recovery.py
-"""
+"""E2 baseline entry point. Run through experiments/e2/run_e2.py for target checks and a unique run folder."""
 import sys
 from pathlib import Path
 

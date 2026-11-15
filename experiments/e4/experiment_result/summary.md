@@ -1,6 +1,6 @@
 # E4 routing experiment
 
-**Run ID:** `4b03c152c6224c9fa5f3321fc8d31d78`
+**Run ID:** `ac1b77db93634b7d8da371ee59105679`
 
 The frozen benchmark contains 100 snapshots and 500 candidate tasks. The E4-only adapter ignores the synthetic listing-expiry field during post-claim admission; all three methods receive the same 500 admitted task IDs. Claim leases, ownership, task status, pickup windows, capacity, route duration, depot return and directed-road connectivity remain enforced.
 
@@ -23,11 +23,11 @@ These paired distance and time comparisons include only snapshots where both ind
 | Nearest-Next | 91 | 3,222.4 | 3,575.3 | 2.70 (2.05, 3.77) | 3.956e-16 | 2.80 (1.86, 4.24) | 2.425e-11 |
 | FCFS | 79 | 3,003.3 | 3,931.2 | 11.38 (9.46, 13.24) | 1.286e-14 | 11.40 (9.26, 13.81) | 1.883e-14 |
 
-Secondary distance and driving-time p-values are Holm-adjusted across the four baseline-by-measure comparisons; see `metrics.json`.
+Secondary distance and driving-time raw p-values are shown above. Holm adjustment spans the four baseline-by-measure comparisons; see `metrics.json`.
 
 ![Figure 1](e4_fig1_tasks_served.png)
 
-*Figure 1. Tasks served by each method across all 100 snapshots; whiskers are 95% Wilson intervals.*
+*Figure 1. Tasks served by each method across all 100 snapshots; whiskers and labels are descriptive 95% task-level Wilson intervals.*
 
 ![Figure 2](e4_fig2_km_per_scenario.png)
 
@@ -43,7 +43,7 @@ Secondary distance and driving-time p-values are Holm-adjusted across the four b
 
 ## Reproducibility and limitations
 
-- Shared run ID: `4b03c152c6224c9fa5f3321fc8d31d78`; admitted tasks: 500 across 100 snapshots.
+- Shared run ID: `ac1b77db93634b7d8da371ee59105679`; admitted tasks: 500 across 100 snapshots.
 - The figure and summaries are generated from scenario CSVs, route-detail CSVs, and manifests; no paper values are hard-coded.
 - Matched-snapshot inference conditions on identical served task sets; aggregate distance totals are descriptive and should not be interpreted as a paired causal comparison.
-- Each snapshot has five candidate tasks and two vehicles; vehicle routes are single trips and travel times do not model live traffic.
+- Each snapshot has five tasks; 50 snapshots have one vehicle and 50 have two; vehicle routes are single trips and travel times do not model live traffic.

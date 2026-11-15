@@ -1,51 +1,56 @@
-# E2 plan: safe claiming and lease recovery
+# E2 experiment plan — Safe claiming and lease recovery
 
-## Questions
-1. When several NGOs claim the same donation at the same time, does exactly one of them get it?
-2. When an NGO claims a donation and never comes, is the donation released after its 6 hour lease so another NGO can
-   take it, without ever taking away a claim that is still valid?
-3. Check of the proposed method: can only NGOs within 20 km by road claim? (Geofence eligibility correctness.)
+## 1. Research questions
 
-## Data (frozen benchmark GEOLOCK-BENCHMARK-DATASET)
-| Part | Benchmark scenarios | Trials |
+When NGOs try to claim the same donation at once, does protected claiming leave just one owner? When an eligible claim expires, can another NGO take it over while valid claims remain protected?
+
+## 2. Dataset
+
+The [frozen benchmark](../../benchmark%20dataset/dataset/) provides fixed listings, NGO identities, claim states, and a directed road-distance matrix. Input hashes are checked before execution.
+
+| Workload | Cases per applicable method |
+| --- | --- |
+| Contention | 150 trials and 850 requests. 50 trials each at 2, 5, and 10 concurrent requests |
+| Lease expiry and safety | 100 expired leases and 25 active leases for each protected method |
+| Eligibility | 1,100 pairs for the proposed method, including direct attempts from ineligible NGOs |
+
+## 3. Methods
+
+| Method | Claim rule | Recovery rule |
 | --- | --- | --- |
-| Contention | 150 `CLAIM_COORDINATION` | 50 trials at each of 2, 5 and 10 NGOs claiming one listing at the same time |
-| Lease | 100 `LEASE_RECOVERY` + 25 `LEASE_ACTIVE_VERIFICATION` | 100 lease expiry and reclaim trials, plus 25 leases that are still running |
-| Geofence check | 100 `GEOFENCE_VERIFICATION` | 1,100 NGO and listing pairs (100 listings × 11 NGOs) |
+| Baseline 1 | Read availability and write separately. No recheck before the write | No lease recovery |
+| Baseline 2 | Check and write in one protected database operation | Recovery disabled |
+| Proposed | The same protected claim function as Baseline 2 | Release eligible expired claims before the next NGO attempts takeover |
 
-Every input file is checked against its SHA-256 in `generation_manifest.json`.
+## 4. Experiment conditions
 
-## Conditions (report Table 3.6)
-| | Non-Atomic Claim (baseline 1) | Protected Claim without Lease Recovery (baseline 2) | Protected Claim with Lease Recovery (proposed) |
-| --- | --- | --- | --- |
-| Claim | check availability and save the claim as two separate steps: no lock, no second check, no one claim rule | the app's `claim_listing()` | the app's `claim_listing()` |
-| Expired leases | never released | never released | the app's `recover_expired_claims()`, run as the scheduler before the next NGO claims |
-| Trials | contention (part 1) | lease (part 2) | contention, lease, geofence check and extra checks |
+- Both [execution modes](README.md#choose-how-to-run-e2) use PostgreSQL 17, the same benchmark files, and the same methods. The driver rebuilds the test database before each method.
+- Each sent request has its own signed-in connection. A barrier releases requests together. Baseline 1 uses a second barrier to ensure all availability reads finish before any claim write.
+- The rules use a 20 km road-distance limit and a 360-minute lease. Prepared timestamps create expired and active cases directly. Request counts can exceed the number of distinct NGO identities.
+- The response timer starts after connection and sign-in. Baseline 1 sums its two timed database calls and excludes its barrier wait. The protected methods time one call and any retry. The code allows one retry with the same request ID for a deadlock or serialization failure.
 
-Each baseline removes one protection of the proposed method and is compared with it on the part that protection is for:
-baseline 1 against the proposed method on contention, baseline 2 against the proposed method on leases. The two sides of
-each comparison start from the same scenario state and use the same listing, NGO set and request schedule.
+## 5. Measures
 
-## Contention setting (recorded in each `run_info.md`)
-* Concurrency: 2, 5 and 10 NGOs, 50 trials each.
-* Synchronisation: one database connection per NGO; a barrier releases all requests of a trial together. In
-  baseline 1 a second barrier makes every NGO finish its check before any NGO saves.
-* Isolation: READ COMMITTED.
-* Retry: a request that hits a deadlock or serialization failure is retried once with the same request ID.
-* Timeout: 15 s to connect, 30 s per statement, 60 s at a barrier.
-* Road geofence 20 km, lease 360 minutes.
+| Measure | How to read it |
+| --- | --- |
+| Duplicate ownership | Trials where more than one active claim was actually stored |
+| Expired lease recovery | Expired cases where another NGO could take over |
+| Active lease safety | Active cases where the original claim was wrongly released |
+| Responses and timing | Successes, conflicts, errors, SQLSTATEs, median of trial medians, and pooled request P95 |
+| Extra checks | Same-request replay, delayed competition, repeat and simultaneous recovery, stale claimants, audit consistency, and geofence decisions |
 
-## Measures
-* **Main 1:** duplicate committed claim rate, the share of contention trials that end with more than one saved owner
-  (read from the database, not from the answers).
-* **Main 2:** lease recovery success, the share of expired lease trials where another NGO could take the donation over.
-* Also: valid leases wrongly released (must be 0), the answers each NGO got, trials where answers and saved data
-  disagree, attempts recorded in the audit log, response time and requests per second.
-* Extra checks of the proposed method: sending the same request ID again, a claim held open for 1 second while another
-  NGO claims (50 trials), running recovery twice, the old NGO trying again, two recovery jobs at the same moment, and
-  the geofence check.
-* Uncertainty: 95 % Wilson intervals and an exact McNemar test on the paired trials.
+Wilson intervals describe uncertainty around observed proportions. Exact paired McNemar tests compare the same scenarios across methods for duplicate ownership and expired-lease recovery.
 
-## Steps
-1. For each condition: rebuild the database, then run it.
-2. Run the comparison. It only reads the result folders.
+## 6. Execution flow
+
+1. Check the experiment target, reset inventory, and frozen inputs.
+2. Rebuild the verified target separately for each method.
+3. Run the scheduled cases and record both request responses and stored database state.
+4. Check that all three method outputs belong to one run and generate the comparison.
+5. Use the [paper-run verifier instructions](README.md#result-files) to inspect the sealed paper evidence offline.
+
+## 7. Interpretation and limits
+
+An expected conflict protects the winning claim. A correct geofence allow/refuse decision can use a different rejection code from the benchmark reference. Report decision correctness and reason-code agreement separately.
+
+This controlled workload is designed to expose a race. The timing includes database round trips and work, and can change with the machine, hosted pooler, or network. Recovery is invoked directly on prepared leases, so the result measures the recovery rules in these cases rather than production scheduler delays.

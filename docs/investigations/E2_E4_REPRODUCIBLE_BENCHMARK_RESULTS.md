@@ -1,4 +1,6 @@
-# E2 and E4 reproducible benchmark results
+# Historical E2 and E4 benchmark results
+
+> This report describes the superseded local experiments. The historical commands and result paths below are retained as citations. For supported workflows, see the [E2 guide](../../experiments/e2/README.md) and the [E4 guide](../../experiments/e4/README.md).
 
 Executed locally on 5 November 2026. **E2 readiness: PARTIAL. E4 readiness: PARTIAL.** The actual proposed implementations execute in isolation and all requested scenario counts completed. These labels reflect observed errors and methodology differences, not missing runs. No shared Supabase connection, hosted worker, deployment, production change or push was used.
 
@@ -12,7 +14,7 @@ Teammate source was located in `C:\Users\User\Downloads\FYP-GeoLock_Hub-ss (1)\F
 
 Inputs: **GEOLOCK-BM-v3.3**, **OSM-DIRECTED-v3.3**, seed **20260915**. All 15 CSVs in the supplied ZIP/extraction have LF transport bytes, whereas the generation manifest declares CRLF hashes. Restoring only CRLF into the separate `experiments/repro_inputs/v33/` mirror matches every declared CSV SHA256 and row count exactly. Original files were not rewritten; per-file transport/source/canonical evidence is in each run manifest. The supplied manifest SHA256 is `139c823a20753e16bf1d6c0aea137ff03a171b57def95723d1be9bd4c66afe34`; its CRLF representation is `5fdafca9baa69c4e1c84eb843d180ff0e2ea6319fccf02ae033a6d3fb595d16a`, matching historical run metadata. No rows, matrices or scenarios were regenerated.
 
-Revision: `df626175c1413249ec2fceb314e0df431d5e692b`, with existing unrelated dirty work preserved. Per-file source hashes, rather than HEAD alone, identify execution. Python 3.12.14; psycopg 3.3.6; PostgreSQL 17.11; native PostGIS 3.6.2 in the baseline database; OR-Tools 9.15.6755. Package versions and native checksums are in `experiments/repro_environment.json` and `experiments/repro_runtime_checksums.json`.
+Revision: `df626175c1413249ec2fceb314e0df431d5e692b`, with existing unrelated dirty work preserved. Per-file source hashes, rather than HEAD alone, identify execution. Python 3.12.14; psycopg 3.3.6; PostgreSQL 17.11; native PostGIS 3.6.2 in the baseline database; OR-Tools 9.15.6755. See the historical [package inventory](e2-e4-review-evidence/repro_environment.json) and [native runtime checksums](e2-e4-review-evidence/repro_runtime_checksums.json).
 
 ## E2: actual PostgreSQL execution
 
@@ -77,9 +79,9 @@ All use benchmark 240-minute routes, 10-minute service, zero exploratory safety 
 
 Six focused artifact/launcher tests passed (`.venv-stage8/Scripts/python.exe -m unittest experiments.test_repro_benchmarks -v`): canonical hash/value integrity; 300 E4 shared-input/validation records; complete E2 ownership/function evidence; error-to-audit matching; unsafe run-ID rejection; overwrite refusal. Offline summary verification independently revalidated 300 E4 plans and both original baselines. All five newly owned E2 setup/smoke/full clusters have `stopped: true`, `remote_connections: 0`; logs/data remain available. Setup failures are not counted as completed benchmarks.
 
-Exact PowerShell setup, full commands, dependencies and portability prerequisites: `experiments/REPRODUCIBLE_E2_E4_README.md`. Use `experiments/run_repro_benchmarks.py --experiment E2 --run-id NEW-ID --teammate-root PATH` or `--experiment E4` under the recorded Python environment; never invoke the original E2 CLI directly because it contains a remote default DSN. The local wrapper restricts connection resolution to its generated loopback port/database. Output overwrite is refused.
+For current setup, execution, and verification, see the [E2 README](../../experiments/e2/README.md) and [E4 README](../../experiments/e4/README.md). The original joint launcher is retired.
 
-Tomorrow's executable single-case demonstration and expected files: `experiments/E2_E4_DEMONSTRATION_GUIDE.md`. Routing case `SCN-ROUTE_PLANNING-0003` serves the same four tasks: Nearest-Next 47.55281 km, proposed 42.94797 km; saved routes and independent feasibility evidence are included. A single-case rerun is a demonstration, not a new full benchmark.
+Historical routing demonstration: Routing case `SCN-ROUTE_PLANNING-0003` serves the same four tasks: Nearest-Next 47.55281 km, proposed 42.94797 km; saved routes and independent feasibility evidence are included. A single-case rerun is a demonstration, not a new full benchmark.
 
 Before presenting an unqualified PASS: disclose/review the actual deadlock robustness gap, resolve the formal 500-versus-483 admission policy mismatch, align the thesis method description with current CP-SAT, and review the specified paired uncertainty protocol. Do not imply new supervisor approval. A product correction would require separately authorized work and new measurements. The current outputs support an honest demonstration of single ownership, protected recovery and offline optimization with these limitations.
 
@@ -88,16 +90,16 @@ Before presenting an unqualified PASS: disclose/review the actual deadlock robus
 No production algorithm, original baseline or original frozen input was edited for these experiments. Existing unrelated work was preserved. Added:
 
 - `experiments/repro_benchmark.py`: integrity, original-source loading and environment helpers.
-- `experiments/run_repro_benchmarks.py`: portable local-only launcher and overwrite guards.
+- The historical local launcher has been retired. Use the current [E2 README](../../experiments/e2/README.md) and [E4 README](../../experiments/e4/README.md) for execution instructions.
 - `experiments/e2_atomic_claiming/run.py`: disposable real PostgreSQL experiment controller.
 - `experiments/e4_post_claim_routing/run.py`: original baselines/current-worker adapter and raw plan capture.
-- `experiments/summarize_repro_benchmarks.py`: result verification, comparison tables and statistics.
+- The historical summarizer generated the comparison tables and statistics for these superseded runs. The current E2 and E4 READMEs link to the active comparison workflow.
 - `experiments/test_repro_benchmarks.py`: six focused artifact/guard checks.
-- `experiments/repro_environment.json`, `experiments/repro_runtime_checksums.json`: dependencies/native evidence.
+- [Historical environment](e2-e4-review-evidence/repro_environment.json) and [runtime checksums](e2-e4-review-evidence/repro_runtime_checksums.json).
 - `experiments/repro_inputs/v33/`: exact manifest-matching transport mirror.
-- `experiments/REPRODUCIBLE_E2_E4_README.md`, `experiments/E2_E4_DEMONSTRATION_GUIDE.md`, this report.
+- Current reproduction instructions are maintained in the [E2 README](../../experiments/e2/README.md) and [E4 README](../../experiments/e4/README.md).
 - Both final result directories named above: raw scenarios/requests/plans, manifests, completion records, comparison CSVs, statistics, presentation-ready `COMPARISON.md`, audit/ownership/validation evidence. E2 additionally retains stopped private runtime data; E4 additionally retains original full-input baseline outputs.
 - Retained exploratory/setup directories under the same result roots; these are explicitly excluded from final sample counts.
-- `experiments/REPRODUCIBILITY_MANIFEST.json`: final source/artifact inventory with SHA256, excluding disposable database binaries/data and itself.
+- [Historical reproducibility manifest](e2-e4-review-evidence/REPRODUCIBILITY_MANIFEST.json) records the original source and artifact paths and SHA-256 hashes for the superseded local experiment. Use the current E2 and E4 guides for published-run provenance.
 
 E2 tables: `comparison.csv`, `lease_comparison.csv`, `comparison_per_scenario.csv`, `summary_statistics.json`. E4 tables: `comparison.csv`, `summary_statistics.csv`, `original_baseline_summary.csv`, `paired_distance_summary.csv`. Full presentation tables are in each final run's `COMPARISON.md`. These outputs, rather than rounded prose, are the authoritative measured records.

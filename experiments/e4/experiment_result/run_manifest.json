@@ -1,0 +1,1599 @@
+{
+  "run_id": "ac1b77db93634b7d8da371ee59105679",
+  "status": "completed",
+  "source_sha256": {
+    "backend/__init__.py": "5824ae3b7fa5429d504bd66251b13ad9f5bc983828e38d6089d81c9bbac11f8f",
+    "backend/routing/__init__.py": "174b4f56ec9e2bd12641025bf6822c407bb0ca1f1471545f81723f505b60547c",
+    "backend/routing/__main__.py": "723ec8bc214feb656b81facbb1c72b90e672bd274a499268c604597ddff54319",
+    "backend/routing/benchmark_v32/__init__.py": "5ad1a740f503801c52bc232fd68499520a4d4e91138908cf616619f7606ff6fe",
+    "backend/routing/benchmark_v32/adapter.py": "edcc3ebc357d1b99dcde847eee037787844a6262648ba6f4f048784828b5deb7",
+    "backend/routing/benchmark_v32/runner.py": "4166fef16c7f682ec1fe056f1e77f3d1b797cd758714290c676f183db4f11178",
+    "backend/routing/benchmark_v32/test_adapter.py": "4a62ef8cdb5bf1981f739221779da95f04c293a89f7b6407d4a40f79aa9a5b8c",
+    "backend/routing/contract.py": "47ed1d97ba249ac50f3462babeb932f4d91c863899ea4297ddcb1a3ce4efa3fb",
+    "backend/routing/contracts/__init__.py": "21a8bdd372ac9e3c784ffdcab5915d249d0f32b7daa4a0f469e16825f5833c80",
+    "backend/routing/diagnostics/__init__.py": "ffcdb01116827ad124d9003145803e9475fa45e58132b700e546d2859ac3e27a",
+    "backend/routing/diagnostics/finalize.py": "e22c0a574fca0a468bc07913e01e4a29bdde7425af5da443d7c3f9cc92d3eeb3",
+    "backend/routing/diagnostics/policy_proposal.py": "80031a48833c43ec2e2a3020f2b51b9f2b7576b28881741e9f73ae46a2886018",
+    "backend/routing/diagnostics/postgres_candidate_hashes.py": "feec464b0a6617e9b2c061f8f942b05f60bb8ff379d6173c41f75178309575f9",
+    "backend/routing/diagnostics/reproducibility.py": "f15013954f2fb23098f0555f156ea219cf3c24f850aec0a0333c78659b32af5e",
+    "backend/routing/diagnostics/summarize.py": "1590cdbc28c67231034ce93e83db29fb7ee467e49bb987adaae7fb7a379d0dd6",
+    "backend/routing/generate_examples.py": "fc06a6dc02bc0abaeb49626981493e2d18ef790781a70ac0bd76d8d3e084f65e",
+    "backend/routing/hosted/__init__.py": "4e47d81d23d4a4a678e67952b6b202b00317ca08567078c4970e131528f2943c",
+    "backend/routing/hosted/__main__.py": "094a69c48a0252ea598b9e1ee276067c0b07e44292a7acefdbb2d2323fc6f066",
+    "backend/routing/hosted/artifact.py": "07ad44a549a9dcf7e026f605e1847cff61c9a8895de4e2780ac651eaa44bddd6",
+    "backend/routing/hosted/benchmark.py": "e3e7d2b5042b21568b8e796e682dfcd8894496d25459109160fcf9335dfb7d67",
+    "backend/routing/hosted/compact_graph.py": "c19ae4a4eaf66aac7c00a83b223e4e9bf43889403cbae4a37a4f6572edc79658",
+    "backend/routing/hosted/config.py": "1f5688815d386639c42a9d417374cc4db1080e272ef546d8dc3c919e25954d2f",
+    "backend/routing/hosted/frozen_benchmark.py": "e388f9089f0bddb245015bcd8f2e03b4e28b815a698d16e53d37fe046d3daf0d",
+    "backend/routing/hosted/run_resource_profiles.py": "1580bf1d923e9538008e3388d6ac75e0907b348b398d4653618d9691465861bb",
+    "backend/routing/hosted/runtime.py": "a5fbbd05e1b1453af7d392d23fc38815886503e73d181ca8d7a9608a914ae272",
+    "backend/routing/integration/__init__.py": "66189aaf0f73f0901ad347523a7f0ca52675398baa31f86ccd911c4710556f05",
+    "backend/routing/integration/graph_worker.py": "8a19d1c22faea21f24b072e1a4c020ae2eae3ba28520dac405007edb25a190e3",
+    "backend/routing/integration/presentation.py": "11da67e75437440d57ff0cfdcc3782a4137b47a1fcf28985d9f4e1949cf76215",
+    "backend/routing/integration/route_resolution.py": "81f84c3380f8e98c02ae2a3ea23d623c53cd6b44b4ab321178c1d14f19c6d9a1",
+    "backend/routing/integration/worker.py": "2daec4009ae5acbddf8b919486f3e2c9e2e1de40141cb07d693a9ceaa7cc1a71",
+    "backend/routing/optimizers/__init__.py": "e694777bec3e3860c7c835f8fcfea8db5190ee74a6e1b81ac710d9f3b281e774",
+    "backend/routing/optimizers/baselines.py": "96dc7063be0f514da30e425c27dd4af13c61d9f257843c8bce28729f12bf1ddc",
+    "backend/routing/optimizers/cp_sat.py": "8ddc8092321439473a9aa09280ffc959e7ecab08750d3fbf585ad3a5db27432f",
+    "backend/routing/optimizers/models.py": "590e1959491e50e50c4bc402a046ed0d48ce3ad55d0191992492774e78f4b8a1",
+    "backend/routing/optimizers/problem.py": "f0cd9a0039c3c9f0b5cff06b017781d6a5b06c5311b1ebd2bad9aedffa50d709",
+    "backend/routing/phase_b/__init__.py": "ea1874f9528fa985f037864df8c1cb9d16cfdb9cf4eed1d90a4c64b2c008f649",
+    "backend/routing/phase_b/baselines.py": "f9abe39492362c4ca9535bdafd1afa72d022079ea4cc0bd9d8a7d7466e4e318e",
+    "backend/routing/phase_b/benchmark.py": "605dce3433812c221ef2d3011c53e94bd736e9cb301fbc51b0507fd2a87a6ade",
+    "backend/routing/phase_b/models.py": "7a3540a0131a701f55a013fe397ef66f543ea4e080ae52e076eaca657f4d3409",
+    "backend/routing/phase_b/optimizers.py": "dcd396243fa176209f4c37adc00f6aa5233dcecb81422688f6e0f8907fc11e85",
+    "backend/routing/phase_b/problem.py": "c67454fbfcd73a6e38e84d118031f8f893df02195761e606d451768012bb4206",
+    "backend/routing/phase_b/routing_model.py": "153588c957a06d4e4c3caec09d6be20214fc44de075d0adfe2246f5e452951c1",
+    "backend/routing/phase_b/scenarios.py": "ab8d38c0c6164850d185230ef68006080391daa2404ca51e11b0fe71538f3e7e",
+    "backend/routing/phase_b/validation.py": "3788a5aee2d5758b26bc04c7299215ff5bae6810f95b0264f8ddfa3c4f59a37d",
+    "backend/routing/phase_c2/__init__.py": "dcce663ee225a0c7fe0ae51238b4736ca7f569c322bc9b752393e8d1e49cb5c7",
+    "backend/routing/phase_c2/__main__.py": "d02d3e638771e347cda45a4de8b8e36e619edf54d99a9891fe0611c0c89eb6d5",
+    "backend/routing/phase_c2/matrices.py": "23223cd03c0103d9aab55300ed59b5511996803aaa5760fa80a4c5ab03cd4703",
+    "backend/routing/phase_c2/orchestration.py": "29097fccedaeac9d0a6b9e446c85db3741626ac435f2e42846bfb5debd915965",
+    "backend/routing/planner/__init__.py": "da58890e3ddabe870a64ba139b905da38da7c173d2d1c7fd943846cd90d7c70d",
+    "backend/routing/planner/matrices.py": "052674839dabcf430d7f7766fcb763c0c788ffd1d172ccffaed65332fc8ff926",
+    "backend/routing/planner/orchestration.py": "0143380d769dfe0b298216f63e4f79bbf09d2566b47c33590112c4d24909380f",
+    "backend/routing/validator/__init__.py": "b2b1b6f3c4086eab848a8b550341fb30d374398fea2270db83ab7d5a924c819f",
+    "backend/routing/worker_service/__init__.py": "e8be21853e553900344366548fbdbe47732da94115461648982fd261bc587d14",
+    "backend/routing/worker_service/__main__.py": "4633ad8e486a021aea020d390e85b9e7e620e13c162667cd9abae6fea51d9379",
+    "backend/routing/worker_service/connection_diagnostic.py": "56f5dd2911502b5c922bdec87e49e7c284731a3a551fbc19f5dc949858d884f1",
+    "backend/routing/worker_service/connection_diagnostic_native17.py": "8cfde6b02e4d6fc88263b5f632e86764e867d6366fa962946b8e2c1852ddc5fb",
+    "backend/routing/worker_service/errors.py": "3741a1507c5774afa3d306eb2c500af5ef927a350728943a0a1f6e6f09407ecd",
+    "backend/routing/worker_service/graph_cache.py": "32d7bf6cb5723a5f88e70666505c9c4ebe2a388570def737dab2871c86390824",
+    "backend/routing/worker_service/journal.py": "87ed10e794dae622bf6592f5b137f1f77f46883e1cc164441a780ba006160dcb",
+    "backend/routing/worker_service/native_readonly_session.py": "d875f44bbaba26a76b37a30d2576d60e890632792be9d854e85116c48ff6fde5",
+    "backend/routing/worker_service/native_service_connection.py": "52cacfdeb18c92afaf4eaedc66f78c4fc9514c7ac3644b85f5f195a25194fa08",
+    "backend/routing/worker_service/native_service_diagnostic.py": "c8b8919d11bc1d11278f3c5de433d1533f0149afccac57afbb43134d345493c3",
+    "backend/routing/worker_service/native_service_probe.py": "3e287ace826c4c4d24d9dcfdfe47fbc0b6bdef3f8e252800f92dc245182bc1f2",
+    "backend/routing/worker_service/native_worker.py": "4839ad6d3b67be2070e3c3819566b6af686555e0aaf9eea6873860a0a7f1af29",
+    "backend/routing/worker_service/orchestrator.py": "5185eaae9d10eb7c261713ef090ea8b1f5fb8870b8d7d037c3d276cdb956aa5a",
+    "backend/routing/worker_service/password_transport_check.py": "409e04b4bc7928bb3a1a288228094071b9f71041448368b8ca0b4f18d7720804",
+    "backend/routing/worker_service/probe_diagnostics.py": "19765df8f08bb76c59d94e6d30b93cab47259f7f74cb7e62288dcd95f57cd6f4",
+    "backend/routing/worker_service/probe_resources.py": "cfe4f67912417284e7d1a9a64110ec45d7346209d2d40333f5cc0de8e0bfb3c8",
+    "backend/routing/worker_service/readonly_pilot_probe.py": "b74befe246a93a2bb1fa931c28089d163e7effcf76b85468dfc3998abcbdc485",
+    "backend/routing/worker_service/server.py": "7593492a1c13d8f9e68e449af026caa98955a160f5c9c80880cfef05a9024db7",
+    "backend/routing/worker_service/staged.py": "738b7d9ef220ff5a76868d5b2170187b209e35fcd5f0c71b1b4a9619c2ae226b",
+    "backend/routing/worker_service/staged_client.py": "85971c9d648f7a96f488cd3a0c759da63accf761c065793a44eeed6e3a66c810",
+    "backend/routing/worker_service/transport.py": "1be88c856eb71fa76b81c4785fcd780433b6abdbd17d211314b00a619de0c665",
+    "backend/routing/worker_service/validator.py": "a90f2f6d23b6418f30a62df4985567ecaea04dc7b11535bac1614b42053db1c1",
+    "backend/routing/worker_service/windows/local_setup_check.py": "25f2721e50ab1a6a82d5c9d163f1f39902d976deb529687af3efdc15395b0012",
+    "experiments/e4/baseline/source_code/fcfs_baseline.py": "23c733f05cbfb7534a3cb07e642a2927c35a13bafef4829aff23e62e774d5d88",
+    "experiments/e4/baseline/source_code/nearest_next_baseline.py": "4b02b1a01713a66f06992088ded50c8d765b8b1fd9d35c402d1fb9f2f5d2b3b8",
+    "experiments/e4/experiment_result/source_code/e4_compare.py": "3adcacf29115ac50919a330a7ccaac15c40fc70887aab4f758daad58c06a7fec",
+    "experiments/e4/or_tools_route_optimiser/source_code/run_or_tools_route_optimiser.py": "3b77a867da3a94e3bcc9c0a3c905fe9ee8cb2d1db1811607c90fee37db722baf",
+    "experiments/e4/requirements.txt": "859ca6374acaf0c41e5f25ab6bf0d1171f19b7d4742db1f765246bc4c1893328",
+    "experiments/e4/run_e4.py": "e1fc7fc1bc57ed55ffe621331fc926cccf01fe98186fc6a6413b4a1b52bb90db",
+    "experiments/e4/test_harness/e4_shared.py": "65067cb5c8bd87615534556bdb7ccd3030e3fdb8218c44b5d1f2e6e2d3bcac26",
+    "experiments/e4/test_harness/test_e4_admission_and_matching.py": "9c62bda3443714e4dc562b366ad3674926df40f4f5dc233581c11d77a37c34c5",
+    "experiments/e4/test_harness/test_e4_publication.py": "ad56f78b6a27a224c81ac361c70a52f81c669c5c5ec4999da6377a43799afc30"
+  },
+  "input_sha256": {
+    "road_nodes.csv": "a8905fb29f95b6ba02c099fd60a188f98ae92f01c7586995295b096b673df6ea",
+    "road_distance_matrix.csv": "b9a272d2396354695ae2ec6fd744a17510f1b5e7c61989fe7b404d2d0e0133e1",
+    "listings.csv": "71f8552af8731ac8b0ddfb205f32c78413088ba3bd3e2a1d4aa9830abe5e532f",
+    "vehicles.csv": "79be6284565e0f544914bcb6b0fb5a847a0756a6039808bfc03920046f571413",
+    "ngos.csv": "ddc14fe9958c272c7d8b7dc32b23ad6bfffd2a066f1b158a05a7cd3e5c535eaa",
+    "scenarios.csv": "973d91972df90c0e39501a35ca2ae181d1a6af37d5ccb83c56e4b4bf2d5c966c",
+    "scenario_members.csv": "7c09e2a9a040726458078c6d23370978a3cba6f155cb2b68aa2bbc356518e6d0",
+    "generation_manifest.json": "5fdafca9baa69c4e1c84eb843d180ff0e2ea6319fccf02ae033a6d3fb595d16a"
+  },
+  "settings": {
+    "approved": true,
+    "geofence_km": 20,
+    "lease_minutes": 360,
+    "route_minutes": 240,
+    "service_minutes": 10,
+    "safety_margin_minutes": 0,
+    "mandatory": false,
+    "availability_policy": "BASELINE_ROUTING_WINDOW",
+    "listing_expiry_policy": "COMMON_STAGE8_ADMISSION",
+    "currency": "BENCHMARK_COST_UNIT",
+    "fixed_cost": 5,
+    "distance_cost_per_km": 1,
+    "solver_wall_seconds": 30,
+    "deterministic_seconds_per_pass": 0.25,
+    "seed": 42
+  },
+  "runtime_versions": {
+    "ortools": "9.15.6755",
+    "numpy": "2.1.3",
+    "scipy": "1.18.1",
+    "matplotlib": "3.11.2"
+  },
+  "snapshots": {
+    "SCN-ROUTE_PLANNING-0001": {
+      "frozen_snapshot_sha256": "af2e1eda1133e5dffaad1a6945b21b91f5195da5335277797ff14e128073b38d",
+      "matrix_sha256": "5a8d5d9a3b3e9b42ecb9077afba9dd7577383f0570d30a1154374d26a03870a6",
+      "admitted_task_ids": [
+        "TASK-LST000124",
+        "TASK-LST000125",
+        "TASK-LST000126",
+        "TASK-LST000127",
+        "TASK-LST000128"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO001-1",
+        "VEH-NGO001-2"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0002": {
+      "frozen_snapshot_sha256": "1aad84405063b467640dcce21f86869ddd5f0059e17792cbcd3140e0885c5e9f",
+      "matrix_sha256": "f4344ad26f124fbd372579ad08dfc862580695b4cfbea29f7be8338f7542ce42",
+      "admitted_task_ids": [
+        "TASK-LST000595",
+        "TASK-LST000597",
+        "TASK-LST000598",
+        "TASK-LST000599",
+        "TASK-LST000600"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO002-1"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0003": {
+      "frozen_snapshot_sha256": "3defb7ca1bf823c5dea261ffd23ec949415569d014bd0a6a23a6f28d820f7701",
+      "matrix_sha256": "829f83cfe89f0625afb2c6c37374fbb038468285b8432342f94c00d622b6de61",
+      "admitted_task_ids": [
+        "TASK-LST000085",
+        "TASK-LST000087",
+        "TASK-LST000088",
+        "TASK-LST000089",
+        "TASK-LST000090"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO003-2"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0004": {
+      "frozen_snapshot_sha256": "07c792206701d2205a421df0d4f80dd0551edeccc05729e3b1e2c0dc34eee8dd",
+      "matrix_sha256": "88f781d350d865774ce21632041f613207e8ba005a40ff4bc7829eded74b1477",
+      "admitted_task_ids": [
+        "TASK-LST000418",
+        "TASK-LST000419",
+        "TASK-LST000420",
+        "TASK-LST000421",
+        "TASK-LST000422"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO004-1",
+        "VEH-NGO004-2"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0005": {
+      "frozen_snapshot_sha256": "d8a0c714b0136fd99088653080e78f042f411e2e57b2f45c9a561c260e784eec",
+      "matrix_sha256": "6575de841802607ee36b070fc2da717260ed1780187240f0475098a323179298",
+      "admitted_task_ids": [
+        "TASK-LST000612",
+        "TASK-LST000614",
+        "TASK-LST000615",
+        "TASK-LST000616",
+        "TASK-LST000617"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO005-1",
+        "VEH-NGO005-2"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0006": {
+      "frozen_snapshot_sha256": "eaa1ed04c78d1a163ac46391c1246de9336f3d95fe566883d74b461cfb83ce9f",
+      "matrix_sha256": "19d0101a00704af35d3dec560fb50d310a069cde4bebaa644f7d98e1b30f381e",
+      "admitted_task_ids": [
+        "TASK-LST000630",
+        "TASK-LST000631",
+        "TASK-LST000635",
+        "TASK-LST000636",
+        "TASK-LST000640"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO006-1"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0007": {
+      "frozen_snapshot_sha256": "5938e93d4c44c9b29570e7f97773e509531e9fa715cd6100e68ac6563ea700e7",
+      "matrix_sha256": "f5a2cdaa7580bde5c3ef322914e8641672201218d6c260c25b06183a317e8a63",
+      "admitted_task_ids": [
+        "TASK-LST000924",
+        "TASK-LST000925",
+        "TASK-LST000927",
+        "TASK-LST000928",
+        "TASK-LST000930"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO007-2"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0008": {
+      "frozen_snapshot_sha256": "81298220b8599cb153028b6655f4adc9fec7f2a3082beb7cb2fd9a288336499b",
+      "matrix_sha256": "9a541a62bfa14e840c9f9233521ac74cab8b11723d1fda1b555ff21ecf7b5370",
+      "admitted_task_ids": [
+        "TASK-LST000584",
+        "TASK-LST000586",
+        "TASK-LST000589",
+        "TASK-LST000590",
+        "TASK-LST000591"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO008-1",
+        "VEH-NGO008-2"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0009": {
+      "frozen_snapshot_sha256": "87ca1fed54b23876655203073659cddb8c7f28a0c0d6f9b9796fc07dfaa3c027",
+      "matrix_sha256": "d126cba74c3276ae9e5b8a6a52ef2862806443bce61cfacc6023f8034341f00a",
+      "admitted_task_ids": [
+        "TASK-LST000714",
+        "TASK-LST000718",
+        "TASK-LST000722",
+        "TASK-LST000725",
+        "TASK-LST000727"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO009-1",
+        "VEH-NGO009-2"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0010": {
+      "frozen_snapshot_sha256": "1ee932df1fccafd6644893ef52fc610cc56159918f4e7d7ad9420c0458ab2577",
+      "matrix_sha256": "c10b10a376cf41137c3a2b9580f9ee8cd38ce07807749e2977d6e544dd9e1fd7",
+      "admitted_task_ids": [
+        "TASK-LST001054",
+        "TASK-LST001056",
+        "TASK-LST001057",
+        "TASK-LST001058",
+        "TASK-LST001059"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO010-1"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0011": {
+      "frozen_snapshot_sha256": "fa18d21bb4478349bac43cffe052b7a835f72ebe2e6afa411473f5d9d57a84c2",
+      "matrix_sha256": "f87ae77409aa10dcf9ce6bbcde530d5c40a763473acd791a37c6f97fb8af81ce",
+      "admitted_task_ids": [
+        "TASK-LST000964",
+        "TASK-LST000965",
+        "TASK-LST000970",
+        "TASK-LST000971",
+        "TASK-LST000975"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO011-2"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0012": {
+      "frozen_snapshot_sha256": "e2ce5299194ec0b92a52bc68d74b75c470f42327a3a746c179488f8dca68f4ae",
+      "matrix_sha256": "5cb088aff5762967b2c4cbf7fa264c63dbc824c6e4776cd925912cf927411c35",
+      "admitted_task_ids": [
+        "TASK-LST001019",
+        "TASK-LST001020",
+        "TASK-LST001021",
+        "TASK-LST001022",
+        "TASK-LST001023"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO001-1",
+        "VEH-NGO001-2"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0013": {
+      "frozen_snapshot_sha256": "cb062842fe6a55aa36d193f31a11f1fc29f087eff2fdce999ca943d1f1c27d4c",
+      "matrix_sha256": "b43842911ef6829be0ee1d64b0273af1c1917658831621795b2f754482812514",
+      "admitted_task_ids": [
+        "TASK-LST000229",
+        "TASK-LST000230",
+        "TASK-LST000232",
+        "TASK-LST000234",
+        "TASK-LST000237"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO002-1",
+        "VEH-NGO002-2"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0014": {
+      "frozen_snapshot_sha256": "8dbf7a3b1adf5c525adb9e9921a5e5ee64e6e7bba36dee5b27ddeca9cebcc5dd",
+      "matrix_sha256": "8aceed9d7f9f1ffb76dc60fa70d60592255e2d5a3a525083ce409870faf96b85",
+      "admitted_task_ids": [
+        "TASK-LST000533",
+        "TASK-LST000534",
+        "TASK-LST000536",
+        "TASK-LST000537",
+        "TASK-LST000538"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO003-1"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0015": {
+      "frozen_snapshot_sha256": "40a9893b3d4348b9c9fdff79490fd93722a129e744893efc35176171d728dde8",
+      "matrix_sha256": "ac51c6450a9d1bcd7dbdca5fb69a2cbbcbf20dfe359d9f1cb03d95fff9f636ca",
+      "admitted_task_ids": [
+        "TASK-LST000052",
+        "TASK-LST000054",
+        "TASK-LST000056",
+        "TASK-LST000057",
+        "TASK-LST000058"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO004-2"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0016": {
+      "frozen_snapshot_sha256": "48fbe4647b6100cbc920a6da0e48bafbd1b28874e657f1b451031e513ac9b955",
+      "matrix_sha256": "55d4768ee458273954f573662b993cf8537e3a2587c01d43d8cf2ce1cef3c191",
+      "admitted_task_ids": [
+        "TASK-LST001078",
+        "TASK-LST001080",
+        "TASK-LST001081",
+        "TASK-LST001083",
+        "TASK-LST001088"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO005-1",
+        "VEH-NGO005-2"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0017": {
+      "frozen_snapshot_sha256": "68cf458566100a9d92d71205a773f8753321f2051991160a846ae45ed6a60f16",
+      "matrix_sha256": "7dd8a96ab416237d12ec2c93df327462607b874bcd29173acfeacec4c37eb3c8",
+      "admitted_task_ids": [
+        "TASK-LST000442",
+        "TASK-LST000449",
+        "TASK-LST000450",
+        "TASK-LST000452",
+        "TASK-LST000453"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO006-1",
+        "VEH-NGO006-2"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0018": {
+      "frozen_snapshot_sha256": "c1bd0b6adb812f091317ae8f4e939425ace6a240dd13f9cab6a81215466fe2ec",
+      "matrix_sha256": "85a88a8abad71db5c1b02d8caa6cb73c54cca1a104f0d9084fa05a556fde0bec",
+      "admitted_task_ids": [
+        "TASK-LST000311",
+        "TASK-LST000313",
+        "TASK-LST000315",
+        "TASK-LST000317",
+        "TASK-LST000318"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO007-1"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0019": {
+      "frozen_snapshot_sha256": "e570a47a98586cb6c79a30478c1b9f6df9cade83e87047d79ed676c040ba803d",
+      "matrix_sha256": "3dd0854515606f7741c3615a28404f57e375ee1fe11a89d682e65500209db430",
+      "admitted_task_ids": [
+        "TASK-LST000696",
+        "TASK-LST000697",
+        "TASK-LST000699",
+        "TASK-LST000700",
+        "TASK-LST000703"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO008-2"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0020": {
+      "frozen_snapshot_sha256": "a35f607de7bc58441ae98050b60c866e72584f6ff4853b90eac6e667fe859c6e",
+      "matrix_sha256": "14919b69444b71c032991b6df2028a5bbb84adc80cc0bbc1b837101681cc7c8d",
+      "admitted_task_ids": [
+        "TASK-LST000238",
+        "TASK-LST000239",
+        "TASK-LST000240",
+        "TASK-LST000242",
+        "TASK-LST000244"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO009-1",
+        "VEH-NGO009-2"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0021": {
+      "frozen_snapshot_sha256": "7ddf9b682702f9e6c532277d68ad9cc1df2e0b71fb0b1ebf0efee1b3f0cbe967",
+      "matrix_sha256": "ebd7577d4a83d13c88dfae2cbb08f0b50d3a7963075f0e09f85e0cfc6f05bc4f",
+      "admitted_task_ids": [
+        "TASK-LST000250",
+        "TASK-LST000251",
+        "TASK-LST000253",
+        "TASK-LST000254",
+        "TASK-LST000255"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO010-1",
+        "VEH-NGO010-2"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0022": {
+      "frozen_snapshot_sha256": "9e0d46eb043cadb56e240742d8c015161f620d9ff692c6d6ec6fa46a0534095a",
+      "matrix_sha256": "c611866793407fc67c14983e4f28f9ade353d2630111429e18dbc84f0cf719e1",
+      "admitted_task_ids": [
+        "TASK-LST001152",
+        "TASK-LST001155",
+        "TASK-LST001158",
+        "TASK-LST001160",
+        "TASK-LST001162"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO011-1"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0023": {
+      "frozen_snapshot_sha256": "7f9d01874f5704a6e2f38a9565afd7b429d89fd24c1223a1b8b5d0c89122e338",
+      "matrix_sha256": "5c465556ad8f9f27a3cc825d204551ab6676c3642ad3e596953c54c79a03c048",
+      "admitted_task_ids": [
+        "TASK-LST001167",
+        "TASK-LST001168",
+        "TASK-LST001169",
+        "TASK-LST001170",
+        "TASK-LST001171"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO001-2"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0024": {
+      "frozen_snapshot_sha256": "ec4834ebb430f2c0110a41ff2b22c46482803beef88498c52d8ae367222aa0e2",
+      "matrix_sha256": "aaf2d10096745c01a68a73a2ebe647b2cdd5b8f97916646d412394081c210c3b",
+      "admitted_task_ids": [
+        "TASK-LST000448",
+        "TASK-LST000454",
+        "TASK-LST000456",
+        "TASK-LST000459",
+        "TASK-LST000462"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO002-1",
+        "VEH-NGO002-2"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0025": {
+      "frozen_snapshot_sha256": "d23c441f8573d79851b1834345d25816021f518b2e3814a6ee71083a3566baa2",
+      "matrix_sha256": "b70d0cb3c7c53a2c1f7051742e379e4255df4706bd98ed010e22342849373c6b",
+      "admitted_task_ids": [
+        "TASK-LST000997",
+        "TASK-LST000998",
+        "TASK-LST000999",
+        "TASK-LST001000",
+        "TASK-LST001001"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO003-1",
+        "VEH-NGO003-2"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0026": {
+      "frozen_snapshot_sha256": "ad3e4d8ba1cb01d9c00cb99551a1a834ada7e5188dde0e6cdcd017d183e2c99b",
+      "matrix_sha256": "645ebe80093ad1411611591252e83ea8faf1b50e3f14a25dcb716c7871f7b2ce",
+      "admitted_task_ids": [
+        "TASK-LST000495",
+        "TASK-LST000496",
+        "TASK-LST000498",
+        "TASK-LST000500",
+        "TASK-LST000501"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO004-1"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0027": {
+      "frozen_snapshot_sha256": "1612a1c3a20e79c973f0f89c06a6ecfdd8b79f87e84e2d32b0cd68482b8ff4bc",
+      "matrix_sha256": "92f6f0e987261dd7b57709c8ffa05bc89cfd562685f29717bb8d1d5a0fb9e3b3",
+      "admitted_task_ids": [
+        "TASK-LST000073",
+        "TASK-LST000074",
+        "TASK-LST000075",
+        "TASK-LST000076",
+        "TASK-LST000077"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO005-2"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0028": {
+      "frozen_snapshot_sha256": "7dc746c4c7ce19ee9a5f502432204f03c7afc087b29d4c93e5d493b3b772221e",
+      "matrix_sha256": "261d5a2583910731014adee4fcbc16a0264f2cccfbc149822a62e3335a0e71a8",
+      "admitted_task_ids": [
+        "TASK-LST000114",
+        "TASK-LST000115",
+        "TASK-LST000117",
+        "TASK-LST000119",
+        "TASK-LST000121"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO006-1",
+        "VEH-NGO006-2"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0029": {
+      "frozen_snapshot_sha256": "b85f8f6664de3f74b9b271d0f4e2a96fd96f33c8d8f374adf3d0fe59ba43c590",
+      "matrix_sha256": "2415265bb10555a55fa59e8e3de60c7ca7522959485a8b7b9bf374b149b5a2a1",
+      "admitted_task_ids": [
+        "TASK-LST000886",
+        "TASK-LST000887",
+        "TASK-LST000888",
+        "TASK-LST000889",
+        "TASK-LST000891"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO007-1",
+        "VEH-NGO007-2"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0030": {
+      "frozen_snapshot_sha256": "01236cb85269628f648e8bfa653b178ca0cc78336775358005270ed8d226f290",
+      "matrix_sha256": "b8bd5b91dff1b4e3b2b0f0bf98331764e691031acf7f7575f94a618624e913fa",
+      "admitted_task_ids": [
+        "TASK-LST000550",
+        "TASK-LST000551",
+        "TASK-LST000553",
+        "TASK-LST000554",
+        "TASK-LST000556"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO008-1"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0031": {
+      "frozen_snapshot_sha256": "95f58281e04e586b1bcc2342b1857f5ed1ca1d07a2efa5c6985121a963590fb4",
+      "matrix_sha256": "5951bac57a6176cf958351c5ee1136bbde89d15e71e1deff7b2e312118b1d7ba",
+      "admitted_task_ids": [
+        "TASK-LST001039",
+        "TASK-LST001040",
+        "TASK-LST001041",
+        "TASK-LST001042",
+        "TASK-LST001043"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO009-2"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0032": {
+      "frozen_snapshot_sha256": "416b99e0210045f2036ff22efef85d5827d463b42c697879ff7c41b038d4ff36",
+      "matrix_sha256": "e5560cc296c680f805d2b7f78c062372d40e056366ce05b06461816ed8119fd4",
+      "admitted_task_ids": [
+        "TASK-LST000804",
+        "TASK-LST000805",
+        "TASK-LST000807",
+        "TASK-LST000808",
+        "TASK-LST000812"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO010-1",
+        "VEH-NGO010-2"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0033": {
+      "frozen_snapshot_sha256": "55beeab39131764b4b90fbb2e0be793128a9282fd41f1c29f0b66ab2ee6d9ce7",
+      "matrix_sha256": "0cf030640f887a0210b6db876fcc2b14112835da89772f9c005e4761317ab4e4",
+      "admitted_task_ids": [
+        "TASK-LST000055",
+        "TASK-LST000060",
+        "TASK-LST000061",
+        "TASK-LST000064",
+        "TASK-LST000065"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO011-1",
+        "VEH-NGO011-2"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0034": {
+      "frozen_snapshot_sha256": "ee09393b17050061e519f0570e085484a22d3eff914ae175ce68e58e5e89fc6e",
+      "matrix_sha256": "8b101aecc485a843e39501eb8d4b4dc7e033fb21142c64ffd777e3a828239c4b",
+      "admitted_task_ids": [
+        "TASK-LST000441",
+        "TASK-LST000443",
+        "TASK-LST000445",
+        "TASK-LST000446",
+        "TASK-LST000451"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO001-1"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0035": {
+      "frozen_snapshot_sha256": "37a1cd86e01fe4c1ad41eaff4bbb16a997943a5e0e339a65be3d66fb21ced576",
+      "matrix_sha256": "893481e9b29b0b92d3994d58eba3395bf74797f224121ec937c1dd111a5d0b9e",
+      "admitted_task_ids": [
+        "TASK-LST000149",
+        "TASK-LST000150",
+        "TASK-LST000152",
+        "TASK-LST000156",
+        "TASK-LST000158"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO002-2"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0036": {
+      "frozen_snapshot_sha256": "6abfb74c18e86b872bb32c9a6f87f04a360e4bde98fee02465b2be445c5b676f",
+      "matrix_sha256": "f77e537b5594d1cb0660e639eaed35960110140701f40dc0d38f53530dec64d3",
+      "admitted_task_ids": [
+        "TASK-LST000736",
+        "TASK-LST000737",
+        "TASK-LST000738",
+        "TASK-LST000739",
+        "TASK-LST000741"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO003-1",
+        "VEH-NGO003-2"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0037": {
+      "frozen_snapshot_sha256": "a076d06a738dfd222d300374144dc56eae019aa6336f227fcbcf8367583459a7",
+      "matrix_sha256": "d26d2b3eb5f199141a20f5265c53455a3711eb5bb020838a2d550e49893c7dda",
+      "admitted_task_ids": [
+        "TASK-LST000338",
+        "TASK-LST000343",
+        "TASK-LST000344",
+        "TASK-LST000345",
+        "TASK-LST000347"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO004-1",
+        "VEH-NGO004-2"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0038": {
+      "frozen_snapshot_sha256": "f75cb73c42dc6aefb0c966588c154d35a8f0bb732e3e889fc1c712c3e214bdfa",
+      "matrix_sha256": "1854c128cc1613cf695c252eb9595a94874ad110bbcd4b2a92a10f1f64e16cea",
+      "admitted_task_ids": [
+        "TASK-LST000870",
+        "TASK-LST000872",
+        "TASK-LST000873",
+        "TASK-LST000874",
+        "TASK-LST000876"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO005-1"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0039": {
+      "frozen_snapshot_sha256": "d8ea8838e5b5c8dec48a9663b95ebfd588f595a14268e8630168bb304332aca8",
+      "matrix_sha256": "aad059cf936411973411d406cd4d93605fdfe086df68fbf1a4e33884e47b678e",
+      "admitted_task_ids": [
+        "TASK-LST000169",
+        "TASK-LST000173",
+        "TASK-LST000176",
+        "TASK-LST000177",
+        "TASK-LST000179"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO006-2"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0040": {
+      "frozen_snapshot_sha256": "c7a171520f6d5b106188bbfbfd15c221bb535413f833cc42281ebb96db0d4357",
+      "matrix_sha256": "302fc170ebb0a2be9484745fd8f272f3879fdc4e97ae9a6a9c654c4a58560a2b",
+      "admitted_task_ids": [
+        "TASK-LST000131",
+        "TASK-LST000132",
+        "TASK-LST000133",
+        "TASK-LST000134",
+        "TASK-LST000135"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO007-1",
+        "VEH-NGO007-2"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0041": {
+      "frozen_snapshot_sha256": "dfa5d59abcbe128aca086bdf38162def643f544aa5fb01631557c7509b502f50",
+      "matrix_sha256": "03f1b9d707cc59ba631d563bac0e19e8eaf450e48ab6a8ba9e287d8f4b5c2ccd",
+      "admitted_task_ids": [
+        "TASK-LST000572",
+        "TASK-LST000573",
+        "TASK-LST000575",
+        "TASK-LST000578",
+        "TASK-LST000580"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO008-1",
+        "VEH-NGO008-2"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0042": {
+      "frozen_snapshot_sha256": "10756ff5725ce7b9215f134aa3cf3ca971324e91291787313ed31ee87f55479b",
+      "matrix_sha256": "3b89efb1fba544d9b264f22ddf3f24598950603543c9ea7ac677bd533edf730f",
+      "admitted_task_ids": [
+        "TASK-LST000041",
+        "TASK-LST000043",
+        "TASK-LST000046",
+        "TASK-LST000047",
+        "TASK-LST000048"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO009-1"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0043": {
+      "frozen_snapshot_sha256": "acd6c97a03501f434cefeabc1ee9cb7edb6762f625dce4d31cf6a5686d640839",
+      "matrix_sha256": "11eb16ddebb89a70de0e8eab626224c104c2890061c5280acceb02e9e94904fa",
+      "admitted_task_ids": [
+        "TASK-LST000204",
+        "TASK-LST000206",
+        "TASK-LST000207",
+        "TASK-LST000208",
+        "TASK-LST000210"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO010-2"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0044": {
+      "frozen_snapshot_sha256": "ecebb074193416ba21324e46a8d545e3f7242a324ebd201d8038ea130b532c2e",
+      "matrix_sha256": "4d7ed33a0cbb678edf743b0aa2e319f947af3b57f6399549c217e376b0403089",
+      "admitted_task_ids": [
+        "TASK-LST001117",
+        "TASK-LST001118",
+        "TASK-LST001119",
+        "TASK-LST001120",
+        "TASK-LST001121"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO011-1",
+        "VEH-NGO011-2"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0045": {
+      "frozen_snapshot_sha256": "e600f2dbc1dd117d78ef5e151579e7d5458713fcecce16acbb9dc5ec406d38b3",
+      "matrix_sha256": "ea6deb69060e717cb8c804ab826bba9de41f741d741fe8610445e59e66bb1d6c",
+      "admitted_task_ids": [
+        "TASK-LST000491",
+        "TASK-LST000492",
+        "TASK-LST000493",
+        "TASK-LST000494",
+        "TASK-LST000499"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO001-1",
+        "VEH-NGO001-2"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0046": {
+      "frozen_snapshot_sha256": "214f7ad9d0c6d15c39a90a7a021ad736e221e4cbd12df7e568dfb499c746975a",
+      "matrix_sha256": "ccdb13530e17476fdada50fd6d473dbc249a161d67c3e31a8818b4ef107ed1c4",
+      "admitted_task_ids": [
+        "TASK-LST000717",
+        "TASK-LST000720",
+        "TASK-LST000721",
+        "TASK-LST000724",
+        "TASK-LST000726"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO002-1"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0047": {
+      "frozen_snapshot_sha256": "a3cb0811db28d8db09f2c86c61bfeaaf513fd7c5795cc673000099b726aa04c7",
+      "matrix_sha256": "cf80c9a7a110ada4acce96718dfa28e015d3000b86f36814449e47dc88a26914",
+      "admitted_task_ids": [
+        "TASK-LST000140",
+        "TASK-LST000143",
+        "TASK-LST000147",
+        "TASK-LST000154",
+        "TASK-LST000155"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO003-2"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0048": {
+      "frozen_snapshot_sha256": "3ae0d54042cf5a9bc33d54a8982fdb973793e61f637421cdcb97631a6059a40a",
+      "matrix_sha256": "008ae86e62c3df59d50d9ca44c80cc3e49a4698ac88502a47616865a05ea7106",
+      "admitted_task_ids": [
+        "TASK-LST000669",
+        "TASK-LST000670",
+        "TASK-LST000671",
+        "TASK-LST000672",
+        "TASK-LST000673"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO004-1",
+        "VEH-NGO004-2"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0049": {
+      "frozen_snapshot_sha256": "c5fc2717cb5d8292b8afbb9fba04898c1ff3a81851a45afa9f4efac101745c17",
+      "matrix_sha256": "d9c7465a161d01681d185c9cbf64e2041e7b275065020eccf8072fdc4d43fbc0",
+      "admitted_task_ids": [
+        "TASK-LST000986",
+        "TASK-LST000988",
+        "TASK-LST000989",
+        "TASK-LST000991",
+        "TASK-LST000992"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO005-1",
+        "VEH-NGO005-2"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0050": {
+      "frozen_snapshot_sha256": "35caa2751acdc2ae8527aef9ce008b8c4542b15a290426462bbe88c1f91c874e",
+      "matrix_sha256": "db27e7c3a2c6017a360b8dbfc1e6f5429d4c0fd3d5a6e0beb27789f4d5cc5511",
+      "admitted_task_ids": [
+        "TASK-LST000457",
+        "TASK-LST000458",
+        "TASK-LST000463",
+        "TASK-LST000464",
+        "TASK-LST000465"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO006-1"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0051": {
+      "frozen_snapshot_sha256": "3980c4159f2564b9b94283f5b230a8e8e9da68f702c4552667412ca577e618c7",
+      "matrix_sha256": "4cdfcda5f4aea90f6c952c5f719af49b72a545448998b81cfd8a664788b24948",
+      "admitted_task_ids": [
+        "TASK-LST000188",
+        "TASK-LST000189",
+        "TASK-LST000190",
+        "TASK-LST000191",
+        "TASK-LST000192"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO007-2"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0052": {
+      "frozen_snapshot_sha256": "ae3b6b594ba8d56e2f49db026cd38356423940eb124b61871975eccb79e8317b",
+      "matrix_sha256": "2eba69f9d61f67aef7d23f03c40a142594f26009ef23c820bf5e275faf9a1653",
+      "admitted_task_ids": [
+        "TASK-LST000676",
+        "TASK-LST000679",
+        "TASK-LST000681",
+        "TASK-LST000682",
+        "TASK-LST000683"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO008-1",
+        "VEH-NGO008-2"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0053": {
+      "frozen_snapshot_sha256": "e204cb28b9b321e628993dd638310cc339e201e89760f09e4b078d5b5fd821c7",
+      "matrix_sha256": "72d6cc511927b5f2c50fda29d20a7915a9fce2450c616f72ce9e42a15ab9bd27",
+      "admitted_task_ids": [
+        "TASK-LST000769",
+        "TASK-LST000771",
+        "TASK-LST000772",
+        "TASK-LST000773",
+        "TASK-LST000776"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO009-1",
+        "VEH-NGO009-2"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0054": {
+      "frozen_snapshot_sha256": "ce13e6bbbcbc6df9dc747620871d61db1e47e1e28563ca540c7aec807f5b6b13",
+      "matrix_sha256": "c3602414acb53acafabd454d16b5737c29271e775c0200fa6101388c00f4f579",
+      "admitted_task_ids": [
+        "TASK-LST000939",
+        "TASK-LST000940",
+        "TASK-LST000943",
+        "TASK-LST000944",
+        "TASK-LST000945"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO010-1"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0055": {
+      "frozen_snapshot_sha256": "008a340b84603d15977b01cd241b35bc889efb895769b03861016bdbb6eb5cd3",
+      "matrix_sha256": "6cb65e5df5a0a10859d2910f2ca8be86ffbda970b13e3df10d22f1dd4f25c890",
+      "admitted_task_ids": [
+        "TASK-LST000840",
+        "TASK-LST000841",
+        "TASK-LST000842",
+        "TASK-LST000844",
+        "TASK-LST000845"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO011-2"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0056": {
+      "frozen_snapshot_sha256": "bb1e5656f1c00f8ef4d902d28905e032cea5cf5df98ac76478969721d0f744b2",
+      "matrix_sha256": "2aa2187783a54f958aed8ba1bc53cc56d783c71dc3bcebc2a97ea9014ed8d3f2",
+      "admitted_task_ids": [
+        "TASK-LST000356",
+        "TASK-LST000357",
+        "TASK-LST000358",
+        "TASK-LST000362",
+        "TASK-LST000363"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO001-1",
+        "VEH-NGO001-2"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0057": {
+      "frozen_snapshot_sha256": "1186067e42ae5e4fdf66b4302d26c2c13ae30cae73cb587e85bdb4fa8e666638",
+      "matrix_sha256": "e2a5554396b501d5805a235625a1fedfa235801e55a9c4e2245c53cd99d7ce82",
+      "admitted_task_ids": [
+        "TASK-LST000423",
+        "TASK-LST000426",
+        "TASK-LST000427",
+        "TASK-LST000429",
+        "TASK-LST000430"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO002-1",
+        "VEH-NGO002-2"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0058": {
+      "frozen_snapshot_sha256": "47e9a6485d201212d843116b79991cc32ffca8165056451d8cf924110eaf6645",
+      "matrix_sha256": "9f3c22a4d69fff1a78a081d24db27869efec3aebb126200b2f888ee962efcbd1",
+      "admitted_task_ids": [
+        "TASK-LST000899",
+        "TASK-LST000900",
+        "TASK-LST000901",
+        "TASK-LST000903",
+        "TASK-LST000905"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO003-1"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0059": {
+      "frozen_snapshot_sha256": "e95687f0d8264133fca0e62b9ba85a530f457c4892c3f950d87747a80d2544b0",
+      "matrix_sha256": "47252193ff6f759d1a22d203ec6eee1f5e40477933c68a25f10b303d070570fa",
+      "admitted_task_ids": [
+        "TASK-LST001138",
+        "TASK-LST001139",
+        "TASK-LST001140",
+        "TASK-LST001142",
+        "TASK-LST001143"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO004-2"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0060": {
+      "frozen_snapshot_sha256": "7e4a7a0705fb3692a9e86a700f6edcbbabff52b44f88abb339bc286fdb0ee2ab",
+      "matrix_sha256": "77969f0f1b54e51d321f91eb085e877c9d14abb2656f9e07f1405c9cb7f9f2dd",
+      "admitted_task_ids": [
+        "TASK-LST000505",
+        "TASK-LST000506",
+        "TASK-LST000510",
+        "TASK-LST000511",
+        "TASK-LST000512"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO005-1",
+        "VEH-NGO005-2"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0061": {
+      "frozen_snapshot_sha256": "db6fd9f9b93a32cd3fadb1583edab13f323033af621984eae96bec25de87ee45",
+      "matrix_sha256": "c8a97f29bde351fdfc8d68412435a800c5a8b257b8b27350fff7e5878f270aaa",
+      "admitted_task_ids": [
+        "TASK-LST000781",
+        "TASK-LST000782",
+        "TASK-LST000783",
+        "TASK-LST000784",
+        "TASK-LST000785"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO006-1",
+        "VEH-NGO006-2"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0062": {
+      "frozen_snapshot_sha256": "42ca80e8bd1edd5f7822e8d58894c1afed495f101683a5ec7b13e2307576e822",
+      "matrix_sha256": "73c97607074213d83f9960681109b9609dd28693928806a499e5a05544a64cae",
+      "admitted_task_ids": [
+        "TASK-LST000652",
+        "TASK-LST000653",
+        "TASK-LST000654",
+        "TASK-LST000655",
+        "TASK-LST000657"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO008-1"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0063": {
+      "frozen_snapshot_sha256": "17aecc7a80f76586dc8626532c3d552dc78cf00c28e931c8969017e0436d9bb7",
+      "matrix_sha256": "50851ab8298c09e55401ace40fe17d4bb963ba32fa1841d3bea35d9989b6c577",
+      "admitted_task_ids": [
+        "TASK-LST000393",
+        "TASK-LST000394",
+        "TASK-LST000395",
+        "TASK-LST000397",
+        "TASK-LST000398"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO009-2"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0064": {
+      "frozen_snapshot_sha256": "0ce1b7aad1c121cbcdae204de4837eefa8e6e1546d28496a5a687ac3b0b28976",
+      "matrix_sha256": "a31938e2d89aca8d97d639594a3cc139928bf77ebcb69cc59a952157383963c2",
+      "admitted_task_ids": [
+        "TASK-LST000503",
+        "TASK-LST000504",
+        "TASK-LST000507",
+        "TASK-LST000508",
+        "TASK-LST000509"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO010-1",
+        "VEH-NGO010-2"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0065": {
+      "frozen_snapshot_sha256": "1418f0ba0a36d30fb57633f8099b6633a40e977f2aaf191634ab4966eb76ef3c",
+      "matrix_sha256": "26193edc94cd75aa7610ae77a04648c9c6e86d30720db79fd50ce58ae7952b2d",
+      "admitted_task_ids": [
+        "TASK-LST000618",
+        "TASK-LST000619",
+        "TASK-LST000620",
+        "TASK-LST000621",
+        "TASK-LST000622"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO011-1",
+        "VEH-NGO011-2"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0066": {
+      "frozen_snapshot_sha256": "0bbccab2f90c4f4ecd851ba303beb8051559d9ece7c1d0a2cbc9f9eaea18d146",
+      "matrix_sha256": "3bf56c838b815864415c99593d35b551614c95d7264bc448d43dfa5b5e441517",
+      "admitted_task_ids": [
+        "TASK-LST000268",
+        "TASK-LST000269",
+        "TASK-LST000275",
+        "TASK-LST000278",
+        "TASK-LST000279"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO001-1"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0067": {
+      "frozen_snapshot_sha256": "52fe56d09491a22467d0a283b34eb0e2fa935a4836cfe4af17a99995cfb27315",
+      "matrix_sha256": "1f17d10e07b93fd2e4e85ed6419d060dd87016a3f2b58bf15eaf3231490bd765",
+      "admitted_task_ids": [
+        "TASK-LST001084",
+        "TASK-LST001085",
+        "TASK-LST001086",
+        "TASK-LST001089",
+        "TASK-LST001090"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO002-2"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0068": {
+      "frozen_snapshot_sha256": "c7537d4d92490a808b974ceedefdb213dbefed6667a56502e87082de10425756",
+      "matrix_sha256": "95cbeff583c8d2f4b07386760ef910af5c629d781a4ef9a7d5cf023834901c46",
+      "admitted_task_ids": [
+        "TASK-LST000371",
+        "TASK-LST000373",
+        "TASK-LST000374",
+        "TASK-LST000375",
+        "TASK-LST000376"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO003-1",
+        "VEH-NGO003-2"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0069": {
+      "frozen_snapshot_sha256": "78c6ca39ba6c55d28f0d3ca345929c1f9d7bbeed6c477d42b69b34a7273293cf",
+      "matrix_sha256": "19e490468f615d82ec56e06f41ed60fce53abb43b1c3237fc49f8f2ed16131ae",
+      "admitted_task_ids": [
+        "TASK-LST001149",
+        "TASK-LST001151",
+        "TASK-LST001153",
+        "TASK-LST001154",
+        "TASK-LST001163"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO004-1",
+        "VEH-NGO004-2"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0070": {
+      "frozen_snapshot_sha256": "781cf81d4d76c4b9003b3aaf8df69691462398f7c239a1457f184e99722fd7f4",
+      "matrix_sha256": "500bdde03eaa1da09e5e4a5c587c3866a1ade42c3b9ac056033ce6f2202e5357",
+      "admitted_task_ids": [
+        "TASK-LST000853",
+        "TASK-LST000854",
+        "TASK-LST000855",
+        "TASK-LST000856",
+        "TASK-LST000859"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO005-1"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0071": {
+      "frozen_snapshot_sha256": "b7d405a9581a08a8700f71499129cd6f1d630b9833289a91700295bcc431e940",
+      "matrix_sha256": "b2352b64be8882361d423c9be279852bc2f950705642a63d4e7293ea2856ade3",
+      "admitted_task_ids": [
+        "TASK-LST000016",
+        "TASK-LST000017",
+        "TASK-LST000018",
+        "TASK-LST000019",
+        "TASK-LST000020"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO006-2"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0072": {
+      "frozen_snapshot_sha256": "d701b204e4282236968ca4c80fba25f656533e52b5b47bc5a0f0ff46cf36737b",
+      "matrix_sha256": "3a44474ad8e6f5410f4f6e31674af4eda373830555b5b3b42c7f53baa6f05556",
+      "admitted_task_ids": [
+        "TASK-LST000918",
+        "TASK-LST000919",
+        "TASK-LST000920",
+        "TASK-LST000921",
+        "TASK-LST000922"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO008-1",
+        "VEH-NGO008-2"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0073": {
+      "frozen_snapshot_sha256": "383610ab4bb7d6688865e5fa590f2ad9ab1b1d0ade043788b59261fd258c3a51",
+      "matrix_sha256": "21d1fac36a29cc4eee8f2ddba916f4885c6efb2c6471e83955d7844ee08ae98a",
+      "admitted_task_ids": [
+        "TASK-LST000304",
+        "TASK-LST000305",
+        "TASK-LST000306",
+        "TASK-LST000308",
+        "TASK-LST000309"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO009-1",
+        "VEH-NGO009-2"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0074": {
+      "frozen_snapshot_sha256": "5aef3060fdc2ae424911b44f622727a5100510b86bc7532b99ed4bdd0e08b5c4",
+      "matrix_sha256": "955332f65899cd7fbf6af10b8f51911810479687712ca1e5678ec7aacf8c7dad",
+      "admitted_task_ids": [
+        "TASK-LST000002",
+        "TASK-LST000006",
+        "TASK-LST000008",
+        "TASK-LST000009",
+        "TASK-LST000011"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO010-1"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0075": {
+      "frozen_snapshot_sha256": "154ff0ec1e5c20523c171910b07ca71040292ce59f84c7f0e4dd76074999717b",
+      "matrix_sha256": "7b6a4721d8234ffd26f470494f461666aea93762f18e76debdeea95e18478b65",
+      "admitted_task_ids": [
+        "TASK-LST000559",
+        "TASK-LST000560",
+        "TASK-LST000561",
+        "TASK-LST000562",
+        "TASK-LST000563"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO011-2"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0076": {
+      "frozen_snapshot_sha256": "1fb3707e802f3b8251ac59bc2636a80b26c9649f62dee6f827de50d645b9770c",
+      "matrix_sha256": "222536c703e3619c41b91a47c1f233490f7aab4a40ac8bb350e1a78dc16dc385",
+      "admitted_task_ids": [
+        "TASK-LST000477",
+        "TASK-LST000478",
+        "TASK-LST000480",
+        "TASK-LST000481",
+        "TASK-LST000482"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO001-1",
+        "VEH-NGO001-2"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0077": {
+      "frozen_snapshot_sha256": "c20eb0947f6e3e06a140a961adea544f876cc3d3dbedd90ffa7d4548138a9b11",
+      "matrix_sha256": "629e928a3f14466e86814e401b5327a6125403ecf9c45fde604e7b0cbd210408",
+      "admitted_task_ids": [
+        "TASK-LST000637",
+        "TASK-LST000638",
+        "TASK-LST000639",
+        "TASK-LST000641",
+        "TASK-LST000642"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO002-1",
+        "VEH-NGO002-2"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0078": {
+      "frozen_snapshot_sha256": "24b87bb29eb09942c2c716c6c3b7302e7516c03942068c573b6d6547fb43168f",
+      "matrix_sha256": "4be327e8298712f14351c6293b66f4864050099dd7bc8cf3a476b48be5f21256",
+      "admitted_task_ids": [
+        "TASK-LST000702",
+        "TASK-LST000704",
+        "TASK-LST000705",
+        "TASK-LST000707",
+        "TASK-LST000708"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO003-1"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0079": {
+      "frozen_snapshot_sha256": "45d5621d83bbc6e30a2893ddc98214c180f4be8d13718b76ca4f714fae5b8466",
+      "matrix_sha256": "bed3e9d23e3dc7bf803c5aa107825743399ffd6867e1973f827ba99879168d5f",
+      "admitted_task_ids": [
+        "TASK-LST000180",
+        "TASK-LST000181",
+        "TASK-LST000182",
+        "TASK-LST000183",
+        "TASK-LST000186"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO004-2"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0080": {
+      "frozen_snapshot_sha256": "07c069b323e967b74b75e6e732588effbd1bef11df5ad7fee9784c62040231ff",
+      "matrix_sha256": "e99d358fd2660d3e4622e939d8fdf449d2ab19fa30312986a04a47493f0b4a9d",
+      "admitted_task_ids": [
+        "TASK-LST000289",
+        "TASK-LST000290",
+        "TASK-LST000293",
+        "TASK-LST000296",
+        "TASK-LST000297"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO005-1",
+        "VEH-NGO005-2"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0081": {
+      "frozen_snapshot_sha256": "79d974ecebe4b807cb4f70869c6a39a66bfa107fcdb85c4b6cb54d22d69b4e89",
+      "matrix_sha256": "fe753e17365753bb35c237062c69dccbd350013b88fe95d5ffcb4f468a1da4c3",
+      "admitted_task_ids": [
+        "TASK-LST000908",
+        "TASK-LST000910",
+        "TASK-LST000912",
+        "TASK-LST000913",
+        "TASK-LST000914"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO006-1",
+        "VEH-NGO006-2"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0082": {
+      "frozen_snapshot_sha256": "b1d1d0d6ba56fe8248e877d890001519c139bd020ac91a81d5ed7a09180d83f0",
+      "matrix_sha256": "48f6c5ba612c7d8f1ffa7f183b3eb37b5697c7386f8fd8912936a853344f50ed",
+      "admitted_task_ids": [
+        "TASK-LST000644",
+        "TASK-LST000646",
+        "TASK-LST000648",
+        "TASK-LST000649",
+        "TASK-LST000651"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO008-1"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0083": {
+      "frozen_snapshot_sha256": "ff51c47f22835c3fb1f678258f286ed9134b823092905e9f58c850dc8c7cb771",
+      "matrix_sha256": "5f3488a0a021030ff6c352649f6ac30b135eac3f81768e579c0521cb76a6f446",
+      "admitted_task_ids": [
+        "TASK-LST000262",
+        "TASK-LST000263",
+        "TASK-LST000264",
+        "TASK-LST000265",
+        "TASK-LST000266"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO009-2"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0084": {
+      "frozen_snapshot_sha256": "ee952ac74091ef7d65c81018ecb32bfaddc7de330ce4d6cf8d1a9e61c3cdc31a",
+      "matrix_sha256": "6acbb9f7957a421f5404aa28f5570bd379b52dfa57024fff42b8806429b8bcbe",
+      "admitted_task_ids": [
+        "TASK-LST000749",
+        "TASK-LST000750",
+        "TASK-LST000751",
+        "TASK-LST000753",
+        "TASK-LST000754"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO010-1",
+        "VEH-NGO010-2"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0085": {
+      "frozen_snapshot_sha256": "443079cca24ccfbbd8dd30dcc8f524b49d73cbd41e2136ea3a76de85b1974005",
+      "matrix_sha256": "9fddd2ee289f3a209cd9ab75235ef00a9521850b8da80fdad709698e8fdee47f",
+      "admitted_task_ids": [
+        "TASK-LST000433",
+        "TASK-LST000434",
+        "TASK-LST000435",
+        "TASK-LST000439",
+        "TASK-LST000440"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO011-1",
+        "VEH-NGO011-2"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0086": {
+      "frozen_snapshot_sha256": "786b47663307fddee4b8b4b9d7d49e5725b5946518835fb70900aacd4ebdb934",
+      "matrix_sha256": "76f08397bc4e31a4ea10fd5bc2822207f02fe5a70ff1a96412829b6247db2b69",
+      "admitted_task_ids": [
+        "TASK-LST000271",
+        "TASK-LST000276",
+        "TASK-LST000277",
+        "TASK-LST000280",
+        "TASK-LST000281"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO001-1"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0087": {
+      "frozen_snapshot_sha256": "8fd154ffb8528f399a32e894a9775b3ae857da88a9949b636cff32ba06729384",
+      "matrix_sha256": "7a8c4bddc92fa2255d5965cfe5feff509a00444a7316201295ebac871f47df1b",
+      "admitted_task_ids": [
+        "TASK-LST001132",
+        "TASK-LST001134",
+        "TASK-LST001135",
+        "TASK-LST001136",
+        "TASK-LST001141"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO002-2"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0088": {
+      "frozen_snapshot_sha256": "4f474bfe01597941718cbe1fa08452f445ff2a10402dceea23dc5fab19723770",
+      "matrix_sha256": "8eaddd8453e566186a4fc9cc259b4ab8d96f4fe2dfc05c11848623a697bd1a7e",
+      "admitted_task_ids": [
+        "TASK-LST000967",
+        "TASK-LST000968",
+        "TASK-LST000969",
+        "TASK-LST000972",
+        "TASK-LST000974"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO003-1",
+        "VEH-NGO003-2"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0089": {
+      "frozen_snapshot_sha256": "b0217a7723278aad1a29f77b0a8e2122c7125a6a2abff73fc54cd7b7e06e2af4",
+      "matrix_sha256": "b7cbda5e76826bfca662fc1e7ba6288935d3eeb3e774c8785609950c7c9cfaff",
+      "admitted_task_ids": [
+        "TASK-LST000576",
+        "TASK-LST000577",
+        "TASK-LST000581",
+        "TASK-LST000582",
+        "TASK-LST000585"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO004-1",
+        "VEH-NGO004-2"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0090": {
+      "frozen_snapshot_sha256": "f116b1f92aae222e9b7f435b9e06024f1522f394f56162d7feb8d19ef8ad4934",
+      "matrix_sha256": "1bd3ab598c3bf3deb285cd52ae4d10bebcefdf5fb596cedb4be1e0be7dd81e14",
+      "admitted_task_ids": [
+        "TASK-LST000212",
+        "TASK-LST000213",
+        "TASK-LST000214",
+        "TASK-LST000215",
+        "TASK-LST000216"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO006-1"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0091": {
+      "frozen_snapshot_sha256": "52590a2cd0bde10e209595fe63f6bf9200e4393945785b1ef06534058feaf1c6",
+      "matrix_sha256": "d13cc09183f273428c0ff1455c4512a38ea44e86ef9ba841a4abc109e7e88f8b",
+      "admitted_task_ids": [
+        "TASK-LST000788",
+        "TASK-LST000790",
+        "TASK-LST000792",
+        "TASK-LST000793",
+        "TASK-LST000799"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO008-2"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0092": {
+      "frozen_snapshot_sha256": "0e3f8938fbe02d9c414432b09f738ab3df0e44f5f527b0d9ebcf45c7bced2305",
+      "matrix_sha256": "a66c12006ffb4e1a96f2b39ccce16956b5aacb048d2ee37f88bc372068043c87",
+      "admitted_task_ids": [
+        "TASK-LST000094",
+        "TASK-LST000095",
+        "TASK-LST000096",
+        "TASK-LST000098",
+        "TASK-LST000100"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO009-1",
+        "VEH-NGO009-2"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0093": {
+      "frozen_snapshot_sha256": "8d56ce0eb2af80d02f4643f477d5820b0dc4ae0b54f7eaa4058a8c6293a256ab",
+      "matrix_sha256": "ffd1060e8e8e1d26824ac798e6daea55c65e986a34efbd134ecf134674c838bd",
+      "admitted_task_ids": [
+        "TASK-LST000335",
+        "TASK-LST000339",
+        "TASK-LST000340",
+        "TASK-LST000341",
+        "TASK-LST000342"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO010-1",
+        "VEH-NGO010-2"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0094": {
+      "frozen_snapshot_sha256": "c20ce103ff78540629dbecb52c8f5333a93256c3f39e4c9cd50d9887736987d2",
+      "matrix_sha256": "777386fcb9a014f23b6cbf193cbf5d346b1933fd3e309b95f2a59a83cc6b1da8",
+      "admitted_task_ids": [
+        "TASK-LST000815",
+        "TASK-LST000816",
+        "TASK-LST000817",
+        "TASK-LST000818",
+        "TASK-LST000820"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO011-1"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0095": {
+      "frozen_snapshot_sha256": "5533ffd72001ddbe01950f7c7c242593b8072ab11b37706467826ccb2676fced",
+      "matrix_sha256": "bbc9e3b6328c74ef04f72bbd3eb588ff5cc52f98245b943b45c0c6ae26506a52",
+      "admitted_task_ids": [
+        "TASK-LST000383",
+        "TASK-LST000384",
+        "TASK-LST000385",
+        "TASK-LST000386",
+        "TASK-LST000387"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO001-2"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0096": {
+      "frozen_snapshot_sha256": "2d71730bb8420f7469bc8f064a163e9a54ce936f399de0cab75569ca1bb486fb",
+      "matrix_sha256": "e0f5eab9d1be595a06379cdda18fafb6159384b21f87f4e21061021611927380",
+      "admitted_task_ids": [
+        "TASK-LST000530",
+        "TASK-LST000531",
+        "TASK-LST000532",
+        "TASK-LST000535",
+        "TASK-LST000539"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO002-1",
+        "VEH-NGO002-2"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0097": {
+      "frozen_snapshot_sha256": "c9ec0b3864e221edb814acbddf0e9f5c68062761bee73cb534a6658a101e6c3c",
+      "matrix_sha256": "da23cd5b6e1549550e0add40ad7dc14f74892d1b8a699f20b3a3ef5da1c7b26f",
+      "admitted_task_ids": [
+        "TASK-LST000109",
+        "TASK-LST000110",
+        "TASK-LST000111",
+        "TASK-LST000113",
+        "TASK-LST000120"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO003-1",
+        "VEH-NGO003-2"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0098": {
+      "frozen_snapshot_sha256": "a60fec4694ab41b1bd1523dcf5e6770f32de59d02a40badc4a08790d32b2c8fb",
+      "matrix_sha256": "04bffa498b9f5e8aa76db34c1963301b199c1e2047e95b8fb9238ddc692b3031",
+      "admitted_task_ids": [
+        "TASK-LST000742",
+        "TASK-LST000743",
+        "TASK-LST000744",
+        "TASK-LST000745",
+        "TASK-LST000747"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO004-1"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0099": {
+      "frozen_snapshot_sha256": "57843a16845d1d4b2448869e78c23c1a32abf485f1e30a20379dba33938f8a7e",
+      "matrix_sha256": "da6ef9443c48d9df23f7406258b02bab32341e924e5f9ab830be9246bf83ae5d",
+      "admitted_task_ids": [
+        "TASK-LST000981",
+        "TASK-LST000982",
+        "TASK-LST000984",
+        "TASK-LST000987",
+        "TASK-LST000993"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO005-2"
+      ]
+    },
+    "SCN-ROUTE_PLANNING-0100": {
+      "frozen_snapshot_sha256": "2a61ced1fc844fc2bb16ab549db706c2dedc461a15811f90708ddd719b7e8690",
+      "matrix_sha256": "5b33c7a0b926e31264866096a3d85da7090d5d4c836538f95b296f31051e9ab3",
+      "admitted_task_ids": [
+        "TASK-LST000767",
+        "TASK-LST000768",
+        "TASK-LST000770",
+        "TASK-LST000774",
+        "TASK-LST000775"
+      ],
+      "vehicle_ids": [
+        "VEH-NGO006-1",
+        "VEH-NGO006-2"
+      ]
+    }
+  },
+  "artifact_sha256": {
+    "baseline/1_nearest_next/run_manifest.json": "818934e4b68064fc302e72972f8a53250d0cedf43ac0a8d7b9ac9a94da8888e5",
+    "baseline/1_nearest_next/run_info.md": "35e392330f9c8655360b53de9b3186f78897b6a210ca4ebfaf5318aa6eb76040",
+    "baseline/1_nearest_next/results_per_scenario.csv": "847d80f0d59d31e3019390fbf9a3c3a96c439ccc176c1085655a18a0f15eb4d3",
+    "baseline/1_nearest_next/details/routes.csv": "2968f11c10702c8f2aff4286386aa6b0cf9f6a9b7250ee19bb3d990f189e0998",
+    "baseline/2_fcfs/run_manifest.json": "2f1301422476dc896b7e39cf9a00bce11283c1e9011203e77b9a58df0c9736ce",
+    "baseline/2_fcfs/run_info.md": "9c7935fda3d3c18f0d12ef5e0ca66bbff41b358b03a592d3f293208bf684e07b",
+    "baseline/2_fcfs/results_per_scenario.csv": "9ea2ca60da78f7beae458a44538d8f576c3130b2a4474f0b48d323b1355bf332",
+    "baseline/2_fcfs/details/routes.csv": "f5fbaa226c51076c0d3a6982c17ed0c27ecfaee356b1545118f80c219fe21935",
+    "or_tools_route_optimiser/result/run_manifest.json": "3a5c37fefbbe9312b1d3fd81c2301286b5ffb93283334d7410c6ff6425febadd",
+    "or_tools_route_optimiser/result/run_info.md": "79affaa15f9667cccc70af4588547ffd93f788361d9e12419f29adf632e4382c",
+    "or_tools_route_optimiser/result/results_per_scenario.csv": "fd244faea315ed7a15fe0279f293145868d1a19e194223aa12f5ad7b3bc1c1c2",
+    "or_tools_route_optimiser/result/details/routes.csv": "f5907e692b9b488f406f12aae20e2b4ed1493f99dcf8d12e704254d6473094f8",
+    "experiment_result/summary.md": "c5cb35c5a80e6bf29438f7bce31a98f3b580e657ca0e681d7ce340d2d6bd0018",
+    "experiment_result/metrics.json": "2c37c12b8d5b1943478e1b5d98fa2bc67248d985aea791fd8ef9682b7287d8c6",
+    "experiment_result/comparison_summary.csv": "256cec598357c3668032541f45a2a3db40190f1c6045e2c119adbc69e017c210",
+    "experiment_result/comparison_per_scenario.csv": "74962834dd37498e9c26327655d513ff4ebfe8671b56332f48c1892e0dac1f45",
+    "experiment_result/e4_fig1_tasks_served.png": "447cd6037f38c94a2dc84f2c3392ff76031fbc651d27a7db290db44251eff01c",
+    "experiment_result/e4_fig1_tasks_served.pdf": "1e16dcebe5dee5e7b00a32763b82dc38112a45c0eaab7df54b80e5f2d97672b2",
+    "experiment_result/e4_fig2_km_per_scenario.png": "89d4414d1ab39dc7a8ba9160fbc655995cbd68d3c97d4e09839dbaddf23c974c",
+    "experiment_result/e4_fig3_total_km.png": "ff78ca31ffe0638098d59e77a0931ea23868d684f7eb3362248b7ebcd9a41e1c",
+    "experiment_result/e4_fig4_matched_task_savings.png": "f4119c48859fde409d4f99abc564b0e563f17cd827abfbd920f35591970872bc",
+    "experiment_result/e4_fig4_matched_task_savings.pdf": "67cea957b376d8e5a12d87e87ee2b839b9c9ddf1f39d7759b8508a66839ac046"
+  }
+}

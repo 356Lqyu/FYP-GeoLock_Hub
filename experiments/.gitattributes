@@ -1,0 +1,14 @@
+# Preserve the recorded bytes of the E2 archive and FYP evidence on checkout.
+archive/e2/** -text
+e2/results/9d879392c87c43c694b4d6b2fbe1fe1b/** -text
+e2/experiment_result/results/** -text
+e4/results/** -text
+e4/baseline/1_nearest_next/** -text whitespace=cr-at-eol
+e4/baseline/2_fcfs/** -text whitespace=cr-at-eol
+e4/or_tools_route_optimiser/result/** -text whitespace=cr-at-eol
+e4/experiment_result/*.csv -text whitespace=cr-at-eol
+e4/experiment_result/*.json -text whitespace=cr-at-eol
+e4/experiment_result/*.md -text whitespace=cr-at-eol
+e4/experiment_result/*.png -text
+e4/experiment_result/*.pdf -text
+e4/experiment_result/published_provenance/** -text whitespace=cr-at-eol

@@ -7,11 +7,12 @@ every plan with the app's independent validator. Nothing under backend/ is chang
 import csv
 import hashlib
 import importlib.util
+from importlib.metadata import version as installed_version
 import json
 import os
 import sys
 import time
-import uuid
+from collections import Counter
 from pathlib import Path
 from types import SimpleNamespace
 import platform
@@ -20,12 +21,14 @@ from datetime import datetime
 E4 = Path(__file__).resolve().parents[1]
 ROOT = E4.parents[1]
 sys.path.insert(0, str(ROOT))
+sys.path.insert(0, str(E4))
 from backend.routing.benchmark_v32.adapter import Adapter as TeamAdapter  # noqa: E402
 from backend.routing.benchmark_v32.runner import baseline_plan  # noqa: E402
 from backend.routing.contract import freeze_scenario  # noqa: E402
 from backend.routing.phase_b import proposed, validate_plan  # noqa: E402
 from backend.routing.phase_b.models import ExecutionConfig  # noqa: E402
 from backend.routing.phase_b.benchmark import semantic  # noqa: E402
+from run_e4 import run_directory  # noqa: E402
 
 SETTINGS = dict(approved=True, geofence_km=20, lease_minutes=360, route_minutes=240, service_minutes=10,
                 safety_margin_minutes=0, mandatory=False, availability_policy='BASELINE_ROUTING_WINDOW',
@@ -65,7 +68,7 @@ def write_csv(path, records, fields=None):
     """Write rows to a CSV file."""
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
-    if not records:
+    if not records and fields is None:
         path.write_text('', encoding='utf-8')
         return
     with path.open('w', encoding='utf-8-sig', newline='') as f:
@@ -159,12 +162,79 @@ class Adapter(TeamAdapter):
         return shared, freeze_scenario(payload)
 
 
+def preflight():
+    """Verify the runtime and sealed benchmark admission without solving."""
+    import matplotlib
+    import numpy
+    import ortools
+    import scipy
+    from ortools.sat.python import cp_model
+    from scipy.stats import wilcoxon
+    from backend.routing.optimizers.cp_sat import _optimise
+    from backend.routing.phase_b.validation import validate_plan as independent_validator
+    from backend.routing.planner.orchestration import OPERATIONAL_METHODS
+
+    versions = {p.__name__: p.__version__ for p in (ortools, numpy, scipy, matplotlib)}
+    for line in (E4 / 'requirements.txt').read_text(encoding='utf-8').splitlines():
+        package, separator, version = line.partition('==')
+        if separator and installed_version(package) != version:
+            raise ValueError(f'E4 requires {package}=={version}; found {installed_version(package)}')
+    if (sys.version_info[:3] != (3, 13, 9) or not callable(wilcoxon)
+            or not hasattr(cp_model, 'CpSolver')):
+        raise ValueError('E4 requires the documented Python 3.13.9 environment.')
+    if (proposed is not OPERATIONAL_METHODS['proposed']
+            or proposed.__globals__.get('_optimise') is not _optimise
+            or validate_plan is not independent_validator):
+        raise ValueError('E4 is not bound to the shared CP-SAT optimiser and validator.')
+    adapter = Adapter()
+    snapshots = {}
+    admitted = set()
+    for scenario in adapter.scenarios:
+        shared, frozen = adapter.convert(scenario)
+        fingerprint = snapshot_evidence(adapter, shared, frozen)
+        task_ids = fingerprint['admitted_task_ids']
+        if len(task_ids) != 5 or admitted.intersection(task_ids):
+            raise ValueError(f'Unexpected admitted tasks in {scenario["scenario_id"]}')
+        admitted.update(task_ids)
+        snapshots[scenario['scenario_id']] = fingerprint
+    if len(snapshots) != 100 or Counter(len(s['vehicle_ids']) for s in snapshots.values()) != {1: 50, 2: 50}:
+        raise ValueError('The sealed benchmark scenario count or fleet distribution changed.')
+    return dict(input_sha256=adapter.input_sha256, settings=SETTINGS,
+                runtime_versions=versions, snapshots=snapshots)
+
+
+def snapshot_evidence(adapter, shared, frozen):
+    """Confirm that the baseline view and solver contract describe the same instance."""
+    payload = frozen.to_dict()['input']
+    matrix = payload['matrix']
+    tasks = {t['task_id']: (t['road_node_id'], t['weight_kg']) for t in shared['tasks']}
+    sealed_tasks = {t['task_id']: (t['pickup']['road_node_id'], t['weight_kg'])
+                    for t in payload['tasks'] if t['task_id'] in frozen.admitted_task_ids}
+    depot = payload['depot']['road_node_id']
+    fleet = {v['vehicle_id']: v['capacity_kg'] for v in shared['fleet']
+             if v['depot_road_node_id'] == depot}
+    sealed_fleet = {v['vehicle_id']: v['capacity_kg'] for v in payload['vehicles']
+                    if v['vehicle_id'] in frozen.available_vehicle_ids}
+    if tasks != sealed_tasks or fleet != sealed_fleet or len(fleet) != len(shared['fleet']):
+        raise ValueError(f'Baseline and sealed task, fleet or depot inputs differ: {shared["scenario_id"]}')
+    for i, source in enumerate(matrix['node_order']):
+        for j, target in enumerate(matrix['node_order']):
+            actual = adapter.data.arc(source, target)
+            expected = ((matrix['distance_km'][i][j], matrix['travel_minutes'][i][j])
+                        if matrix['arc_status'][i][j] == 'AVAILABLE' else None)
+            if actual != expected:
+                raise ValueError(f'Directed matrix differs from baseline lookup: {source} -> {target}')
+    return dict(frozen_snapshot_sha256=frozen.sha256, matrix_sha256=frozen.matrix_sha256,
+                admitted_task_ids=sorted(tasks), vehicle_ids=sorted(fleet))
+
+
 def evaluate(method):
     """Run one method on the 100 snapshots and return one checked row per scenario."""
     ad = Adapter()
     out = []
     for sc in ad.scenarios:
         shared, frozen = ad.convert(sc)
+        evidence = snapshot_evidence(ad, shared, frozen)
         started = time.perf_counter()
         try:
             plan = proposed(frozen, CONFIG) if method == 'or_tools_route_optimiser' else baseline_plan(ad, shared, frozen, method, CONFIG)
@@ -191,7 +261,16 @@ def evaluate(method):
                        unserved_reasons=json.dumps(dict(sorted(plan.unserved_reasons))),
                        coverage_proven_optimal='YES' if plan.coverage_optimal else 'NO',
                        optimization_status=plan.optimization_status,
-                       frozen_snapshot_sha256=frozen.sha256,
+                       solver_statuses=json.dumps(plan.solver_statuses),
+                       secondary_proven_optimal='YES' if plan.secondary_optimal else 'NO',
+                       coverage_bound=plan.pickup_task_objective_bound,
+                       distance_bound_scaled=plan.secondary_bound_scaled,
+                       distance_objective_scaled=plan.secondary_objective_scaled,
+                       optimality_gap=plan.optimality_gap,
+                       frozen_snapshot_sha256=evidence['frozen_snapshot_sha256'],
+                       matrix_sha256=evidence['matrix_sha256'],
+                       admitted_task_ids=json.dumps(evidence['admitted_task_ids']),
+                       vehicle_ids=json.dumps(evidence['vehicle_ids']),
                        plan_sha256=hashlib.sha256(json.dumps(semantic(plan), sort_keys=True, default=str).encode()).hexdigest(),
                        error='')
             routes = [dict(scenario_id=sc['scenario_id'], vehicle_id=r.vehicle_id,
@@ -206,14 +285,14 @@ def evaluate(method):
 
 
 def source_fingerprints():
-    """Hashes of the routing code used, for the run record."""
-    files = [ROOT / 'backend/routing/phase_b/optimizers.py', ROOT / 'backend/routing/optimizers/cp_sat.py',
-             ROOT / 'backend/routing/phase_b/validation.py', ROOT / 'backend/routing/contract.py',
-             ROOT / 'backend/routing/benchmark_v32/adapter.py', ROOT / 'backend/routing/benchmark_v32/runner.py',
-             E4 / 'baseline/source_code/nearest_next_baseline.py',
-             E4 / 'baseline/source_code/fcfs_baseline.py',
-             E4 / 'experiment_result/source_code/e4_compare.py', Path(__file__)]
-    return {str(p.relative_to(ROOT)): sha256(p) for p in files if p.exists()}
+    """Fingerprint the routing package, including transitive Python modules."""
+    files = [p for p in (ROOT / 'backend/routing').rglob('*.py') if 'tests' not in p.parts]
+    files.extend(p for p in E4.rglob('*.py') if 'results' not in p.relative_to(E4).parts)
+    files.append(E4 / 'requirements.txt')
+    backend_package = ROOT / 'backend' / '__init__.py'
+    if backend_package.is_file():
+        files.append(backend_package)
+    return {p.relative_to(ROOT).as_posix(): sha256(p) for p in sorted(files)}
 
 
 TITLES = dict(nearest_next='Nearest-Next (baseline 1)', fcfs='First come first served, FCFS (baseline 2)',
@@ -224,15 +303,25 @@ HOW = dict(nearest_next="its own plan_routes(): each vehicle in turn drives to t
                                     '(Google OR-Tools CP-SAT; the same callable the routing worker uses)')
 
 
-def run_and_save(method, out):
+def run_and_save(method):
     """Run one method and write its result folder."""
-    out = Path(out)
-    run_id = os.environ.get('GEOLOCK_E4_RUN_ID', '').strip() or uuid.uuid4().hex
-    if any(ch.isspace() for ch in run_id):
-        raise ValueError('GEOLOCK_E4_RUN_ID must not contain whitespace')
+    run_id = os.environ.get('GEOLOCK_E4_RUN_ID', '')
+    directory = run_directory(run_id)
+    if not (directory / 'run_manifest.json').is_file():
+        raise ValueError('Start a new E4 run with run_e4.py.')
+    manifest = json.loads((directory / 'run_manifest.json').read_text(encoding='utf-8'))
+    fingerprints = source_fingerprints()
+    if (manifest['run_id'] != run_id or manifest['status'] != 'in_progress'
+            or manifest['source_sha256'] != fingerprints):
+        raise ValueError('E4 run identity or source fingerprints changed.')
+    out = directory / 'methods' / ('optimiser' if method == 'or_tools_route_optimiser' else method)
+    if (directory / 'methods').resolve() != directory / 'methods':
+        raise ValueError('The E4 method directory cannot be redirected.')
+    out.mkdir(parents=True, exist_ok=False)
     rows, adapter = evaluate(method)
-    write_csv(out / 'details' / 'routes.csv', [r for x in rows for r in x.pop('_routes')])
-    write_csv(out / 'results_per_scenario.csv', rows)
+    write_csv(out / 'details' / 'routes.csv', [r for x in rows for r in x.pop('_routes')],
+              fields=('scenario_id', 'vehicle_id', 'stops_in_order', 'stops'))
+    write_csv(out / 'results_per_scenario.csv', rows, fields=list(dict.fromkeys(key for row in rows for key in row)))
     env = environment()
     info = [('Run ID', run_id), ('Run at', env['run_at']), ('Scenarios', f'{len(rows)} ROUTE_PLANNING snapshots (sealed, shared by all E4 methods)'),
             ('Method', HOW[method]), ('Execution policy', f'{CONFIG}'),
@@ -244,7 +333,7 @@ def run_and_save(method, out):
     run_info(out / 'run_info.md', TITLES[method], info)
     write_json(out / 'run_manifest.json', dict(method=method, run_id=run_id, settings=SETTINGS,
         input_sha256=adapter.input_sha256,
-        source_sha256=source_fingerprints(),
+        source_sha256=fingerprints,
         artifact_sha256={'results_per_scenario.csv': sha256(out / 'results_per_scenario.csv'),
                          'details/routes.csv': sha256(out / 'details' / 'routes.csv'),
                          'run_info.md': sha256(out / 'run_info.md')},
@@ -252,4 +341,6 @@ def run_and_save(method, out):
     print(f"{TITLES[method]}: {sum(r.get('served_tasks') or 0 for r in rows)}/{sum(r['valid_tasks'] for r in rows)} pickups served, "
           f"{sum(r.get('total_distance_km') or 0 for r in rows):,.1f} km, "
           f"{sum(r['independent_check_passed'] == 'YES' for r in rows)}/100 plans valid -> {out}")
+    if len(rows) != 100 or any(row['independent_check_passed'] != 'YES' for row in rows):
+        raise ValueError(f'E4 method {method} failed; partial evidence is in {out}')
     return rows

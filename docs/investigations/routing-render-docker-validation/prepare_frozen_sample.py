@@ -16,7 +16,7 @@ def main():
     for name,expected in manifest['generated_csv_sha256'].items():
         path=directory/(name+'.csv');actual=hashlib.sha256(path.read_bytes()).hexdigest()
         assert actual==expected;seals[name]=actual
-    from experiments.e4_post_claim_routing.run import Adapter
+    from experiments.legacy_e4_adapter import Adapter
     adapter=Adapter();cases=[(row['scenario_id'],adapter.convert(row)[1]) for row in adapter.scenarios]
     cases.sort(key=lambda pair:(len(pair[1].admitted_task_ids),pair[0]))
     selected=[cases[i] for i in sorted(set((0,len(cases)//2,len(cases)-1)))]

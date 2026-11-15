@@ -1,0 +1,23 @@
+{
+  "comparison/comparison_per_scenario.csv": "74962834dd37498e9c26327655d513ff4ebfe8671b56332f48c1892e0dac1f45",
+  "comparison/comparison_summary.csv": "665e5a6fdebc2c14fdab7c09c3ca85b244cdbada26e9e544ee68ad963dd7949b",
+  "comparison/e4_fig1_tasks_served.png": "00e8de8f3cbdc2cfc0c83568c619bead55882a1de654839edfda76a20906d650",
+  "comparison/e4_fig2_km_per_scenario.png": "89d4414d1ab39dc7a8ba9160fbc655995cbd68d3c97d4e09839dbaddf23c974c",
+  "comparison/e4_fig3_total_km.png": "ff78ca31ffe0638098d59e77a0931ea23868d684f7eb3362248b7ebcd9a41e1c",
+  "comparison/e4_fig4_matched_task_savings.pdf": "5ac3f4804b759ba4297ee5530b148c2ae3368c4d5d0e17a8876266cb29fd4cb4",
+  "comparison/e4_fig4_matched_task_savings.png": "1dd281e1cc0d200d9247e2da3f95fdcb5f5dcf573e1f3213180943d968239146",
+  "comparison/metrics.json": "4c20477c5afbad9ea52f32be678b344a2d551cba40faea88ae45a3ec90d8f5cf",
+  "comparison/summary.md": "4db861b9ea2008558cba7a37a4374f41bda7749b720984ea23d503638c8f55dc",
+  "methods/fcfs/details/routes.csv": "f5fbaa226c51076c0d3a6982c17ed0c27ecfaee356b1545118f80c219fe21935",
+  "methods/fcfs/results_per_scenario.csv": "6c0dbf8731c53ca64a3b928c7291e59bf7015e2a561eaab084f15be964eac4ae",
+  "methods/fcfs/run_info.md": "031bdec9e72a79fe877007ae2e9bc1febb4c5bb7ec04528c82d30ca9f8dfb484",
+  "methods/fcfs/run_manifest.json": "3787ea7afe3e3cfb9f03408535cddabaa6a8b61b3b69e896e8c0b336076503f7",
+  "methods/nearest_next/details/routes.csv": "2968f11c10702c8f2aff4286386aa6b0cf9f6a9b7250ee19bb3d990f189e0998",
+  "methods/nearest_next/results_per_scenario.csv": "f3ca3da82670cc57a44657ff7bed0d2f7e78a766c7dcf69bcb1d73a0e9b81080",
+  "methods/nearest_next/run_info.md": "9a81290a539fc582dcbea3e58d43a0cc2dca05f9844f1dc3472448325e00d804",
+  "methods/nearest_next/run_manifest.json": "9c78bc44231d3052047130388a12e4a11410ee79b45e2ce6708bbbad34ad550c",
+  "methods/optimiser/details/routes.csv": "f5907e692b9b488f406f12aae20e2b4ed1493f99dcf8d12e704254d6473094f8",
+  "methods/optimiser/results_per_scenario.csv": "5ed0cbb9fb5f0698f94ee5ec2aa457eeec4dadf3b9e1d3ff580370955bea9ed4",
+  "methods/optimiser/run_info.md": "fba8d35642cf414674eaaaeac289c85e4d436433115165d4b6895de37039b919",
+  "methods/optimiser/run_manifest.json": "1dbc2762a32e8b4c4db37efc0c1bc0c6ca22a9b5b81fb30f457f9f1f24d1184d"
+}

@@ -1,52 +1,71 @@
-# E4: OR-Tools route optimiser against simple routing rules
+# E4 — Plan routes after donations are claimed
 
-* Plan: [`EXPERIMENT_PLAN.md`](EXPERIMENT_PLAN.md)
-* Result report and figures are regenerated under `experiment_result/` after a complete same-run execution. The currently saved result files predate the 500-task admission/matched-task correction and must be treated as historical until that rerun completes.
+E4 gives three planners the same 100 scenarios and 500 admitted pickups. It compares how many pickups they serve and how far they drive when they serve the same tasks. E4 runs locally without PostgreSQL, Supabase, or a live road service.
 
-| Folder | Content |
+| Method | Rule |
 | --- | --- |
-| `test_harness/` | builds one sealed planning snapshot per scenario and checks every plan; used by all three methods |
-| `baseline/` | Nearest-Next (baseline 1) and first come first served (baseline 2): programs in `source_code/`, results in `1_nearest_next/` and `2_fcfs/` |
-| `or_tools_route_optimiser/` | proposed method, the app's OR-Tools route optimiser (`backend/routing/optimizers/cp_sat.py`, unchanged): program in `source_code/`, results in `result/` |
-| `experiment_result/` | comparison program, summary, figures and the per scenario comparison table |
+| Nearest-Next | Pick the nearest feasible next stop. |
+| First Come, First Served (FCFS) | Pick the oldest feasible task first. |
+| Proposed OR-Tools CP-SAT | Maximize the number of served tasks, then minimize road distance at that coverage. |
+
+The older routing diagnostic admitted 483 tasks because it applied a synthetic listing expiry. Current E4 ignores that benchmark-only field for post-claim planning and admits 500. Claim leases, ownership, task status, pickup windows, capacity, route limits, depot return, and directed road connectivity still apply. See the [experiment plan](EXPERIMENT_PLAN.md).
 
 ## How to run
 
-From the repository root, in PowerShell. These commands intentionally replace the fixed result folders. First confirm the current result files are committed or otherwise backed up. All three methods use one shared run ID, and execution stops if any command fails:
+**1. Set up Python.** Install Windows x64 CPython **3.13.9**, then run these commands from the repository root in PowerShell. Dependency installation normally needs internet access.
 
-```powershell
-$ErrorActionPreference = 'Stop'
-$env:GEOLOCK_E4_RUN_ID = [guid]::NewGuid().ToString('N')
-try {
-    python experiments/e4/baseline/source_code/nearest_next_baseline.py
-    if ($LASTEXITCODE -ne 0) { throw 'Nearest-Next failed; preserve partial evidence and stop.' }
+~~~powershell
+py -3.13 --version
+py -3.13 -m venv .venv-e4
+$e4Python = '.\.venv-e4\Scripts\python.exe'
+& $e4Python -m pip install -r experiments/e4/requirements.txt
+& $e4Python -m pip check
+~~~
 
-    python experiments/e4/baseline/source_code/fcfs_baseline.py
-    if ($LASTEXITCODE -ne 0) { throw 'FCFS failed; preserve partial evidence and stop.' }
+Check that the version command reports `Python 3.13.9`. Keep the shared [routing package](../../backend/routing/) and the [frozen dataset](../../benchmark%20dataset/dataset/) in the checkout.
 
-    python experiments/e4/or_tools_route_optimiser/source_code/run_or_tools_route_optimiser.py
-    if ($LASTEXITCODE -ne 0) { throw 'CP-SAT failed; preserve partial evidence and stop.' }
+**2. Check the setup offline.** In a new shell, set `$e4Python` again using the line above.
 
-    python experiments/e4/experiment_result/source_code/e4_compare.py
-    if ($LASTEXITCODE -ne 0) { throw 'E4 comparison failed; do not treat the outputs as final.' }
-}
-finally {
-    Remove-Item Env:\GEOLOCK_E4_RUN_ID -ErrorAction SilentlyContinue
-}
-```
+~~~powershell
+& $e4Python -B experiments/e4/run_e4.py --preflight-only
+& $e4Python -B -m unittest discover -s experiments/e4/test_harness
+~~~
 
-The comparison fails closed unless the three manifests have the same run ID, settings, frozen-input hashes and source hashes; it also requires 100 scenarios, 500 common-admission tasks and successful independent validation of all 300 plans. Do not run only one method and combine it with earlier results.
+Preflight should report 100 snapshots, 500 admitted tasks, and 50 snapshots each for one-vehicle and two-vehicle fleets. The tests cover admission, matched comparisons, and safe publication.
 
-The E4 adapter ignores the synthetic legacy listing-expiry field only for this benchmark. It preserves claim-lease, ownership, task-status, pickup-window, capacity, route-duration, depot-return and directed-road checks. The CP-SAT optimiser and frozen dataset are unchanged.
+**3. Run the full experiment.** This command replaces the managed active results only after successful validation. It automatically runs Nearest-Next, FCFS, and CP-SAT, validates their routes, and generates the comparison. All outputs share one run ID.
 
-## Result files
+~~~powershell
+& $e4Python -B experiments/e4/run_e4.py
+~~~
 
-Start with `experiment_result/comparison_summary.csv`: the main numbers of the three methods side by side.
+A successful run prints `Published E4 run`, the new run ID, and the manifest path. Work is staged under `experiments/e4/.work/`. Failed stages can hold diagnostics.
 
-| File | What it shows |
+**4. Open the results.**
+
+~~~powershell
+Invoke-Item -LiteralPath 'experiments/e4/experiment_result/summary.md'
+~~~
+
+| Folder or file | What it contains |
 | --- | --- |
-| `<method>/results_per_scenario.csv` | one row per scenario: valid pickups, pickups served, km, driving time, vehicles used, rule violations, whether the plan passed the independent check and planning time |
-| `<method>/details/routes.csv` | the stop order of every vehicle |
-| `experiment_result/comparison_summary.csv` | one row per measure with the value of each method |
-| `experiment_result/comparison_per_scenario.csv` | one row per scenario, including whether the methods served identical task-ID sets |
-| `experiment_result/metrics.json` | aggregate metrics and exact-task paired estimates, intervals and tests |
+| [baseline/1_nearest_next/](baseline/1_nearest_next/) | Nearest-Next scenario results, routes, and manifest |
+| [baseline/2_fcfs/](baseline/2_fcfs/) | FCFS scenario results, routes, and manifest |
+| [or_tools_route_optimiser/result/](or_tools_route_optimiser/result/) | Proposed planner's scenario results, routes, and manifest |
+| [experiment_result/](experiment_result/) | Summary, metrics, comparison CSVs, figures, and active run manifest |
+
+Read coverage across all snapshots first. Use the matched-task figures to compare distance on the same pickups.
+
+**5. Verify the saved outputs offline.** Use the first command for the active files. Use the second for the original paper run `ac1b77db93634b7d8da371ee59105679` while its artifacts are still the active set. The paper verifier checks the original manifest, frozen inputs, source hashes, and artifacts. A [saved source snapshot](experiment_result/published_provenance/backend/routing/hosted/frozen_benchmark.py) supplies the exact diagnostic bytes recorded by that run.
+
+~~~powershell
+& $e4Python -B experiments/e4/run_e4.py --verify-active
+& $e4Python -B experiments/e4/experiment_result/published_provenance/verify.py
+~~~
+
+**6. Recover an interrupted publication only if requested by the driver.** For example, Windows may terminate the process while it is replacing the published files. This command can restore the previous active outputs. It runs no routing method.
+
+~~~powershell
+& $e4Python -B experiments/e4/run_e4.py --recover-publication
+& $e4Python -B experiments/e4/run_e4.py --verify-active
+~~~

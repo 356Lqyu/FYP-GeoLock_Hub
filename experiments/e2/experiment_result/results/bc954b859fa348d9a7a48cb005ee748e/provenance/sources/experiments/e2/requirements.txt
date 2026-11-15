@@ -1,0 +1,4 @@
+# Minimal Python dependencies for the E2 runner, comparison and figures.
+# The E2 run manifest records the exact installed versions for reproduction.
+psycopg[binary]>=3.2,<4
+matplotlib>=3.9,<4

@@ -1,5 +1,7 @@
 # Claim-conflict UI and E2/E4 evidence review
 
+> The historical E2 runner and both deadlock reproducers are retired. The [legacy E2 source archive](e2-e4-review-evidence/legacy-e2-claiming.zip) preserves the runner and the experiment-directory reproducer at their original paths. The shared-helper reproducer remains with its original investigation evidence. Running either historical procedure requires restoring the archive into its original repository-relative paths and providing the original isolated runtime prerequisites. For the current experiment, use the [E2 README](../../experiments/e2/README.md).
+
 5 November 2026. **Part A: IMPLEMENTED locally. Part B E2: CONFIRMED reproducible lock mechanism. Part B E4: CONFIRMED admission mismatch.** Existing benchmark readiness remains **PARTIAL** for both experiments. No backend SQL/function, routing algorithm, frozen input or existing result was changed. No DEV connection, migration deployment, hosted worker operation, APK installation or push was performed.
 
 ## A. Claim conflict: source findings and local UI changes

@@ -2,8 +2,8 @@
 
 | Item | Value |
 | --- | --- |
-| Run ID | 4b03c152c6224c9fa5f3321fc8d31d78 |
-| Run at | 2026-11-10T21:52:50+08:00 |
+| Run ID | ac1b77db93634b7d8da371ee59105679 |
+| Run at | 2026-11-15T17:29:46+08:00 |
 | Scenarios | 100 ROUTE_PLANNING snapshots (sealed, shared by all E4 methods) |
 | Method | backend.routing.phase_b.optimizers.proposed -> backend/routing/optimizers/cp_sat.py (Google OR-Tools CP-SAT; the same callable the routing worker uses) |
 | Execution policy | ExecutionConfig(fixed_cost_weight=1.0, distance_cost_weight=1.0, deterministic_seconds_per_pass=0.25) |

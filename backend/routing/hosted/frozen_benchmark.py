@@ -11,7 +11,7 @@ from .benchmark import peak_memory
 def main():
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',required=True);a=p.parse_args()
     from experiments.repro_benchmark import sha, ROOT
-    from experiments.e4_post_claim_routing.run import Adapter
+    from experiments.legacy_e4_adapter import Adapter
     from ..phase_b import METHODS,validate_plan
     from ..phase_b.models import ExecutionConfig
     manifest_path=ROOT/'experiments/repro_inputs/v33/generation_manifest.json'

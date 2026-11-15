@@ -1,14 +1,16 @@
-"""E2 comparison. Reads the three result folders (it never runs a condition) and writes
-summary.md, metrics.json, the comparison tables and four figures into experiment_result/.
+"""E2 comparison. Reads the three methods in one run directory (it never runs a condition) and writes
+summary.md, metrics.json, comparison tables and figures into that run's comparison/ folder.
 
-Part 1, contention: baseline 1 against the proposed method (duplicate committed claim rate).
-Part 2, lease: baseline 2 against the proposed method (lease recovery success).
+Part 1, contention: all three methods (duplicate committed claim rate).
+Part 2, lease: protected baseline against the proposed method (lease recovery success).
 Proportions get 95 % Wilson intervals, paired outcomes an exact McNemar test.
-Run from the repository root: python experiments/e2/experiment_result/source_code/e2_compare.py
+Run through experiments/e2/run_e2.py after all three method outputs are complete.
 """
 import csv
+import hashlib
 import json
 import math
+import os
 from pathlib import Path
 import statistics
 
@@ -31,6 +33,77 @@ def read(path):
         raise SystemExit(f'Missing result: {path}. Run that condition first.')
     with path.open(encoding='utf-8-sig', newline='') as f:
         return list(csv.DictReader(f))
+
+
+def scenario_map(path, method):
+    """Read trial rows without silently collapsing duplicated scenario IDs."""
+    records = read(path)
+    ids = [r['scenario_id'] for r in records]
+    if len(ids) != len(set(ids)):
+        raise SystemExit(f'{method} has duplicate contention scenario records.')
+    return {r['scenario_id']: r for r in records}
+
+
+def validate_contention_requests(method, trials, requests):
+    """Require one saved row per scheduled request for every common contention trial."""
+    rows = [r for r in requests if r['scenario_id'] in trials]
+    expected = sum(int(t['ngos_competing']) for t in trials.values())
+    if len(rows) != expected:
+        raise SystemExit(f'{method} contention request count is {len(rows)}; expected {expected}.')
+    ids = [r.get('request_id', '') for r in rows]
+    if any(not value for value in ids) or len(ids) != len(set(ids)):
+        raise SystemExit(f'{method} contention request IDs are missing or duplicated.')
+    by_scenario = {}
+    for row in rows:
+        by_scenario.setdefault(row['scenario_id'], []).append(row)
+    for sid, trial in trials.items():
+        expected_ordinals = list(range(1, int(trial['ngos_competing']) + 1))
+        ordinals = sorted(int(r['request_number']) for r in by_scenario.get(sid, []))
+        if ordinals != expected_ordinals:
+            raise SystemExit(f'{method} request ordinals do not match the scheduled requests in {sid}.')
+    return rows
+
+
+def validate_run_manifests(manifests, run_id):
+    """Reject cross-run, cross-target, cross-input or incomplete method mixtures."""
+    if set(manifests) != {'b1', 'b2', 'p'}:
+        raise SystemExit('E2 comparison requires exactly the three primary methods.')
+    if {m.get('experiment_run_id') for m in manifests.values()} != {run_id}:
+        raise SystemExit('E2 methods have missing or mixed experiment run IDs.')
+    identities = [m.get('target_identity') for m in manifests.values()]
+    if any(not value for value in identities) or any(value != identities[0] for value in identities[1:]):
+        raise SystemExit('E2 methods have mixed or missing database/project identities.')
+    hashes = [m.get('input_sha256') for m in manifests.values()]
+    if any(not value for value in hashes) or any(value != hashes[0] for value in hashes[1:]):
+        raise SystemExit('E2 methods have mixed or missing benchmark hashes.')
+    for key, manifest in manifests.items():
+        if int(manifest.get('trials', -1)) != 150 or int(manifest.get('contention_requests', -1)) != 850:
+            raise SystemExit(f'{key} is incomplete: expected 150 contention scenarios.')
+        expected_leases = 0 if key == 'b1' else 125
+        if int(manifest.get('lease_cases', -1)) != expected_leases:
+            raise SystemExit(f'{key} is incomplete: expected {expected_leases} lease cases.')
+        expected_expired, expected_active = (0, 0) if key == 'b1' else (100, 25)
+        if int(manifest.get('expired_lease_cases', -1)) != expected_expired or int(manifest.get('active_lease_cases', -1)) != expected_active:
+            raise SystemExit(f'{key} has incomplete expired/active lease case coverage.')
+    return True
+
+
+def validate_run_provenance(root_manifest, repo_root, input_dir):
+    """Verify all source and frozen-input hashes recorded for the run."""
+    source_hashes = root_manifest.get('source_sha256') or {}
+    input_hashes = root_manifest.get('benchmark_input_sha256') or {}
+    if not source_hashes or not input_hashes:
+        raise SystemExit('E2 root manifest is missing source or benchmark hashes.')
+    for rel_path, expected in source_hashes.items():
+        path = Path(repo_root) / rel_path
+        if not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest() != expected:
+            raise SystemExit(f'E2 source changed since the run manifest was recorded: {rel_path}')
+    generation = json.loads((Path(input_dir) / 'generation_manifest.json').read_text(encoding='utf-8'))
+    for filename, expected in input_hashes.items():
+        actual = hashlib.sha256((Path(input_dir) / filename).read_bytes()).hexdigest()
+        if actual != expected or generation['generated_csv_sha256'].get(filename.removesuffix('.csv')) != actual:
+            raise SystemExit(f'E2 frozen benchmark input hash changed: {filename}')
+    return True
 
 
 def write_csv(path, records):
@@ -85,12 +158,20 @@ def p95(values):
 def contention(trials, requests):
     """Contention measures for each number of NGOs."""
     out = {}
+    contention_ids = {t['scenario_id'] for t in trials}
     for w in ('2', '5', '10', 'all'):
         ts = [t for t in trials if w == 'all' or t['ngos_competing'] == w]
-        rq = [r for r in requests if r['scenario_id'].startswith('SCN-CLAIM') and (w == 'all' or r['ngos_competing'] == w)]
+        rq = [r for r in requests if r['scenario_id'] in contention_ids
+              and (w == 'all' or r['ngos_competing'] == w)]
         dup = sum(t['more_than_one_owner'] == 'YES' for t in ts)
         p, lo, hi = wilson(dup, len(ts))
         lat = [float(r['response_ms']) for r in rq if r['response_ms'] not in ('', '0', '0.0')]
+        states = {}
+        for r in rq:
+            for state in filter(None, (r.get('sqlstate') or '').split(';')):
+                states[state] = states.get(state, 0) + 1
+        scenario_medians = [float(t['median_response_ms']) for t in ts if t.get('median_response_ms') not in ('', None)]
+        request_rates = [float(t['requests_per_second']) for t in ts if t.get('requests_per_second') not in ('', None)]
         out[w] = dict(trials=len(ts), duplicate_trials=dup, duplicate_rate=p, duplicate_ci95=[lo, hi],
                       extra_committed_claims=sum(max(0, int(t['claims_stored']) - 1) for t in ts),
                       trials_exactly_one_owner=sum(t['claims_stored'] == '1' for t in ts),
@@ -101,8 +182,12 @@ def contention(trials, requests):
                       inconsistent_trials=sum(t['consistent_state'] != 'YES' for t in ts),
                       attempts_sent=sum(int(t['attempts_sent']) for t in ts),
                       attempts_in_audit_log=sum(int(t['attempts_in_audit_log']) for t in ts),
-                      median_requests_per_second=statistics.median(float(t['requests_per_second']) for t in ts),
-                      median_ms=statistics.median(lat) if lat else None, p95_ms=p95(lat))
+                      median_requests_per_second=statistics.median(request_rates) if request_rates else None,
+                      median_ms=statistics.median(lat) if lat else None,
+                      median_scenario_median_ms=statistics.median(scenario_medians) if scenario_medians else None,
+                      p95_ms=p95(lat), sqlstate_counts=states,
+                      sqlstate_40P01=states.get('40P01', 0), sqlstate_40001=states.get('40001', 0),
+                      other_sqlstate_counts={k: v for k, v in states.items() if k not in ('40P01', '40001')})
     return out
 
 
@@ -122,29 +207,74 @@ def lease(rows):
 
 def main():
     """Read the result folders, then write the comparison tables, figures and summary.md."""
+    global OUT, COND
+    run_root_raw = os.environ.get('GEOLOCK_E2_RUN_DIR')
+    run_id = os.environ.get('GEOLOCK_E2_RUN_ID')
+    if not run_root_raw or not run_id:
+        raise SystemExit('Comparison requires GEOLOCK_E2_RUN_ID and GEOLOCK_E2_RUN_DIR from run_e2.py.')
+    run_root = Path(run_root_raw).resolve()
+    OUT = run_root / 'comparison'
+    COND = {'b1': run_root / 'methods' / 'non_atomic_claim',
+            'b2': run_root / 'methods' / 'protected_claim_without_lease_recovery',
+            'p': run_root / 'methods' / 'protected_claim_with_lease_recovery'}
+    if OUT.exists():
+        raise SystemExit(f'Comparison output already exists; refusing to overwrite: {OUT}')
+    root_manifest_path = run_root / 'run_manifest.json'
+    if not root_manifest_path.is_file():
+        raise SystemExit('Missing E2 root run manifest.')
+    root_manifest = json.loads(root_manifest_path.read_text(encoding='utf-8'))
+    if root_manifest.get('experiment_run_id') != run_id or root_manifest.get('status') != 'in_progress':
+        raise SystemExit('E2 root manifest run ID/status is inconsistent.')
+    repo_root = E2.parents[1]
+    input_dir = repo_root / 'benchmark dataset' / 'dataset'
+    validate_run_provenance(root_manifest, repo_root, input_dir)
+    manifests = {}
+    for key, path in COND.items():
+        mp = path / 'run_manifest.json'
+        if not mp.is_file():
+            raise SystemExit(f'Missing complete method manifest: {mp}')
+        manifests[key] = json.loads(mp.read_text(encoding='utf-8'))
+    validate_run_manifests(manifests, run_id)
+    if any(m.get('target_identity') != root_manifest.get('target_identity') for m in manifests.values()):
+        raise SystemExit('Method manifests do not match the root run target identity.')
+    if any(m.get('input_sha256') != root_manifest.get('benchmark_input_sha256') for m in manifests.values()):
+        raise SystemExit('Method manifests do not match the root benchmark input hashes.')
+    if any(m.get('source_sha256') != root_manifest.get('source_sha256') for m in manifests.values()):
+        raise SystemExit('Method manifests do not match the root source hashes.')
     b1, b2, p = COND['b1'], COND['b2'], COND['p']
-    T = {'b1': {r['scenario_id']: r for r in read(b1 / 'results_per_scenario.csv')},
-         'p': {r['scenario_id']: r for r in read(p / 'results_per_scenario.csv')}}
-    R = {'b1': read(b1 / 'details' / 'requests.csv'), 'p': read(p / 'details' / 'requests.csv')}
+    T = {k: scenario_map(COND[k] / 'results_per_scenario.csv', k) for k in ('b1', 'b2', 'p')}
+    R = {k: read(COND[k] / 'details' / 'requests.csv') for k in ('b1', 'b2', 'p')}
     L = {'b2': {r['scenario_id']: r for r in read(b2 / 'lease_results_per_scenario.csv')},
          'p': {r['scenario_id']: r for r in read(p / 'lease_results_per_scenario.csv')}}
     ids, lids = sorted(T['p']), sorted(L['p'])
-    assert len(ids) == 150 and sorted(T['b1']) == ids, 'contention trials differ between baseline 1 and the proposed method'
+    assert len(ids) == 150 and all(sorted(T[k]) == ids for k in ('b1', 'b2')), 'contention scenario IDs differ across methods'
+    for k in ('b1', 'b2', 'p'):
+        validate_contention_requests(k, T[k], R[k])
+        if len(validate_contention_requests(k, T[k], R[k])) != 850:
+            raise SystemExit(f'{k} must record exactly 850 contention requests.')
+        assert len(T[k]) == 150, f'{k} must record exactly 150 contention trials'
+        level_counts = {w: sum(t['ngos_competing'] == str(w) for t in T[k].values()) for w in (2, 5, 10)}
+        assert level_counts == {2: 50, 5: 50, 10: 50}, f'{k} concurrency coverage differs: {level_counts}'
     assert len(lids) == 125 and sorted(L['b2']) == lids, 'lease trials differ between baseline 2 and the proposed method'
     geo = read(p / 'geofence_check' / 'details' / 'eligibility_pairs.csv')
     stored_geo = json.loads((p / 'geofence_check' / 'details' / 'claims_stored_after_check.json').read_text())['claims_stored']
     cc = json.loads((p / 'details' / 'concurrent_recovery_check.json').read_text(encoding='utf-8'))
     dl = read(p / 'details' / 'delayed_request_check.csv')
-    dbs = {json.loads((d / 'run_manifest.json').read_text(encoding='utf-8')).get('database') for d in COND.values()}
+    dbs = {m.get('database') for m in manifests.values()}
 
     m = dict(benchmark=BENCHMARK_NAME, database=dbs.pop() if len(dbs) == 1 else 'mixed: ' + ', '.join(sorted(map(str, dbs))),
              units=dict(contention_trials=len(ids), lease_expired=sum(L['p'][s]['case'] == 'lease expired' for s in lids),
                         lease_still_running=sum(L['p'][s]['case'] == 'lease still running' for s in lids), geofence_pairs=len(geo)))
-    # part 1: contention, baseline 1 against the proposed method
-    m['contention'] = {k: contention(list(T[k].values()), R[k]) for k in ('b1', 'p')}
-    ob = sum(T['b1'][s]['more_than_one_owner'] == 'YES' and T['p'][s]['more_than_one_owner'] == 'NO' for s in ids)
-    op = sum(T['b1'][s]['more_than_one_owner'] == 'NO' and T['p'][s]['more_than_one_owner'] == 'YES' for s in ids)
-    m['contention']['mcnemar'] = dict(only_baseline_duplicate=ob, only_proposed_duplicate=op, p_exact=mcnemar_exact(ob, op))
+    # Part 1: all three methods independently run the same contention scenario IDs.
+    m['contention'] = {k: contention(list(T[k].values()), R[k]) for k in ('b1', 'b2', 'p')}
+    pair_tests = {}
+    for a, b in (('b1', 'b2'), ('b1', 'p'), ('b2', 'p')):
+        only_a = sum(T[a][s]['more_than_one_owner'] == 'YES' and T[b][s]['more_than_one_owner'] == 'NO' for s in ids)
+        only_b = sum(T[a][s]['more_than_one_owner'] == 'NO' and T[b][s]['more_than_one_owner'] == 'YES' for s in ids)
+        pair_tests[f'{a}_vs_{b}'] = {'only_a_duplicate': only_a, 'only_b_duplicate': only_b,
+                                     'method_a': a, 'method_b': b,
+                                     'p_exact': mcnemar_exact(only_a, only_b)}
+    m['contention']['mcnemar'] = pair_tests
     # part 2: lease, baseline 2 against the proposed method
     m['lease'] = {k: lease(list(L[k].values())) for k in ('b2', 'p')}
     exp = [s for s in lids if L['p'][s]['case'] == 'lease expired']
@@ -183,6 +313,9 @@ def main():
     rows = []
     for label, get, better in (
             ('Trials with more than one owner (of 150)', lambda k: C[k]['all']['duplicate_trials'], 'lower'),
+            ('Duplicate-trial rate, all scenarios (%)', lambda k: round(100 * C[k]['all']['duplicate_rate'], 2), 'lower'),
+            ('Duplicate-trial 95% Wilson CI, all scenarios (%)',
+             lambda k: f"{100*C[k]['all']['duplicate_ci95'][0]:.2f}–{100*C[k]['all']['duplicate_ci95'][1]:.2f}", 'lower'),
             ('  2 NGOs at once (of 50)', lambda k: C[k]['2']['duplicate_trials'], 'lower'),
             ('  5 NGOs at once (of 50)', lambda k: C[k]['5']['duplicate_trials'], 'lower'),
             ('  10 NGOs at once (of 50)', lambda k: C[k]['10']['duplicate_trials'], 'lower'),
@@ -191,20 +324,44 @@ def main():
             ('Requests told "already claimed" (of 850)', lambda k: C[k]['all']['conflict'], '700 (the others)'),
             ('Requests that failed with an error', lambda k: C[k]['all']['error'], 'lower'),
             ('Attempts recorded in the audit log (of 850)', lambda k: C[k]['all']['attempts_in_audit_log'], 'higher'),
-            ('Response time, median (ms)', lambda k: round(C[k]['all']['median_ms'], 1), 'lower')):
-        rows.append(dict(part='1. Contention: baseline 1 against proposed', measure=label.strip(),
-                         baseline=get('b1'), proposed=get('p'), better_when=better,
-                         test='exact McNemar p = %.1e' % C['mcnemar']['p_exact'] if label.startswith('Trials') else ''))
+            ('Response time, median of scenario medians (ms)', lambda k: round(C[k]['all']['median_scenario_median_ms'], 1), 'lower'),
+            ('Response time, pooled request median (ms)', lambda k: round(C[k]['all']['median_ms'], 1), 'lower'),
+            ('Response time, pooled 95th percentile (ms)', lambda k: round(C[k]['all']['p95_ms'], 1), 'lower'),
+            ('SQLSTATE 40P01 deadlocks', lambda k: C[k]['all']['sqlstate_40P01'], 'lower'),
+            ('SQLSTATE 40001 serialization failures', lambda k: C[k]['all']['sqlstate_40001'], 'lower')):
+        rows.append(dict(part='1. Contention: three-method comparison', measure=label.strip(),
+                         non_atomic=get('b1'), protected_no_recovery=get('b2'), proposed=get('p'), better_when=better,
+                         test=json.dumps(C['mcnemar'], sort_keys=True) if label.startswith('Trials') else ''))
+    for w in ('2', '5', '10'):
+        rows.append(dict(part=f'1. Contention at {w} concurrent requests', measure='Duplicate-trial rate (%)',
+                         non_atomic=round(100 * C['b1'][w]['duplicate_rate'], 2),
+                         protected_no_recovery=round(100 * C['b2'][w]['duplicate_rate'], 2),
+                         proposed=round(100 * C['p'][w]['duplicate_rate'], 2), better_when='lower', test=''))
+        rows.append(dict(part=f'1. Contention at {w} concurrent requests', measure='Duplicate-trial 95% Wilson CI (%)',
+                         non_atomic=f"{100*C['b1'][w]['duplicate_ci95'][0]:.2f}–{100*C['b1'][w]['duplicate_ci95'][1]:.2f}",
+                         protected_no_recovery=f"{100*C['b2'][w]['duplicate_ci95'][0]:.2f}–{100*C['b2'][w]['duplicate_ci95'][1]:.2f}",
+                         proposed=f"{100*C['p'][w]['duplicate_ci95'][0]:.2f}–{100*C['p'][w]['duplicate_ci95'][1]:.2f}", better_when='lower', test=''))
+        for label, metric in (('Median of scenario medians (ms)', 'median_scenario_median_ms'),
+                              ('Pooled request median (ms)', 'median_ms'),
+                              ('Pooled request P95 (ms)', 'p95_ms')):
+            rows.append(dict(part=f'1. Contention at {w} concurrent requests', measure=label,
+                             non_atomic=round(C['b1'][w][metric], 1),
+                             protected_no_recovery=round(C['b2'][w][metric], 1),
+                             proposed=round(C['p'][w][metric], 1), better_when='lower', test=''))
     for label, get, better in (
             ('Expired leases taken over by another NGO (of 100)', lambda k: LZ[k]['recovered'], 'higher'),
             ('Donations left blocked by an expired lease (of 100)', lambda k: LZ[k]['stranded_listings'], 'lower'),
             ('Valid leases wrongly released (of 25)', lambda k: LZ[k]['false_release'], 'lower')):
-        rows.append(dict(part='2. Lease: baseline 2 against proposed', measure=label, baseline=get('b2'), proposed=get('p'),
+        rows.append(dict(part='2. Lease: baseline 2 against proposed', measure=label, non_atomic='N/A', protected_no_recovery=get('b2'), proposed=get('p'),
                          better_when=better, test='exact McNemar p = %.1e' % LZ['mcnemar']['p_exact'] if label.startswith('Expired') else ''))
+    OUT.mkdir(parents=True, exist_ok=False)
     write_csv(OUT / 'comparison_summary.csv', rows)
     write_csv(OUT / 'comparison_contention.csv', [dict(
         scenario_id=s, ngos_at_once=T['p'][s]['ngos_competing'],
         baseline1_claims_saved=T['b1'][s]['claims_stored'], baseline1_more_than_one_owner=T['b1'][s]['more_than_one_owner'],
+        baseline1_success=T['b1'][s]['told_success'], baseline1_conflict=T['b1'][s]['told_already_claimed'],
+        baseline2_claims_saved=T['b2'][s]['claims_stored'], baseline2_more_than_one_owner=T['b2'][s]['more_than_one_owner'],
+        baseline2_success=T['b2'][s]['told_success'], baseline2_conflict=T['b2'][s]['told_already_claimed'],
         baseline1_told_you_got_it=T['b1'][s]['told_success'],
         proposed_claims_saved=T['p'][s]['claims_stored'], proposed_more_than_one_owner=T['p'][s]['more_than_one_owner'],
         proposed_told_you_got_it=T['p'][s]['told_success'], proposed_told_already_claimed=T['p'][s]['told_already_claimed'])
@@ -268,9 +425,13 @@ def figures(m):
 
     fig, ax = plt.subplots(figsize=(6.2, 3.6))
     ax.set_ylim(0, 112)
-    for off, k, col in ((-0.2, 'b1', BASELINE_1), (0.2, 'p', PROPOSED)):
+    methods = (('b1', BASELINE_1), ('b2', BASELINE_2), ('p', PROPOSED))
+    for off, (k, col) in zip((-0.27, 0, 0.27), methods):
         vals = [100 * c[k][w]['duplicate_rate'] for w in ws]
-        bars(ax, [i + off for i in range(3)], vals, col, 0.38, label=NAME[k], text=[f'{v:.0f}%' for v in vals])
+        low = [100 * c[k][w]['duplicate_ci95'][0] for w in ws]
+        high = [100 * c[k][w]['duplicate_ci95'][1] for w in ws]
+        bars(ax, [i + off for i in range(3)], vals, col, 0.24, label=NAME[k],
+             low=low, high=high, text=[f'{v:.0f}%' for v in vals], pad=1.1)
     ax.set_xticks(range(3), ws)
     ax.set_xlabel('NGOs claiming the same listing at once')
     ax.set_ylabel('Contention trials (%, n = 50 each)')
@@ -278,21 +439,18 @@ def figures(m):
     ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.2), ncol=1)
     save(plt, fig, 'e2_fig1_duplicate_owners.png')
 
-    p = c['p']
-    fig, ax = plt.subplots(figsize=(6, 3.6))
-    med, hi = [p[w]['median_ms'] for w in ws], [p[w]['p95_ms'] for w in ws]
-    ax.set_ylim(0, max(hi) * 1.25)
-    pad = max(hi) * 0.02
-    ax.bar([i - 0.2 for i in range(3)], med, 0.38, color=PROPOSED, label='Median')
-    ax.bar([i + 0.2 for i in range(3)], hi, 0.38, color='#9cc3ef', label='95th percentile')
-    for i, (a, b) in enumerate(zip(med, hi)):
-        ax.text(i - 0.2, a + pad, f'{a:.0f}', ha='center', va='bottom', fontsize=8)
-        ax.text(i + 0.2, b + pad, f'{b:.0f}', ha='center', va='bottom', fontsize=8)
+    fig, ax = plt.subplots(figsize=(7.4, 4.2))
+    # The comparator aggregates trial medians already rounded by the harness.
+    medians = {k: [c[k][w]['median_scenario_median_ms'] for w in ws] for k, _ in methods}
+    ax.set_ylim(0, max(max(values) for values in medians.values()) * 1.15 or 1)
+    for off, (k, col), label in zip((-0.25, 0, 0.25), methods, ('Baseline 1', 'Baseline 2', 'Proposed')):
+        group = ax.bar([i + off for i in range(3)], medians[k], 0.22, color=col, label=label)
+        ax.bar_label(group, fmt='%.1f', padding=3, fontsize=8)
     ax.set_xticks(range(3), ws)
-    ax.set_xlabel('NGOs claiming the same listing at once')
+    ax.set_xlabel('Concurrent claim requests')
     ax.set_ylabel('Response time (ms)')
-    ax.set_title('Claim response time of the proposed method')
-    ax.legend(loc='upper left')
+    ax.set_title('Claim response time by method and concurrency', pad=26)
+    ax.legend(loc='lower center', bbox_to_anchor=(0.5, 1.01), ncol=3)
     save(plt, fig, 'e2_fig2_response_time.png')
 
     lz = m['lease']
@@ -324,113 +482,66 @@ def figures(m):
 
 
 def summary(m):
-    """Write summary.md."""
+    """Write the three-method RQ2 summary and preserve method-specific comparisons."""
     c, lz, g, rc = m['contention'], m['lease'], m['geofence_check'], m['recovery_checks']
-    b1, p = c['b1']['all'], c['p']['all']
-    b2l, pl = lz['b2'], lz['p']
-    cc, dl = rc['concurrent_recovery'], m['delayed_request_check']
-    supa = m['database'].startswith('separate experiment only Supabase')
-    L = ['# E2 result: safe claiming and lease recovery', '',
-         '## What we tested', '',
-         'E2 answers two questions about the GeoLock claim functions that the Flutter app calls.', '',
-         '1. **Contention.** Several NGOs press "Claim" on the same donation at the same time. Does exactly one of them get it?',
-         '2. **Lease recovery.** An NGO claims a donation and never comes. Is the donation released after its 6 hour lease, '
-         'so another NGO can take it, without ever taking away a claim that is still valid?', '',
-         'Each question has its own baseline (report Table 3.6). Each baseline removes one protection of the proposed method, '
-         'so the comparison shows what that protection does.', '',
-         '| Condition | How a claim is made | Expired leases | Compared in |', '| --- | --- | --- | --- |',
-         '| Non-Atomic Claim (baseline 1) | two separate steps: check "is it still available?", then save. No lock, no second '
-         'check, no one claim rule | not used | part 1 |',
-         '| Protected Claim without Lease Recovery (baseline 2) | the app\'s `claim_listing()` | never released | part 2 |',
-         '| **Protected Claim with Lease Recovery (proposed)** | the app\'s `claim_listing()`: locks the donation, checks again, '
-         'allows one active claim only | released by the app\'s `recover_expired_claims()` | parts 1 and 2 |', '',
-         '## Setup', '',
-         f"* **Data:** the frozen benchmark dataset {BENCHMARK_NAME}: 150 contention scenarios, 125 lease scenarios and "
-         f"{g['pairs']:,} NGO and donation pairs for the geofence check.",
-         f"* **Database:** {m['database']}. Never the app's own Supabase project. The claim and recovery functions are copied "
-         'unchanged from the live app. Each condition starts from a freshly rebuilt database.',
-         '* **Contention setting:** 50 trials each with 2, 5 and 10 NGOs. Each NGO has its own connection and a barrier releases '
-         'all requests of a trial together. READ COMMITTED isolation, one retry after a deadlock, time limits of 15 s to connect, '
-         '30 s per statement and 60 s at the barrier.', '',
-         '## Results', '',
-         'The main numbers are also in `comparison_summary.csv`, one row per measure.', '',
-         '### 1. Contention: baseline 1 against the proposed method', '',
-         'Each trial is one new donation that 2, 5 or 10 NGOs claim at the same time. The trial fails if more than one '
-         'claim is saved in the database.', '',
-         '| NGOs at once | Trials | Baseline 1: trials with more than one owner | Proposed: trials with more than one owner |',
-         '| --- | --- | --- | --- |']
-    for w in ('2', '5', '10', 'all'):
-        L.append(f"| {w if w != 'all' else '**All**'} | {c['p'][w]['trials']} | {c['b1'][w]['duplicate_trials']} "
-                 f"({pct(c['b1'][w]['duplicate_rate'])}) | {c['p'][w]['duplicate_trials']} ({pct(c['p'][w]['duplicate_rate'])}) |")
-    L += ['', '| All 850 requests | Baseline 1 | Proposed |', '| --- | --- | --- |',
-          f"| Told \"you got it\" | {b1['success']} | {p['success']} |",
-          f"| Told \"already claimed\" | {b1['conflict']} | {p['conflict']} |",
-          f"| Failed with an error | {b1['error']} | {p['error']} |",
-          f"| Extra claims saved beyond one owner | {b1['extra_committed_claims']} | {p['extra_committed_claims']} |",
-          f"| Attempts recorded in the audit log | {b1['attempts_in_audit_log']} | {p['attempts_in_audit_log']} |",
-          f"| Response time, median | {b1['median_ms']:.0f} ms | {p['median_ms']:.0f} ms |", '',
-          '![Figure 1](e2_fig1_duplicate_owners.png)', '',
-          '*Figure 1. Share of contention trials that ended with more than one saved owner, by number of NGOs claiming at once '
-          '(50 trials per bar).*', '',
-          '![Figure 2](e2_fig2_response_time.png)', '',
-          '*Figure 2. Response time of `claim_listing()` in the proposed method: median and 95th percentile over all requests '
-          'at each contention level.*', '',
-          '### 2. Lease: baseline 2 against the proposed method', '',
-          'Each trial is a donation that one NGO claimed earlier. In 100 trials that NGO\'s 6 hour lease has run out, in 25 it '
-          'is still running. A second NGO then tries to claim the donation.', '',
-          '| Earlier claim | Trials | Second NGO got it: baseline 2 | Second NGO got it: proposed | Right outcome |',
-          '| --- | --- | --- | --- | --- |',
-          f"| lease expired (NGO never came) | {pl['expired_cases']} | {b2l['recovered']} | **{pl['recovered']}** | the second NGO gets it |",
-          f"| lease still valid | {pl['active_cases']} | {b2l['false_release']} | **{pl['false_release']}** | the first NGO keeps it |", '',
-          '![Figure 3](e2_fig3_lease_recovery.png)', '',
-          '*Figure 3. Share of the 100 expired lease trials in which another eligible NGO took the donation over. Error bars show '
-          '95 % Wilson confidence intervals.*', '',
-          '### 3. Extra checks of the proposed method', '',
-          'These checks have no baseline. They test that the proposed method also handles the harder cases named by the '
-          'supervisor and the authority contract.', '',
-          '| Check | Result |', '| --- | --- |',
-          f"| Same request ID sent again | first answer returned, nothing new saved in {m['replay']['same_answer']} of {m['replay']['trials']} trials |",
-          f"| One claim held open for 1 s while a second NGO claims | exactly one claim saved in {dl['passed']} of {dl['trials']} trials |",
-          f"| Recovery run again right after | released nothing more in {rc['repeated_recovery_released_nothing']} of 125 trials |",
-          f"| Old holder claims again after its lease expired | refused in {rc['stale_holder_refused']} of {rc['stale_holder_cases']} trials |",
-          f"| Two recovery jobs at the same moment on {cc['expired_claims_prepared']} expired claims | each claim released exactly once: {'yes' if cc['passed'] else 'no'} |",
-          f"| Geofence: NGO within 20 km by road may claim | {g['correct']:,} of {g['pairs']:,} pairs decided correctly |",
-          f"| Ineligible NGO calls `claim_listing()` directly | refused {g['direct_claims_refused']} of {g['direct_claims']}, {g['claims_saved']} claims saved |", '',
-          '![Figure 4](e2_fig4_geofence_check.png)', '',
-          '*Figure 4. Geofence decisions of the proposed method by type of NGO and listing pair, and direct `claim_listing()` '
-          'calls by ineligible NGOs that were refused.*', '',
-          '## Analysis', '',
-          f"**Without an atomic claim, every race ends with several owners.** In baseline 1 every NGO saw \"available\" before "
-          f"anyone saved a claim, so all {b1['requests']} requests were told \"you got it\". All {b1['trials']} trials ended with "
-          f"more than one owner and {b1['extra_committed_claims']} extra claims were saved. Two NGOs are already enough for this.", '',
-          f"**The proposed claim keeps exactly one owner.** None of its {p['trials']} trials ended with more than one owner (95 % "
-          f"confidence interval {ci(*p['duplicate_ci95'])}; exact McNemar test against baseline 1, p = {c['mcnemar']['p_exact']:.1g}). "
-          f"Each trial had one \"you got it\" and the other NGOs were told \"already claimed\" ({p['success']} and {p['conflict']} "
-          f"answers, {p['error']} errors), and the answers always matched what was saved. Every attempt was written to the audit "
-          f"log ({p['attempts_in_audit_log']} of {p['attempts_sent']}); baseline 1 left no record.", '',
-          f"**The protection is quick.** The median answer took {p['median_ms']:.0f} ms and 95 % came within {p['p95_ms']:.0f} ms, "
-          'even with 10 NGOs at once.' + (' These times include the internet delay to Supabase.' if supa else ''), '',
-          f"**Without lease recovery, abandoned donations stay blocked.** In baseline 2 none of the {b2l['expired_cases']} expired "
-          f"claims was released, so {b2l['stranded_listings']} donations could never be collected. With recovery all "
-          f"{pl['recovered']} were released and taken over by another NGO (exact McNemar test, p = {lz['mcnemar']['p_exact']:.1g}), "
-          f"and none of the {pl['active_cases']} valid claims was touched.", '',
-          '## Conclusion', '',
-          f"The proposed method never let two NGOs own the same donation (0 of {p['trials']} trials, against "
-          f"{b1['duplicate_trials']} of {b1['trials']} for baseline 1), and it released every abandoned claim "
-          f"({pl['recovered']} of {pl['expired_cases']}, against {b2l['recovered']} for baseline 2) without touching a valid one. "
-          'It is better than both baselines on the outcome each baseline was built to test, and it passed every extra check.', '',
-          '## Limits of this experiment', '']
-    if not supa:
-        L.append('* **These result files come from a development check run on PostgreSQL with stand ins for Supabase auth, '
-                 'using the same SQL. Run `run_e2.py` on the E2 Supabase project to get the final results.**')
-    L += ['* In baseline 1 every NGO finishes its check before any NGO saves, the worst case for a check then save design. '
-          'With real timing some NGOs would see "already claimed". The test shows that duplicates are possible, not how often '
-          'they happen in daily use.',
-          '* Lease expiry is simulated by giving the earlier claim an older start time, and recovery runs right before the '
-          'second NGO claims instead of on the scheduler\'s timer.',
-          '* The geofence uses the benchmark road distance, not the app\'s live road network cache.',
-          '* Each contention scenario has 2 to 4 nearby NGOs, so with 5 or 10 requests some NGOs send more than one request.', '']
-    (OUT / 'summary.md').write_text('\n'.join(L), encoding='utf-8')
+    labels = [('b1', 'Non-Atomic Claim'), ('b2', 'Protected Claim, no lease recovery'),
+              ('p', 'Protected Claim with lease recovery (proposed)')]
+    lines = ['# E2 result: protected claim and lease recovery', '',
+             '## Contention: three primary methods', '',
+             'All three methods used the same 150 frozen contention scenarios: 50 each with 2, 5, and 10 concurrent requests '
+             '(850 requests per method). Request count is not a count of distinct NGO identities; the frozen scenario NGO pool '
+             'may be reused when request count exceeds the number of eligible identities.', '',
+             '| Method | Duplicate trials / 150 (95% Wilson CI) | SUCCESS | CONFLICT | ERROR | 40P01 | 40001 | Median of scenario medians (ms) | Pooled P95 (ms) |',
+             '| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |']
+    for key, label in labels:
+        x = c[key]['all']
+        lines.append(f"| {label} | {x['duplicate_trials']}/150 ({pct(x['duplicate_rate'])}; {ci(*x['duplicate_ci95'])}) | "
+                     f"{x['success']} | {x['conflict']} | {x['error']} | {x['sqlstate_40P01']} | {x['sqlstate_40001']} | "
+                     f"{x['median_scenario_median_ms']:.1f} | {x['p95_ms']:.1f} |")
+    lines += ['', '### Contention by concurrent request level', '',
+              '| Requests at once | Method | Trials | Duplicate trials (95% Wilson CI) | SUCCESS | CONFLICT | ERROR | Median of scenario medians (ms) |',
+              '| ---: | --- | ---: | ---: | ---: | ---: | ---: | ---: |']
+    for w in ('2', '5', '10'):
+        for key, label in labels:
+            x = c[key][w]
+            lines.append(f"| {w} | {label} | {x['trials']} | {x['duplicate_trials']} ({pct(x['duplicate_rate'])}; {ci(*x['duplicate_ci95'])}) | "
+                         f"{x['success']} | {x['conflict']} | {x['error']} | {x['median_scenario_median_ms']:.1f} |")
+    lines += ['', '### Paired duplicate-ownership tests', '',
+              '| Pair | Only first method has duplicate ownership | Only second method has duplicate ownership | Exact McNemar p |',
+              '| --- | ---: | ---: | ---: |']
+    for pair, result in c['mcnemar'].items():
+        lines.append(f"| {result['method_a']} vs {result['method_b']} | {result['only_a_duplicate']} | "
+                     f"{result['only_b_duplicate']} | {result['p_exact']:.6g} |")
+    lines += ['', 'The test uses each shared contention scenario as its paired unit.',
+              '', '![Figure 1](e2_fig1_duplicate_owners.png)', '',
+              '*Figure 1. Duplicate-ownership trial rates by method and concurrency; whiskers show 95% Wilson intervals.*', '',
+              '![Figure 2](e2_fig2_response_time.png)', '',
+              '*Figure 2. Claim response time by method and concurrency. Each bar represents the median of 50 contention-trial medians, measured in milliseconds.*', '',
+              '## Lease recovery comparison', '',
+              'Lease checks are separate from contention: both protected methods use 100 expired-lease cases and 25 active-lease controls. '
+              'The non-atomic method has no lease mechanism and is not included in this comparison.', '',
+              '| Measure | Protected, no recovery | Proposed, with recovery |', '| --- | ---: | ---: |',
+              f"| Expired leases recovered (/100) | {lz['b2']['recovered']}/{lz['b2']['expired_cases']} | {lz['p']['recovered']}/{lz['p']['expired_cases']} |",
+              f"| Active leases incorrectly released (/25) | {lz['b2']['false_release']}/{lz['b2']['active_cases']} | {lz['p']['false_release']}/{lz['p']['active_cases']} |",
+              f"| Exact paired McNemar p | {lz['mcnemar']['p_exact']:.6g} |", '',
+              '![Figure 3](e2_fig3_lease_recovery.png)', '',
+              '*Figure 3. Expired-lease recovery with 95% Wilson intervals.*', '',
+              '## Additional proposed-method checks', '',
+              f"- Request replay returned the same answer in {m['replay']['same_answer']}/{m['replay']['trials']} contention trials.",
+              f"- Repeated recovery released nothing additional in {rc['repeated_recovery_released_nothing']}/125 lease cases.",
+              f"- Stale holder was refused in {rc['stale_holder_refused']}/{rc['stale_holder_cases']} expired cases.",
+              f"- Concurrent recovery passed: {rc['concurrent_recovery']['passed']}.",
+              f"- Geofence decisions correct: {g['correct']}/{g['pairs']}; direct ineligible claims refused: {g['direct_claims_refused']}/{g['direct_claims']}.", '',
+              '![Figure 4](e2_fig4_geofence_check.png)', '',
+              '## Reproducibility notes', '',
+              f"- Frozen benchmark: {BENCHMARK_NAME}; input hashes are recorded in each method manifest.",
+              f"- Database metadata: {m['database']} (see manifests; credentials are not recorded here).",
+              '- Baseline 1 deliberately synchronizes its read step before its write step to expose the non-atomic race.',
+              '- Retry behavior remains one retry using the same request ID after SQLSTATE 40P01 or 40001; every observed SQLSTATE is retained in request records.',
+              '- Lease expiry is simulated from frozen claim-state timestamps; recovery is invoked directly for this controlled test.',
+              '- Request counts at concurrency levels 5 and 10 may reuse NGO identities from the scenario’s eligible NGO pool.', '',
+              f"**Assessment: {m['verdict']}.**"]
+    (OUT / 'summary.md').write_text('\n'.join(lines) + '\n', encoding='utf-8')
 
 
 if __name__ == '__main__':

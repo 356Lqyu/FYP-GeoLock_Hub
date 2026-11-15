@@ -11,28 +11,15 @@ import statistics
 from collections import Counter
 from pathlib import Path
 import math
+import os
+import sys
 
 HERE = Path(__file__).resolve()
 E4 = HERE.parents[2]
 
-OUT = HERE.parents[1]
-FILES = dict(optimiser=E4 / 'or_tools_route_optimiser' / 'result' / 'results_per_scenario.csv',
-             nearest_next=E4 / 'baseline' / '1_nearest_next' / 'results_per_scenario.csv',
-             fcfs=E4 / 'baseline' / '2_fcfs' / 'results_per_scenario.csv')
-ROUTE_FILES = dict(optimiser=E4 / 'or_tools_route_optimiser' / 'result' / 'details' / 'routes.csv',
-                   nearest_next=E4 / 'baseline' / '1_nearest_next' / 'details' / 'routes.csv',
-                   fcfs=E4 / 'baseline' / '2_fcfs' / 'details' / 'routes.csv')
-MANIFEST_FILES = dict(optimiser=E4 / 'or_tools_route_optimiser' / 'result' / 'run_manifest.json',
-                      nearest_next=E4 / 'baseline' / '1_nearest_next' / 'run_manifest.json',
-                      fcfs=E4 / 'baseline' / '2_fcfs' / 'run_manifest.json')
-ARTIFACT_FILES = {
-    'optimiser': {'results_per_scenario.csv': FILES['optimiser'], 'details/routes.csv': ROUTE_FILES['optimiser'],
-                  'run_info.md': E4 / 'or_tools_route_optimiser' / 'result' / 'run_info.md'},
-    'nearest_next': {'results_per_scenario.csv': FILES['nearest_next'], 'details/routes.csv': ROUTE_FILES['nearest_next'],
-                     'run_info.md': E4 / 'baseline' / '1_nearest_next' / 'run_info.md'},
-    'fcfs': {'results_per_scenario.csv': FILES['fcfs'], 'details/routes.csv': ROUTE_FILES['fcfs'],
-             'run_info.md': E4 / 'baseline' / '2_fcfs' / 'run_info.md'},
-}
+OUT = None
+METHODS = ('optimiser', 'nearest_next', 'fcfs')
+ARTIFACT_NAMES = ('results_per_scenario.csv', 'details/routes.csv', 'run_info.md')
 NAMES = dict(optimiser='OR-Tools route optimiser (proposed)', nearest_next='Nearest-Next (baseline 1)', fcfs='FCFS (baseline 2)')
 
 
@@ -197,15 +184,22 @@ def validate_run_manifests(manifests):
     return manifests['optimiser']['run_id']
 
 
-def verify_run_manifests():
+def verify_run_manifests(paths, root_manifest, run_id):
     """Fail closed if result files were produced by different E4 invocations."""
-    manifests = {key: json.loads(path.read_text(encoding='utf-8')) for key, path in MANIFEST_FILES.items()}
-    run_id = validate_run_manifests(manifests)
-    validate_result_artifacts(manifests)
-    return run_id
+    manifests = {key: json.loads((path / 'run_manifest.json').read_text(encoding='utf-8'))
+                 for key, path in paths.items()}
+    if validate_run_manifests(manifests) != run_id:
+        raise ValueError('Method results do not belong to the requested run.')
+    for key, value in manifests.items():
+        for field in ('settings', 'input_sha256', 'source_sha256'):
+            if value[field] != root_manifest[field]:
+                raise ValueError(f'{key} differs from root manifest on {field}')
+    validate_result_artifacts(manifests, {
+        key: {name: path / name for name in ARTIFACT_NAMES} for key, path in paths.items()
+    })
 
 
-def validate_result_artifacts(manifests, artifact_paths=ARTIFACT_FILES):
+def validate_result_artifacts(manifests, artifact_paths):
     """Verify saved per-method result files against their manifest hashes."""
     for method, paths in artifact_paths.items():
         expected = manifests[method].get('artifact_sha256')
@@ -225,8 +219,8 @@ def compare(p, b, ids, name, proposed_tasks, baseline_tasks):
     same = matched_task_scenarios(p, b, ids, proposed_tasks, baseline_tasks)
     km = [float(p[s]['total_distance_km']) - float(b[s]['total_distance_km']) for s in same]
     tm = [float(p[s]['driving_time_min']) - float(b[s]['driving_time_min']) for s in same]
-    _, kp, knz = wilcoxon_pratt(km)
-    _, tp, _ = wilcoxon_pratt(tm)
+    _, kp, knz = wilcoxon_pratt(km) if same else (None, None, 0)
+    _, tp, _ = wilcoxon_pratt(tm) if same else (None, None, 0)
     _, sp, _ = wilcoxon_pratt(served_diff)
     return dict(baseline=name,
                 coverage=dict(proposed_served=sum(int(p[s]['served_tasks']) for s in ids),
@@ -247,7 +241,7 @@ def compare(p, b, ids, name, proposed_tasks, baseline_tasks):
                     hl_driving_min=hodges_lehmann(tm), driving_ci95=list(bootstrap_ci(tm)), driving_wilcoxon_p=tp))
 
 
-def baseline_overlap(R, ids):
+def baseline_overlap(R, ids, paths):
     """How alike the two simple rules are: same number served, same plan, same pickups, and what stopped them."""
     import collections
     data = E4.parents[1] / 'benchmark dataset' / 'dataset'
@@ -258,16 +252,16 @@ def baseline_overlap(R, ids):
     weight = {r['listing_id']: float(r['listing_weight_kg']) for r in table('listings')}
     cap = {r['vehicle_id']: float(r['vehicle_capacity_kg']) for r in table('vehicles')}
     fleet = collections.defaultdict(list)
-    for r in table('vehicles'):
-        fleet[r['ngo_id']].append(r['vehicle_id'])
-    ngo = {r['scenario_id']: r['entity_id'] for r in table('scenario_members') if r['entity_type'] == 'NGO'}
+    for r in table('scenario_members'):
+        if r['entity_type'] == 'VEHICLE' and r['scenario_role'] == 'AVAILABLE_FLEET':
+            fleet[r['scenario_id']].append(r['entity_id'])
 
     def served_sets(folder):
         out = collections.defaultdict(dict)
-        for r in read_rows(E4 / 'baseline' / folder / 'details' / 'routes.csv'):
+        for r in read_rows(paths[folder] / 'details' / 'routes.csv'):
             out[r['scenario_id']][r['vehicle_id']] = r['stops_in_order'].split(' > ')
         return out
-    routes = {'nearest_next': served_sets('1_nearest_next'), 'fcfs': served_sets('2_fcfs')}
+    routes = {'nearest_next': served_sets('nearest_next'), 'fcfs': served_sets('fcfs')}
     left, fits_by_weight, no_route = 0, 0, 0
     for s in ids:
         load = {v: sum(weight[t.replace('TASK-', '')] for t in stops) for v, stops in routes['nearest_next'][s].items()}
@@ -275,11 +269,11 @@ def baseline_overlap(R, ids):
             left += 1
             if why == 'ROUTE_UNAVAILABLE':
                 no_route += 1
-            elif any(weight[t.replace('TASK-', '')] <= cap[v] - load.get(v, 0) for v in fleet[ngo[s]]):
+            elif any(weight[t.replace('TASK-', '')] <= cap[v] - load.get(v, 0) for v in fleet[s]):
                 fits_by_weight += 1
     pick = {k: {s: set(t for stops in routes[k][s].values() for t in stops) for s in ids} for k in routes}
     return dict(same_number_served=sum(R['nearest_next'][s]['served_tasks'] == R['fcfs'][s]['served_tasks'] for s in ids),
-                same_plan=sum(R['nearest_next'][s]['plan_sha256'] == R['fcfs'][s]['plan_sha256'] for s in ids),
+                same_plan=sum(routes['nearest_next'][s] == routes['fcfs'][s] for s in ids),
                 same_pickups=sum(pick['nearest_next'][s] == pick['fcfs'][s] for s in ids),
                 same_km=sum(R['nearest_next'][s]['total_distance_km'] == R['fcfs'][s]['total_distance_km'] for s in ids),
                 left_out_by_nearest_next=left, left_out_no_road=no_route, left_out_that_fit_by_weight=fits_by_weight)
@@ -293,16 +287,32 @@ def read_rows(path):
 
 def main():
     """Read the result folders, then write the comparison tables, figures and summary.md."""
-    run_id = verify_run_manifests()
-    R = {k: read(v) for k, v in FILES.items()}
+    global OUT
+    sys.path.insert(0, str(E4))
+    from run_e4 import run_directory
+    run_id = os.environ.get('GEOLOCK_E4_RUN_ID', '')
+    directory = run_directory(run_id)
+    OUT = directory / 'comparison'
+    if OUT.exists() or OUT.is_symlink():
+        raise ValueError(f'Comparison output already exists: {OUT}')
+    manifest = json.loads((directory / 'run_manifest.json').read_text(encoding='utf-8'))
+    if manifest['run_id'] != run_id or manifest['status'] != 'in_progress':
+        raise ValueError('Unexpected E4 root manifest identity or status.')
+    paths = {key: directory / 'methods' / key for key in METHODS}
+    verify_run_manifests(paths, manifest, run_id)
+    R = {key: read(path / 'results_per_scenario.csv') for key, path in paths.items()}
     ids = sorted(R['optimiser'])
-    assert all(set(R[k]) == set(ids) for k in R) and len(ids) == 100, 'scenario sets differ'
-    task_sets = {}
-    for method in R:
-        task_sets[method] = read_served_task_sets(ROUTE_FILES[method], ids, R[method])
-    for s in ids:  # every method got the same snapshot
-        assert len({R[k][s]['frozen_snapshot_sha256'] for k in R}) == 1, f'different snapshot for {s}'
-        assert len({R[k][s]['valid_tasks'] for k in R}) == 1
+    if len(ids) != 100 or any(set(rows) != set(ids) for rows in R.values()) or set(ids) != set(manifest['snapshots']):
+        raise ValueError('E4 scenario sets differ.')
+    task_sets = {key: read_served_task_sets(path / 'details/routes.csv', ids, R[key])
+                 for key, path in paths.items()}
+    for s in ids:
+        expected = manifest['snapshots'][s]
+        for key, rows in R.items():
+            actual = {field: rows[s][field] for field in ('frozen_snapshot_sha256', 'matrix_sha256')}
+            actual.update({field: json.loads(rows[s][field]) for field in ('admitted_task_ids', 'vehicle_ids')})
+            if actual != expected or not task_sets[key][s].issubset(expected['admitted_task_ids']):
+                raise ValueError(f'E4 snapshot evidence differs: {key}/{s}')
         if any(R[k][s].get('error') for k in R):
             raise ValueError(f'At least one method failed for {s}')
         if any(R[k][s]['independent_check_passed'] != 'YES' for k in R):
@@ -333,14 +343,14 @@ def main():
             violations=sum(int(rs[s].get(c) or 0) for s in ids for c in ('capacity_violations', 'duration_violations', 'time_window_violations', 'other_violations')),
             total_km=sum(float(rs[s]['total_distance_km']) for s in ids),
             total_driving_time_min=round(sum(float(rs[s]['driving_time_min']) for s in ids), 2),
-            km_per_served_task=sum(float(rs[s]['total_distance_km']) for s in ids) / served,
+            km_per_served_task=sum(float(rs[s]['total_distance_km']) for s in ids) / served if served else None,
             vehicles_used=sum(int(rs[s]['vehicles_used']) for s in ids),
             timeouts=sum(rs[s]['timeout'] == 'YES' for s in ids),
             median_planning_ms=statistics.median(float(rs[s]['planning_time_ms']) for s in ids),
             max_planning_ms=max(float(rs[s]['planning_time_ms']) for s in ids),
             unserved_reasons=dict(reasons),
             coverage_proven_optimal=sum(rs[s].get('coverage_proven_optimal') == 'YES' for s in ids))
-    m['baselines_alike'] = baseline_overlap(R, ids)
+    m['baselines_alike'] = baseline_overlap(R, ids, paths)
     m['primary_vs_nearest_next'] = compare(R['optimiser'], R['nearest_next'], ids, 'nearest_next',
         task_sets['optimiser'], task_sets['nearest_next'])
     m['descriptive_vs_fcfs'] = compare(R['optimiser'], R['fcfs'], ids, 'fcfs',
@@ -351,8 +361,9 @@ def main():
         ('fcfs', 'distance_km', m['descriptive_vs_fcfs']['distance_identical_task_set']['wilcoxon_p']),
         ('fcfs', 'driving_time_min', m['descriptive_vs_fcfs']['distance_identical_task_set']['driving_wilcoxon_p']),
     ]
-    m['holm_secondary'] = [dict(baseline=baseline, measure=measure, p_raw=p, p_holm=p_holm)
-                            for (baseline, measure, p), p_holm in zip(secondary_keys, holm([x[2] for x in secondary_keys]))]
+    m['holm_secondary'] = [dict(baseline=baseline, measure=measure, p_raw=p,
+                                 p_holm=p_holm if p is not None else None)
+                            for (baseline, measure, p), p_holm in zip(secondary_keys, holm([x[2] if x[2] is not None else 1.0 for x in secondary_keys]))]
     R_ = {'proposed': R['optimiser'], 'baseline1_nearest_next': R['nearest_next'], 'baseline2_fcfs': R['fcfs']}
     out_rows = []
     for s in ids:
@@ -367,6 +378,7 @@ def main():
         o['km_saved_vs_nearest_next'] = round(float(R['nearest_next'][s]['total_distance_km']) - float(R['optimiser'][s]['total_distance_km']), 3) if same_nearest else ''
         o['km_saved_vs_fcfs'] = round(float(R['fcfs'][s]['total_distance_km']) - float(R['optimiser'][s]['total_distance_km']), 3) if same_fcfs else ''
         out_rows.append(o)
+    OUT.mkdir(exist_ok=False)
     write_csv(OUT / 'comparison_per_scenario.csv', out_rows)
 
     def row(measure, key, fmt, better):
@@ -380,7 +392,7 @@ def main():
         row(f'Valid pickups served (of {valid_task_total})', 'served', int, 'higher'),
         row('Scenarios with every pickup served (of 100)', 'full_coverage_snapshots', int, 'higher'),
         row('Total distance, all scenarios (km)', 'total_km', lambda v: round(v, 1), 'lower'),
-        row('Distance per pickup served (km)', 'km_per_served_task', lambda v: round(v, 2), 'lower'),
+        row('Distance per pickup served (km)', 'km_per_served_task', lambda v: round(v, 2) if v is not None else '', 'lower'),
         row('Vehicles used', 'vehicles_used', int, 'lower'),
         row('Capacity, duration or time window violations', 'violations', int, 'lower'),
         row('Solver timeouts', 'timeouts', int, 'lower'),
@@ -432,12 +444,14 @@ def matched_task_savings_rows(metrics):
     ]
     rows = []
     for label, result in comparisons:
-        # The stored Hodges–Lehmann value is baseline minus CP-SAT. Negating it
+        # The stored Hodges–Lehmann value is CP-SAT minus baseline. Negating it
         # expresses savings as positive values favouring CP-SAT; reverse the
         # confidence interval endpoints under the same transformation.
-        estimate = -float(result['hl_km'])
-        low = -float(result['ci95'][1])
-        high = -float(result['ci95'][0])
+        estimate, low, high = None, None, None
+        if result['snapshots']:
+            estimate = -float(result['hl_km'])
+            low = -float(result['ci95'][1])
+            high = -float(result['ci95'][0])
         rows.append({
             'label': label,
             'snapshots': int(result['snapshots']),
@@ -463,18 +477,19 @@ def figure4_matched_task_savings(metrics):
     value_ax = fig.add_subplot(grid[0, 1], sharey=ax)
 
     ax.axvline(0, color='#888888', linewidth=0.8, linestyle='--', zorder=0)
-    ax.errorbar(
-        estimates, y,
-        xerr=[[estimate - low for estimate, low in zip(estimates, lows)],
-              [high - estimate for estimate, high in zip(estimates, highs)]],
-        fmt='o', color=PROPOSED, ecolor=PROPOSED, capsize=3,
-        linewidth=1.4, markersize=5, zorder=2,
-    )
+    for estimate, low, high, row in zip(estimates, lows, highs, y):
+        if estimate is not None:
+            ax.hlines(row, low, high, color=PROPOSED, linewidth=1.4)
+            ax.plot([low, high], [row, row], '|', color=PROPOSED, markersize=6)
+            ax.plot(estimate, row, 'o', color=PROPOSED, markersize=5)
     ax.set_yticks(y, [f"{row['label']} (n={row['snapshots']})" for row in rows])
     ax.tick_params(axis='y', length=0, pad=6, labelsize=8)
     ax.set_ylim(-0.55, len(rows) - 0.45)
     ax.invert_yaxis()
-    ax.set_xlim(0, max(highs) * 1.08)
+    endpoints = [0] + [v for v in lows + highs + estimates if v is not None]
+    low, high = min(endpoints), max(endpoints)
+    pad = (high - low) * 0.08 or 1
+    ax.set_xlim(low - pad, high + pad)
     ax.set_xlabel('Matched-task road-distance savings (km); positive favours CP-SAT')
     ax.set_title('CP-SAT savings for identical served task sets')
     ax.grid(axis='x', color='#e3e3e3', linewidth=0.6)
@@ -490,7 +505,8 @@ def figure4_matched_task_savings(metrics):
         value_ax.text(
             0.04, index,
             f"{row['estimate_km']:.2f} km\n"
-            f"95% CI: {row['ci95_low_km']:.2f}–{row['ci95_high_km']:.2f} km",
+            f"95% CI: {row['ci95_low_km']:.2f}–{row['ci95_high_km']:.2f} km"
+            if row['estimate_km'] is not None else "No matched snapshots",
             transform=value_ax.get_yaxis_transform(),
             ha='left', va='center', fontsize=8, color='#222222', linespacing=1.3,
         )
@@ -524,10 +540,13 @@ def figure(R, ids, m, task_sets):
     for i, k in enumerate(keys):
         lo, hi = pm[k]['coverage_ci95']
         bars(ax, [i], [100 * pm[k]['coverage']], colours[i], 0.55, low=[100 * lo], high=[100 * hi],
-             text=[f"{pm[k]['served']} of {pm[k]['valid_tasks']}"])
+             text=[f"{pm[k]['coverage']:.1%} ({pm[k]['served']}/{pm[k]['valid_tasks']})\n"
+                   f"95% Wilson CI: {100 * lo:.1f}–{100 * hi:.1f}%"])
     ax.set_xticks(range(3), names)
     ax.set_ylabel('Valid pickups served (%)')
     ax.set_title('Pickups served')
+    fig.tight_layout()
+    fig.savefig(OUT / 'e4_fig1_tasks_served.pdf', bbox_inches='tight')
     save(plt, fig, 'e4_fig1_tasks_served.png')
 
     eq = matched_task_scenarios(R['optimiser'], R['nearest_next'], ids,
@@ -535,7 +554,9 @@ def figure(R, ids, m, task_sets):
     fig, ax = plt.subplots(figsize=(4.8, 4.4))
     x = [float(R['nearest_next'][s]['total_distance_km']) for s in eq]
     y = [float(R['optimiser'][s]['total_distance_km']) for s in eq]
-    lim = max(x + y) * 1.05
+    lim = (max(x + y, default=0) * 1.05) or 1
+    if not eq:
+        ax.text(0.5, 0.5, "No matched snapshots", ha="center", transform=ax.transAxes)
     ax.plot([0, lim], [0, lim], color='#888888', lw=0.8, ls='--', label='Equal distance')
     ax.scatter(x, y, s=14, color=PROPOSED, alpha=0.85, label='One scenario')
     ax.set_xlim(0, lim); ax.set_ylim(0, lim); ax.set_aspect('equal')
@@ -549,7 +570,7 @@ def figure(R, ids, m, task_sets):
     # Aggregate totals are descriptive across each method's own served tasks.
     fig, ax = plt.subplots(figsize=(6.4, 3.6))
     top = max(m['per_method'][key]['total_km'] for key in keys)
-    ax.set_ylim(0, top * 1.22)
+    ax.set_ylim(0, top * 1.22 or 1)
     pad = top * 0.015
     for i, key in enumerate(keys):
         value = m['per_method'][key]['total_km']
@@ -586,12 +607,15 @@ def summary(m):
           '| Baseline | Matched snapshots | CP-SAT distance (km) | Baseline distance (km) | CP-SAT distance saving (HL, 95% bootstrap CI) | Wilcoxon–Pratt p | CP-SAT driving-time saving (HL, 95% CI) | Wilcoxon–Pratt p |',
           '| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |']
     for label, result in (('Nearest-Next', dn), ('FCFS', df)):
+        if not result['snapshots']:
+            L.append(f"| {label} | 0 | — | — | — | — | — | — |")
+            continue
         lo, hi = result['ci95']
         tlo, thi = result['driving_ci95']
         L.append(f"| {label} | {result['snapshots']} | {result['proposed_km']:,.1f} | {result['baseline_km']:,.1f} | {-result['hl_km']:.2f} ({-hi:.2f}, {-lo:.2f}) | {result['wilcoxon_p']:.4g} | {-result['hl_driving_min']:.2f} ({-thi:.2f}, {-tlo:.2f}) | {result['driving_wilcoxon_p']:.4g} |")
-    L += ['', 'Secondary distance and driving-time p-values are Holm-adjusted across the four baseline-by-measure comparisons; see `metrics.json`.', '',
+    L += ['', 'Secondary distance and driving-time raw p-values are shown above. Holm adjustment spans the four baseline-by-measure comparisons; see `metrics.json`.', '',
           '![Figure 1](e4_fig1_tasks_served.png)', '',
-          '*Figure 1. Tasks served by each method across all 100 snapshots; whiskers are 95% Wilson intervals.*', '',
+          '*Figure 1. Tasks served by each method across all 100 snapshots; whiskers and labels are descriptive 95% task-level Wilson intervals.*', '',
           '![Figure 2](e4_fig2_km_per_scenario.png)', '',
           '*Figure 2. Per-snapshot route distances for CP-SAT and Nearest-Next, restricted to snapshots with identical served task IDs and valid plans.*', '',
           '![Figure 3](e4_fig3_total_km.png)', '',
@@ -602,7 +626,7 @@ def summary(m):
           f"- Shared run ID: `{m['run_id']}`; admitted tasks: {m['admitted_task_total']} across {m['realised_units']} snapshots.",
           '- The figure and summaries are generated from scenario CSVs, route-detail CSVs, and manifests; no paper values are hard-coded.',
           '- Matched-snapshot inference conditions on identical served task sets; aggregate distance totals are descriptive and should not be interpreted as a paired causal comparison.',
-          '- Each snapshot has five candidate tasks and two vehicles; vehicle routes are single trips and travel times do not model live traffic.', '']
+          '- Each snapshot has five tasks; 50 snapshots have one vehicle and 50 have two; vehicle routes are single trips and travel times do not model live traffic.', '']
     (OUT / 'summary.md').write_text('\n'.join(L), encoding='utf-8')
 
 

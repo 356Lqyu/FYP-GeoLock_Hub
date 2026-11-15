@@ -355,4 +355,4 @@ if __name__ == '__main__':
     # E4 run on the shared snapshots (main() above is the old stand alone run and is not used)
     sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'test_harness'))
     from e4_shared import run_and_save
-    run_and_save('nearest_next', Path(__file__).resolve().parents[1] / FOLDER)
+    run_and_save('nearest_next')
