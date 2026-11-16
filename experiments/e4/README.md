@@ -56,14 +56,13 @@ Invoke-Item -LiteralPath 'experiments/e4/experiment_result/summary.md'
 
 Read coverage across all snapshots first. Use the matched-task figures to compare distance on the same pickups.
 
-**5. Verify the saved outputs offline.** Use the first command for the active files. Use the second for the original paper run `ac1b77db93634b7d8da371ee59105679` while its artifacts are still the active set. The paper verifier checks the original manifest, frozen inputs, source hashes, and artifacts. A [saved source snapshot](experiment_result/published_provenance/backend/routing/hosted/frozen_benchmark.py) supplies the exact diagnostic bytes recorded by that run.
+**5. Verify the saved outputs offline.** After a successful run replaces the active results, check that the active manifest is marked `completed`, lists exactly the required artifacts, and records the matching SHA-256 hash for each artifact.
 
 ~~~powershell
 & $e4Python -B experiments/e4/run_e4.py --verify-active
-& $e4Python -B experiments/e4/experiment_result/published_provenance/verify.py
 ~~~
 
-**6. Recover an interrupted publication only if requested by the driver.** For example, Windows may terminate the process while it is replacing the published files. This command can restore the previous active outputs. It runs no routing method.
+**6. Recover an interrupted publication.** Use recovery only if publication was interrupted. Recovery can modify active result files to restore the previous result set. Keep `.work/` intact until recovery and subsequent verification both succeed.
 
 ~~~powershell
 & $e4Python -B experiments/e4/run_e4.py --recover-publication

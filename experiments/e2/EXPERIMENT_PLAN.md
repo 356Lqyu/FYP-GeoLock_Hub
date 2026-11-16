@@ -47,7 +47,7 @@ Wilson intervals describe uncertainty around observed proportions. Exact paired 
 2. Rebuild the verified target separately for each method.
 3. Run the scheduled cases and record both request responses and stored database state.
 4. Check that all three method outputs belong to one run and generate the comparison.
-5. Use the [paper-run verifier instructions](README.md#result-files) to inspect the sealed paper evidence offline.
+5. Follow the [latest-run verification instructions](README.md#find-and-verify-the-results) to run `--verify-latest` offline. It checks the completed run manifest, run ID, output file inventory and SHA-256 hashes in `results/latest/`, and the frozen input hashes.
 
 ## 7. Interpretation and limits
 

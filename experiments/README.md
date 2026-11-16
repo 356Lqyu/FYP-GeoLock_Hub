@@ -31,4 +31,4 @@ py -m venv .venv
 pip install -r experiments/requirements.txt
 ```
 
-Follow each experiment's README for its commands. For E2, use the [hosted reproduction guide](e2/README.md#reproduce-the-hosted-paper-procedure-on-windows) and the [latest-run verification instructions](e2/README.md#find-and-verify-the-results). For E4, see [published-run verification](e4/README.md).
+Follow each experiment's README for its commands. For E2, use the [hosted reproduction guide](e2/README.md#reproduce-the-hosted-paper-procedure-on-windows) and the [latest-run verification instructions](e2/README.md#find-and-verify-the-results). For E4, see [active-result verification](e4/README.md#how-to-run).

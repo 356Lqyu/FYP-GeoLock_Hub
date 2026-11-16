@@ -2,8 +2,8 @@
 
 | Item | Value |
 | --- | --- |
-| Run ID | ac1b77db93634b7d8da371ee59105679 |
-| Run at | 2026-11-15T17:29:33+08:00 |
+| Run ID | 7f5ddab6c0f94b20adffc878d3a97217 |
+| Run at | 2026-11-16T22:02:51+08:00 |
 | Scenarios | 100 ROUTE_PLANNING snapshots (sealed, shared by all E4 methods) |
 | Method | its own plan_routes(): each vehicle in turn drives to the nearest pickup it can still fit and finish in time |
 | Execution policy | ExecutionConfig(fixed_cost_weight=1.0, distance_cost_weight=1.0, deterministic_seconds_per_pass=0.25) |

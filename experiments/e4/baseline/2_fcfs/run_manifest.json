@@ -1,6 +1,6 @@
 {
   "method": "fcfs",
-  "run_id": "ac1b77db93634b7d8da371ee59105679",
+  "run_id": "7f5ddab6c0f94b20adffc878d3a97217",
   "settings": {
     "approved": true,
     "geofence_km": 20,
@@ -51,7 +51,7 @@
     "backend/routing/hosted/benchmark.py": "e3e7d2b5042b21568b8e796e682dfcd8894496d25459109160fcf9335dfb7d67",
     "backend/routing/hosted/compact_graph.py": "c19ae4a4eaf66aac7c00a83b223e4e9bf43889403cbae4a37a4f6572edc79658",
     "backend/routing/hosted/config.py": "1f5688815d386639c42a9d417374cc4db1080e272ef546d8dc3c919e25954d2f",
-    "backend/routing/hosted/frozen_benchmark.py": "e388f9089f0bddb245015bcd8f2e03b4e28b815a698d16e53d37fe046d3daf0d",
+    "backend/routing/hosted/frozen_benchmark.py": "d931d2786ebf3f72b405e9f813ccecbfedb37c40ac505c0092bc2aef92c632d5",
     "backend/routing/hosted/run_resource_profiles.py": "1580bf1d923e9538008e3388d6ac75e0907b348b398d4653618d9691465861bb",
     "backend/routing/hosted/runtime.py": "a5fbbd05e1b1453af7d392d23fc38815886503e73d181ca8d7a9608a914ae272",
     "backend/routing/integration/__init__.py": "66189aaf0f73f0901ad347523a7f0ca52675398baa31f86ccd911c4710556f05",
@@ -106,6 +106,8 @@
     "backend/routing/worker_service/windows/local_setup_check.py": "25f2721e50ab1a6a82d5c9d163f1f39902d976deb529687af3efdc15395b0012",
     "experiments/e4/baseline/source_code/fcfs_baseline.py": "23c733f05cbfb7534a3cb07e642a2927c35a13bafef4829aff23e62e774d5d88",
     "experiments/e4/baseline/source_code/nearest_next_baseline.py": "4b02b1a01713a66f06992088ded50c8d765b8b1fd9d35c402d1fb9f2f5d2b3b8",
+    "experiments/e4/experiment_result/published_provenance/backend/routing/hosted/frozen_benchmark.py": "e388f9089f0bddb245015bcd8f2e03b4e28b815a698d16e53d37fe046d3daf0d",
+    "experiments/e4/experiment_result/published_provenance/verify.py": "d09fec05a75ba8f8ca3e33e88d18a7a84f17a1523667061d14c4f0405a97583d",
     "experiments/e4/experiment_result/source_code/e4_compare.py": "3adcacf29115ac50919a330a7ccaac15c40fc70887aab4f758daad58c06a7fec",
     "experiments/e4/or_tools_route_optimiser/source_code/run_or_tools_route_optimiser.py": "3b77a867da3a94e3bcc9c0a3c905fe9ee8cb2d1db1811607c90fee37db722baf",
     "experiments/e4/requirements.txt": "859ca6374acaf0c41e5f25ab6bf0d1171f19b7d4742db1f765246bc4c1893328",
@@ -115,9 +117,9 @@
     "experiments/e4/test_harness/test_e4_publication.py": "ad56f78b6a27a224c81ac361c70a52f81c669c5c5ec4999da6377a43799afc30"
   },
   "artifact_sha256": {
-    "results_per_scenario.csv": "9ea2ca60da78f7beae458a44538d8f576c3130b2a4474f0b48d323b1355bf332",
+    "results_per_scenario.csv": "6987a8063b91438d55586e52b5b50d61a332f4ce49d34a1b29dd24c0d6cd505f",
     "details/routes.csv": "f5fbaa226c51076c0d3a6982c17ed0c27ecfaee356b1545118f80c219fe21935",
-    "run_info.md": "9c7935fda3d3c18f0d12ef5e0ca66bbff41b358b03a592d3f293208bf684e07b"
+    "run_info.md": "9efac62312af63b75ef5dbc3a2871570bbcbbb0baf42fa663650f14d694defbe"
   },
   "environment": {
     "python": "3.13.9",
@@ -125,9 +127,11 @@
     "packages": {
       "numpy": "2.1.3",
       "scipy": "1.18.1",
+      "sklearn": "1.5.2",
+      "xgboost": "2.1.4",
       "ortools": "9.15.6755",
       "matplotlib": "3.11.2"
     },
-    "run_at": "2026-11-15T17:29:37+08:00"
+    "run_at": "2026-11-16T22:02:57+08:00"
   }
 }
