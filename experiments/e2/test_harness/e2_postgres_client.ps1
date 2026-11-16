@@ -1,5 +1,5 @@
 function Assert-E2LocalRootInventory {
-    param([string]$Root, [switch]$Recovery)
+    param([string]$Root, [switch]$Recovery, [switch]$ConfiguredRecovery)
 
     if (-not (Test-Path -LiteralPath $Root)) { return }
     foreach ($item in (Get-ChildItem -LiteralPath $Root -Force -ErrorAction Stop)) {
@@ -10,6 +10,7 @@ function Assert-E2LocalRootInventory {
         if ($Recovery) {
             if ($item.Name -ieq 'cluster' -and $item -is [IO.DirectoryInfo] -and -not $linked) { continue }
             if ($item.Name -ieq 'postgresql.log' -and $regularFile) { continue }
+            if ($ConfiguredRecovery -and $regularFile -and $item.Name -iin @('local.json','run.lock')) { continue }
         }
         throw "E2 local setup or recovery refused: unexpected or unsafe entry '$($item.Name)' under '$Root'. Nothing was removed."
     }

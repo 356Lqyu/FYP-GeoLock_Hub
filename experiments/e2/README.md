@@ -103,7 +103,7 @@ $projectRef = Read-Host 'Enrolled E2-only Supabase project reference'
 .\experiments\e2\run.ps1 -Hosted -ConfirmProject $projectRef
 ~~~
 
-A completed run prints `E2 complete:` followed by the result folder. If execution fails after preflight, keep the failure output and any new result folder. For connection timeouts during contention, check Session Pooler capacity and logs. For fixture or reset errors, check the reported SQL error and the disposable project's Auth and object inventory. Keep the guards in place. Follow [Find and verify the results](#find-and-verify-the-results) to check the new run.
+A completed run prints `E2 complete:` with the result folder and run ID. If execution fails after preflight, keep the terminal output. Partial files may remain in `.latest.pending/` until the next full run or offline recovery. For connection timeouts during contention, check Session Pooler capacity and logs. For fixture or reset errors, check the reported SQL error and the disposable project's Auth and object inventory. Keep the guards in place. Follow [Find and verify the results](#find-and-verify-the-results) to check the new run.
 
 ## Local PostgreSQL on Windows
 
@@ -162,7 +162,7 @@ Check the displayed database `geolock_e2`, address `127.0.0.1`, configured port,
 .\experiments\e2\run.ps1
 ~~~
 
-To run a standalone method, use one of the following commands. Each is also a rebuild and gets its own run ID. Only the full run makes the three-method comparison.
+To run a standalone method, use one of the following commands. Each rebuilds E2, gets its own run ID, and replaces `results/standalone/` on success. Only the full run publishes to `results/latest/` and makes the three-method comparison.
 
 ~~~powershell
 .\experiments\e2\run.ps1 -Method baseline1
@@ -172,9 +172,40 @@ To run a standalone method, use one of the following commands. Each is also a re
 
 **4. Troubleshoot setup.** For a missing extension, install the package for the same PostgreSQL 17 installation. For an occupied port, check which service owns it. You can choose a different unused port during a **fresh** setup with `-Port`. Use the same port and binaries for recovery of an existing cluster. For startup or stop warnings, inspect the existing cluster status and `postgresql.log` before proceeding.
 
+## Recover a configured cluster with a stale PID file
+
+Use this section when `local.json` already exists and the runner reports a stale or unreadable `postmaster.pid`. Keep `local.json` and `hosted.json` in place. Close other E2 runs and avoid starting PostgreSQL manually while recovering the cluster.
+
+**1. Inspect from the repository root.** Use the same Windows account that set up E2, in a PowerShell window that can read the Windows process, service and TCP listener inventories. If access is denied, use an elevated PowerShell window under that same account. This command reads local files and system metadata without starting or connecting to PostgreSQL.
+
+~~~powershell
+$localRoot = Join-Path $env:LOCALAPPDATA 'GeoLockHub\E2'
+$e2Config = Get-Content -LiteralPath (Join-Path $localRoot 'local.json') -Raw | ConvertFrom-Json
+$recoveryTarget = @{
+    ExpectedSystemIdentifier = [string]$e2Config.cluster_system_identifier
+    PgBin = $e2Config.pg_bin
+    Port = [int]$e2Config.port
+}
+.\experiments\e2\scripts\recover_local_e2.ps1 -Action Inspect @recoveryTarget
+~~~
+
+**2. Quarantine only if inspection reports a verified stale PID candidate.** If the PID is still assigned, the port has a listener, or any check fails, stop and preserve the file. In the same PowerShell window, enter the PID reported by the successful inspection. The command below repeats the checks and renames the PID file in the same directory, printing its new path and SHA-256. It leaves PostgreSQL stopped.
+
+~~~powershell
+$stalePid = Read-Host 'Verified stale PID reported by Inspect'
+$clusterId = $recoveryTarget.ExpectedSystemIdentifier
+.\experiments\e2\scripts\recover_local_e2.ps1 -Action QuarantineStalePid @recoveryTarget -ConfirmStalePid "QUARANTINE STALE PID $stalePid FOR E2 CLUSTER $clusterId"
+~~~
+
+**3. Run normal preflight when ready to start PostgreSQL.** Startup may replay WAL and update cluster files after an unclean shutdown. Preflight checks the live target marker and reset inventory without rebuilding or running experiment methods.
+
+~~~powershell
+.\experiments\e2\run.ps1 -PreflightOnly -AllowStart
+~~~
+
 ## Recover an interrupted E2 setup
 
-Use recovery when local setup created the dedicated cluster but did not write `local.json`. If `local.json` already exists, use normal preflight. Recovery preserves the cluster. An existing regular `hosted.json` can stay in place.
+Use this procedure when local setup created the dedicated cluster but did not write `local.json`. Recovery preserves the cluster. An existing regular `hosted.json` can stay in place.
 
 **1. Inspect.** Use the same PostgreSQL binaries and port as setup. These commands show the on-disk cluster identifier. The recovery script checks identity, the PID record, and the cluster inventory.
 
@@ -210,7 +241,7 @@ If the runner reports a missing or invalid config, follow the [Supabase enrollme
 
 ## Result files
 
-Open `experiments/e2/experiment_result/results/<run-id>/comparison/summary.md` after a full run.
+Open `experiments/e2/experiment_result/results/latest/comparison/summary.md` after a full run. Local and hosted runs publish to the same `latest/` folder. The root manifest records the mode and a new run ID, which also appears in each method manifest.
 
 | File | What it tells you |
 | --- | --- |
@@ -218,53 +249,37 @@ Open `experiments/e2/experiment_result/results/<run-id>/comparison/summary.md` a
 | `comparison_contention.csv`, `comparison_lease.csv`, `comparison_geofence.csv` | Matched cases behind the totals |
 | `methods/<method>/` | Raw requests, scenario rows, and method manifest |
 | `run_manifest.json` | Completion status, target, input hashes, and source hashes |
+| `result_sha256.json` | Run ID and SHA-256 inventory of the published output files |
 
 Start with duplicate ownership and expired-lease recovery. A conflict is the expected answer for a losing request. Figure 2 shows the median of trial medians. Pooled P95 answers a separate question about the slower end of all recorded requests.
 
-For the research paper, use the [published summary](experiment_result/results/bc954b859fa348d9a7a48cb005ee748e/comparison/summary.md). The [paper-run provenance notes](experiment_result/results/bc954b859fa348d9a7a48cb005ee748e/provenance/README.md) explain how its exact source and result files are preserved.
+For the research paper, use the [verified results in `latest/`](#find-and-verify-the-results) and record the run ID from its manifest.
+
+The runner writes to a fixed staging directory and validates the evidence before publication. If execution or validation fails, the previous result remains active. During replacement, `latest/` may be briefly absent while the previous result is held in `.latest.previous/`. If interrupted in that window, run the following offline command from the repository root. It restores the previous result if necessary and clears pending output. Copy any partial diagnostics you want to inspect before recovery. The next full run also performs this recovery automatically. Review a recovery error before proceeding.
+
+~~~powershell
+& .\.venv-e2\Scripts\python.exe -B experiments/e2/run_e2.py --recover-results
+~~~
+
+Each output slot uses one pending directory and one temporary backup. Keep any paper exports you edit separately, since verification checks the exact published file inventory. Existing UUID-named runs are outside this replacement process.
 
 ## Find and verify the results
 
-**1. Check the evidence for the new run.** Use the run ID at the end of the `E2 complete:` path. The following commands only read saved files. They check that the run is marked `completed`, all three method manifests belong to it, and the expected workload is recorded. A failed run can leave partial diagnostics in its own folder.
+**1. Check the evidence for the latest run.** The verifier checks the complete output inventory, run ID, and frozen input hashes offline. The next commands show the root manifest and open the comparison summary. The runner checks the three method manifests, recorded source hashes, and workload coverage before publication.
 
 ~~~powershell
-$runId = Read-Host 'New run ID from the E2 complete message'
-$runDir = Join-Path 'experiments/e2/experiment_result/results' $runId
-$root = Get-Content -Raw -LiteralPath (Join-Path $runDir 'run_manifest.json') | ConvertFrom-Json
-$methods = @('non_atomic_claim', 'protected_claim_without_lease_recovery', 'protected_claim_with_lease_recovery')
-if ($root.status -ne 'completed' -or $root.experiment_run_id -ne $runId -or
-    @(Compare-Object -ReferenceObject $methods -DifferenceObject @($root.selected_methods)).Count -ne 0) {
-    throw 'Expected a completed full E2 run with all three methods.'
-}
-foreach ($method in $methods) {
-    $record = Get-Content -Raw -LiteralPath (Join-Path $runDir "methods/$method/run_manifest.json") | ConvertFrom-Json
-    $expired = if ($method -eq 'non_atomic_claim') { 0 } else { 100 }
-    $active = if ($method -eq 'non_atomic_claim') { 0 } else { 25 }
-    if ($record.experiment_run_id -ne $runId -or $record.method -ne $method -or
-        $record.trials -ne 150 -or $record.contention_requests -ne 850 -or
-        $record.expired_lease_cases -ne $expired -or $record.active_lease_cases -ne $active) {
-        throw "Missing or mismatched workload for $method."
-    }
-    Write-Host "$method passed the recorded workload check."
-}
-$comparison = Join-Path $runDir 'comparison'
-Get-ChildItem -LiteralPath $comparison
-Invoke-Item -LiteralPath (Join-Path $comparison 'summary.md')
+& .\.venv-e2\Scripts\python.exe -B experiments/e2/run_e2.py --verify-latest
+if ($LASTEXITCODE -ne 0) { throw 'Latest E2 result did not pass verification.' }
+$runDir = 'experiments/e2/experiment_result/results/latest'
+Get-Content -Raw -LiteralPath (Join-Path $runDir 'run_manifest.json') | ConvertFrom-Json
+Invoke-Item -LiteralPath (Join-Path $runDir 'comparison/summary.md')
 ~~~
 
 Look for `summary.md`, `metrics.json`, the summary, contention, lease, and geofence CSVs, and four PNG figures. In `metrics.json`, each method should show 50 trials each at 2, 5, and 10 concurrent requests. The protected methods also log lease requests, so their raw `details/requests.csv` can have more than 850 rows. The proposed method's additional evidence sits in its `details/` and `geofence_check/` folders.
 
 **2. Read the scientific verdict.** `E2 complete` means the driver saved the full run and generated the comparison. The `Assessment` in `summary.md` (also `verdict` in `metrics.json`) interprets the proposed method's recorded outcomes. `SUPPORTED` means the defined checks passed. `PARTIALLY SUPPORTED` means the core safety checks passed while at least one additional condition failed. `NOT SUPPORTED` means the core safety checks did not all pass. Review the actual counts, errors, and audit evidence even when the run completes. Keep the new run ID with its results.
 
-**3. Verify the original paper run offline.** This separate command checks the archived paper run's source copies, manifests, input hashes, and output checksums. It does not validate a newly generated run, connect to PostgreSQL, or create new figures.
-
-~~~powershell
-& .\.venv-e2\Scripts\python.exe -B experiments/e2/experiment_result/results/bc954b859fa348d9a7a48cb005ee748e/provenance/verify.py
-~~~
-
-Expect `Verified 19 paper-run sources, 8 frozen inputs, 31 original results`, followed by the method-manifest and figure checks. See the [provenance notes](experiment_result/results/bc954b859fa348d9a7a48cb005ee748e/provenance/README.md). Record new-run response times separately from the original paper measurements.
-
-**4. Run offline tests if you are checking an implementation change.** These exercise the runner with test data and mocked connections. They do not start PostgreSQL. The second command uses PowerShell 7 (`pwsh`).
+**3. Run offline tests if you are checking an implementation change.** These exercise the runner with test data and mocked connections. They do not start PostgreSQL. The second command uses PowerShell 7 (`pwsh`).
 
 ~~~powershell
 $e2Python = '.\.venv-e2\Scripts\python.exe'

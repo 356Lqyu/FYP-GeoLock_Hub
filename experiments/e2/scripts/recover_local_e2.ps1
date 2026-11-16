@@ -23,6 +23,7 @@ $HostAddress = '127.0.0.1'
 $E2Root = Split-Path -Parent $PSScriptRoot
 
 . (Join-Path $E2Root 'test_harness\e2_postgres_client.ps1')
+. (Join-Path $E2Root 'test_harness\e2_process_safety.ps1')
 
 if ($Port -eq 5432) { throw 'E2 requires a dedicated port other than 5432.' }
 
@@ -51,8 +52,26 @@ function Start-E2PostgresBounded {
 function Assert-NoReparse {
     param([string]$Path)
     $item = Get-Item -LiteralPath $Path -Force
-    if (($item.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0) {
+    if (($item.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0 -or $item.LinkType) {
         throw "Recovery refused a symbolic link or reparse point: $Path"
+    }
+}
+
+function Assert-E2ConfiguredRecoveryTarget {
+    param([string]$Path)
+    Assert-NoReparse $Path
+    $config = Get-Content -LiteralPath $Path -Raw | ConvertFrom-Json -ErrorAction Stop
+    if ($config.version -ne 1 -or $config.mode -cne 'local' -or
+        $config.setup_approval -cne 'created_as_new_e2_owned_cluster' -or
+        [string]$config.target_id -notmatch '^(?:[0-9a-f]{32}|[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12})$' -or
+        $config.host -cne $HostAddress -or $config.dbname -cne $DatabaseName -or $config.user -cne 'postgres') {
+        throw 'Recovery refused: local.json does not identify a setup-approved local E2 target.'
+    }
+    if ([string]$config.cluster_system_identifier -cne $ExpectedSystemIdentifier -or
+        [string]$config.port -cne [string]$Port -or
+        (ConvertTo-E2CanonicalPath $config.data_dir) -ine (ConvertTo-E2CanonicalPath $DataDir) -or
+        (ConvertTo-E2CanonicalPath $config.pg_bin) -ine (ConvertTo-E2CanonicalPath $PgBin)) {
+        throw 'Recovery refused: local.json identity does not match the supplied cluster identifier, data directory, port, or PostgreSQL bin directory.'
     }
 }
 
@@ -67,7 +86,6 @@ function Assert-E2PostgresState {
     if (-not (Get-Command Get-NetTCPConnection -ErrorAction SilentlyContinue)) {
         throw 'Recovery refused: Get-NetTCPConnection is unavailable, so listener ownership cannot be checked.'
     }
-    . (Join-Path $E2Root 'test_harness\e2_process_safety.ps1')
     $listeners = @(Get-E2ListenerInventory -Port $Port)
     Write-Host "[E2 recovery] Process/service and port $Port inventories collected; validating ownership."
     $activeE2Pid = ''
@@ -84,18 +102,31 @@ function Read-PostmasterPidFile {
     Assert-NoReparse $Path
     $raw = [IO.File]::ReadAllText($Path)
     $lines = $raw -split "`r?`n"
-    if ($lines.Count -lt 4 -or $lines[0] -notmatch '^\d+$' -or $lines[3] -notmatch '^\d+$') {
+    if ($lines.Count -lt 4 -or $lines[0] -notmatch '^[1-9][0-9]{0,9}$' -or $lines[3] -notmatch '^\d+$') {
         throw 'Recovery refused: postmaster.pid is malformed; preserve it for manual review.'
     }
-    $recordedDir = [IO.Path]::GetFullPath($lines[1].Trim()).TrimEnd('\')
+    $recordedDir = ConvertTo-E2CanonicalPath $lines[1]
     $expected = [IO.Path]::GetFullPath($ExpectedDir).TrimEnd('\')
     if ($recordedDir -ine $expected -or [int]$lines[3] -ne $ExpectedPort) {
         throw 'Recovery refused: postmaster.pid data path or port differs from the verified E2 target.'
+    }
+    if ($configuredRecovery -and ($lines.Count -lt 6 -or $lines[5].Trim() -cne $HostAddress)) {
+        throw 'Recovery refused: postmaster.pid does not record the configured E2 loopback address.'
     }
     return [pscustomobject]@{ Pid=$lines[0].Trim(); DataDirectory=$recordedDir; Port=[int]$lines[3]; Raw=$raw }
 }
 
 if (-not $env:LOCALAPPDATA) { throw 'LOCALAPPDATA is unavailable; recovery cannot identify the E2-owned paths.' }
+$configuredRecovery = Test-Path -LiteralPath $ConfigPath
+$pidPath = Join-Path $DataDir 'postmaster.pid'
+if ($configuredRecovery) {
+    if ($Action -eq 'Complete' -or $ApprovePostgresStartForInspection) {
+        throw 'Configured E2 recovery permits only offline stale PID inspection and quarantine. Use normal preflight after recovery.'
+    }
+    if (-not (Test-Path -LiteralPath $pidPath)) {
+        throw 'Configured E2 recovery requires an existing postmaster.pid. Use normal E2 preflight if there is no PID file.'
+    }
+}
 if ($Action -eq 'Inspect' -and -not $ApprovePostgresStartForInspection -and -not (Test-Path -LiteralPath (Join-Path $DataDir 'postmaster.pid'))) {
     throw 'Inspecting database inventory requires starting PostgreSQL, which may replay WAL and update cluster state. Re-run only after approving that startup with -ApprovePostgresStartForInspection.'
 }
@@ -105,7 +136,6 @@ if ($Action -eq 'QuarantineStalePid' -and -not (Test-Path -LiteralPath (Join-Pat
 if ($Action -eq 'Complete' -and $ConfirmRecovery -cne "COMPLETE E2 SETUP $ExpectedSystemIdentifier") {
     throw "Completion requires -ConfirmRecovery 'COMPLETE E2 SETUP $ExpectedSystemIdentifier'. No cluster was started."
 }
-if (Test-Path -LiteralPath $ConfigPath) { throw "Recovery refused because local.json already exists. Use the normal read-only E2 preflight instead: $ConfigPath" }
 if (-not (Test-Path -LiteralPath $DataDir -PathType Container)) { throw "E2 cluster data directory is missing: $DataDir" }
 if (-not (Test-Path -LiteralPath $PgBin -PathType Container)) { throw "PostgreSQL bin directory does not exist: $PgBin" }
 $PgBin = (Resolve-Path -LiteralPath $PgBin).Path
@@ -120,7 +150,8 @@ for ($parent = Split-Path -Parent $LocalRoot; $parent; $parent = Split-Path -Par
     $next = Split-Path -Parent $parent
     if (-not $next -or $next -eq $parent) { break }
 }
-Assert-E2LocalRootInventory -Root $LocalRoot -Recovery
+Assert-E2LocalRootInventory -Root $LocalRoot -Recovery -ConfiguredRecovery:$configuredRecovery
+if ($configuredRecovery) { Assert-E2ConfiguredRecoveryTarget $ConfigPath }
 $clusterParent = Join-Path $LocalRoot 'cluster'
 $unexpectedClusterItems = @(Get-ChildItem -LiteralPath $clusterParent -Force | Where-Object { $_.Name -ne 'data' })
 if ($unexpectedClusterItems.Count -gt 0) { throw "Recovery refused: unexpected files are present beside the E2 data directory: $($unexpectedClusterItems.Name -join ', ')." }
@@ -138,19 +169,18 @@ if (-not $idMatch.Success -or $idMatch.Groups[1].Value -cne $ExpectedSystemIdent
 }
 if (-not $stateMatch.Success) { throw 'Could not determine the on-disk PostgreSQL cluster state.' }
 $PgCtl = Join-Path $PgBin 'pg_ctl.exe'
-$pidPath = Join-Path $DataDir 'postmaster.pid'
 $pidRecord = $null
 if (Test-Path -LiteralPath $pidPath) {
     $pidRecord = Read-PostmasterPidFile $pidPath $DataDir $Port
 }
 $recordedPid = if ($pidRecord) { $pidRecord.Pid } else { '' }
-$serverStatus = Assert-E2PostgresState -RecordedPostmasterPid $recordedPid -RequireStopped:($Action -eq 'QuarantineStalePid')
+$serverStatus = Assert-E2PostgresState -RecordedPostmasterPid $recordedPid -RequireStopped:($configuredRecovery -or $Action -eq 'QuarantineStalePid')
 $serverAlreadyRunning = $serverStatus -eq 0
 if ($serverAlreadyRunning -and -not $pidRecord) {
     throw 'Recovery refused: PostgreSQL is running but no verified E2 postmaster.pid exists.'
 }
 $listener = $null
-if (-not $serverAlreadyRunning) {
+if (-not $serverAlreadyRunning -and -not $configuredRecovery) {
     try {
         $listener = [Net.Sockets.TcpListener]::new([Net.IPAddress]::Parse($HostAddress),$Port)
         $listener.Start()
@@ -177,27 +207,46 @@ if ($pidRecord -and -not $serverAlreadyRunning) {
     }
     $required = "QUARANTINE STALE PID $($pidRecord.Pid) FOR E2 CLUSTER $ExpectedSystemIdentifier"
     if ($ConfirmStalePid -cne $required) { throw "Stale PID quarantine requires -ConfirmStalePid '$required'. No file was changed." }
-    # Repeat identity/process/listener checks immediately before the same-directory
-    # rename. File.Move fails if the unique destination already exists.
-    $controlTextAgain = Invoke-E2Native (Join-Path $PgBin 'pg_controldata.exe') @('-D',$DataDir) | Out-String
-    $idAgain = [regex]::Match($controlTextAgain,'Database system identifier:\s*(\d+)')
-    if (-not $idAgain.Success -or $idAgain.Groups[1].Value -cne $ExpectedSystemIdentifier) { throw 'Cluster identity changed; stale PID was not moved.' }
-    $pidAgain = Read-PostmasterPidFile $pidPath $DataDir $Port
-    if ($pidAgain.Raw -cne $pidRecord.Raw) { throw 'postmaster.pid changed after inspection; it was not moved.' }
-    Assert-E2PostgresState -RecordedPostmasterPid $pidRecord.Pid -RequireStopped
-    $stamp = [DateTime]::UtcNow.ToString('yyyyMMddTHHmmssfffZ')
-    $archivePath = "$pidPath.stale.$stamp.$([Guid]::NewGuid().ToString('N'))"
-    $beforeHash = (Get-FileHash -LiteralPath $pidPath -Algorithm SHA256).Hash
-    [IO.File]::Move($pidPath,$archivePath)
-    $afterHash = (Get-FileHash -LiteralPath $archivePath -Algorithm SHA256).Hash
-    if ($beforeHash -cne $afterHash -or $beforeHash -cne $pidHash) { throw "PID file was preserved at '$archivePath', but its verification hash differed. Stop and review." }
+    # Prevent the local runner from opening its lock during the final checks and rename.
+    $runLock = $null
+    try {
+        if ($configuredRecovery) {
+            Assert-E2LocalRootInventory -Root $LocalRoot -Recovery -ConfiguredRecovery
+            $lockPath = Join-Path $LocalRoot 'run.lock'
+            try { $runLock = [IO.File]::Open($lockPath, 'OpenOrCreate', 'ReadWrite', 'None') }
+            catch { throw 'Recovery refused: could not exclusively open the local E2 run lock. No PID file was moved.' }
+            Assert-E2ConfiguredRecoveryTarget $ConfigPath
+        }
+        # Repeat identity/process/listener checks immediately before the same-directory rename.
+        $controlTextAgain = Invoke-E2Native (Join-Path $PgBin 'pg_controldata.exe') @('-D',$DataDir) | Out-String
+        $idAgain = [regex]::Match($controlTextAgain,'Database system identifier:\s*(\d+)')
+        if (-not $idAgain.Success -or $idAgain.Groups[1].Value -cne $ExpectedSystemIdentifier) { throw 'Cluster identity changed; stale PID was not moved.' }
+        Assert-E2PostgresState -RecordedPostmasterPid $pidRecord.Pid -RequireStopped | Out-Null
+        $pidAgain = Read-PostmasterPidFile $pidPath $DataDir $Port
+        if ($pidAgain.Raw -cne $pidRecord.Raw) { throw 'postmaster.pid changed after inspection; it was not moved.' }
+        $stamp = [DateTime]::UtcNow.ToString('yyyyMMddTHHmmssfffZ')
+        $archivePath = "$pidPath.stale.$stamp.$([Guid]::NewGuid().ToString('N'))"
+        $beforeHash = (Get-FileHash -LiteralPath $pidPath -Algorithm SHA256).Hash
+        if ($beforeHash -cne $pidHash) { throw 'postmaster.pid changed after inspection; it was not moved.' }
+        [IO.File]::Move($pidPath,$archivePath)
+        $afterHash = (Get-FileHash -LiteralPath $archivePath -Algorithm SHA256).Hash
+        if ($beforeHash -cne $afterHash) { throw "PID file was preserved at '$archivePath', but its verification hash differed. Stop and review." }
+    } finally {
+        if ($null -ne $runLock) { $runLock.Dispose() }
+    }
     Write-Host "Stale PID file preserved by rename: $archivePath"
     Write-Host "SHA-256: $afterHash"
-    Write-Host 'No database was started or connected. Next, run Action Inspect with -ApprovePostgresStartForInspection.'
+    if ($configuredRecovery) {
+        Write-Host 'No database was started or connected. Next, use normal E2 preflight with -AllowStart if you approve PostgreSQL startup.'
+    } else {
+        Write-Host 'No database was started or connected. Next, run Action Inspect with -ApprovePostgresStartForInspection.'
+    }
     return
 } elseif ($Action -eq 'QuarantineStalePid') {
     throw 'No postmaster.pid exists to quarantine; no file was changed.'
 }
+
+if ($configuredRecovery) { throw 'Configured E2 recovery found no verified stale PID file. No database was started or connected.' }
 
 if ($Action -eq 'Complete' -and $pidRecord -and -not $serverAlreadyRunning) {
     throw 'Completion requires postmaster.pid to be absent after separately approved quarantine; no database was started.'

@@ -14,6 +14,7 @@ ROOT = E2.parents[1]
 sys.path.insert(0, str(E2 / 'test_harness'))
 import e2_harness as harness  # noqa: E402
 import e2_hosted as hosted  # noqa: E402
+import e2_results as results  # noqa: E402
 
 sys.path.insert(0, str(E2 / 'experiment_result' / 'source_code'))
 import e2_compare as compare  # noqa: E402
@@ -26,8 +27,8 @@ METHODS = {
 
 
 @contextmanager
-def cluster_run_lock(path):
-    """Keep one Windows runner active per local E2 cluster, including cleanup."""
+def cluster_run_lock(path, label='local cluster'):
+    """Keep one Windows runner active per local cluster or results directory."""
     import msvcrt
 
     if harness._is_reparse_point(path):
@@ -38,7 +39,7 @@ def cluster_run_lock(path):
             msvcrt.locking(lock.fileno(), msvcrt.LK_NBLCK, 1)
         except OSError as exc:
             if exc.errno in (errno.EACCES, errno.EAGAIN):
-                raise SystemExit('Another E2 run holds the local cluster lock. Wait for it to finish.') from None
+                raise SystemExit(f'Another E2 run holds the {label} lock. Wait for it to finish.') from None
             raise
         yield
 
@@ -103,9 +104,6 @@ def validate_standalone(out, method, root_manifest):
 
 def execute_run(args, dsn, target, *, reset_conn=None):
     """Execute preflight and the selected methods against the verified cluster."""
-    results_root = harness.RESULTS_ROOT
-    out = harness.run_output_path(results_root, args.run_id)
-
     # Connection is used only for SELECTs here. Each method repeats identity and
     # object-inventory checks immediately before its reset.
     identity, inventory = preflight(dsn, target)
@@ -116,7 +114,21 @@ def execute_run(args, dsn, target, *, reset_conn=None):
         print('Read-only preflight passed; no result directory or database changes were made.')
         return 0
 
-    out.mkdir(parents=True, exist_ok=False)
+    publication = results.Publication(harness.RESULTS_ROOT, full=args.method == 'all')
+    root = publication.active.parent
+    root.mkdir(parents=True, exist_ok=True)
+    with cluster_run_lock(root / '.publication.lock', 'results'):
+        publication.recover()
+        generate_results(args, dsn, target, identity, inventory, input_hashes, publication.pending,
+                         reset_conn=reset_conn)
+        publication.publish()
+    print(f'E2 complete: {publication.active} (run ID: {args.run_id})')
+    return 0
+
+
+def generate_results(args, dsn, target, identity, inventory, input_hashes, out, *, reset_conn=None):
+    """Write and validate one complete run in the staging directory."""
+    out.mkdir(exist_ok=False)
     os.environ['GEOLOCK_E2_RUN_ID'] = args.run_id
     os.environ['GEOLOCK_E2_RUN_DIR'] = str(out.resolve())
     source_files = [E2 / 'run_e2.py', E2 / 'run.ps1', E2 / 'scripts' / 'setup_local_e2.ps1', E2 / 'requirements.txt',
@@ -125,6 +137,7 @@ def execute_run(args, dsn, target, *, reset_conn=None):
                     E2 / 'test_harness' / 'e2_process_safety.ps1',
                     E2 / 'test_harness' / 'e2_harness.py',
                     E2 / 'test_harness' / 'e2_hosted.py',
+                    E2 / 'test_harness' / 'e2_results.py',
                     E2 / 'database' / '00_provision_e2_target_marker.sql',
                     E2 / 'database' / '00_local_auth_compat.sql',
                     E2 / 'database' / '01_geolock_v3_schema.sql', E2 / 'database' / '02_app_claim_layer.sql',
@@ -154,15 +167,14 @@ def execute_run(args, dsn, target, *, reset_conn=None):
             compare.main()
         else:
             validate_standalone(method_out, method, manifest)
+        manifest['status'] = 'completed'
+        harness.write_json(out / 'run_manifest.json', manifest)
+        results.seal(out, manifest, full=args.method == 'all')
     except (Exception, KeyboardInterrupt, SystemExit) as exc:
         manifest['status'] = 'failed_or_incomplete'
         manifest['failure_type'] = type(exc).__name__
         harness.write_json(out / 'run_manifest.json', manifest)
         raise
-    manifest['status'] = 'completed'
-    harness.write_json(out / 'run_manifest.json', manifest)
-    print(f'E2 complete: {out}')
-    return 0
 
 
 def main(argv=None):
@@ -172,11 +184,30 @@ def main(argv=None):
                         help='write password-free local enrollment and print dashboard marker SQL')
     parser.add_argument('--confirm-project', help='exact enrolled project reference for a destructive hosted run')
     parser.add_argument('--method', choices=('all', *METHODS), default='all')
-    parser.add_argument('--run-id', default=uuid.uuid4().hex)
+    offline = parser.add_mutually_exclusive_group()
+    offline.add_argument('--verify-latest', action='store_true', help='verify published result checksums offline')
+    offline.add_argument('--recover-results', action='store_true', help='recover interrupted result publication offline')
     parser.add_argument('--preflight-only', action='store_true')
     parser.add_argument('--allow-start', action='store_true',
                         help='allow a local preflight to start the configured E2 cluster')
     args = parser.parse_args(argv)
+    if args.verify_latest or args.recover_results:
+        if (args.register_hosted or args.confirm_project or args.preflight_only or args.allow_start
+                or args.method != 'all' or args.mode != 'local'):
+            parser.error('Result verification and recovery are separate offline operations')
+        publication = results.Publication(harness.RESULTS_ROOT)
+        with cluster_run_lock(publication.active.parent / '.publication.lock', 'results'):
+            if args.recover_results:
+                publication.recover()
+                results.Publication(harness.RESULTS_ROOT, full=False).recover()
+                print('E2 result publication recovery complete.')
+            else:
+                manifest = results.verify(publication.active)
+                if manifest['benchmark_input_sha256'] != harness.check_inputs(harness.TABLES):
+                    raise SystemExit('Published E2 benchmark hashes differ from the frozen inputs.')
+                print(f"Verified latest E2 result and frozen inputs (run ID: {manifest['experiment_run_id']}).")
+        return 0
+    args.run_id = uuid.uuid4().hex
     if args.register_hosted:
         if args.preflight_only or args.confirm_project or args.allow_start or args.method != 'all':
             parser.error('--register-hosted is a separate offline operation')

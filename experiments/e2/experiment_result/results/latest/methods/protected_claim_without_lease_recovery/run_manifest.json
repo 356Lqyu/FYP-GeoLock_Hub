@@ -1,0 +1,67 @@
+{
+  "method": "protected_claim_without_lease_recovery",
+  "experiment_run_id": "0a6773e88bcc4fefa2b5dfdbd2c1b7b7",
+  "method_run_id": "223cc61dce98e740",
+  "input_sha256": {
+    "scenarios.csv": "973d91972df90c0e39501a35ca2ae181d1a6af37d5ccb83c56e4b4bf2d5c966c",
+    "scenario_members.csv": "7c09e2a9a040726458078c6d23370978a3cba6f155cb2b68aa2bbc356518e6d0",
+    "ngos.csv": "ddc14fe9958c272c7d8b7dc32b23ad6bfffd2a066f1b158a05a7cd3e5c535eaa",
+    "donations.csv": "057dbd5b9486c79984ae2c64144daad2a4c4db6b8c0fbc233c1bcae9eb9b288b",
+    "donors.csv": "aefee7b3fc9b0c955f7ae3d60238dd4ec7cea49885dcd0545706acb797604e63",
+    "listings.csv": "71f8552af8731ac8b0ddfb205f32c78413088ba3bd3e2a1d4aa9830abe5e532f",
+    "claim_initial_states.csv": "30e5f3bbd933fd3827bcafb9d119d036ece0dbe1e17f0172f66b919cf98d1065",
+    "road_distance_matrix.csv": "b9a272d2396354695ae2ec6fd744a17510f1b5e7c61989fe7b404d2d0e0133e1"
+  },
+  "environment": {
+    "python": "3.12.7",
+    "platform": "Windows-11-10.0.22621-SP0",
+    "psycopg": "3.3.9",
+    "matplotlib": "3.11.2",
+    "run_at": "2026-11-16T16:47:21+08:00"
+  },
+  "database": "verified isolated Supabase E2 target",
+  "target_identity": {
+    "connection_host": "aws-0-ap-southeast-2.pooler.supabase.com",
+    "connection_user": "postgres.spkmclekqzysnwoxfxrx",
+    "database": "postgres",
+    "marker_verified": true,
+    "mode": "hosted",
+    "project_ref": "spkmclekqzysnwoxfxrx",
+    "server_version": "17.11",
+    "target_id": "684dbb3f733348ac99210cf2d5c41842",
+    "tls": "verify-full"
+  },
+  "source_sha256": {
+    "experiments\\e2\\run_e2.py": "1d9d817e03ca7d3da19f7721e799d3912ee097a530c378095ef5414dc0389419",
+    "experiments\\e2\\run.ps1": "87bb72c426afa0943bdf45ec6dc0d7396b90e4e56cb07df644de7762d8e43a7a",
+    "experiments\\e2\\scripts\\setup_local_e2.ps1": "c371f870bde0fa4beb4da8f55944bc469603e96a7c60d070835d6d6e6cf3a159",
+    "experiments\\e2\\requirements.txt": "f6e167af1d5e776704ec644f49f3d3079bd60e02ed307eeaa33dd3e2acc48dbc",
+    "experiments\\e2\\scripts\\recover_local_e2.ps1": "a77dc7f01ccf1dfff02f34723f9f2b114e82344222dca8f1d7695a2f201a92bb",
+    "experiments\\e2\\test_harness\\e2_postgres_client.ps1": "4abfd53e04a10bf2ffb8fcfc3e24d5b08e1eb961f11435e717e5fcfc468030c5",
+    "experiments\\e2\\test_harness\\e2_process_safety.ps1": "36e6ca49b2e1f693a2e12ee742a98a887732b329dd2eb8cd977d82700c413fa5",
+    "experiments\\e2\\test_harness\\e2_harness.py": "a040885b88858fddecab1735426ec7a883cddf09e3af6890ffccae90081c23b5",
+    "experiments\\e2\\test_harness\\e2_hosted.py": "192d47b6518f86146aaafcddad041c752b5a829577216380e805800a43b47946",
+    "experiments\\e2\\test_harness\\e2_results.py": "f4a9e0a4ad0d51ee3bf06adfb541acb29798aa70246b5d1464031ec46b8b936f",
+    "experiments\\e2\\database\\00_provision_e2_target_marker.sql": "a80c1a1e2766d3aea3b8e3d42aef1584e3e9cdca70110c934ef385a34b7985d5",
+    "experiments\\e2\\database\\00_local_auth_compat.sql": "b9019ca98a28e23b85031ac48c5ab1d0824b6ac661e9783c0c41c68ac050b16b",
+    "experiments\\e2\\database\\01_geolock_v3_schema.sql": "b64a66b995b72b43e83bef9490931776e0cfbe090fe18fc73fb71c8422ddc063",
+    "experiments\\e2\\database\\02_app_claim_layer.sql": "cb4a5e65676d494b4e109e038ada3a50eba3a97cb0b69377ac0b5b97c9741dfc",
+    "experiments\\e2\\database\\03_non_atomic_baseline.sql": "7c3f677a00df3cdff089c696000b967eeb9fe69859f971fcdb47af5616486a0d",
+    "experiments\\e2\\database\\04_reset_e2_objects.sql": "3c4f08bbb3ca1ed5ce75969fbbc19cc501f60f5f96d3f55e583c433bd4e5f9cc",
+    "experiments\\e2\\baseline\\source_code\\run_non_atomic_claim.py": "31f58a12e112bbaccb0698ec3afb66902affceaba7b50f1840a2132cbe30be2b",
+    "experiments\\e2\\baseline\\source_code\\run_protected_claim_without_lease_recovery.py": "ad3e8d5809057d08295eed322c5d0938289abdda426bc73cf2bbefc6ca982bb1",
+    "experiments\\e2\\protected_claim_with_lease_recovery\\source_code\\run_protected_claim_with_lease_recovery.py": "2aacb4aadec4fc856ff0964745e9f0592d0653e2d0587849f969c965222dcd51",
+    "experiments\\e2\\experiment_result\\source_code\\e2_compare.py": "3477be1e1cc8dc97bd4594a30b490bad839473053a3653a94e3ba8c95010875d"
+  },
+  "server_version": "PostgreSQL 17.11",
+  "extension_versions": {
+    "pgcrypto": "1.3",
+    "postgis": "3.3.7"
+  },
+  "trials": 150,
+  "lease_cases": 125,
+  "contention_requests": 850,
+  "expired_lease_cases": 100,
+  "active_lease_cases": 25,
+  "request_records": 975
+}

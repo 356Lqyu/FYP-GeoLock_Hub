@@ -19,7 +19,7 @@ The baselines are the ones named for each research area in the report (Table 3.6
 | Experiment | Proposed (GeoLock) | Baselines | Main result |
 | --- | --- | --- | --- |
 | [E1](e1/experiment_result/summary.md) | AI hub ranking | Nearest-Hub, Random Hub | picks the reference hub for **82.2 %** of 349 test donations, against 41.8 % (Nearest-Hub) and 4.6 % (Random) |
-| [E2](e2/experiment_result/results/bc954b859fa348d9a7a48cb005ee748e/comparison/summary.md) | protected claim with lease recovery | Non-Atomic Claim, Protected Claim without Lease Recovery | **0** of 150 races end with two owners (150 for Non-Atomic Claim); **100** of 100 expired leases released (0 for both baselines) |
+| [E2](e2/README.md#find-and-verify-the-results) | protected claim with lease recovery | Non-Atomic Claim, Protected Claim without Lease Recovery | See the latest verified comparison for duplicate ownership and expired-lease recovery. |
 | [E3](e3/experiment_result/summary.md) | community hub aggregation | direct household pickup | NGO drives **1,376 km** instead of 2,689 km (48.8 % less); 100 pickup stops instead of 438 |
 | [E4](e4/experiment_result/summary.md) | OR-Tools route optimiser (app routing worker) | Nearest-Next, first come first served | See the active comparison for coverage and matched-task savings. |
 
@@ -31,4 +31,4 @@ py -m venv .venv
 pip install -r experiments/requirements.txt
 ```
 
-Follow each experiment's README for its commands. For E2, use the [hosted reproduction guide](e2/README.md#reproduce-the-hosted-paper-procedure-on-windows) and the [paper-run verification instructions](e2/experiment_result/results/bc954b859fa348d9a7a48cb005ee748e/provenance/README.md). For E4, see [published-run verification](e4/README.md).
+Follow each experiment's README for its commands. For E2, use the [hosted reproduction guide](e2/README.md#reproduce-the-hosted-paper-procedure-on-windows) and the [latest-run verification instructions](e2/README.md#find-and-verify-the-results). For E4, see [published-run verification](e4/README.md).

@@ -234,6 +234,8 @@ def main():
         if not mp.is_file():
             raise SystemExit(f'Missing complete method manifest: {mp}')
         manifests[key] = json.loads(mp.read_text(encoding='utf-8'))
+        if manifests[key].get('method') != path.name:
+            raise SystemExit(f'E2 method manifest does not match its result folder: {mp}')
     validate_run_manifests(manifests, run_id)
     if any(m.get('target_identity') != root_manifest.get('target_identity') for m in manifests.values()):
         raise SystemExit('Method manifests do not match the root run target identity.')
@@ -247,19 +249,25 @@ def main():
     L = {'b2': {r['scenario_id']: r for r in read(b2 / 'lease_results_per_scenario.csv')},
          'p': {r['scenario_id']: r for r in read(p / 'lease_results_per_scenario.csv')}}
     ids, lids = sorted(T['p']), sorted(L['p'])
-    assert len(ids) == 150 and all(sorted(T[k]) == ids for k in ('b1', 'b2')), 'contention scenario IDs differ across methods'
+    if len(ids) != 150 or any(sorted(T[k]) != ids for k in ('b1', 'b2')):
+        raise SystemExit('E2 comparison requires the same 150 contention scenario IDs across methods.')
     for k in ('b1', 'b2', 'p'):
-        validate_contention_requests(k, T[k], R[k])
         if len(validate_contention_requests(k, T[k], R[k])) != 850:
             raise SystemExit(f'{k} must record exactly 850 contention requests.')
-        assert len(T[k]) == 150, f'{k} must record exactly 150 contention trials'
         level_counts = {w: sum(t['ngos_competing'] == str(w) for t in T[k].values()) for w in (2, 5, 10)}
-        assert level_counts == {2: 50, 5: 50, 10: 50}, f'{k} concurrency coverage differs: {level_counts}'
-    assert len(lids) == 125 and sorted(L['b2']) == lids, 'lease trials differ between baseline 2 and the proposed method'
+        if level_counts != {2: 50, 5: 50, 10: 50}:
+            raise SystemExit(f'{k} concurrency coverage differs: {level_counts}')
+    if len(lids) != 125 or sorted(L['b2']) != lids:
+        raise SystemExit('E2 comparison requires the same 125 lease trials for both protected methods.')
     geo = read(p / 'geofence_check' / 'details' / 'eligibility_pairs.csv')
     stored_geo = json.loads((p / 'geofence_check' / 'details' / 'claims_stored_after_check.json').read_text())['claims_stored']
     cc = json.loads((p / 'details' / 'concurrent_recovery_check.json').read_text(encoding='utf-8'))
     dl = read(p / 'details' / 'delayed_request_check.csv')
+    if any(sum(row['case'] == 'lease expired' for row in cases.values()) != 100 or
+           sum(row['case'] == 'lease still running' for row in cases.values()) != 25 for cases in L.values()):
+        raise SystemExit('E2 comparison requires 100 expired leases and 25 active controls per protected method.')
+    if len(geo) != 1100 or len(dl) != 50 or len({row['scenario_id'] for row in dl}) != 50:
+        raise SystemExit('E2 comparison has incomplete geofence or delayed-request evidence.')
     dbs = {m.get('database') for m in manifests.values()}
 
     m = dict(benchmark=BENCHMARK_NAME, database=dbs.pop() if len(dbs) == 1 else 'mixed: ' + ', '.join(sorted(map(str, dbs))),
@@ -423,15 +431,16 @@ def figures(m):
     plt = plot_style()
     c, ws = m['contention'], ['2', '5', '10']
 
-    fig, ax = plt.subplots(figsize=(6.2, 3.6))
-    ax.set_ylim(0, 112)
+    fig, ax = plt.subplots(figsize=(8.8, 3.8))
+    ax.set_ylim(0, 116)
     methods = (('b1', BASELINE_1), ('b2', BASELINE_2), ('p', PROPOSED))
     for off, (k, col) in zip((-0.27, 0, 0.27), methods):
         vals = [100 * c[k][w]['duplicate_rate'] for w in ws]
         low = [100 * c[k][w]['duplicate_ci95'][0] for w in ws]
         high = [100 * c[k][w]['duplicate_ci95'][1] for w in ws]
+        labels = [f'{v:.0f}%\n[{lo:.1f}–{hi:.1f}%]' for v, lo, hi in zip(vals, low, high)]
         bars(ax, [i + off for i in range(3)], vals, col, 0.24, label=NAME[k],
-             low=low, high=high, text=[f'{v:.0f}%' for v in vals], pad=1.1)
+             low=low, high=high, text=labels, pad=1.1)
     ax.set_xticks(range(3), ws)
     ax.set_xlabel('NGOs claiming the same listing at once')
     ax.set_ylabel('Contention trials (%, n = 50 each)')

@@ -272,7 +272,8 @@ class OfflineHarnessTests(unittest.TestCase):
             $node -is [System.Management.Automation.Language.CommandAst] -and
                 $node.GetCommandName() -eq 'Assert-E2LocalRootInventory'
         }, $false))
-        if ($guard.Count -ne 1) { throw 'Expected one local root inventory call' }
+        if ($guard.Count -lt 1) { throw 'Expected a local root inventory call' }
+        $configuredRecovery = Test-Path -LiteralPath (Join-Path $LocalRoot 'local.json')
         & ([scriptblock]::Create($guard[0].Extent.Text))
         """
         return subprocess.run(
@@ -324,6 +325,111 @@ class OfflineHarnessTests(unittest.TestCase):
             result = self._run_local_root_guard('recover_local_e2.ps1', hosted.parent)
             self.assertEqual(result.returncode, 0, result.stderr)
             self.assertEqual(hosted.read_bytes(), original)
+
+    @unittest.skipUnless(POWERSHELL, 'PowerShell is required to exercise configured recovery')
+    def test_configured_stale_pid_recovery(self):
+        # Run the recovery control flow against a temporary profile. Replace only
+        # the OS inventory and native binary calls with deterministic fixtures.
+        command = r"""
+        $ErrorActionPreference = 'Stop'
+        $e2Root = $env:E2_TEST_ROOT
+        $path = Join-Path $e2Root 'scripts/recover_local_e2.ps1'
+        $tree = [System.Management.Automation.Language.Parser]::ParseFile($path, [ref]$null, [ref]$null)
+        $state = $tree.Find({
+            param($node)
+            $node -is [System.Management.Automation.Language.FunctionDefinitionAst] -and
+                $node.Name -eq 'Assert-E2PostgresState'
+        }, $false)
+        $mock = @'
+        function Invoke-E2Native {
+            param([string]$Executable, [string[]]$Arguments)
+            switch (Split-Path -Leaf $Executable) {
+                'postgres.exe' {
+                    if ($Arguments[0] -cne '--version') { throw 'Unexpected native operation' }
+                    'postgres (PostgreSQL) 17.11'
+                }
+                'pg_controldata.exe' {
+                    "Database system identifier: $env:E2_TEST_DISK_ID"
+                    'Database cluster state: in production'
+                }
+                default { throw 'Unexpected native operation' }
+            }
+        }
+        function Assert-E2PostgresState {
+            param([string]$RecordedPostmasterPid, [switch]$RequireStopped)
+            if (-not $RequireStopped) { throw 'Configured recovery must require a stopped cluster' }
+            $processes = @()
+            if ($env:E2_TEST_PID_ASSIGNED -eq '1') {
+                $processes += [pscustomobject]@{ ProcessId=7428; Name=$null; CommandLine=$null }
+            }
+            Assert-E2ProcessSafety -PgCtlStatusCode 3 -DataDir $DataDir -PgBin $PgBin `
+                -ProgramFilesRoot $env:ProgramFiles -Port $Port -Processes $processes `
+                -RecordedPostmasterPid $RecordedPostmasterPid -RequireStopped
+            return 3
+        }
+'@
+        $script = $tree.Extent.Text.Replace($state.Extent.Text, $mock).Replace(
+            '$E2Root = Split-Path -Parent $PSScriptRoot', '$E2Root = $env:E2_TEST_ROOT')
+        & ([scriptblock]::Create($script)) -Action $env:E2_TEST_ACTION `
+            -ExpectedSystemIdentifier '7707119756798008108' -PgBin $env:E2_TEST_BIN `
+            -ConfirmStalePid $env:E2_TEST_CONFIRM
+        """
+        expected = '7707119756798008108'
+        wrong = '7707119756798008109'
+        with tempfile.TemporaryDirectory() as temp:
+            profile = Path(temp)
+            root = profile / 'GeoLockHub' / 'E2'
+            data = root / 'cluster' / 'data'
+            data.mkdir(parents=True)
+            (data / 'PG_VERSION').write_text('17')
+            pid = data / 'postmaster.pid'
+            original = f'7428\n{data.as_posix()}\n1794492879\n55432\n\n127.0.0.1\n'.encode()
+            pid.write_bytes(original)
+            (root / 'hosted.json').touch()
+            (root / 'run.lock').touch()
+            pg_bin = profile / 'bin'
+            pg_bin.mkdir()
+            for executable in ('postgres', 'pg_ctl', 'pg_controldata', 'psql', 'createdb'):
+                (pg_bin / f'{executable}.exe').touch()
+            config = dict(version=1, mode='local', setup_approval='created_as_new_e2_owned_cluster',
+                          target_id='a' * 32, host='127.0.0.1', port=55432, dbname='geolock_e2',
+                          user='postgres', data_dir=str(data), pg_bin=str(pg_bin))
+
+            def recover(action='Inspect', config_id=expected, disk_id=expected, assigned=False, confirm=''):
+                (root / 'local.json').write_text(json.dumps(dict(config, cluster_system_identifier=config_id)))
+                return subprocess.run(
+                    [POWERSHELL, '-NoProfile', '-NonInteractive', '-Command', command],
+                    env={**os.environ, 'LOCALAPPDATA': temp, 'E2_TEST_ROOT': str(RUNNER_PATH.parent),
+                         'E2_TEST_BIN': str(pg_bin), 'E2_TEST_ACTION': action, 'E2_TEST_DISK_ID': disk_id,
+                         'E2_TEST_PID_ASSIGNED': str(int(assigned)), 'E2_TEST_CONFIRM': confirm},
+                    capture_output=True, text=True, timeout=15, check=False)
+
+            inspection = recover()
+            self.assertEqual(inspection.returncode, 0, inspection.stderr)
+            self.assertIn('Verified stale PID candidate: PID 7428', inspection.stdout)
+            for overrides, message in (
+                (dict(assigned=True), 'still assigned to a process'),
+                (dict(config_id=wrong), 'local.json identity does not match'),
+                (dict(disk_id=wrong), 'on-disk cluster system identifier does not match'),
+                (dict(action='Complete'), 'permits only offline stale PID'),
+                (dict(action='QuarantineStalePid'), 'requires -ConfirmStalePid'),
+            ):
+                with self.subTest(overrides=overrides):
+                    result = recover(**overrides)
+                    self.assertNotEqual(result.returncode, 0)
+                    self.assertIn(message, result.stderr)
+                    self.assertEqual(pid.read_bytes(), original)
+            confirmation = f'QUARANTINE STALE PID 7428 FOR E2 CLUSTER {expected}'
+            with (root / 'run.lock').open('r+b'):
+                result = recover('QuarantineStalePid', confirm=confirmation)
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn('could not exclusively open the local E2 run lock', result.stderr)
+                self.assertEqual(pid.read_bytes(), original)
+            result = recover('QuarantineStalePid', confirm=confirmation)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertFalse(pid.exists())
+            (quarantined,) = data.glob('postmaster.pid.stale.*')
+            self.assertEqual(quarantined.read_bytes(), original)
 
     @unittest.skipUnless(POWERSHELL, 'PowerShell is required to exercise the local inventory call')
     def test_local_inventory_rejects_unexpected_files_and_unsafe_hosted_entries(self):
@@ -540,26 +646,111 @@ class OfflineHarnessTests(unittest.TestCase):
                     patch.dict('os.environ', {}, clear=True), \
                     patch.object(RUNNER, 'preflight', return_value=({'marker_verified': True}, {})), \
                     patch.object(HARNESS, 'check_inputs', return_value={'input': 'hash'}), \
-                    patch.object(HARNESS, 'run_output_path', return_value=Path(temp) / 'new') as output_path, \
+                    patch.object(HARNESS, 'RESULTS_ROOT', Path(temp)), \
                     patch.object(HARNESS, 'run_method') as run_method, \
-                    patch.object(RUNNER.compare, 'main') as compare, \
+                    patch.object(RUNNER.compare, 'main', side_effect=self.write_comparison_fixture) as compare, \
                     patch.object(RUNNER, 'validate_standalone') as standalone:
                 method = 'all' if choice == 'preflight' else choice
-                out = Path(temp) / 'new'
+                out = Path(temp) / ('latest' if method == 'all' else 'standalone')
                 self.assertEqual(RUNNER.execute_run(Namespace(method=method, run_id='offline',
                                                              preflight_only=choice == 'preflight'), 'local', {}), 0)
-                output_path.assert_called_once_with(RUNNER.E2 / 'experiment_result' / 'results', 'offline')
                 expected = [] if choice == 'preflight' else (list(RUNNER.METHODS.values()) if choice == 'all'
                                                              else [RUNNER.METHODS[choice]])
                 self.assertEqual([call.args[0] for call in run_method.call_args_list], expected)
                 self.assertEqual(compare.call_count, int(choice == 'all'))
                 self.assertEqual(standalone.call_count, int(choice in RUNNER.METHODS))
                 if expected:
-                    manifest = json.loads((out / 'run_manifest.json').read_text(encoding='utf-8'))
+                    manifest = RUNNER.results.verify(out)
                     self.assertEqual(manifest['status'], 'completed')
                     self.assertEqual(manifest['selected_methods'], expected)
+                    self.assertEqual(manifest['experiment_run_id'], 'offline')
                 else:
-                    self.assertFalse(out.exists())
+                    self.assertEqual(list(Path(temp).iterdir()), [])
+
+    @staticmethod
+    def write_comparison_fixture():
+        comparison = Path(os.environ['GEOLOCK_E2_RUN_DIR']) / 'comparison'
+        comparison.mkdir()
+        for name in RUNNER.results.COMPARISON_FILES:
+            (comparison / name).write_bytes(b'synthetic comparison')
+
+    def test_full_run_replaces_only_after_success_and_keeps_failed_output_bounded(self):
+        from argparse import Namespace
+        with tempfile.TemporaryDirectory() as temp, patch.dict(os.environ), \
+                patch.object(HARNESS, 'RESULTS_ROOT', Path(temp)), \
+                patch.object(RUNNER, 'preflight', return_value=({'marker_verified': True}, {})), \
+                patch.object(HARNESS, 'check_inputs', return_value={'input': 'hash'}), \
+                patch.object(HARNESS, 'run_method') as method, \
+                patch.object(RUNNER.compare, 'main', side_effect=self.write_comparison_fixture) as comparison:
+            root = Path(temp)
+            historic = root / 'old-uuid'
+            historic.mkdir()
+            (historic / 'evidence').write_bytes(b'historical result')
+
+            def execute(run_id):
+                return RUNNER.execute_run(Namespace(method='all', run_id=run_id, preflight_only=False), 'local', {})
+
+            self.assertEqual(execute('first'), 0)
+            prior = RUNNER.results.result_hashes(root / 'latest')
+            method.side_effect = RuntimeError('synthetic failure')
+            with self.assertRaisesRegex(RuntimeError, 'synthetic failure'):
+                execute('failed')
+            self.assertEqual(RUNNER.results.result_hashes(root / 'latest'), prior)
+            method.side_effect = None
+            comparison.side_effect = None  # Missing required comparison outputs must also fail.
+            with self.assertRaisesRegex(SystemExit, 'comparison output missing'):
+                execute('incomplete')
+            self.assertEqual(RUNNER.results.result_hashes(root / 'latest'), prior)
+            comparison.side_effect = self.write_comparison_fixture
+            self.assertEqual(execute('next'), 0)
+            self.assertEqual(RUNNER.results.verify(root / 'latest')['experiment_run_id'], 'next')
+            self.assertEqual({path.name for path in root.iterdir()}, {'latest', 'old-uuid', '.publication.lock'})
+            self.assertEqual((historic / 'evidence').read_bytes(), b'historical result')
+            with patch.object(RUNNER, 'validate_standalone'):
+                args = Namespace(method='baseline1', run_id='single', preflight_only=False)
+                self.assertEqual(RUNNER.execute_run(args, 'local', {}), 0)
+            self.assertEqual(RUNNER.results.verify(root / 'standalone')['experiment_run_id'], 'single')
+            self.assertEqual(RUNNER.results.verify(root / 'latest')['experiment_run_id'], 'next')
+
+    def test_publication_recovers_interruption_before_and_after_promotion(self):
+        with tempfile.TemporaryDirectory() as temp:
+            publication = RUNNER.results.Publication(Path(temp))
+
+            def saved(path, run_id):
+                path.mkdir()
+                manifest = {'experiment_run_id': run_id, 'status': 'completed'}
+                HARNESS.write_json(path / 'run_manifest.json', manifest)
+                RUNNER.results.seal(path, manifest, full=False)
+
+            saved(publication.previous, 'prior')
+            saved(publication.pending, 'staged')
+            publication.recover()
+            self.assertEqual(RUNNER.results.verify(publication.active)['experiment_run_id'], 'prior')
+            self.assertFalse(publication.pending.exists())
+            self.assertFalse(publication.previous.exists())
+
+            publication.active.rename(publication.previous)
+            saved(publication.active, 'published')
+            publication.recover()
+            self.assertEqual(RUNNER.results.verify(publication.active)['experiment_run_id'], 'published')
+            self.assertFalse(publication.previous.exists())
+
+            saved(publication.pending, 'blocked')
+            original_rename = Path.rename
+
+            def refuse_promotion(path, destination):
+                if path == publication.pending:
+                    raise PermissionError('synthetic sharing violation')
+                return original_rename(path, destination)
+
+            with patch.object(type(publication.pending), 'rename', refuse_promotion), self.assertRaises(PermissionError):
+                publication.publish()
+            self.assertEqual(RUNNER.results.verify(publication.active)['experiment_run_id'], 'published')
+            publication.recover()
+
+            (publication.active / 'run_manifest.json').write_text('{}', encoding='utf-8')
+            with self.assertRaisesRegex(SystemExit, 'integrity check failed'):
+                publication.recover()
 
     def test_reset_inventory_fails_closed_for_unknown_objects_owner_or_dependencies(self):
         allowed = [('public', 'donations', 'r', 'postgres', False)]
@@ -626,7 +817,6 @@ class OfflineHarnessTests(unittest.TestCase):
     def test_runner_preserves_existing_output_and_requires_run_scoped_paths(self):
         runner = (Path(__file__).parents[1] / 'run_e2.py').read_text(encoding='utf-8')
         harness_source = Path(__file__).with_name('e2_harness.py').read_text(encoding='utf-8')
-        self.assertIn('run_output_path(results_root, args.run_id)', runner)
         self.assertNotIn('shutil.rmtree', harness_source)
         self.assertIn("'experiment_run_id': args.run_id", runner)
         self.assertIn("'database' / '00_local_auth_compat.sql'", runner)
@@ -771,6 +961,19 @@ class OfflineHarnessTests(unittest.TestCase):
             save = COMPARE.save
 
             def check_response_plot(plt, fig, name):
+                if name == 'e2_fig1_duplicate_owners.png':
+                    from itertools import combinations
+
+                    fig.tight_layout()
+                    fig.canvas.draw()
+                    ax = fig.axes[0]
+                    self.assertEqual([label.get_text() for label in ax.texts],
+                                     ['100%\n[92.9–100.0%]'] * 3 + ['0%\n[0.0–7.1%]'] * 6)
+                    bounds = [label.get_window_extent() for label in ax.texts]
+                    self.assertFalse(any(a.overlaps(b) for a, b in combinations(bounds, 2)))
+                    self.assertTrue(all(ax.bbox.contains(box.x0, box.y0) and ax.bbox.contains(box.x1, box.y1)
+                                        for box in bounds))
+                    self.assertEqual(len(ax.containers), 6)
                 if name == 'e2_fig2_response_time.png':
                     ax = fig.axes[0]
                     expected = [value for group in scenario_medians.values() for value in group]
