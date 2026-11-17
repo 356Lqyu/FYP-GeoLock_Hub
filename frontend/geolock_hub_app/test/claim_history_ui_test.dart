@@ -1,3 +1,4 @@
+import 'claim_pickup_photos_test.dart' show PhotoHttpClient;
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -15,6 +16,9 @@ class _FakeClaimDetailReader implements ClaimPickupDetailReader {
     this.historical,
     this.historyError,
     this.claimCardsFailures = 0,
+    this.cardError,
+    this.cardFields = const {},
+    this.audit = const [],
   });
 
   final Map<String, dynamic> detail;
@@ -22,6 +26,9 @@ class _FakeClaimDetailReader implements ClaimPickupDetailReader {
   final Map<String, dynamic>? historical;
   final Object? historyError;
   int claimCardsFailures;
+  final Object? cardError;
+  final Map<String, dynamic> cardFields;
+  final List<Map<String, dynamic>> audit;
   final calls = <String>[];
   String? actor = 'ngo-a';
 
@@ -33,6 +40,7 @@ class _FakeClaimDetailReader implements ClaimPickupDetailReader {
     calls.add(name);
     switch (name) {
       case 'get_my_claim_cards_v2':
+        if (cardError != null) throw cardError!;
         if (claimCardsFailures > 0) {
           claimCardsFailures--;
           throw StateError('temporary claim cards failure');
@@ -65,6 +73,7 @@ class _FakeClaimDetailReader implements ClaimPickupDetailReader {
             'lease_recovery_pending': active
                 ? DateTime.parse(expiredAt).isBefore(DateTime.now().toUtc())
                 : false,
+            ...cardFields,
           },
         ];
       case 'get_claimed_listing_detail':
@@ -85,7 +94,7 @@ class _FakeClaimDetailReader implements ClaimPickupDetailReader {
       case 'get_donation_images':
         return const [];
       case 'get_authorized_audit_events':
-        return const [];
+        return audit;
       default:
         throw StateError('Unexpected RPC $name');
     }
@@ -246,107 +255,117 @@ void main() {
     await tester.pumpWidget(const SizedBox());
   });
 
-  testWidgets('released NGO claim is readable but clearly read only', (
-    tester,
-  ) async {
-    tester.view.physicalSize = const Size(1000, 2200);
-    tester.view.devicePixelRatio = 1;
-    addTearDown(tester.view.resetPhysicalSize);
-    addTearDown(tester.view.resetDevicePixelRatio);
-    final reader = _FakeClaimDetailReader(
-      detail: releasedDetail(),
-      historical: {
-        ...releasedDetail(),
-        'read_only': true,
-        'claim_created_at': '2026-11-02T16:44:00Z',
-        'constituents': [
+  testWidgets(
+    'released history shows recorded release and never requests media',
+    (tester) async {
+      var photoRequests = 0;
+      final reader = _FakeClaimDetailReader(
+        detail: releasedDetail(),
+        cardFields: {'primary_image_path': 'cover.jpg'},
+        audit: [
           {
-            'donation_id': 'donation-a',
-            'title': 'Historical goods',
-            'total_weight_kg': 20,
-            'donation_status': 'AVAILABLE',
-            'primary_image_path': null,
-            'batch_cover_path': null,
-            'items': [
-              {
-                'item_name': 'Canned beans',
-                'category_name': 'Food',
-                'quantity': 2,
-                'unit_label': 'cans',
-                'unit_weight_kg': 0.5,
-              },
-            ],
+            'event_type': 'CANCEL_CLAIM',
+            'occurred_at': '2026-11-03T06:03:14Z',
+            'outcome': 'SUCCESS',
           },
         ],
+      );
+      await tester.pumpWidget(
+        MaterialApp(
+          home: ClaimPickupDetailPage(
+            claimId: 'claim-released',
+            reader: reader,
+            photoUrlResolver: (_) async {
+              photoRequests++;
+              throw StateError('Unexpected signing');
+            },
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.widgetWithText(Chip, 'Released'), findsOneWidget);
+      expect(find.text('Claim created'), findsOneWidget);
+      expect(find.text('Claim released'), findsOneWidget);
+      expect(find.text('Listing availability'), findsNothing);
+      expect(find.text('Lease expiration (database)'), findsNothing);
+      expect(find.text('Test address'), findsNothing);
+      expect(find.text('3.1, 101.6'), findsNothing);
+      expect(find.byType(DonationPhotoCarousel), findsNothing);
+      expect(photoRequests, 0);
+      expect(reader.calls, [
+        'get_my_claim_cards_v2',
+        'get_authorized_audit_events',
+      ]);
+    },
+  );
+
+  for (final coverState in ['allowed', 'denied', 'absent']) {
+    testWidgets(
+      'collected history keeps the timeline when cover is $coverState',
+      (tester) async {
+        final requestedPaths = <String>[];
+        final reader = _FakeClaimDetailReader(
+          detail: {...releasedDetail(), 'claim_status': 'COMPLETED'},
+          cardFields: {
+            'task_status': 'COLLECTED',
+            if (coverState != 'absent') 'primary_image_path': 'cover.jpg',
+          },
+          historyError: const PostgrestException(
+            message: 'function missing',
+            code: 'PGRST202',
+          ),
+          audit: [
+            {
+              'event_type': 'COMPLETE_PICKUP',
+              'occurred_at': '2026-11-03T06:03:14Z',
+              'outcome': 'SUCCESS',
+            },
+          ],
+        );
+        debugNetworkImageHttpClientProvider = () => PhotoHttpClient();
+        try {
+          await tester.pumpWidget(
+            MaterialApp(
+              home: ClaimPickupDetailPage(
+                claimId: 'claim-released',
+                reader: reader,
+                photoUrlResolver: (path) async {
+                  requestedPaths.add(path);
+                  if (coverState == 'denied') {
+                    throw StateError('Signing denied');
+                  }
+                  return 'https://example.invalid/collected-cover.jpg';
+                },
+              ),
+            ),
+          );
+          await tester.pumpAndSettle();
+        } finally {
+          debugNetworkImageHttpClientProvider = null;
+        }
+        expect(find.widgetWithText(Chip, 'Collected'), findsOneWidget);
+        expect(find.text('Handover completed'), findsOneWidget);
+        expect(find.text('Listing availability'), findsNothing);
+        expect(find.text('Claim Lease Status'), findsNothing);
+        expect(find.text('Test address'), findsNothing);
+        expect(find.text('3.1, 101.6'), findsNothing);
+        expect(
+          find.text('Historical details temporarily unavailable'),
+          findsNothing,
+        );
+        expect(
+          find.byKey(const Key('collected-claim-cover')),
+          coverState == 'allowed' ? findsOneWidget : findsNothing,
+        );
+        expect(requestedPaths, coverState == 'absent' ? [] : ['cover.jpg']);
+        expect(reader.calls, [
+          'get_my_claim_cards_v2',
+          'get_authorized_audit_events',
+        ]);
+        await tester.pumpWidget(const SizedBox());
       },
     );
-    await tester.pumpWidget(
-      MaterialApp(
-        home: ClaimPickupDetailPage(claimId: 'claim-released', reader: reader),
-      ),
-    );
-    await tester.pumpAndSettle();
-    expect(find.text('Historical claim — read only'), findsOneWidget);
-    expect(
-      find.textContaining('Donation Progress · Historical goods'),
-      findsOneWidget,
-    );
-    expect(
-      find.text('Released after no handover was confirmed'),
-      findsOneWidget,
-    );
-    expect(find.text('Confirm handover'), findsNothing);
-    expect(find.text('Confirm no handover'), findsNothing);
-    expect(find.text('Canned beans'), findsOneWidget);
-    expect(find.text('Food · 2 cans · 0.5 kg each'), findsOneWidget);
-    expect(find.text('Test address'), findsNothing);
-    expect(find.text('3.1, 101.6'), findsNothing);
-    expect(reader.calls, contains('get_my_historical_claim_detail'));
-    expect(reader.calls, isNot(contains('get_claimed_listing_detail')));
-    expect(
-      reader.calls.any(
-        (name) =>
-            name.toLowerCase().contains('claim') && !name.startsWith('get_'),
-      ),
-      isFalse,
-    );
-    await tester.pumpWidget(const SizedBox());
-  });
-
-  testWidgets('released history degrades honestly when migration is absent', (
-    tester,
-  ) async {
-    tester.view.physicalSize = const Size(1000, 1800);
-    tester.view.devicePixelRatio = 1;
-    addTearDown(tester.view.resetPhysicalSize);
-    addTearDown(tester.view.resetDevicePixelRatio);
-    final reader = _FakeClaimDetailReader(
-      detail: releasedDetail(),
-      historyError: const PostgrestException(
-        message: 'CLAIM_NOT_FOUND_OR_FORBIDDEN',
-        code: 'PGRST202',
-      ),
-    );
-    await tester.pumpWidget(
-      MaterialApp(
-        home: ClaimPickupDetailPage(claimId: 'claim-released', reader: reader),
-      ),
-    );
-    await tester.pumpAndSettle();
-    expect(find.text('Historical claim — read only'), findsOneWidget);
-    expect(
-      find.text('Historical details temporarily unavailable'),
-      findsOneWidget,
-    );
-    expect(
-      find.text('Historical item details temporarily unavailable'),
-      findsNothing,
-    );
-    expect(find.textContaining('CLAIM_NOT_FOUND_OR_FORBIDDEN'), findsNothing);
-    expect(find.text('Test address'), findsNothing);
-    expect(reader.calls, isNot(contains('get_claimed_listing_detail')));
-    await tester.pumpWidget(const SizedBox());
-  });
+  }
 
   testWidgets('active claim detail continues to load constituents normally', (
     tester,
@@ -392,6 +411,7 @@ void main() {
     );
     expect(reader.calls, contains('get_claimed_listing_constituents'));
     expect(find.text('Test address'), findsOneWidget);
+    expect(find.text('Claim Lease Status'), findsOneWidget);
     expect(find.text('3.1, 101.6'), findsOneWidget);
     await tester.pumpWidget(const SizedBox());
   });
@@ -401,7 +421,7 @@ void main() {
   ) async {
     final reader = _FakeClaimDetailReader(
       detail: releasedDetail(),
-      historyError: const PostgrestException(
+      cardError: const PostgrestException(
         message: 'CLAIM_NOT_FOUND_OR_FORBIDDEN private-detail',
         code: 'P0001',
       ),
@@ -446,11 +466,19 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      expect(find.text('Historical claim — read only'), findsOneWidget);
-      expect(find.text('Private donor pickup location hidden'), findsOneWidget);
+      expect(
+        find.widgetWithText(Chip, 'Expired — Recovery Pending'),
+        findsOneWidget,
+      );
+      expect(
+        find.textContaining('database still controls recovery'),
+        findsOneWidget,
+      );
       expect(find.text('Test address'), findsNothing);
-      expect(reader.calls, contains('get_my_historical_claim_detail'));
-      expect(reader.calls, isNot(contains('get_claimed_listing_detail')));
+      expect(reader.calls, [
+        'get_my_claim_cards_v2',
+        'get_authorized_audit_events',
+      ]);
       await tester.pumpWidget(const SizedBox());
     },
   );
@@ -486,14 +514,53 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    expect(find.text('Historical claim — read only'), findsOneWidget);
-    expect(find.text('EXPIRED'), findsNothing);
+    expect(find.widgetWithText(Chip, 'Expired'), findsOneWidget);
     expect(find.text('Test address'), findsNothing);
-    expect(find.text('Private donor pickup location hidden'), findsOneWidget);
-    expect(reader.calls, contains('get_my_historical_claim_detail'));
+    expect(find.text('Private donor pickup location hidden'), findsNothing);
     expect(find.text('Confirm no handover'), findsNothing);
+    expect(reader.calls, [
+      'get_my_claim_cards_v2',
+      'get_authorized_audit_events',
+    ]);
     await tester.pumpWidget(const SizedBox());
   });
+
+  for (final state in ['CANCELLED', 'ACTIVE']) {
+    testWidgets(
+      'minimal safe details for $state without operational evidence',
+      (tester) async {
+        final reader = _FakeClaimDetailReader(
+          detail: {...releasedDetail(), 'claim_status': state},
+          cardFields: {'primary_image_path': 'ignored.jpg'},
+        );
+        await tester.pumpWidget(
+          MaterialApp(
+            home: ClaimPickupDetailPage(
+              claimId: 'claim-released',
+              reader: reader,
+              photoUrlResolver: (_) async =>
+                  throw StateError('Unexpected signing'),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+        expect(
+          find.widgetWithText(
+            Chip,
+            state == 'ACTIVE' ? 'Status Needs Review' : 'Cancelled',
+          ),
+          findsOneWidget,
+        );
+        expect(find.text('Claim created'), findsOneWidget);
+        expect(find.text('Claim Lease Status'), findsNothing);
+        expect(find.text('Test address'), findsNothing);
+        expect(reader.calls, [
+          'get_my_claim_cards_v2',
+          'get_authorized_audit_events',
+        ]);
+      },
+    );
+  }
 
   testWidgets('reconciliation-required claim retains its protected actions', (
     tester,
@@ -522,36 +589,43 @@ void main() {
     await tester.pumpWidget(const SizedBox());
   });
 
-  testWidgets('claim detail retry refresh uses a synchronous setState callback', (
-    tester,
-  ) async {
-    final reader = _FakeClaimDetailReader(
-      detail: {
-        ...releasedDetail(),
-        'claim_status': 'RECONCILIATION_REQUIRED',
-        'lease_status': 'RECONCILIATION_REQUIRED',
-        'listing_status': 'CLAIMED',
-      },
-      claimCardsFailures: 1,
-    );
+  testWidgets(
+    'claim detail retry refresh uses a synchronous setState callback',
+    (tester) async {
+      final reader = _FakeClaimDetailReader(
+        detail: {
+          ...releasedDetail(),
+          'claim_status': 'RECONCILIATION_REQUIRED',
+          'lease_status': 'RECONCILIATION_REQUIRED',
+          'listing_status': 'CLAIMED',
+        },
+        claimCardsFailures: 1,
+      );
 
-    await tester.pumpWidget(
-      MaterialApp(
-        home: ClaimPickupDetailPage(claimId: 'claim-released', reader: reader),
-      ),
-    );
-    await tester.pumpAndSettle();
-    expect(find.text('Retry'), findsOneWidget);
-    expect(tester.takeException(), isNull);
+      await tester.pumpWidget(
+        MaterialApp(
+          home: ClaimPickupDetailPage(
+            claimId: 'claim-released',
+            reader: reader,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('Retry'), findsOneWidget);
+      expect(tester.takeException(), isNull);
 
-    await tester.tap(find.text('Retry'));
-    await tester.pumpAndSettle();
+      await tester.tap(find.text('Retry'));
+      await tester.pumpAndSettle();
 
-    expect(find.text('Handover requires reconciliation'), findsOneWidget);
-    expect(reader.calls.where((name) => name == 'get_my_claim_cards_v2'), hasLength(2));
-    expect(tester.takeException(), isNull);
-    await tester.pumpWidget(const SizedBox());
-  });
+      expect(find.text('Handover requires reconciliation'), findsOneWidget);
+      expect(
+        reader.calls.where((name) => name == 'get_my_claim_cards_v2'),
+        hasLength(2),
+      );
+      expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox());
+    },
+  );
 
   test('claim detail errors use safe authorization/network messages', () {
     expect(

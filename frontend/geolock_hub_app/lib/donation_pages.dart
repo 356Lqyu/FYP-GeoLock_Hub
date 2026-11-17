@@ -45,14 +45,6 @@ String claimDetailsErrorMessage(Object error) {
   return 'Claim details are temporarily unavailable. Refresh and try again.';
 }
 
-String _historicalClaimOutcome(Object? value) => switch (value?.toString()) {
-  'RECONCILED_NO_HANDOVER' => 'Released after no handover was confirmed',
-  'EXPIRED_SAFE_RELEASE' => 'Released after safe lease expiry',
-  'HANDOVER_UNCERTAIN' => 'Released for unresolved handover review',
-  null || '' => 'Historical outcome unavailable',
-  final status => friendlyWorkflowStatus(status),
-};
-
 Future<Map<String, dynamic>?> _readClaimReconciliationReceipt(
   String requestId,
 ) async {
@@ -2254,72 +2246,23 @@ class _ClaimPickupDetailPageState extends State<ClaimPickupDetailPage>
     if (claimCard == null) {
       throw StateError('Claim details could not be verified for this account.');
     }
-    final claimStatus = claimCard['claim_status']?.toString();
-    final leaseStatus = claimCard['lease_status']?.toString();
-    final cardExpiry = DateTime.tryParse(
-      claimCard['lease_expires_at']?.toString() ?? '',
-    );
-    final cardServerNow = DateTime.tryParse(
-      claimCard['server_now']?.toString() ?? '',
-    );
-    final leaseExpired = claimCard['lease_is_expired'] is bool
-        ? claimCard['lease_is_expired'] as bool
-        : cardExpiry != null &&
-              cardServerNow != null &&
-              !cardExpiry.isAfter(cardServerNow);
-    final historicalOnly =
+    final presentation = ClaimCard.fromJson(claimCard);
+    // Basic claim history is available from the owned card and audit stream.
+    // Do not fetch operational detail or historical constituents for this view.
+    final cardOnly =
         const {
           'RELEASED',
           'EXPIRED',
           'COMPLETED',
           'CANCELLED',
-        }.contains(claimStatus) ||
-        (claimStatus == 'ACTIVE' && (leaseStatus != 'ACTIVE' || leaseExpired));
+        }.contains(presentation.claimStatus) ||
+        presentation.tab != ClaimTab.active ||
+        presentation.displayStatus == ClaimDisplayStatus.needsReview ||
+        (presentation.claimStatus == 'ACTIVE' && !presentation.isValidActive);
 
     late final Map<String, dynamic> result;
-    if (historicalOnly) {
-      try {
-        final response = await _reader.rpc(
-          'get_my_historical_claim_detail',
-          params: {'p_claim': widget.claimId},
-        );
-        if (response is! Map || response['read_only'] != true) {
-          throw const FormatException('Invalid historical claim response.');
-        }
-        result = Map<String, dynamic>.from(response);
-        final historicalConstituents = response['constituents'];
-        final validConstituents =
-            historicalConstituents is List &&
-            historicalConstituents.every((row) => row is Map);
-        result['constituents'] = validConstituents
-            ? historicalConstituents
-                  .map((row) => Map<String, dynamic>.from(row as Map))
-                  .toList()
-            : <Map<String, dynamic>>[];
-        result['constituents_available'] =
-            validConstituents && historicalConstituents.isNotEmpty;
-      } on PostgrestException catch (error) {
-        // During rollout, the legacy detail RPC is deliberately not called:
-        // it returns private donor location for closed claims. The claim card
-        // remains useful, and this state makes missing history explicit.
-        if (error.code != 'PGRST202') rethrow;
-        result = <String, dynamic>{
-          'claim_id': widget.claimId,
-          'claim_status': claimStatus,
-          'claim_created_at': claimCard['claimed_at'],
-          'claim_close_reason': claimCard['close_reason'],
-          'claim_closed_at': claimCard['closed_at'],
-          'listing_id': claimCard['listing_id'],
-          'listing_weight_kg': claimCard['listing_weight_kg'],
-          'lease_status': leaseStatus,
-          'lease_expires_at': claimCard['lease_expires_at'],
-          'source_type': claimCard['source_type'],
-          'task_status': claimCard['task_status'],
-          'constituents': <Map<String, dynamic>>[],
-          'constituents_available': false,
-          'history_reader_unavailable': true,
-        };
-      }
+    if (cardOnly) {
+      result = <String, dynamic>{};
     } else {
       final response = await _reader.rpc(
         'get_claimed_listing_detail',
@@ -2339,7 +2282,6 @@ class _ClaimPickupDetailPageState extends State<ClaimPickupDetailPage>
       result['constituents'] = constituents
           .map((row) => Map<String, dynamic>.from(row as Map))
           .toList();
-      result['constituents_available'] = true;
       // Claim detail returns donation_ids rather than a singular donation_id.
       // Use the claim-authorized constituents before requesting photo metadata.
       final donationIds = (result['constituents'] as List)
@@ -2368,19 +2310,14 @@ class _ClaimPickupDetailPageState extends State<ClaimPickupDetailPage>
       result['donation_images'] = images;
     }
     result['claim_card'] = claimCard;
-    result['presentation'] = ClaimCard.fromJson(claimCard);
+    result['presentation'] = presentation;
+    result['card_only'] = cardOnly;
     result['constituents'] ??= <Map<String, dynamic>>[];
-    result['constituents_available'] ??= true;
     if (result['source_type'] == 'DIRECT_DONATION' &&
         result['donation_id'] == null &&
         (result['constituents'] as List).isNotEmpty) {
       result['donation_id'] =
           (result['constituents'] as List).first['donation_id'];
-    }
-    if (historicalOnly && result['source_type'] == 'DIRECT_DONATION') {
-      result['pickup_address'] = null;
-      result['latitude'] = null;
-      result['longitude'] = null;
     }
     var auditRows = <Map<String, dynamic>>[];
     String? auditError;
@@ -2404,12 +2341,9 @@ class _ClaimPickupDetailPageState extends State<ClaimPickupDetailPage>
     if (userId != _reader.identity) {
       throw StateError('Account changed. Refresh details.');
     }
-    final presentation = result['presentation'] as ClaimCard?;
-    if (mounted &&
-        generation == _generation &&
-        presentation?.isValidActive == true) {
+    if (mounted && generation == _generation && presentation.isValidActive) {
       final delay =
-          presentation!.leaseExpiresAt!.difference(presentation.serverNow!) -
+          presentation.leaseExpiresAt!.difference(presentation.serverNow!) -
           elapsed.elapsed;
       _leaseRefresh?.cancel();
       _leaseRefresh = Timer(
@@ -2490,6 +2424,52 @@ class _ClaimPickupDetailPageState extends State<ClaimPickupDetailPage>
     }
   }
 
+  Widget _buildClaimHistory(
+    ClaimCard card,
+    List<StatusTimelineEvent> events,
+    String? auditError,
+  ) {
+    final collected =
+        card.displayStatus == ClaimDisplayStatus.collected ||
+        card.displayStatus == ClaimDisplayStatus.completed;
+    final status = collected ? 'Collected' : card.badge;
+    final cover = card.primaryImagePath;
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      children: [
+        Text(
+          card.title ?? card.sourceType ?? 'Claimed pickup',
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
+        Align(
+          alignment: Alignment.centerLeft,
+          child: Chip(label: Text(status)),
+        ),
+        if (collected && card.listingWeightKg != null)
+          _claimDetailRow('Weight', '${card.listingWeightKg} kg'),
+        if (card.displayStatus == ClaimDisplayStatus.expiredPending)
+          const Text(
+            'The lease elapsed. The database still controls recovery.',
+          ),
+        if (card.displayStatus == ClaimDisplayStatus.needsReview)
+          const Text('Refresh to verify this claim before attempting pickup.'),
+        if (collected && cover != null && cover.isNotEmpty)
+          _CollectedClaimCover(
+            key: ValueKey((_generation, cover)),
+            path: cover,
+            resolver: widget.photoUrlResolver,
+          ),
+        GeoStatusTimeline(
+          title: 'Claim and Pickup History',
+          currentStatus: status,
+          events: events,
+          errorMessage: auditError,
+          emptyMessage: 'No recorded claim or pickup events are available.',
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(title: const Text('Claimed Pickup Details')),
@@ -2545,6 +2525,13 @@ class _ClaimPickupDetailPageState extends State<ClaimPickupDetailPage>
             ),
           );
         }
+        if (data['card_only'] == true) {
+          return _buildClaimHistory(
+            data['presentation'] as ClaimCard,
+            claimEvents,
+            data['audit_error']?.toString(),
+          );
+        }
         final claimStatus = data['claim_status']?.toString();
         final leaseStatus = data['lease_status']?.toString();
         final taskStatus = card?['task_status']?.toString();
@@ -2552,14 +2539,6 @@ class _ClaimPickupDetailPageState extends State<ClaimPickupDetailPage>
         final isReconciliationRequired =
             claimStatus == 'RECONCILIATION_REQUIRED' &&
             presentation?.displayStatus == ClaimDisplayStatus.reconciliation;
-        final isHistoricalReadOnly =
-            const {
-              'RELEASED',
-              'EXPIRED',
-              'COMPLETED',
-              'CANCELLED',
-            }.contains(claimStatus) ||
-            (claimStatus == 'ACTIVE' && presentation?.isValidActive != true);
         final privateDonorLocationAllowed =
             claimStatus == 'ACTIVE' && presentation?.isValidActive == true;
         return ListView(
@@ -2585,78 +2564,6 @@ class _ClaimPickupDetailPageState extends State<ClaimPickupDetailPage>
                 },
               ),
             _claimDetailRow('Claim', friendlyWorkflowStatus(claimStatus)),
-            if (isHistoricalReadOnly) ...[
-              const Card(
-                child: ListTile(
-                  leading: Icon(Icons.history),
-                  title: Text('Historical claim — read only'),
-                  subtitle: Text(
-                    'This claim is historical or its lease is no longer active. No pickup or claim actions are available.',
-                  ),
-                ),
-              ),
-              if (data['claim_close_reason'] != null)
-                _claimDetailRow(
-                  'Historical outcome',
-                  _historicalClaimOutcome(data['claim_close_reason']),
-                ),
-              if (claimStatus == 'ACTIVE' &&
-                  (presentation?.isValidActive != true) &&
-                  data['claim_close_reason'] == null)
-                const ListTile(
-                  leading: Icon(Icons.hourglass_bottom),
-                  title: Text('Lease elapsed; recovery is database controlled'),
-                  subtitle: Text(
-                    'The claim remains historical for location access until the protected recovery workflow updates it.',
-                  ),
-                ),
-              if (claimStatus == 'EXPIRED' &&
-                  data['claim_close_reason'] == null)
-                _claimDetailRow('Historical outcome', 'Lease expired'),
-              if (data['claim_closed_at'] != null)
-                _claimDetailRow(
-                  'Claim closed',
-                  statusTimestampText(context, data['claim_closed_at']) ?? '—',
-                ),
-              if (data['lease_issued_at'] != null)
-                _claimDetailRow(
-                  'Lease issued',
-                  statusTimestampText(context, data['lease_issued_at']) ?? '—',
-                ),
-              if (data['lease_release_reason'] != null)
-                _claimDetailRow(
-                  'Lease release reason',
-                  friendlyWorkflowStatus(data['lease_release_reason']),
-                ),
-              if (data['reconciliation'] is Map)
-                _claimDetailRow(
-                  'Reconciliation outcome',
-                  '${friendlyWorkflowStatus((data['reconciliation'] as Map)['case_status'])}${(data['reconciliation'] as Map)['resolution_reason'] == null ? '' : ' · ${friendlyWorkflowStatus((data['reconciliation'] as Map)['resolution_reason'])}'}',
-                ),
-              if (data['history_reader_unavailable'] == true)
-                const Card(
-                  child: ListTile(
-                    leading: Icon(Icons.info_outline),
-                    title: Text('Historical details temporarily unavailable'),
-                    subtitle: Text(
-                      'The claim is in your history, but the secure history reader is not deployed yet. No pickup location is shown.',
-                    ),
-                  ),
-                ),
-              if (data['constituents_available'] == false &&
-                  data['history_reader_unavailable'] != true)
-                const Card(
-                  child: ListTile(
-                    leading: Icon(Icons.info_outline),
-                    title: Text(
-                      'Historical item details unavailable or not recorded',
-                    ),
-                    subtitle: Text(
-                      'The claim status is confirmed, but this response has no complete donation or batch contents. Retry later or contact support if the record should contain item details.',
-                    ),
-                  ),
-                ),
-            ],
             _claimDetailRow(
               'Listing availability',
               friendlyWorkflowStatus(data['listing_status']),
@@ -2812,22 +2719,6 @@ class _ClaimPickupDetailPageState extends State<ClaimPickupDetailPage>
                 emptyMessage:
                     'No earlier donation events are available in this claim read.',
               ),
-              if (isHistoricalReadOnly && donation['items'] is List)
-                if ((donation['items'] as List).whereType<Map>().isEmpty)
-                  const ListTile(
-                    dense: true,
-                    title: Text('No item-level details were recorded'),
-                  )
-                else
-                  for (final item
-                      in (donation['items'] as List).whereType<Map>())
-                    ListTile(
-                      dense: true,
-                      title: Text(item['item_name']?.toString() ?? 'Item'),
-                      subtitle: Text(
-                        '${item['category_name'] ?? 'Category unavailable'} · ${item['quantity'] ?? '—'} ${item['unit_label'] ?? ''} · ${item['unit_weight_kg'] ?? '—'} kg each',
-                      ),
-                    ),
             ],
             const Text(
               'Exact pickup details are shown only after this NGO has a claim for the listing.',
@@ -2836,6 +2727,44 @@ class _ClaimPickupDetailPageState extends State<ClaimPickupDetailPage>
         );
       },
     ),
+  );
+}
+
+class _CollectedClaimCover extends StatefulWidget {
+  const _CollectedClaimCover({super.key, required this.path, this.resolver});
+
+  final String path;
+  final Future<String> Function(String path)? resolver;
+
+  @override
+  State<_CollectedClaimCover> createState() => _CollectedClaimCoverState();
+}
+
+class _CollectedClaimCoverState extends State<_CollectedClaimCover> {
+  late final Future<String> _url = Future.sync(
+    () =>
+        widget.resolver?.call(widget.path) ??
+        createDonationPhotoSignedUrl(
+          _db,
+          widget.path,
+          surface: 'Collected claim',
+        ),
+  );
+
+  @override
+  Widget build(BuildContext context) => FutureBuilder<String>(
+    future: _url,
+    builder: (context, snapshot) {
+      final url = snapshot.data;
+      if (url == null || url.isEmpty) return const SizedBox.shrink();
+      return Image.network(
+        url,
+        key: const Key('collected-claim-cover'),
+        height: 160,
+        fit: BoxFit.contain,
+        errorBuilder: (_, _, _) => const SizedBox.shrink(),
+      );
+    },
   );
 }
 

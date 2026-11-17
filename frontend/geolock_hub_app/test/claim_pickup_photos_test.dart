@@ -70,6 +70,7 @@ class PhotoReader implements ClaimPickupDetailReader {
             'claim_id': 'claim',
             'claim_status': 'ACTIVE',
             'lease_status': 'ACTIVE',
+            'lease_id': 'lease',
             'listing_id': 'listing',
             'source_type': source,
             'task_status': 'CONFIRMED',

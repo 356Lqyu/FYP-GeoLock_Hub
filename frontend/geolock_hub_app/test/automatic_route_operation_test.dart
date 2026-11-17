@@ -58,6 +58,152 @@ Map<String, dynamic> detail() => {
 };
 
 void main() {
+  const attemptKey = 'ngo_route_operation_ngo';
+  const historyKey = 'ngo_route_operation_history_ngo_request';
+  const original = {
+    'request_id': 'request',
+    'snapshot_id': 'snapshot',
+    'intent': 'GENERATE_AND_AUTHORIZE',
+    'phase': 'combined',
+    'status': 'infeasible',
+    'policy_id': 'policy',
+    'vehicle_ids': ['old-vehicle'],
+  };
+  Map<String, dynamic> terminalResponse([String? result = 'INFEASIBLE']) => {
+    'kind': 'AUTHORIZATION_UNCONFIRMED',
+    'ngo_id': 'ngo',
+    'request_id': 'request',
+    'snapshot_id': 'snapshot',
+    'operation_terminal': result,
+  };
+  Future<void> finish(
+    NgoRoutingRepository repo, [
+    String terminal = 'INFEASIBLE',
+  ]) => repo.finishTerminalRouteOperation(
+    owner: 'ngo',
+    requestId: 'request',
+    snapshotId: 'snapshot',
+    terminal: terminal,
+  );
+  for (final terminal in ['INFEASIBLE', 'REJECTED']) {
+    test(
+      'archives matching $terminal and preserves the original attempt and outcome',
+      () async {
+        final response = terminalResponse(terminal);
+        final saved = {
+          ...original,
+          if (terminal == 'INFEASIBLE')
+            'infeasible_response': {'outcome': 'INFEASIBLE', 'methods': []},
+        };
+        SharedPreferences.setMockInitialValues({attemptKey: jsonEncode(saved)});
+        var reads = 0;
+        final repo = NgoRoutingRepository(
+          identity: () => 'ngo',
+          rpc: (name, _) async => fail('Unexpected RPC: $name'),
+          combinedPlanner: (_) async => fail('No planning during archive'),
+          authorizationReader: (body) async {
+            reads++;
+            expect(body, {'request_id': 'request', 'snapshot_id': 'snapshot'});
+            return response;
+          },
+        );
+        await finish(repo, terminal);
+        final prefs = await SharedPreferences.getInstance();
+        expect(prefs.getString(attemptKey), isNull);
+        expect(jsonDecode(prefs.getString(historyKey)!), {
+          ...saved,
+          'terminal_response': response,
+        });
+        expect(reads, 1);
+      },
+    );
+  }
+
+  final refusedResponses = <String, Map<String, dynamic>>{
+    'missing terminal': terminalResponse()..remove('operation_terminal'),
+    'unconfirmed': terminalResponse(null),
+    'wrong request': {...terminalResponse(), 'request_id': 'other'},
+    'wrong snapshot': {...terminalResponse(), 'snapshot_id': 'other'},
+    'wrong owner': {...terminalResponse(), 'ngo_id': 'other'},
+    'changed outcome': terminalResponse('REJECTED'),
+    'receipt': receipt(),
+    'ambiguous mixed response': {
+      ...terminalResponse(),
+      'authorization': receipt()['authorization'],
+    },
+  };
+  for (final entry in refusedResponses.entries) {
+    test('terminal finish preserves active record for ${entry.key}', () async {
+      final saved = jsonEncode(original);
+      SharedPreferences.setMockInitialValues({attemptKey: saved});
+      final repo = NgoRoutingRepository(
+        identity: () => 'ngo',
+        rpc: (name, _) async => fail('Unexpected RPC: $name'),
+        authorizationReader: (_) async => entry.value,
+      );
+      await expectLater(
+        finish(repo),
+        throwsA(anyOf(isA<StateError>(), isA<FormatException>())),
+      );
+      final prefs = await SharedPreferences.getInstance();
+      expect(prefs.getString(attemptKey), saved);
+      expect(prefs.getString(historyKey), isNull);
+    });
+  }
+
+  test('terminal finish preserves an already recorded authorization', () async {
+    final saved = jsonEncode({
+      ...original,
+      'authorization': receipt()['authorization'],
+    });
+    SharedPreferences.setMockInitialValues({attemptKey: saved});
+    final repo = NgoRoutingRepository(
+      identity: () => 'ngo',
+      rpc: (name, _) async => fail('Unexpected RPC: $name'),
+      authorizationReader: (_) async =>
+          fail('Recorded receipt blocks terminal finish'),
+    );
+    await expectLater(finish(repo), throwsStateError);
+    final prefs = await SharedPreferences.getInstance();
+    expect(prefs.getString(attemptKey), saved);
+    expect(prefs.getString(historyKey), isNull);
+  });
+
+  for (final failure in ['owner', 'record', 'network']) {
+    test(
+      'terminal finish preserves the request when $failure changes during verification',
+      () async {
+        final saved = jsonEncode(original);
+        final updated = jsonEncode({
+          ...original,
+          'vehicle_ids': ['changed'],
+        });
+        SharedPreferences.setMockInitialValues({attemptKey: saved});
+        final prefs = await SharedPreferences.getInstance();
+        var owner = 'ngo';
+        final repo = NgoRoutingRepository(
+          identity: () => owner,
+          rpc: (name, _) async => fail('Unexpected RPC: $name'),
+          authorizationReader: (_) async {
+            if (failure == 'owner') owner = 'another-ngo';
+            if (failure == 'record') await prefs.setString(attemptKey, updated);
+            if (failure == 'network') throw const SocketException('offline');
+            return terminalResponse();
+          },
+        );
+        await expectLater(
+          finish(repo),
+          throwsA(anyOf(isA<StateError>(), isA<SocketException>())),
+        );
+        expect(
+          prefs.getString(attemptKey),
+          failure == 'record' ? updated : saved,
+        );
+        expect(prefs.getString(historyKey), isNull);
+      },
+    );
+  }
+
   setUp(() => SharedPreferences.setMockInitialValues({}));
   const capturePath = String.fromEnvironment('GEOLOCK_AUTOMATIC_LOCAL_CAPTURE');
   test(

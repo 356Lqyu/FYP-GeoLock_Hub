@@ -38,6 +38,7 @@ class _NgoRoutesPageState extends NgoSessionPage<NgoRoutesPage> {
   bool _claimsVerified = false;
   String? _backendError;
   String? _plannerConnection;
+  bool _plannerConnectionFailed = false;
   bool _checkingPlanner = false;
   bool _generating = false;
   bool _initialHealthChecked = false;
@@ -114,13 +115,19 @@ class _NgoRoutesPageState extends NgoSessionPage<NgoRoutesPage> {
     try {
       await repository.checkPlannerConnection();
       if (mounted) {
-        setState(
-          () => _plannerConnection =
-              'Planner ACTIVE for DEV. Read-only check; no snapshot or route created.',
-        );
+        setState(() {
+          _plannerConnectionFailed = false;
+          _plannerConnection =
+              'Planner ACTIVE for DEV. Read-only check; no snapshot or route created.';
+        });
       }
     } catch (e) {
-      if (mounted) setState(() => _plannerConnection = routingError(e));
+      if (mounted) {
+        setState(() {
+          _plannerConnectionFailed = true;
+          _plannerConnection = routingError(e);
+        });
+      }
     } finally {
       if (mounted) setState(() => _checkingPlanner = false);
     }
@@ -139,6 +146,7 @@ class _NgoRoutesPageState extends NgoSessionPage<NgoRoutesPage> {
     _pendingPlanning = {};
     _routeOperation = {};
     _plannerConnection = null;
+    _plannerConnectionFailed = false;
 
     _selected.clear();
   }
@@ -247,16 +255,8 @@ class _NgoRoutesPageState extends NgoSessionPage<NgoRoutesPage> {
         ),
       );
       if (mounted) await reload();
-    } else if (result['kind'] == 'ADVISORY_CANDIDATE') {
-      setState(
-        () => error =
-            'No route was authorized. Review the unserved pickups in Route support.',
-      );
     } else {
-      setState(
-        () => error =
-            'No committed authorization receipt visible. Keep this operation; no new request was sent.',
-      );
+      setState(() => error = routingOperationMessage(result));
     }
   }
 
@@ -325,10 +325,10 @@ class _NgoRoutesPageState extends NgoSessionPage<NgoRoutesPage> {
         children: [
           if ((loading || busy) && !_generating)
             const LinearProgressIndicator(),
-          if (error != null)
+          if (error != null) Text(error!, key: const Key('routing-error')),
+          if (_plannerConnectionFailed)
             Text(
-              'Route setup needs attention. No new request will be sent automatically.',
-              key: const Key('routing-error'),
+              'Planner connection check failed. ${_plannerConnection ?? ''}',
             ),
           if (!fresh && !loading)
             const Text('Refresh before performing an action.'),
@@ -410,25 +410,8 @@ class _NgoRoutesPageState extends NgoSessionPage<NgoRoutesPage> {
           if (_routeOperation.isNotEmpty)
             Card(
               child: ListTile(
-                title: Text(
-                  _routeOperation['status'] == 'authorized'
-                      ? 'Previously authorized route retained. Review it below; this is not a new authorization.'
-                      : NgoRoutingRepository.isFinishedPreflight(
-                          _routeOperation,
-                        )
-                      ? 'Route setup stopped before generation.'
-                      : 'Route setup needs attention.',
-                ),
-                subtitle:
-                    _routeOperation['status'] != 'authorized' &&
-                        _routeOperation['failure_code'] is String
-                    ? Text(
-                        routingFailureMessage(
-                              _routeOperation['failure_code'],
-                            ) ??
-                            'No route is confirmed. Open Route support for help.',
-                      )
-                    : null,
+                title: Text('Saved routing request'),
+                subtitle: Text(savedRoutingOperationMessage(_routeOperation)),
                 trailing: _routeOperation['status'] == 'authorized'
                     ? TextButton(
                         key: const Key('archive-authorization'),
@@ -455,22 +438,15 @@ class _NgoRoutesPageState extends NgoSessionPage<NgoRoutesPage> {
                       ),
               ),
             ),
-          if (_pendingPlanning['status'] == 'pending')
-            const Text(
-              'Route setup needs attention. Open Route support; no new request will be sent automatically.',
+          if (!_generating && _generationBlocker != null)
+            Text(
+              _generationBlocker!,
+              key: const Key('routing-generation-blocker'),
             ),
+          for (final guidance in _capacityGuidance) Text(guidance),
           FilledButton.icon(
             key: const Key('generate-route'),
-            onPressed:
-                !_generating &&
-                    actionsEnabled &&
-                    _overview?['authorization_enforced'] == true &&
-                    _overview?['policy_id'] is String &&
-                    repository.combinedPlanningConfigured &&
-                    _routeOperation.isEmpty &&
-                    _pendingPlanning['status'] != 'pending' &&
-                    _selected.isNotEmpty &&
-                    _displayClaims.isNotEmpty
+            onPressed: !_generating && _generationBlocker == null
                 ? _generate
                 : null,
             icon: _generating
@@ -526,6 +502,69 @@ class _NgoRoutesPageState extends NgoSessionPage<NgoRoutesPage> {
       return 'Not available for new planning. Review vehicle availability and depot verification.';
     }
     return 'Not eligible: reservation, depot verification or other backend checks require review.';
+  }
+
+  String? get _generationBlocker {
+    if (_routeOperation.isNotEmpty) {
+      if (_routeOperation['status'] == 'infeasible') {
+        return 'No feasible route was found for your previous selection. '
+            'In Route Support, check the outcome and finish the attempt before '
+            'planning with different eligible pickups or vehicles.';
+      }
+      if (_routeOperation['status'] == 'rejected') {
+        return 'In Route Support, confirm the rejection and finish the previous '
+            'attempt before starting another.';
+      }
+      return 'Review the saved routing request before starting another.';
+    }
+    if (_pendingPlanning['status'] == 'pending') {
+      return 'A previous planning request is pending. Open Route Support to review it.';
+    }
+    if (!actionsEnabled) {
+      return 'Wait for the route setup to finish loading or refresh to continue.';
+    }
+    if (_overview?['policy_id'] is! String) {
+      return 'No routing policy is available. Contact the coordinator.';
+    }
+    if (_overview?['authorization_enforced'] != true) {
+      return 'Route authorization is unavailable. Contact the coordinator.';
+    }
+    if (!repository.combinedPlanningConfigured) {
+      return 'The combined planner is not configured. Check Route Support.';
+    }
+    if (_selected.isEmpty) return 'Select an eligible vehicle to continue.';
+    if (_displayClaims.isEmpty) return 'There are no eligible claimed pickups.';
+    return null;
+  }
+
+  Iterable<String> get _capacityGuidance sync* {
+    final vehicles = routingRows(_fleet?['vehicles'] ?? [])
+        .where(
+          (vehicle) =>
+              _selected.contains(vehicle['vehicle_id']) &&
+              _vehicleAllowed(vehicle),
+        )
+        .toList();
+    if (vehicles.isEmpty) return;
+    final capacities = vehicles
+        .map((vehicle) => num.tryParse('${vehicle['payload_capacity_kg']}'))
+        .toList();
+    if (capacities.any(
+      (value) => value == null || !value.isFinite || value <= 0,
+    )) {
+      return;
+    }
+    final largest = capacities.whereType<num>().reduce((a, b) => a > b ? a : b);
+    for (final pickup in _displayClaims) {
+      final weight = num.tryParse(
+        '${pickup['load_kg'] ?? pickup['listing_weight_kg']}',
+      );
+      if (weight != null && weight.isFinite && weight > largest) {
+        yield '${pickup['title'] ?? 'This pickup'} weighs $weight kg, but the '
+            'largest selected vehicle can carry only $largest kg. '
+            'A pickup cannot be split across vehicles.';
+      }
+    }
   }
 
   Set<Object?> get _eligibleClaimIds => routingRows(

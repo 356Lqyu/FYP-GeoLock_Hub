@@ -144,6 +144,9 @@ void main() {
       await tester.ensureVisible(find.byTooltip('Route support'));
       await tester.tap(find.byTooltip('Route support'));
       await tester.pumpAndSettle();
+      expect(find.textContaining('preserved-request'), findsNothing);
+      await tester.tap(find.text('Technical details'));
+      await tester.pumpAndSettle();
       expect(find.textContaining('preserved-request'), findsOneWidget);
       expect(
         (await SharedPreferences.getInstance()).getString(

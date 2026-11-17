@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:geolock_hub_app/routing/ngo_routing_repository.dart';
 import 'package:geolock_hub_app/routing/ngo_routes_page.dart';
 import 'package:geolock_hub_app/routing/routing_worker_client.dart';
+import 'package:geolock_hub_app/routing/routing_diagnostics_page.dart';
 import 'automatic_route_operation_test.dart' as fixtures;
 
 Map<String, dynamic> overview({List<Map<String, dynamic>> routes = const []}) =>
@@ -32,6 +33,296 @@ Map<String, dynamic> overview({List<Map<String, dynamic>> routes = const []}) =>
 
 void main() {
   setUp(() => SharedPreferences.setMockInitialValues({}));
+
+  for (final terminal in [
+    'CONFIRMED',
+    'INFEASIBLE',
+    'REJECTED',
+    'UNCONFIRMED',
+  ]) {
+    testWidgets('Route Support reports $terminal without routing writes', (
+      tester,
+    ) async {
+      final operation = <String, dynamic>{
+        'request_id': 'request',
+        'snapshot_id': 'snapshot',
+        'phase': 'combined',
+        'status': 'authorization_unknown',
+      };
+      SharedPreferences.setMockInitialValues({
+        'ngo_route_operation_ngo': jsonEncode(operation),
+      });
+      final reads = <String>[];
+      var outcomeReads = 0;
+      final repo = NgoRoutingRepository(
+        identity: () => 'ngo',
+        rpc: (name, _) async {
+          reads.add(name);
+          if (name == 'get_my_authorized_route') return fixtures.detail();
+          fail('Unexpected RPC: $name');
+        },
+        authorizationReader: (body) async {
+          outcomeReads++;
+          expect(body, {'request_id': 'request', 'snapshot_id': 'snapshot'});
+          return terminal == 'CONFIRMED'
+              ? fixtures.receipt()
+              : {
+                  'kind': 'AUTHORIZATION_UNCONFIRMED',
+                  'request_id': 'request',
+                  'snapshot_id': 'snapshot',
+                  'ngo_id': 'ngo',
+                  'operation_terminal':
+                      terminal == 'REJECTED' && outcomeReads > 1
+                      ? null
+                      : terminal,
+                };
+        },
+        combinedPlanner: (_) async => fail('Support cannot run the planner'),
+      );
+      await tester.pumpWidget(
+        MaterialApp(
+          home: RoutingDiagnosticsPage(
+            repository: repo,
+            operation: operation,
+            planning: const {},
+          ),
+        ),
+      );
+      expect(find.text('Finish previous attempt'), findsNothing);
+      await tester.tap(find.text('Check authorization outcome (read only)'));
+      await tester.pumpAndSettle();
+      final expected = switch (terminal) {
+        'CONFIRMED' => 'Route authorization confirmed.',
+        'INFEASIBLE' => 'No feasible route was found. No route was authorized.',
+        'REJECTED' => 'The saved routing request was rejected.',
+        _ => 'No committed receipt is visible',
+      };
+      expect(find.textContaining(expected), findsOneWidget);
+      expect(
+        find.text('Finish previous attempt'),
+        {'INFEASIBLE', 'REJECTED'}.contains(terminal)
+            ? findsOneWidget
+            : findsNothing,
+      );
+      expect((await repo.routeOperation())['request_id'], 'request');
+      if (terminal == 'REJECTED') {
+        await tester.tap(find.text('Finish previous attempt'));
+        await tester.pumpAndSettle();
+        expect(
+          find.textContaining('Could not finish this attempt'),
+          findsOneWidget,
+        );
+        expect(find.text('Finish previous attempt'), findsNothing);
+        expect(outcomeReads, 2);
+        expect((await repo.routeOperation())['request_id'], 'request');
+      }
+      expect(reads, terminal == 'CONFIRMED' ? ['get_my_authorized_route'] : []);
+    });
+  }
+
+  testWidgets(
+    'finishing refreshes eligibility and only an explicit tap creates a new request',
+    (tester) async {
+      tester.view.physicalSize = const Size(1000, 1300);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      SharedPreferences.setMockInitialValues({
+        'ngo_route_operation_ngo': jsonEncode({
+          'request_id': 'old-request',
+          'snapshot_id': 'old-snapshot',
+          'phase': 'combined',
+          'status': 'infeasible',
+          'vehicle_ids': ['old-vehicle'],
+        }),
+      });
+      var fleetReads = 0;
+      var outcomeReads = 0;
+      final snapshotRequests = <String>[];
+      final plannedRequests = <String>[];
+      final repo = NgoRoutingRepository(
+        identity: () => 'ngo',
+        rpc: (name, params) async {
+          if (name == 'list_my_vehicles') {
+            fleetReads++;
+            return {
+              'vehicles': [
+                {
+                  'ngo_id': 'ngo',
+                  'vehicle_id': 'truck',
+                  'vehicle_label': 'Truck',
+                  'payload_capacity_kg': 200,
+                  'eligible_for_planning': true,
+                },
+                {
+                  'ngo_id': 'ngo',
+                  'vehicle_id': 'reserved',
+                  'vehicle_label': 'Reserved',
+                  'payload_capacity_kg': 50,
+                  'eligible_for_planning': false,
+                },
+              ],
+            };
+          }
+          if (name == 'get_my_routing_overview') {
+            return {
+              ...overview(),
+              'eligible_tasks': [
+                {'claim_id': 'cookies', 'title': 'Cookies', 'load_kg': 20},
+              ],
+            };
+          }
+          if (name == 'get_my_claim_cards_v2') return [];
+          if (name == 'begin_my_routing_snapshot') {
+            snapshotRequests.add(params['p_request'] as String);
+            expect(params['p_vehicle_ids'], ['truck']);
+            return {'ngo_id': 'ngo', 'snapshot_id': 'new-snapshot'};
+          }
+          fail('Unexpected RPC: $name');
+        },
+        authorizationReader: (body) async {
+          outcomeReads++;
+          expect(body, {
+            'request_id': 'old-request',
+            'snapshot_id': 'old-snapshot',
+          });
+          return {
+            'kind': 'AUTHORIZATION_UNCONFIRMED',
+            'ngo_id': 'ngo',
+            ...body,
+            'operation_terminal': 'INFEASIBLE',
+          };
+        },
+        authorizationCapabilities: (_) async => {
+          'contract': 'geolock.routing-auto-now.v1',
+          'ngo_id': 'ngo',
+          'automatic_departure': true,
+          'combined_generation_enabled': true,
+        },
+        combinedPlanner: (body) async {
+          plannedRequests.add(body['request_id'] as String);
+          return {
+            'kind': 'ADVISORY_CANDIDATE',
+            'outcome': 'INFEASIBLE',
+            'dispatch_authority_issued': false,
+            'ngo_id': 'ngo',
+            'snapshot_id': 'new-snapshot',
+          };
+        },
+      );
+      await tester.pumpWidget(
+        MaterialApp(home: NgoRoutesPage(repository: repo)),
+      );
+      await tester.pumpAndSettle();
+      final generate = find.byKey(const Key('generate-route'));
+      expect(tester.widget<FilledButton>(generate).onPressed, isNull);
+      await tester.tap(find.byTooltip('Route support'));
+      await tester.pumpAndSettle();
+      expect(find.text('Finish previous attempt'), findsNothing);
+      await tester.tap(find.text('Check authorization outcome (read only)'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Finish previous attempt'));
+      await tester.pumpAndSettle();
+      expect(
+        outcomeReads,
+        3,
+      ); // Reload, explicit lookup, and fresh finish lookup.
+      expect(fleetReads, 2);
+      expect(snapshotRequests, isEmpty);
+      expect(plannedRequests, isEmpty);
+      expect(await repo.routeOperation(), isEmpty);
+      expect(tester.widget<FilledButton>(generate).onPressed, isNull);
+      await tester.tap(find.text('Reserved · 50 kg'));
+      await tester.pumpAndSettle();
+      expect(tester.widget<FilledButton>(generate).onPressed, isNull);
+      await tester.tap(find.text('Truck · 200 kg'));
+      await tester.pumpAndSettle();
+      expect(tester.widget<FilledButton>(generate).onPressed, isNotNull);
+      await tester.tap(generate);
+      await tester.pumpAndSettle();
+      expect(snapshotRequests.single, isNot('old-request'));
+      expect(plannedRequests, snapshotRequests);
+      expect(
+        (await repo.routeOperation())['infeasible_response']['outcome'],
+        'INFEASIBLE',
+      );
+    },
+  );
+
+  for (final saved in [false, true]) {
+    testWidgets(
+      'capacity guidance preserves original Generate gate; saved=$saved',
+      (tester) async {
+        tester.view.physicalSize = const Size(1000, 1300);
+        tester.view.devicePixelRatio = 1;
+        addTearDown(tester.view.resetPhysicalSize);
+        addTearDown(tester.view.resetDevicePixelRatio);
+        if (saved) {
+          SharedPreferences.setMockInitialValues({
+            'ngo_route_operation_ngo': jsonEncode({
+              'request_id': 'existing',
+              'phase': 'combined',
+              'status': 'infeasible',
+            }),
+          });
+        }
+        final repo = NgoRoutingRepository(
+          identity: () => 'ngo',
+          rpc: (name, _) async => switch (name) {
+            'list_my_vehicles' => {
+              'vehicles': [
+                {
+                  'ngo_id': 'ngo',
+                  'vehicle_id': 'truck',
+                  'vehicle_label': 'Truck',
+                  'eligible_for_planning': true,
+                  'payload_capacity_kg': 200,
+                },
+              ],
+            },
+            'get_my_routing_overview' => {
+              ...overview(),
+              'eligible_tasks': [
+                {'claim_id': 'rice', 'title': 'Rice', 'load_kg': 1000},
+              ],
+            },
+            'get_my_claim_cards_v2' => [],
+            _ => fail('Unexpected RPC: $name'),
+          },
+          authorizationReader: (_) async => fail('No receipt read expected'),
+          combinedPlanner: (_) async => fail('No planner call expected'),
+          authorizationCapabilities: (_) async =>
+              fail('No capability call expected'),
+        );
+        await tester.pumpWidget(
+          MaterialApp(home: NgoRoutesPage(repository: repo)),
+        );
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Truck · 200 kg'));
+        await tester.pumpAndSettle();
+        expect(
+          find.textContaining('A pickup cannot be split across vehicles'),
+          findsOneWidget,
+        );
+        final button = tester.widget<FilledButton>(
+          find.byKey(const Key('generate-route')),
+        );
+        expect(button.onPressed, saved ? isNull : isNotNull);
+        if (saved) {
+          expect(
+            find.textContaining(
+              'No feasible route was found for your previous selection',
+            ),
+            findsOneWidget,
+          );
+          expect(
+            find.text('No feasible route was found. No route was authorized.'),
+            findsOneWidget,
+          );
+        }
+      },
+    );
+  }
 
   testWidgets(
     'main list contains only backend-admitted, server-unexpired claims',
@@ -103,6 +394,10 @@ void main() {
       );
       await tester.pumpAndSettle();
       expect((await repo.routeOperation())['request_id'], 'stable');
+      expect(
+        find.text('Route setup stopped before generation.'),
+        findsOneWidget,
+      );
       final dismiss = find.text('Dismiss interrupted setup');
       await tester.ensureVisible(dismiss);
       await tester.tap(dismiss);

@@ -371,7 +371,11 @@ class NgoRoutingRepository {
           response['outcome'] == 'INFEASIBLE' &&
           response['dispatch_authority_issued'] == false &&
           response['snapshot_id'] == operation['snapshot_id']) {
-        await _saveOperation(owner, {...operation, 'status': 'infeasible'});
+        await _saveOperation(owner, {
+          ...operation,
+          'status': 'infeasible',
+          'infeasible_response': response,
+        });
         return response;
       }
       final accepted = await _acceptAuthorization(owner, operation, response);
@@ -488,27 +492,61 @@ class NgoRoutingRepository {
     return {...response, 'routes': routes};
   }
 
-  Future<Map<String, dynamic>> reconcileRouteOperation() async {
-    final owner = identity;
-    final operation = await routeOperation();
-    if (owner == null ||
+  static bool _hasSavedAuthorization(Map<String, dynamic> operation) =>
+      operation['status'] == 'authorized' ||
+      operation['authorization'] != null ||
+      operation['authorization_request_id'] != null;
+
+  static bool hasTerminalRouteEvidence(
+    Map<String, dynamic> operation,
+    Map<String, dynamic> response,
+  ) =>
+      !_hasSavedAuthorization(operation) &&
+      operation['request_id'] is String &&
+      operation['snapshot_id'] is String &&
+      response['request_id'] == operation['request_id'] &&
+      response['snapshot_id'] == operation['snapshot_id'] &&
+      response['kind'] == 'AUTHORIZATION_UNCONFIRMED' &&
+      const {
+        'INFEASIBLE',
+        'REJECTED',
+      }.contains(response['operation_terminal']) &&
+      response['authorization'] == null &&
+      response['route_ids'] == null &&
+      response['dispatch_authority_issued'] != true;
+
+  Future<Map<String, dynamic>> _readRouteOutcome(
+    String owner,
+    Map<String, dynamic> operation,
+  ) async {
+    final reader = authorizationReader;
+    if (operation['request_id'] is! String ||
         operation['snapshot_id'] is! String ||
-        authorizationReader == null) {
+        reader == null) {
       throw StateError(
         'No confirmed snapshot ID. Resume only the original operation; never create a replacement.',
       );
     }
     final response = _owned(
-      await authorizationReader!({
+      await reader({
         'request_id': operation['request_id'],
         'snapshot_id': operation['snapshot_id'],
       }),
       owner,
     );
+    if (identity != owner) throw StateError('Account changed.');
+    return response;
+  }
+
+  Future<Map<String, dynamic>> reconcileRouteOperation() async {
+    final owner = identity;
+    final operation = await routeOperation();
+    if (owner == null) throw StateError('Sign in as an NGO.');
+    final response = await _readRouteOutcome(owner, operation);
     if (response['kind'] == 'AUTHORIZATION_UNCONFIRMED' &&
         response['snapshot_id'] == operation['snapshot_id'] &&
         response['request_id'] == operation['request_id']) {
-      if ({'REJECTED', 'INFEASIBLE'}.contains(response['operation_terminal'])) {
+      if (hasTerminalRouteEvidence(operation, response)) {
         await _saveOperation(owner, {
           ...operation,
           'status': response['operation_terminal'] == 'REJECTED'
@@ -560,11 +598,30 @@ class NgoRoutingRepository {
   Future<void> finishRouteOperation() =>
       _finishRouteOperation(allowCombinedFlight: false);
 
+  /// Archive only an owned terminal attempt that was reviewed in Route Support.
+  Future<void> finishTerminalRouteOperation({
+    required String owner,
+    required String requestId,
+    required String snapshotId,
+    required String terminal,
+  }) => _finishRouteOperation(
+    allowCombinedFlight: false,
+    terminalAttempt: (
+      owner: owner,
+      requestId: requestId,
+      snapshotId: snapshotId,
+      terminal: terminal,
+    ),
+  );
+
   Future<void> _finishRouteOperation({
     required bool allowCombinedFlight,
+    ({String owner, String requestId, String snapshotId, String terminal})?
+    terminalAttempt,
   }) async {
     final owner = identity;
     if (owner == null ||
+        (terminalAttempt != null && terminalAttempt.owner != owner) ||
         (_combinedFlight != null && !allowCombinedFlight) ||
         !_archivingOwners.add(owner)) {
       throw StateError('Operation is still pending.');
@@ -572,7 +629,24 @@ class NgoRoutingRepository {
     try {
       final operation = await routeOperation();
       if (operation.isEmpty) throw StateError('No operation to archive.');
-      if (operation['snapshot_id'] is String) {
+      Map<String, dynamic>? terminalEvidence;
+      if (terminalAttempt != null) {
+        if (operation['request_id'] != terminalAttempt.requestId ||
+            operation['snapshot_id'] != terminalAttempt.snapshotId ||
+            _hasSavedAuthorization(operation)) {
+          throw StateError(
+            'The saved attempt changed or already has authorization.',
+          );
+        }
+        final response = await _readRouteOutcome(owner, operation);
+        if (!hasTerminalRouteEvidence(operation, response) ||
+            response['operation_terminal'] != terminalAttempt.terminal) {
+          throw StateError(
+            'The outcome changed or could not be confirmed as terminal.',
+          );
+        }
+        terminalEvidence = response;
+      } else if (operation['snapshot_id'] is String) {
         final result = await reconcileRouteOperation();
         if (result['kind'] == 'DATABASE_AUTHORIZATION_RECEIPT') {
           final oldReceipt = operation['authorization'];
@@ -592,10 +666,7 @@ class NgoRoutingRepository {
           }
           // _acceptAuthorization already verified every owner-scoped route's
           // candidate/snapshot binding. Route completion is a separate lifecycle.
-        } else if (!{
-          'REJECTED',
-          'INFEASIBLE',
-        }.contains(result['operation_terminal'])) {
+        } else if (!hasTerminalRouteEvidence(operation, result)) {
           throw StateError(
             'Authorization outcome remains uncertain. Preserve this operation.',
           );
@@ -606,15 +677,19 @@ class NgoRoutingRepository {
         );
       }
       final confirmed = await routeOperation();
+      final activeEncoded = jsonEncode(confirmed);
       if (identity != owner ||
-          confirmed['request_id'] != operation['request_id']) {
+          confirmed['request_id'] != operation['request_id'] ||
+          (terminalAttempt != null && activeEncoded != jsonEncode(operation))) {
         throw StateError('Operation changed. History was not archived.');
       }
       final prefs = await SharedPreferences.getInstance();
       final key =
           'ngo_route_operation_history_${owner}_${operation['request_id']}';
       final previous = prefs.getString(key);
-      final encoded = jsonEncode(confirmed);
+      final encoded = terminalEvidence == null
+          ? activeEncoded
+          : jsonEncode({...confirmed, 'terminal_response': terminalEvidence});
       // Do not overwrite an earlier, different historical record.
       if (previous != null && previous != encoded) {
         throw StateError(
@@ -625,7 +700,7 @@ class NgoRoutingRepository {
         throw StateError('Cannot preserve authorization history.');
       }
       if (identity != owner ||
-          jsonEncode(await routeOperation()) != encoded ||
+          jsonEncode(await routeOperation()) != activeEncoded ||
           !await prefs.remove('ngo_route_operation_$owner')) {
         throw StateError(
           'Cannot archive the finished operation. History retained.',
