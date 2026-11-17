@@ -12,7 +12,7 @@ import sys
 
 from .contract import VERSION
 
-EXAMPLES = Path(__file__).with_name("examples")
+EXAMPLES = Path(__file__).with_name("tests") / "fixtures"
 NODES = ["TOY-DEPOT", "TOY-DONOR", "TOY-HUB"]
 # Directed edge -> (km, minutes). Unique paths between line-graph vertices.
 EDGES = {(0, 1): (2.0, 4.0), (1, 0): (2.5, 5.0),

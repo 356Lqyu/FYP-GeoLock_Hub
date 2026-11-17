@@ -13,7 +13,7 @@ from .transport import JsonHttp, uuid
 def validator_build():
     root=Path(__file__).resolve().parents[1]
     h=hashlib.sha256()
-    for name in ('contract.py','phase_b/validation.py','integration/worker.py'):
+    for name in ('contract.py','validator/validation.py','integration/worker.py'):
         h.update((root/name).read_bytes())
     return 'geolock-independent-validator:'+h.hexdigest()
 

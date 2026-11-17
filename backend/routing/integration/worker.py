@@ -10,10 +10,10 @@ import copy
 import re
 
 from ..contract import VERSION, DEV_PROJECT
-from ..phase_c2 import prepare_input, evaluate
-from ..phase_c2.matrices import digest, require
-from ..phase_b.models import ExecutionConfig, Plan, Route, Stop
-from ..phase_b.validation import validate_plan
+from ..planner.orchestration import prepare_input, evaluate
+from ..planner.matrices import digest, require
+from ..optimizers.models import ExecutionConfig, Plan, Route, Stop
+from ..validator.validation import validate_plan
 
 
 @dataclass(frozen=True)

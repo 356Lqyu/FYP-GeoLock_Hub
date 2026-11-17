@@ -1,6 +1,6 @@
 """E4 proposed method: the app's OR-Tools route optimiser, used unchanged.
 
-Calls backend.routing.phase_b.optimizers.proposed, the same function the routing worker uses
+Calls backend.routing.optimizers.methods.proposed, the same function the routing worker uses
 (Google OR-Tools CP-SAT in backend/routing/optimizers/cp_sat.py). It serves as many pickups as
 possible, then picks the shortest total road distance.
 Run all methods from the repository root with python experiments/e4/run_e4.py.

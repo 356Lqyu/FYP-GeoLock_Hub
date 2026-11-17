@@ -49,7 +49,11 @@ Each claim is expected to have a bounded lease. Recovery logic is needed for sta
 ### 5. Hub aggregation and routing
 The system evaluates both hub-based coordination and downstream route planning. The purpose is not to merely visualize a map, but to measure whether aggregation and routing reduce distance or improve task execution under the same frozen scenario constraints.
 
-## Setup
+## Run the GeoLock Hub app with Windows routing
+
+Follow the [Windows Routing + Android Flutter Quick Start](docs/LOCAL_ROUTING_WINDOWS.md#quick-start-windows-routing-android-flutter-app) for the Validator, Planner, USB connection and Flutter launcher. The seven-folder routing release remains undeployed pending DEV validator compatibility and cutover approval.
+
+## Benchmark setup
 
 ```bash
 python -m pip install -r "benchmark dataset/source code/requirements.txt"

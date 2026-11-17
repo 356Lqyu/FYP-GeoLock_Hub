@@ -1,2 +1,2 @@
--r ../phase_b/requirements-lock.txt
+-r requirements-lock.txt
 psycopg[binary]==3.3.6

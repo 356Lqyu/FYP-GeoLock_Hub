@@ -1,7 +1,7 @@
 {
   "planned_units": 100,
   "realised_units": 100,
-  "run_id": "7f5ddab6c0f94b20adffc878d3a97217",
+  "run_id": "725519de6de948e6a60fb673f563dbe8",
   "admitted_task_total": 500,
   "per_method": {
     "optimiser": {
@@ -25,8 +25,8 @@
       "km_per_served_task": 7.609268131868132,
       "vehicles_used": 100,
       "timeouts": 0,
-      "median_planning_ms": 45.15,
-      "max_planning_ms": 958.3,
+      "median_planning_ms": 38.15,
+      "max_planning_ms": 980.5,
       "unserved_reasons": {
         "PARTIAL": 45
       },
@@ -53,8 +53,8 @@
       "km_per_served_task": 8.498653421633554,
       "vehicles_used": 116,
       "timeouts": 0,
-      "median_planning_ms": 1.8,
-      "max_planning_ms": 3.4,
+      "median_planning_ms": 1.9,
+      "max_planning_ms": 3.7,
       "unserved_reasons": {
         "ROUTE_UNAVAILABLE": 2,
         "FLEET_CAPACITY_OR_ROUTE_BUDGET_EXHAUSTED": 45
@@ -83,7 +83,7 @@
       "vehicles_used": 116,
       "timeouts": 0,
       "median_planning_ms": 1.6,
-      "max_planning_ms": 3.6,
+      "max_planning_ms": 2.6,
       "unserved_reasons": {
         "ROUTE_UNAVAILABLE": 2,
         "FLEET_CAPACITY_OR_ROUTE_BUDGET_EXHAUSTED": 45

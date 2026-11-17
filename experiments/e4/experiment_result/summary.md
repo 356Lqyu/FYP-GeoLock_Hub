@@ -1,6 +1,6 @@
 # E4 routing experiment
 
-**Run ID:** `7f5ddab6c0f94b20adffc878d3a97217`
+**Run ID:** `725519de6de948e6a60fb673f563dbe8`
 
 The frozen benchmark contains 100 snapshots and 500 candidate tasks. The E4-only adapter ignores the synthetic listing-expiry field during post-claim admission; all three methods receive the same 500 admitted task IDs. Claim leases, ownership, task status, pickup windows, capacity, route duration, depot return and directed-road connectivity remain enforced.
 
@@ -43,7 +43,7 @@ Secondary distance and driving-time raw p-values are shown above. Holm adjustmen
 
 ## Reproducibility and limitations
 
-- Shared run ID: `7f5ddab6c0f94b20adffc878d3a97217`; admitted tasks: 500 across 100 snapshots.
+- Shared run ID: `725519de6de948e6a60fb673f563dbe8`; admitted tasks: 500 across 100 snapshots.
 - The figure and summaries are generated from scenario CSVs, route-detail CSVs, and manifests; no paper values are hard-coded.
 - Matched-snapshot inference conditions on identical served task sets; aggregate distance totals are descriptive and should not be interpreted as a paired causal comparison.
 - Each snapshot has five tasks; 50 snapshots have one vehicle and 50 have two; vehicle routes are single trips and travel times do not model live traffic.

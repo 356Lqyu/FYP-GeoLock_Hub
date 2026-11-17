@@ -44,7 +44,7 @@ py -3.12 -m venv .venv-stage8
 & .\.venv-stage8\Scripts\python.exe -m pip check
 ```
 
-On other laptops change only `Set-Location` to that person's checkout. Dependencies are pinned by `worker_service/requirements.txt` and `phase_b/requirements-lock.txt`, including OR-Tools 9.15.6755 and psycopg 3.3.6. Do not regenerate pins or upgrade the solver to fix an installation error. Installing packages uses the configured package index but does not access DEV. A venv activation command is unnecessary because every command uses its explicit Python path.
+On other laptops change only `Set-Location` to that person's checkout. Dependencies are pinned by `worker_service/requirements.txt` and `worker_service/requirements-lock.txt`, including OR-Tools 9.15.6755 and psycopg 3.3.6. Do not regenerate pins or upgrade the solver to fix an installation error. Installing packages uses the configured package index but does not access DEV. A venv activation command is unnecessary because every command uses its explicit Python path.
 
 If local PowerShell policy blocks trusted project scripts, review them and, if organizational policy permits, use a session-only policy:
 
@@ -65,10 +65,9 @@ For unchanged native behavior, an administrator must arrange the public, indepen
 ```powershell
 .\backend\routing\worker_service\windows\Test-LocalRoutingSetup.ps1
 & .\.venv-stage8\Scripts\python.exe -B -m unittest discover -s backend/routing/worker_service/tests -t . -q
-& .\.venv-stage8\Scripts\python.exe -B -m unittest backend.routing.hosted.tests.test_journal_initialization -q
 ```
 
-The setup check clears activation/database variables **in its child processes**, imports no encrypted profiles and starts isolated disabled APIs on temporary ports. It GETs only `/health` and stops its own children. Existing services on 8787/8788 are left alone. Expected result: `PASS`, native client `NOT CONNECTED`, both health results `DISABLED`. The last test module is retained under `hosted/tests` because it tests the shared SQLite fix; importing that test does not require Docker or enable hosted runtime.
+The setup check clears activation/database variables **in its child processes**, imports no encrypted profiles and starts isolated disabled APIs on temporary ports. It GETs only `/health` and stops its own children. Existing services on 8787/8788 are left alone. Expected result: `PASS`, native client `NOT CONNECTED`, both health results `DISABLED`. Worker test discovery includes the Windows SQLite journal regression under `worker_service/tests`.
 
 ## 5. Credentials and saved configuration (approved operator only)
 
@@ -95,9 +94,43 @@ Answer **Y** for session pooler, use the exact host from the pinned profile, ent
 
 No activation or DB call occurs during saving. The saved passwords exist for historical configuration compatibility; the native startup still asks for hidden native-console passwords once per process before serving requests. Do not put passwords in command arguments, transcripts, environment dumps or Flutter defines.
 
-## 6. Start an approved live demonstration
+<a id="quick-start-windows-routing-android-flutter-app"></a>
 
-**Instructions only. Requires separate approval to access DEV/run routing.** Check for an already running pair before starting duplicates:
+## Quick Start — Windows Routing + Android Flutter App
+
+**Release status: the seven-folder routing release remains undeployed pending DEV validator compatibility and cutover approval.** Use this sequence only for an explicitly approved checkout, DEV session, and graph. The earlier references `DEV-GROUP1-EXACT-20261030` and `DEV-VALIDATOR-RESTORE-20261029` are historical examples. Obtain current approval for each role before activation. Supplying an approval string to the launcher does not itself grant approval.
+
+### Initial setup
+
+1. Follow [Windows prerequisites](#3-install-prerequisites-once-operator-actions-not-executed-here) for Python 3.12 x64, the pinned worker dependencies, native libpq 17.11, and the verified CA at the pinned location. A local PostgreSQL server is unnecessary.
+2. Have the DEV administrator provision the scoped graph, planner, and validator logins, the DEV publishable client key, and an approved frozen graph. Follow [saved configuration](#5-credentials-and-saved-configuration-approved-operator-only) to register the profiles privately. Use an authorised DEV NGO account in the app. The validator token stays between the two services.
+3. Install Flutter, the Android build toolchain and SDK platform-tools. The current [Flutter launcher](../scripts/Run-RoutingDev.ps1) expects its Flutter tool files under `C:\flutter\src\flutter\bin\cache` and ADB under `%LOCALAPPDATA%\Android\Sdk\platform-tools`. Confirm these locations before proceeding. From the repository root, run dependency setup with the same Flutter SDK on PATH. The launcher itself uses `--no-pub`.
+
+   ```powershell
+   Push-Location .\frontend\geolock_hub_app
+   try { flutter pub get } finally { Pop-Location }
+   ```
+
+### Read-only configuration checks
+
+From the repository root, check the saved worker profiles and Flutter launcher paths without activation. Run the worker checks as the operator who saved the profiles.
+
+```powershell
+.\backend\routing\worker_service\windows\Start-Worker.ps1 -Mode validator -CheckConfig
+.\backend\routing\worker_service\windows\Start-Worker.ps1 -Mode planner -CheckConfig
+.\scripts\Run-RoutingDev.ps1 -CheckConfig
+```
+
+These checks do not start workers, alter ADB mappings, launch Flutter, or connect to DEV. `-CheckConnection` is a separate read-only **live DEV** check that requires approval. Never combine it with `-Activate`. It writes a local diagnostic receipt under `results/worker-runtime-connections/`.
+
+```powershell
+.\backend\routing\worker_service\windows\Start-Worker.ps1 -Mode validator -CheckConnection
+.\backend\routing\worker_service\windows\Start-Worker.ps1 -Mode planner -CheckConnection
+```
+
+### Normal startup after setup and approval
+
+Open three PowerShell terminals at the repository root. Before launching, use the following to check whether ports 8787 or 8788 are already occupied. Identify the owning session before proceeding if either is in use.
 
 ```powershell
 Get-NetTCPConnection -State Listen -ErrorAction SilentlyContinue |
@@ -105,66 +138,61 @@ Get-NetTCPConnection -State Listen -ErrorAction SilentlyContinue |
     Select-Object LocalAddress,LocalPort,OwningProcess
 ```
 
-If occupied, identify the owning session; do not kill/restart another person's workers. In **terminal 1**, repository root:
+1. **Terminal 1 — Start Validator.** Enter its current approval reference and use only the hidden native password prompt. Leave the terminal open.
 
-```powershell
-$approval = Read-Host 'Current approved DEV demonstration/session reference'
-.\backend\routing\worker_service\windows\Start-Worker.ps1 -Mode validator -Activate -ApprovalRef $approval
-```
+   ```powershell
+   $validatorApproval = Read-Host 'Current approved DEV validator reference'
+   .\backend\routing\worker_service\windows\Start-Worker.ps1 -Mode validator -Activate -ApprovalRef $validatorApproval
+   ```
 
-In **terminal 2**, same root:
+   From terminal 3, check the existing listener before starting the planner. Expect `ACTIVE` and DEV project `rcgyuwiidqvrgbxswhqj`.
 
-```powershell
-$approval = Read-Host 'Current approved DEV demonstration/session reference'
-.\backend\routing\worker_service\windows\Start-Worker.ps1 -Mode planner -GraphId 'eab1f7ee-a8e0-4bed-a0e1-2c4bff024936' -Activate -ApprovalRef $approval -EnableCombinedWorkflow
-```
+   ```powershell
+   Invoke-RestMethod 'http://127.0.0.1:8788/health' -TimeoutSec 5
+   ```
 
-Enter each role's password only in its hidden prompt. Combined workflow is needed for the normal Flutter Generate & Authorize action. Add `-EnableExactWorkflow` **only** if the separately scoped exact-pilot path is approved and needed; it is not required for normal generation. Historical approval strings are not automatically current approval. Both commands remain foreground processes; closing terminals or sleep/logoff interrupts access.
+2. **Terminal 2 — Start Planner.** The UUID `eab1f7ee-a8e0-4bed-a0e1-2c4bff024936` is a previously working **DEV example**. Enter it only if the administrator confirms it is still available and approved for this session. Otherwise enter the approved frozen graph ID. Leave the terminal open.
 
-In **terminal 3**, check HTTP only:
+   ```powershell
+   $graphId = Read-Host 'Approved frozen DEV graph UUID'
+   $plannerApproval = Read-Host 'Current approved DEV planner reference'
+   .\backend\routing\worker_service\windows\Start-Worker.ps1 -Mode planner -GraphId $graphId -Activate -ApprovalRef $plannerApproval -EnableCombinedWorkflow
+   ```
 
-```powershell
-Invoke-RestMethod 'http://127.0.0.1:8788/health' -TimeoutSec 5
-Invoke-RestMethod 'http://127.0.0.1:8787/health' -TimeoutSec 5
-```
+   `-EnableCombinedWorkflow` enables the normal Flutter Generate & Authorize flow. The separate exact pilot is outside this Quick Start. From terminal 3, check the planner listener. `ACTIVE` confirms the HTTP listener is enabled. It does not prove graph readiness, current database permissions, or a successful route.
 
-Expect `ACTIVE` and project `rcgyuwiidqvrgbxswhqj`. Do not use POST `/v1/plan`, `/v1/validate` or authorization as a health check. If separately approved, the following make **real read-only DEV connections** and exit without a listener; **not run in this review**:
+   ```powershell
+   Invoke-RestMethod 'http://127.0.0.1:8787/health' -TimeoutSec 5
+   ```
 
-```powershell
-.\backend\routing\worker_service\windows\Start-Worker.ps1 -Mode validator -CheckConnection
-.\backend\routing\worker_service\windows\Start-Worker.ps1 -Mode planner -CheckConnection
-```
+3. **Terminal 3 — Connect Android.** Use a USB data cable, enable USB debugging, and authorise this laptop on the phone. Continue only if ADB shows the selected device as `device`.
 
-Never combine `-CheckConnection` with `-Activate`. First full-graph load can be slow and memory-heavy on the original representation; have several GiB of free RAM, do not apply Render's 512 MB assumptions, and do not create demonstration snapshots while cold-loading. The optional existing `Prepare-WorkerCache.ps1` copies a sealed historical graph **only after evidence verification**, but still does not prove today's DB manifest, preload the in-memory graph or authorize transferring graph data to another person. Obtain explicit graph-export sharing/preparation approval first; do not copy live journals or caches as a shortcut.
+   ```powershell
+   $adb = Join-Path $env:LOCALAPPDATA 'Android\Sdk\platform-tools\adb.exe'
+   & $adb devices -l
+   $device = Read-Host 'Authorised physical Android device serial'
+   $state = & $adb -s $device get-state
+   if ($LASTEXITCODE -ne 0 -or $state -ne 'device') { throw 'Android device is not ready' }
+   foreach ($port in 8787,8788) {
+       & $adb -s $device reverse "tcp:$port" "tcp:$port"
+       if ($LASTEXITCODE -ne 0) { throw "ADB reverse failed for port $port" }
+   }
+   & $adb -s $device reverse --list
+   ```
 
-## 7. Android connection: recommended USB development path
+   The app uses port 8787, the planner. The planner talks to the validator on laptop loopback. The Flutter launcher also installs both USB mappings, including 8788, to match its current workflow. No LAN firewall rule is required. Keep the validator token out of Flutter.
 
-Use a **debug** APK and a USB data cable, enable Android Developer options/USB debugging, and authorize that laptop. Commands below change only the local device tunnel/build when an operator runs them; none were executed here. Install Android platform-tools through the approved SDK setup.
+4. **Terminal 3 — Run the Flutter debug app.**
 
-```powershell
-$adb = Join-Path $env:LOCALAPPDATA 'Android\Sdk\platform-tools\adb.exe'
-& $adb devices -l
-$device = Read-Host 'Online authorized device serial from the list'
-& $adb -s $device get-state
-# Continue only if the state is device (not offline/unauthorized):
-& $adb -s $device reverse tcp:8787 tcp:8787
-& $adb -s $device reverse --list
-```
+   ```powershell
+   .\scripts\Run-RoutingDev.ps1 -Device $device
+   ```
 
-This maps the phone's `127.0.0.1:8787` to that USB laptop's planner. No LAN firewall opening or TLS exception is needed: cleartext is permitted only for the existing debug loopback/emulator allowlist. Port 8788 is never forwarded to the phone. Recheck the mapping after reconnect/reboot. A phone attached to the supervisor's laptop reaches **that laptop**, not the owner's laptop.
+   The launcher reapplies both USB mappings, builds and launches the debug app, and selects the DEV Supabase environment and `http://127.0.0.1:8787` as the planner endpoint. Sign in with the authorised DEV account. Use the app's connection check before generating a route. Generate & Authorize can write to DEV, so use it only within the approved scope. Keep the laptop awake and preserve app storage and pending request IDs.
 
-From the Flutter app directory:
+For shutdown, see [Stop and recover safely](#9-stop-and-recover-safely). For device, graph, or connection errors, see [Troubleshooting](#10-troubleshooting-and-remaining-requirements). A first graph load can be slow and memory-intensive. The optional cache preparation script requires separate graph-export approval and does not prove the live database manifest.
 
-```powershell
-Set-Location .\frontend\geolock_hub_app
-flutter pub get
-flutter build apk --debug --dart-define=GEOLOCK_SUPABASE_ENV=dev --dart-define=GEOLOCK_ROUTING_API_URL=http://127.0.0.1:8787
-& $adb -s $device install -r .\build\app\outputs\flutter-apk\app-debug.apk
-```
-
-The tracked DEV Flutter configuration already selects its matching publishable key. Do not pass worker passwords/tokens to the build. URL is compile-time configuration: changing PowerShell variables later does not update an installed APK. Preserve app storage/pending request IDs when reinstalling; do not uninstall to clear an uncertain operation. In-app read-only connection check must reach ACTIVE on the configured endpoint before generating; generation still needs separate approval.
-
-## 8. Android emulator on backend laptop
+## 7. Android emulator on backend laptop
 
 Use the standard Android emulator host alias, not the emulator's own localhost:
 
@@ -175,7 +203,7 @@ flutter run --debug --dart-define=GEOLOCK_SUPABASE_ENV=dev --dart-define=GEOLOCK
 
 No reverse tunnel normally needed. A physical phone cannot use `10.0.2.2` to locate your laptop. For an emulator on **another** laptop, use the LAN HTTPS arrangement below (or run its own approved backend); that emulator's host alias points to the wrong machine.
 
-## 9. Another device on the LAN: optional HTTPS setup
+## 8. Another device on the LAN: optional HTTPS setup
 
 USB is the default. For wireless LAN access, `127.0.0.1` on a phone is not the laptop, and HTTP `http://192.168.x.x:8787` is rejected by both existing Flutter URL validation and Android debug policy. Do not broaden that allowlist, disable certificate validation or expose the validator to make it work.
 
@@ -216,13 +244,14 @@ flutter build apk --debug --dart-define=GEOLOCK_SUPABASE_ENV=dev --dart-define=G
 
 Do not open 8787/8788 to the LAN, disable the firewall or expose ports to the internet. If the phone changes IP, update the narrow rule deliberately. An HTTPS URL is also required for release APKs; loopback HTTP is **debug-only**. A publicly trusted certificate can be used entirely on a private LAN; obtaining/provisioning it is an operator prerequisite, not permission here to register a domain or incur cost.
 
-## 10. Stop and recover safely
+## 9. Stop and recover safely
 
 Wait for an active request to finish, then Ctrl+C in the **planner** terminal and **validator** terminal. Stop the optional proxy with Ctrl+C. Do not use `taskkill /IM python.exe` or stop unrelated Python processes. The native worker clears its in-memory password buffers on orderly exit; hard termination may skip cleanup.
 
 ```powershell
 # Remove only this phone mapping when no longer needed:
 & $adb -s $device reverse --remove tcp:8787
+& $adb -s $device reverse --remove tcp:8788
 # Optional LAN rule cleanup, elevated terminal, only if created by this guide:
 Remove-NetFirewallRule -DisplayName 'GeoLock local HTTPS demo'
 ```
@@ -231,7 +260,7 @@ Keep `$env:LOCALAPPDATA\GeoLockHubRoutingDev\state\journal` intact, including SQ
 
 No live backup is performed by these instructions. For a separately approved backup, quiesce and stop workers first, use an operator-approved SQLite-consistent backup procedure (not an arbitrary copy of only the `.sqlite3` file while live), protect the payloads/ACLs and verify restoration in isolation. DPAPI profiles require independent secure reprovisioning on another Windows account. Do not distribute operational journals with the project.
 
-## 11. Troubleshooting and remaining requirements
+## 10. Troubleshooting and remaining requirements
 
 - `NATIVE_POSTGRESQL17_LIBRARY_REQUIRED` / version mismatch: exact client installation missing; do not disable the pin.
 - `APPROVED_CA_MISSING` / profile mismatch: check the exact historical path/host; do not alter the hash casually.
@@ -242,3 +271,26 @@ No live backup is performed by these instructions. For a separately approved bac
 - Cold graph or insufficient RAM: wait/warm only under approved procedure, reduce demo scope through legitimate UI/data selection; never change road weights, solver semantics or freshness checks.
 
 Cloud hosting is postponed/not selected. Render code, Docker definitions and experiment evidence remain reference material and are not imported or required by the Windows entrypoints. The only shared production change from that investigation was the previously tested bounded Windows SQLite initialization retry; it is retained because reverting it would restore a reproducible local crash-recovery defect. No PostgreSQL journal redesign exists.
+
+## Validator identity for the local routing consolidation
+
+The seven-folder source layout is pending separate DEV compatibility and cutover approval.
+The validator hashes the raw bytes of the three inputs below in order. The prefix for
+both identities is `geolock-independent-validator:`. These values describe the
+migration checkout, whose Windows line endings are part of the fingerprint.
+
+| Before | After | SHA-256 before | SHA-256 after |
+| --- | --- | --- | --- |
+| `contract.py` | `contract.py` | `47ed1d97ba249ac50f3462babeb932f4d91c863899ea4297ddcb1a3ce4efa3fb` | `47ed1d97ba249ac50f3462babeb932f4d91c863899ea4297ddcb1a3ce4efa3fb` |
+| `phase_b/validation.py` | `validator/validation.py` | `3788a5aee2d5758b26bc04c7299215ff5bae6810f95b0264f8ddfa3c4f59a37d` | `ee1a0633f36be4be198790fdf9eeb257c5c61e890ac66c92fd78d623e862296a` |
+| `integration/worker.py` | `integration/worker.py` | `2daec4009ae5acbddf8b919486f3e2c9e2e1de40141cb07d693a9ceaa7cc1a71` | `c80443f80a34b407d63ec37c0b66cc74d337884db314e92fda6774e10eabe20b` |
+
+The build digest changed from `56b2745bcd81b3d2a2ca90f1f57460262870bbb86d12b553d4eb88dbadc663d6`
+to `4184dbbe2dc85f77bb142406ffe8527e45c97ce8642e0571ebc89c66c0d7919f`
+because the validator source moved and the validator and integration imports changed.
+This record describes the local checkout.
+
+The reviewed SQL compares the entire attestation report on replay, including build
+identity. Before switching or rolling back either release, verify the deployed
+contract and reconcile unfinished requests that could replay an attestation. Preserve
+the planner journal, client request IDs and existing database attestations.

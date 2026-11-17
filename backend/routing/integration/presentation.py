@@ -5,7 +5,7 @@ candidate receipt. This function does not connect to Supabase or attest a plan.
 """
 from dataclasses import asdict
 from decimal import Decimal
-from ..phase_b import OPERATIONAL_METHODS
+from ..optimizers.methods import OPERATIONAL_METHODS
 from ..planner.matrices import require
 
 

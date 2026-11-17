@@ -5,7 +5,7 @@ current E4 runner uses its own 500-task admission policy. The compatibility adap
 """
 from types import SimpleNamespace
 
-from backend.routing.benchmark_v32.adapter import Adapter as ExistingAdapter
+from experiments.routing_research.benchmark_v32.adapter import Adapter as ExistingAdapter
 from backend.routing.contract import freeze_scenario
 from experiments.repro_benchmark import DATA, ROOT, module, rows
 

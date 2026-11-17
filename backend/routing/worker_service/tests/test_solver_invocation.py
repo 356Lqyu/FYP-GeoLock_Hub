@@ -7,7 +7,7 @@ import unittest
 import ortools
 from ortools.sat.python import cp_model
 
-from backend.routing.phase_b import OPERATIONAL_METHODS
+from backend.routing.optimizers.methods import OPERATIONAL_METHODS
 from backend.routing.worker_service.journal import Journal
 from backend.routing.worker_service.orchestrator import RoutingWorker
 from backend.routing.worker_service.validator import Validator

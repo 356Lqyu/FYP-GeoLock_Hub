@@ -10,9 +10,9 @@ import json
 from typing import Protocol
 
 from ..contracts import freeze_scenario
-from ..phase_b import OPERATIONAL_METHODS
+from ..optimizers.methods import OPERATIONAL_METHODS
 from ..optimizers.models import ExecutionConfig,Plan
-from ..phase_b.validation import validate_plan
+from ..validator.validation import validate_plan
 from .matrices import digest, numeric, require
 
 

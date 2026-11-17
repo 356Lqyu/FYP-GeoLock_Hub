@@ -1,7 +1,7 @@
 """E4 shared code, used by all three methods.
 
 Builds one sealed planning snapshot per ROUTE_PLANNING scenario with the team's adapter
-(backend.routing.benchmark_v32), applies the app's admission rules, runs a method and checks
+(experiments.routing_research.benchmark_v32), applies the app's admission rules, runs a method and checks
 every plan with the app's independent validator. Nothing under backend/ is changed.
 """
 import csv
@@ -22,12 +22,13 @@ E4 = Path(__file__).resolve().parents[1]
 ROOT = E4.parents[1]
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(E4))
-from backend.routing.benchmark_v32.adapter import Adapter as TeamAdapter  # noqa: E402
-from backend.routing.benchmark_v32.runner import baseline_plan  # noqa: E402
+from experiments.routing_research.benchmark_v32.adapter import Adapter as TeamAdapter  # noqa: E402
+from experiments.routing_research.benchmark_v32.runner import baseline_plan  # noqa: E402
 from backend.routing.contract import freeze_scenario  # noqa: E402
-from backend.routing.phase_b import proposed, validate_plan  # noqa: E402
-from backend.routing.phase_b.models import ExecutionConfig  # noqa: E402
-from backend.routing.phase_b.benchmark import semantic  # noqa: E402
+from backend.routing.optimizers.methods import proposed
+from backend.routing.validator.validation import validate_plan  # noqa: E402
+from backend.routing.optimizers.models import ExecutionConfig  # noqa: E402
+from experiments.routing_research.algorithms.benchmark import semantic  # noqa: E402
 from run_e4 import run_directory  # noqa: E402
 
 SETTINGS = dict(approved=True, geofence_km=20, lease_minutes=360, route_minutes=240, service_minutes=10,
@@ -171,7 +172,7 @@ def preflight():
     from ortools.sat.python import cp_model
     from scipy.stats import wilcoxon
     from backend.routing.optimizers.cp_sat import _optimise
-    from backend.routing.phase_b.validation import validate_plan as independent_validator
+    from backend.routing.validator.validation import validate_plan as independent_validator
     from backend.routing.planner.orchestration import OPERATIONAL_METHODS
 
     versions = {p.__name__: p.__version__ for p in (ortools, numpy, scipy, matplotlib)}
@@ -288,6 +289,10 @@ def source_fingerprints():
     """Fingerprint the routing package, including transitive Python modules."""
     files = [p for p in (ROOT / 'backend/routing').rglob('*.py') if 'tests' not in p.parts]
     files.extend(p for p in E4.rglob('*.py') if 'results' not in p.relative_to(E4).parts)
+    benchmark = ROOT / 'experiments/routing_research/benchmark_v32'
+    files.extend(benchmark / name for name in ('__init__.py', 'adapter.py', 'runner.py', 'test_adapter.py'))
+    algorithms = ROOT / 'experiments/routing_research/algorithms'
+    files.extend(algorithms / name for name in ('__init__.py', 'benchmark.py', 'routing_model.py', 'scenarios.py'))
     files.append(E4 / 'requirements.txt')
     backend_package = ROOT / 'backend' / '__init__.py'
     if backend_package.is_file():
@@ -299,7 +304,7 @@ TITLES = dict(nearest_next='Nearest-Next (baseline 1)', fcfs='First come first s
               or_tools_route_optimiser='OR-Tools route optimiser (proposed, current app)')
 HOW = dict(nearest_next="its own plan_routes(): each vehicle in turn drives to the nearest pickup it can still fit and finish in time",
            fcfs="its own plan_routes(): each vehicle in turn takes pickups in the order they were claimed",
-           or_tools_route_optimiser='backend.routing.phase_b.optimizers.proposed -> backend/routing/optimizers/cp_sat.py '
+           or_tools_route_optimiser='backend.routing.optimizers.methods.proposed -> backend/routing/optimizers/cp_sat.py '
                                     '(Google OR-Tools CP-SAT; the same callable the routing worker uses)')
 
 
@@ -326,7 +331,7 @@ def run_and_save(method):
     info = [('Run ID', run_id), ('Run at', env['run_at']), ('Scenarios', f'{len(rows)} ROUTE_PLANNING snapshots (sealed, shared by all E4 methods)'),
             ('Method', HOW[method]), ('Execution policy', f'{CONFIG}'),
             ('Settings', '240 minute route, 10 min per stop, 360 minute lease, fixed cost 5 + 1 per km'),
-            ('Validator', 'backend.routing.phase_b.validate_plan (independent recomputation)')]
+            ('Validator', 'backend.routing.validator.validate_plan (independent recomputation)')]
     if method == 'or_tools_route_optimiser':
         info.append(('OR-Tools', env['packages'].get('ortools')))
     info.append(('Python', env['python']))

@@ -1,21 +1,95 @@
-# Routing scenario input contract
+# GeoLock Hub routing
 
-**Selected default (7 November 2026): Windows laptop routing.** Start with [the Windows setup/start/stop guide](../../docs/LOCAL_ROUTING_WINDOWS.md) and `worker_service/windows/Start-Worker.ps1`. Existing Python/OR-Tools, independent validator, SQLite recovery and Supabase RPCs remain the runtime architecture. Render/cloud hosting is postponed; hosted/Docker sources are retained reference material, not prerequisites. The Phase A contract below remains historical library documentation.
+## Windows planner and validator
+
+The selected deployment runs the native planner and validator as separate Python services on Windows. PowerShell launches them through [Start-Worker.ps1](worker_service/windows/Start-Worker.ps1). The services use native PostgreSQL connections and scoped Supabase RPCs, with a local SQLite journal for recovery. Render and Docker are unnecessary for this workflow. For setup, startup, and shutdown, follow the [Windows Routing + Android Flutter Quick Start](../../docs/LOCAL_ROUTING_WINDOWS.md#quick-start-windows-routing-android-flutter-app). The seven-folder routing release remains undeployed pending DEV validator compatibility and cutover approval.
+
+## Architecture overview
+
+| Path | Responsibility |
+| --- | --- |
+| [contract.py](contract.py) and [contracts/](contracts/) | `contract.py` implements the schema and freezes routing inputs. `contracts/` exposes the public input contract. |
+| [planner/](planner/) | Builds directed road matrices, prepares planning inputs, and evaluates the operational routing methods. |
+| [optimizers/](optimizers/) | Holds the [method registry](optimizers/methods.py), canonical solver, constructive baselines, and planning models. [cp_sat.py](optimizers/cp_sat.py) implements the proposed optimizer, which maximizes pickup coverage before minimizing road distance. |
+| [validator/](validator/) | Exposes independent plan validation and stored work-item validation. The route checks are implemented in [validator/validation.py](validator/validation.py). |
+| [integration/](integration/) | Converts sealed database snapshots and graph exports into planning inputs and formats results for the Flutter client. |
+| [worker_service/](worker_service/) | Runs the planner and validator HTTP services, authenticates requests, calls scoped RPCs, and journals progress. |
+| [worker_service/windows/](worker_service/windows/) | Holds the Windows setup, launch, and operator checks. |
+| [Versioned benchmark adapter](../../experiments/routing_research/benchmark_v32/README.md) | Bridges frozen benchmark data and baseline planners into the shared routing contract for E4. |
+| [Routing research tools](../../experiments/routing_research/README.md) | Contains the synthetic demo and offline reproducibility diagnostics. Historical evidence tools retain their original inputs and verification paths. |
+| [Historical routing archive](../../docs/investigations/routing-archive/README.md) | Inactive Render and Docker implementation, hosted tests, and a historical worker test receipt. |
+| [tests/fixtures/](tests/fixtures/) and [tests/](tests/) | Synthetic scenario fixtures and regression checks for the contract and package layout. |
+
+## From request to authorised route
+
+```text
+Flutter request
+  → Windows planner service
+  → Read the PostgreSQL snapshot, prepare the directed graph matrix, and seal the inputs
+  → CP-SAT produces a route candidate
+  → Independent Windows validator checks the stored candidate and attests its digest
+  → PostgreSQL checks the authorisation request and grants route authority
+```
+
+Planning and validation are advisory. A candidate and its attestation support the authorisation decision. PostgreSQL alone grants route authorisation through the authenticated `authorize_my_routing_candidate` RPC.
+
+## How E4 uses routing
+
+[Experiment E4](../../experiments/e4/README.md) runs offline. Its [test harness](../../experiments/e4/test_harness/e4_shared.py) reuses the shared `proposed()` CP-SAT wrapper and independent `validate_plan()` function. E4 supplies its own [Nearest-Next](../../experiments/e4/baseline/source_code/nearest_next_baseline.py) and [FCFS](../../experiments/e4/baseline/source_code/fcfs_baseline.py) implementations and reads the frozen benchmark dataset.
+
+## Where to start reading
+
+1. [Windows launcher](worker_service/windows/Start-Worker.ps1) and [native worker](worker_service/native_worker.py) for how the two services start.
+2. [Worker orchestration](worker_service/orchestrator.py) for snapshot preparation, candidate submission, validation, and authorisation.
+3. [Input contract](contract.py) and [planning orchestration](planner/orchestration.py) for what the planner receives and how it compares methods.
+4. [Public solver wrapper](optimizers/methods.py) and [CP-SAT implementation](optimizers/cp_sat.py) for how the proposed plan is computed.
+5. [Independent route checks](validator/validation.py) and [validator service](worker_service/validator.py) for the distinction between checking a plan and attesting a stored candidate.
+
+## Maintenance
+
+Check dependencies and provenance before removing or moving a compatibility module or historical diagnostic. Older imports, tests, and evidence tools use their existing paths. Published E4 manifests record exact source paths and hashes, including some hosted and diagnostic files outside E4's execution path.
+
+## Offline routing checks
+
+Use the Python 3.12 Windows dependency lock in
+[worker_service/requirements-lock.txt](worker_service/requirements-lock.txt) for
+solver-only checks. The worker requirements include that lock and pin the
+PostgreSQL driver. The [Windows routing guide](../../docs/LOCAL_ROUTING_WINDOWS.md)
+covers installation and operation.
+
+```powershell
+& .\.venv-stage8\Scripts\python.exe -B -m unittest discover -s backend/routing -t . -v
+& .\.venv-stage8\Scripts\python.exe -B -m unittest discover -s experiments/routing_research/algorithms/tests -t . -v
+```
+
+The operational registry runs FCFS, nearest neighbour, and the proposed CP-SAT
+method. The research registry also exposes the distance-only entry point.
+CP-SAT maximises pickup-task coverage before minimising total directed road
+distance. One direct pickup or one indivisible hub batch counts as one task.
+Independent validation recomputes service windows, route duration, loads,
+capacity and distance from the sealed input without calling the solver.
+
+The planner builds directed matrices by shortest road distance, with travel
+time measured on the same path. Missing or unreachable arcs remain explicit.
+The [research guide](../../experiments/routing_research/README.md) documents the
+synthetic graph demo and separate research comparisons.
+
+## Routing scenario input contract
 
 Stage 8 Phase A supplies an offline Python input boundary for later routing
 methods. It does not connect to Supabase, run a solver, persist a planning run,
 validate a proposed route, publish routes, or grant dispatch authority.
 
 Python was selected because the backend directory was empty and the existing
-benchmark/baseline/test tooling is Python. This package uses the standard library
-only. It is separate from research simulations and imports no synthetic fleet
-into the operational application. Python 3.10 or later is required.
+benchmark/baseline/test tooling is Python. The Phase A contract tools use only
+the standard library and require Python 3.10 or later. They are separate from
+research simulations and import no synthetic fleet into the operational application.
 
 Run from the repository root:
 
 ```powershell
 python -m unittest discover -s backend/routing/tests -v
-python -m backend.routing backend/routing/examples/mixed.json
+python -m backend.routing backend/routing/tests/fixtures/mixed.json
 python -m backend.routing.generate_examples --check
 ```
 
@@ -34,15 +108,15 @@ numbers must be finite and booleans cannot substitute for numeric values.
 `freeze_scenario(dict)` returns `FrozenScenario`, a frozen dataclass holding a
 canonical JSON string, SHA-256 of the complete envelope, matrix SHA-256,
 admitted IDs, typed exclusions, eligible vehicle IDs and unavailable arcs.
-`to_dict()` returns a fresh copy. Four later methods consume copies of this
+`to_dict()` returns a fresh copy. The three operational methods consume copies of this
 identical sealed problem, identified by the same digest; method identity and
 method-specific output belong in a separate execution record. Reordering task
 or fleet records does not change the digest. Matrix node order remains explicit.
 
 Hashes detect changes; they are not signatures or proof of database authority.
-The library validates supplied assertions. A future authenticated PostgreSQL
-snapshot producer must obtain and join canonical records, trusted node mappings
-and source tokens. No such producer or dispatch adapter is implemented here.
+The contract validates supplied assertions. The Windows planner obtains canonical
+records, trusted node mappings and source tokens through the operational snapshot
+integration.
 `dispatch_authority_issued` is always false in the output envelope.
 
 ## Required fields
