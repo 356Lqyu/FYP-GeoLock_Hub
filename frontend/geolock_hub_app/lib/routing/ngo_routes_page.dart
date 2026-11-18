@@ -42,6 +42,13 @@ class _NgoRoutesPageState extends NgoSessionPage<NgoRoutesPage> {
   bool _checkingPlanner = false;
   bool _generating = false;
   bool _initialHealthChecked = false;
+  // Option C: generated (advisory, attested) route held until Start Route.
+  Map<String, dynamic>? _generated;
+  Map<String, dynamic>? _candidateStatus;
+  bool _starting = false;
+  Timer? _validityTicker;
+  DateTime? _validUntilLocal;
+  late final _startExecutor = RouteExecutionController(repository);
 
   Future<void> _showSupport() async {
     await Navigator.push<void>(
@@ -147,8 +154,77 @@ class _NgoRoutesPageState extends NgoSessionPage<NgoRoutesPage> {
     _routeOperation = {};
     _plannerConnection = null;
     _plannerConnectionFailed = false;
+    _clearGenerated();
 
     _selected.clear();
+  }
+
+  void _clearGenerated() {
+    _generated = null;
+    _candidateStatus = null;
+    _validityTicker?.cancel();
+    _validityTicker = null;
+    _validUntilLocal = null;
+  }
+
+  @override
+  void dispose() {
+    _validityTicker?.cancel();
+    super.dispose();
+  }
+
+  /// Display-only countdown. The offset comes from the backend clock
+  /// (valid_until - server_now), so a wrong phone clock cannot extend it; the
+  /// database re-checks the window with its own time when Start is pressed.
+  void _armValidity(Map<String, dynamic> status) {
+    _validityTicker?.cancel();
+    // Phase 2: the backend's effective deadline (earliest of the 60-minute
+    // validity window and each served claim's own lease/service limits).
+    final until = DateTime.tryParse(
+      '${status['effective_deadline'] ?? status['valid_until']}',
+    );
+    final now = DateTime.tryParse('${status['server_now']}');
+    if (until == null || now == null) {
+      _validUntilLocal = null;
+      return;
+    }
+    _validUntilLocal = DateTime.now().add(until.difference(now));
+    _validityTicker = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (mounted) setState(() {});
+    });
+  }
+
+  Duration? get _validityRemaining {
+    final until = _validUntilLocal;
+    if (until == null) return null;
+    final left = until.difference(DateTime.now());
+    return left.isNegative ? Duration.zero : left;
+  }
+
+  String? get _startBlocker {
+    final status = _candidateStatus;
+    if (_generated == null || status == null) return null;
+    if (status['started_route_id'] is String) {
+      // A start this device sent (possibly with a lost response) is recovered
+      // from its saved receipt; any other start is opened from the route list.
+      if (status['saved_start'] == true) {
+        return actionsEnabled
+            ? null
+            : 'Refresh to confirm the route is still valid.';
+      }
+      return 'This route was already started. Open it under Your pickup routes.';
+    }
+    if (status['single_route'] != true) {
+      return 'This plan needs more than one vehicle. Select one vehicle and generate again.';
+    }
+    if (status['expired'] == true || _validityRemaining == Duration.zero) {
+      return deadlineExpiredMessage(status['deadline_reason']);
+    }
+    if (status['attested'] != true || status['startable'] != true) {
+      return 'This route cannot be started. Generate a new route.';
+    }
+    if (!actionsEnabled) return 'Refresh to confirm the route is still valid.';
+    return null;
   }
 
   @override
@@ -207,12 +283,50 @@ class _NgoRoutesPageState extends NgoSessionPage<NgoRoutesPage> {
       'error': [?backendError, ?fleetError].join('\n'),
       'pending': await repository.pendingPlanning(),
       'operation': await repository.restoreRouteOperation(),
+      'candidate_status': await _refreshCandidateStatus(),
+      'restored_start_route': await _restoreStart(),
     };
+  }
+
+  Future<Map<String, dynamic>?> _refreshCandidateStatus() async {
+    final candidate = _generated?['candidate_id'];
+    if (candidate is! String) return null;
+    try {
+      return {
+        ...await repository.candidateStatus(candidate),
+        'saved_start': await repository.savedStartRequest(candidate) != null,
+      };
+    } catch (_) {
+      return const {'startable': false};
+    }
+  }
+
+  /// Read-only: adopt a start that committed while its response was lost.
+  Future<String?> _restoreStart() async {
+    try {
+      final receipt = await repository.restoreRouteStart();
+      if (receipt == null) return null;
+      await _startExecutor.adoptAtomicStart(receipt);
+      return receipt['route_id'] as String?;
+    } catch (_) {
+      // Receipt unavailable is not proof of rollback. The saved request is
+      // kept; Start Route replays it, and the route list stays authoritative.
+      return null;
+    }
   }
 
   @override
   void received(Object? value) {
     final data = routingObject(value);
+    if (_generated != null) {
+      final status = data['candidate_status'];
+      if (status is Map) {
+        _candidateStatus = Map<String, dynamic>.from(status);
+        _armValidity(_candidateStatus!);
+      } else {
+        _clearGenerated();
+      }
+    }
     _fleet = data['fleet'] as Map<String, dynamic>?;
     _overview = data['overview'] as Map<String, dynamic>?;
     _routeDetails = data['route_details'] as Map<String, Map<String, dynamic>>;
@@ -240,52 +354,149 @@ class _NgoRoutesPageState extends NgoSessionPage<NgoRoutesPage> {
     _planRequest = const Uuid().v4();
   }
 
-  Future<void> _showOperationResult(Map<String, dynamic> result) async {
-    if (!mounted) return;
-    if (result['kind'] == 'DATABASE_AUTHORIZATION_RECEIPT') {
-      final routes = routingRows(result['routes']);
-      await Navigator.push<void>(
-        context,
-        MaterialPageRoute(
-          builder: (_) => NgoRouteDetailPage(
-            routeId: routes.first['route_id'] as String,
-            repository: repository,
-            mapBuilder: widget.mapBuilder,
-          ),
-        ),
-      );
-      if (mounted) await reload();
-    } else {
-      setState(() => error = routingOperationMessage(result));
-    }
-  }
-
-  Future<void> _runOperation(
-    Future<Map<String, dynamic>> Function() action,
-  ) async {
-    final owner = repository.identity;
-    await perform(() async {
-      final result = await action();
-      if (owner == repository.identity) await _showOperationResult(result);
-    });
-    final saved = await repository.routeOperation();
-    if (mounted) setState(() => _routeOperation = saved);
-  }
-
+  /// Generate Route: advisory planning + independent validation only.
+  /// Nothing is authorised or dispatched until the NGO presses Start Route.
   Future<void> _generate() async {
-    if (_generating || !actionsEnabled) return;
-    setState(() => _generating = true);
+    if (_generating || _starting || !actionsEnabled) return;
+    setState(() {
+      _generating = true;
+      _clearGenerated();
+    });
     try {
-      await _runOperation(
-        () => repository.generateAndAuthorize(
+      await perform(() async {
+        final result = await repository.generateRoute(
           _selected.toList()..sort(),
           _planRequest,
           _overview!['policy_id'] as String,
-        ),
-      );
+        );
+        if (!mounted) return;
+        if (result['outcome'] == 'INFEASIBLE') {
+          setState(() => error = routingFailureMessage('INFEASIBLE'));
+          return;
+        }
+        final status = routingObject(result['candidate_status']);
+        setState(() {
+          _generated = result;
+          _candidateStatus = status;
+          _armValidity(status);
+        });
+      });
+      final pending = await repository.pendingPlanning();
+      if (mounted) setState(() => _pendingPlanning = pending);
     } finally {
-      if (mounted) setState(() => _generating = false);
+      if (mounted) {
+        setState(() {
+          _generating = false;
+          _planRequest = const Uuid().v4();
+        });
+      }
     }
+  }
+
+  /// Start Route: one protected RPC authorises the generated route with the
+  /// backend's current time and starts its first stop atomically. The first
+  /// stop is never started again by the app.
+  Future<void> _startRoute() async {
+    final candidate = _generated?['candidate_id'];
+    if (_starting || candidate is! String || _startBlocker != null) return;
+    setState(() => _starting = true);
+    String? routeId;
+    try {
+      await perform(() async {
+        final receipt = await repository.authorizeAndStart(candidate);
+        await _startExecutor.adoptAtomicStart(receipt);
+        routeId = receipt['route_id'] as String;
+      });
+    } finally {
+      if (mounted) setState(() => _starting = false);
+    }
+    if (!mounted) return;
+    if (routeId == null) {
+      // Keep the failure visible across the refresh that re-reads validity.
+      final failure = error;
+      await reload();
+      if (mounted && failure != null) setState(() => error = failure);
+      return;
+    }
+    setState(_clearGenerated);
+    await Navigator.push<void>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => NgoRouteDetailPage(
+          routeId: routeId!,
+          repository: repository,
+          mapBuilder: widget.mapBuilder,
+        ),
+      ),
+    );
+    if (mounted) await reload();
+  }
+
+  Widget _generatedRouteCard(BuildContext context) {
+    final status = _candidateStatus ?? const {};
+    final until = DateTime.tryParse(
+      '${status['effective_deadline'] ?? status['valid_until'] ?? ''}',
+    );
+    final left = _validityRemaining;
+    final limitedBy = deadlineReasonLabel(status['deadline_reason']);
+    final blocker = _startBlocker;
+    String two(int v) => v.toString().padLeft(2, '0');
+    return Card(
+      key: const Key('generated-route-card'),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Generated route — not started',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 4),
+            const Text(
+              'Review the route. Nothing is reserved or dispatched until you press Start Route.',
+            ),
+            const SizedBox(height: 8),
+            ProposedRouteView(
+              candidate: _generated!,
+              fleet: routingRows(_fleet?['vehicles'] ?? []),
+              tasks: _displayClaims,
+              mapBuilder: widget.mapBuilder,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              until == null
+                  ? 'Validity unavailable. Refresh to verify.'
+                  : 'Start by ${two(until.toLocal().hour)}:${two(until.toLocal().minute)}'
+                        '${left == null ? '' : ' · ${left.inMinutes} min ${two(left.inSeconds % 60)} s left'}',
+              key: const Key('generated-route-validity'),
+            ),
+            if (limitedBy != null)
+              Text(limitedBy, key: const Key('generated-route-deadline-reason')),
+            if (blocker != null)
+              Text(blocker, key: const Key('start-route-blocker')),
+            const SizedBox(height: 8),
+            FilledButton.icon(
+              key: const Key('start-generated-route'),
+              onPressed: !_starting && blocker == null ? _startRoute : null,
+              icon: _starting
+                  ? const SizedBox.square(
+                      dimension: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Icon(Icons.play_arrow),
+              label: Text(
+                _starting
+                    ? 'Starting route…'
+                    : status['started_route_id'] is String
+                    ? 'Open started route'
+                    : 'Start Route',
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
@@ -323,7 +534,7 @@ class _NgoRoutesPageState extends NgoSessionPage<NgoRoutesPage> {
       child: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          if ((loading || busy) && !_generating)
+          if ((loading || busy) && !_generating && !_starting)
             const LinearProgressIndicator(),
           if (error != null) Text(error!, key: const Key('routing-error')),
           if (_plannerConnectionFailed)
@@ -366,7 +577,7 @@ class _NgoRoutesPageState extends NgoSessionPage<NgoRoutesPage> {
                       } else {
                         _selected.remove(v['vehicle_id']);
                       }
-
+                      _clearGenerated();
                       _planRequest = const Uuid().v4();
                     })
                   : null,
@@ -396,8 +607,7 @@ class _NgoRoutesPageState extends NgoSessionPage<NgoRoutesPage> {
                 '${claimLeaseMessage(t, eligible: _eligibleClaimIds.contains(t['claim_id']))}',
               ),
             ),
-          if (!repository.planningConfigured &&
-              !repository.combinedPlanningConfigured)
+          if (!repository.planningConfigured)
             Text(
               repository.plannerConfigurationMessage,
               key: const Key('planner-configuration-error'),
@@ -446,7 +656,7 @@ class _NgoRoutesPageState extends NgoSessionPage<NgoRoutesPage> {
           for (final guidance in _capacityGuidance) Text(guidance),
           FilledButton.icon(
             key: const Key('generate-route'),
-            onPressed: !_generating && _generationBlocker == null
+            onPressed: !_generating && !_starting && _generationBlocker == null
                 ? _generate
                 : null,
             icon: _generating
@@ -456,9 +666,14 @@ class _NgoRoutesPageState extends NgoSessionPage<NgoRoutesPage> {
                   )
                 : const Icon(Icons.route),
             label: Text(
-              _generating ? 'Generating route…' : 'Generate & Authorize Route',
+              _generating
+                  ? 'Generating route…'
+                  : _generated == null
+                  ? 'Generate Route'
+                  : 'Generate a new route',
             ),
           ),
+          if (_generated != null) _generatedRouteCard(context),
           const SizedBox(height: 20),
           Text(
             'Your pickup routes',
@@ -529,10 +744,13 @@ class _NgoRoutesPageState extends NgoSessionPage<NgoRoutesPage> {
     if (_overview?['authorization_enforced'] != true) {
       return 'Route authorization is unavailable. Contact the coordinator.';
     }
-    if (!repository.combinedPlanningConfigured) {
-      return 'The combined planner is not configured. Check Route Support.';
+    if (!repository.planningConfigured) {
+      return 'The route planner is not configured. Check Route Support.';
     }
     if (_selected.isEmpty) return 'Select an eligible vehicle to continue.';
+    if (_selected.length > 1) {
+      return 'Select one vehicle. Start Route runs one vehicle route at a time.';
+    }
     if (_displayClaims.isEmpty) return 'There are no eligible claimed pickups.';
     return null;
   }
@@ -982,7 +1200,9 @@ class _NgoRouteDetailPageState extends NgoSessionPage<NgoRouteDetailPage> {
                   children: [
                     Chip(
                       label: Text(
-                        s['lease_expired_pending_recovery'] == true
+                        s['detached'] == true
+                            ? 'Removed from route — claim kept'
+                            : s['lease_expired_pending_recovery'] == true
                             ? 'Waiting for expiry recovery'
                             : s['deferred_status'] == 'RESOLVED_UNCOLLECTED'
                             ? 'Not collected — resolved'
@@ -1010,11 +1230,28 @@ class _NgoRouteDetailPageState extends NgoSessionPage<NgoRouteDetailPage> {
                     Text(
                       'Planned arrival: ${routeMytTime(s['planned_arrival'])}',
                     ),
+                    if (s['detached'] == true)
+                      const Text(
+                        'This pickup was removed from the route. Its claim is still active and can be planned again.',
+                      ),
+                    if (s['detached'] != true &&
+                        s['projected_completion'] != null &&
+                        s['task_status'] != 'COLLECTED')
+                      Text(
+                        'Projected finish: ${routeMytTime(s['projected_completion'])} · '
+                        'claim deadline: ${routeMytTime(s['lease_deadline'])}',
+                        key: Key('stop-projection-${s['task_id']}'),
+                      ),
+                    if (s['projected_feasible'] == false)
+                      Text(
+                        stopInfeasibleMessage(s['projection_reason']),
+                        key: Key('stop-infeasible-${s['task_id']}'),
+                      ),
                     if (s['lease_expired_pending_recovery'] == true)
                       const Text(
                         'The lease has expired, but the protected backend recovery process has not opened reconciliation yet. Refresh later; skip remains unavailable until the backend authorizes deferral.',
                       ),
-                    if (!_isTerminal)
+                    if (!_isTerminal && s['detached'] != true)
                       Wrap(
                         spacing: 8,
                         children: [
@@ -1043,6 +1280,32 @@ class _NgoRouteDetailPageState extends NgoSessionPage<NgoRouteDetailPage> {
                                 : null,
                             child: const Text('Complete pickup'),
                           ),
+                          if (s['can_detach'] == true)
+                            OutlinedButton(
+                              key: Key('detach-stop-${s['task_id']}'),
+                              onPressed: authorized
+                                  ? () async {
+                                      if (await routingConfirm(
+                                        context,
+                                        'Remove this pickup from the route?',
+                                        'This pickup can no longer be collected before its claim deadline. '
+                                            'It will be removed from this route without being collected. '
+                                            'Your claim stays active and can be planned again. '
+                                            'Other pickups are not affected.',
+                                      )) {
+                                        if (mounted) {
+                                          await _action(
+                                            () => _executor.detachStop(
+                                              widget.routeId,
+                                              s['task_id'] as String,
+                                            ),
+                                          );
+                                        }
+                                      }
+                                    }
+                                  : null,
+                              child: const Text('Remove from route'),
+                            ),
                           if (s['can_defer'] == true)
                             OutlinedButton(
                               key: Key('defer-pickup-${s['task_id']}'),

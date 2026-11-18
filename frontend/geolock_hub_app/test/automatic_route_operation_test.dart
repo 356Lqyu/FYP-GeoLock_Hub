@@ -8,6 +8,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:geolock_hub_app/routing/ngo_routing_repository.dart';
 import 'package:geolock_hub_app/routing/ngo_routes_page.dart';
+import 'option_c_fake_backend.dart';
 
 Map<String, dynamic> receipt() => {
   'kind': 'DATABASE_AUTHORIZATION_RECEIPT',
@@ -549,139 +550,127 @@ void main() {
     expect(calls, 0);
   });
 
-  for (final fail in [false, true]) {
-    testWidgets(
-      'route button loading covers generation and authorization; failure=$fail',
-      (tester) async {
-        final writes = <String>[];
-        final generation = Completer<void>();
-        final authorization = Completer<void>();
-        var submissions = 0;
-        final repo = NgoRoutingRepository(
-          identity: () => 'ngo',
-          rpc: (name, params) async {
-            if (name == 'list_my_vehicles') {
-              return {
-                'vehicles': [
-                  {
-                    'vehicle_id': 'vehicle',
-                    'ngo_user_id': 'ngo',
-                    'vehicle_label': 'V2',
-                    'payload_capacity_kg': 500,
-                    'eligible_for_planning': true,
-                  },
-                ],
-              };
-            }
-            if (name == 'get_my_routing_overview') {
-              return {
-                'ngo_id': 'ngo',
-                'contract': 'geolock.ngo-routing.v1',
-                'policy_id': 'policy',
-                'authorization_enforced': true,
-                'eligible_tasks': [
-                  {'task_id': 'task', 'title': 'Pickup'},
-                ],
-                'routes': [],
-              };
-            }
-            if (name == 'begin_my_routing_snapshot') {
-              writes.add(name);
-              return {'ngo_id': 'ngo', 'snapshot_id': 'snapshot'};
-            }
-            if (name == 'get_my_authorized_route') {
-              await authorization.future;
-              return detail();
-            }
-            throw StateError('No pickup writes allowed');
-          },
-          authorizationCapabilities: (_) async => {
-            'ngo_id': 'ngo',
-            'contract': 'geolock.routing-auto-now.v1',
-            'automatic_departure': true,
-            'combined_generation_enabled': true,
-          },
-          combinedPlanner: (body) async {
-            submissions++;
-            await generation.future;
-            return {...receipt(), 'request_id': await repoOperationRequest()};
-          },
-          authorizationReader: (body) async => {
-            ...receipt(),
-            if (fail) 'kind': 'AUTHORIZATION_UNCONFIRMED',
-            'request_id': body['request_id'],
-            'snapshot_id': body['snapshot_id'],
-          },
-        );
-        // The response request ID is read from the same persisted synthetic operation.
-        await tester.pumpWidget(
-          MaterialApp(
-            home: NgoRoutesPage(
-              repository: repo,
-              mapBuilder: (markers) => Text('Map markers: ${markers.length}'),
-            ),
+  // Replaces the former page test "route button loading covers generation and
+  // authorization" (old Generate & Authorize page flow, removed by Option C).
+  testWidgets(
+    'Generate Route → Start Route: card, deadline, uncertain start recovery, '
+    'single first-stop dispatch and automatic continuation',
+    (tester) async {
+      tester.view.physicalSize = const Size(1000, 2600);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      final b = Backend()
+        ..startGate = Completer<void>()
+        ..loseStartResponse = true // the transaction commits, response lost
+        ..failReceiptReads = 1; // and the immediate receipt read also fails
+      await tester.pumpWidget(
+        MaterialApp(
+          home: NgoRoutesPage(
+            repository: b.repo(),
+            mapBuilder: (markers) => Text('Map markers: ${markers.length}'),
           ),
-        );
-        await tester.pumpAndSettle();
-        await tester.tap(find.byType(CheckboxListTile));
-        await tester.pumpAndSettle();
-        await tester.ensureVisible(find.byKey(const Key('generate-route')));
-        final button = find.byKey(const Key('generate-route'));
-        await tester.tap(button);
-        await tester.pump();
-        await tester.pump(const Duration(milliseconds: 100));
-        expect(
-          find.descendant(
-            of: button,
-            matching: find.byType(CircularProgressIndicator),
-          ),
-          findsOneWidget,
-        );
-        expect(find.text('Generating route…'), findsOneWidget);
-        expect(tester.widget<FilledButton>(button).onPressed, isNull);
-        expect(find.byType(LinearProgressIndicator), findsNothing);
-        await tester.tap(button);
-        await tester.pump();
-        expect(submissions, 1);
-        if (fail) {
-          generation.completeError(TimeoutException('synthetic failure'));
-          await tester.pumpAndSettle();
-          expect(find.text('Generating route…'), findsNothing);
-          expect(find.text('Generate & Authorize Route'), findsOneWidget);
-          expect(find.byKey(const Key('routing-error')), findsOneWidget);
-          expect(submissions, 1);
-          await tester.pumpWidget(const SizedBox());
-          return;
-        }
-        generation.complete();
-        await tester.pump();
-        await tester.pump(const Duration(milliseconds: 100));
-        expect(find.text('Generating route…'), findsOneWidget);
-        expect(tester.widget<FilledButton>(button).onPressed, isNull);
-        expect(find.byType(LinearProgressIndicator), findsNothing);
-        authorization.complete();
-        await tester.pumpAndSettle();
-        expect(find.text('Database authorization confirmed'), findsOneWidget);
-        expect(find.text('Map markers: 2'), findsOneWidget);
-        expect(find.text('Choose departure time'), findsNothing);
-        expect(find.text('Request database authorization'), findsNothing);
-        expect(writes, ['begin_my_routing_snapshot']);
-        expect(await repo.routeOperation(), isEmpty);
-        expect(
-          (await SharedPreferences.getInstance()).getKeys().any(
-            (key) => key.startsWith('ngo_route_operation_history_ngo_'),
-          ),
-          isTrue,
-        );
-        await tester.pumpWidget(const SizedBox());
-      },
-    );
-  }
-}
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.byType(CheckboxListTile));
+      await tester.pumpAndSettle();
 
-Future<String> repoOperationRequest() async {
-  final prefs = await SharedPreferences.getInstance();
-  return (jsonDecode(prefs.getString('ngo_route_operation_ngo')!)
-          as Map)['request_id']
-      as String;
+      // 1. Generate Route: advisory only.
+      final generate = find.byKey(const Key('generate-route'));
+      expect(find.text('Generate Route'), findsOneWidget);
+      expect(find.text('Generate & Authorize Route'), findsNothing);
+      await tester.tap(generate);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 50));
+      expect(b.planCalls, 1);
+      expect(b.routeId, isNull, reason: 'generation authorises nothing');
+      expect(b.calls, isNot(contains('authorize_my_routing_candidate')));
+
+      // 2. Candidate card and server-clock deadline.
+      expect(find.byKey(const Key('generated-route-card')), findsOneWidget);
+      expect(find.text('Generated route — not started'), findsOneWidget);
+      final validity = tester.widget<Text>(
+        find.byKey(const Key('generated-route-validity')),
+      );
+      expect(validity.data, startsWith('Start by '));
+      expect(validity.data, contains(' left'));
+      final start = find.byKey(const Key('start-generated-route'));
+      expect(tester.widget<FilledButton>(start).onPressed, isNotNull);
+      expect(find.text('Start Route'), findsOneWidget);
+
+      // 3. Start Route with an uncertain outcome; button is single-flight.
+      await tester.ensureVisible(start);
+      await tester.tap(start);
+      await tester.pump();
+      expect(find.text('Starting route…'), findsOneWidget);
+      expect(tester.widget<FilledButton>(start).onPressed, isNull);
+      expect(
+        tester.widget<FilledButton>(generate).onPressed,
+        isNull,
+        reason: 'no new generation while a start is in flight',
+      );
+      await tester.tap(start, warnIfMissed: false);
+      b.startGate!.complete();
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 50));
+      await tester.pump(const Duration(milliseconds: 50));
+      expect(
+        b.calls.where((c) => c == 'authorize_and_start_my_route'),
+        hasLength(1),
+      );
+      expect(b.states, ['DISPATCHED', 'PLANNED'], reason: 'it committed');
+      expect(
+        find.textContaining('route start was not confirmed'),
+        findsOneWidget,
+        reason: 'uncertain outcome is reported, not treated as failure',
+      );
+
+      // 4. Recovery: the refreshed status offers to open the started route
+      //    from its saved receipt; nothing is re-sent.
+      final open = find.byKey(const Key('start-generated-route'));
+      expect(find.text('Open started route'), findsOneWidget);
+      expect(tester.widget<FilledButton>(open).onPressed, isNotNull);
+      await tester.ensureVisible(open);
+      await tester.tap(open);
+      await tester.pumpAndSettle();
+      expect(
+        b.calls.where((c) => c == 'authorize_and_start_my_route'),
+        hasLength(1),
+        reason: 'recovered from the receipt, never a second start',
+      );
+      expect(b.startedClaims, isEmpty, reason: 'app never starts stop 1');
+      expect(find.text('Route details'), findsOneWidget);
+      expect(find.byKey(const Key('start-route')), findsNothing);
+
+      // 5. Complete stop 1 → stop 2 starts automatically (Start consent kept).
+      Future<void> completeVisible() async {
+        final enabled = find.byWidgetPredicate(
+          (w) =>
+              w is FilledButton &&
+              w.onPressed != null &&
+              w.child is Text &&
+              (w.child as Text).data == 'Complete pickup',
+        );
+        expect(enabled, findsOneWidget);
+        await tester.ensureVisible(enabled);
+        await tester.tap(enabled);
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Confirm'));
+        await tester.pumpAndSettle();
+      }
+
+      await completeVisible();
+      expect(b.states, ['COLLECTED', 'DISPATCHED']);
+      expect(b.startedClaims, ['c1'], reason: 'only stop 2 is started by app');
+      await completeVisible();
+      expect(b.states, ['COLLECTED', 'COLLECTED']);
+      expect(b.startedClaims, ['c1']);
+      expect(
+        b.calls.where((c) => c == 'authorize_and_start_my_route'),
+        hasLength(1),
+      );
+      await tester.pumpWidget(const SizedBox());
+    },
+  );
 }

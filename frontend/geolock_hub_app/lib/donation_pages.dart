@@ -196,7 +196,23 @@ class _EligibleListingsPageState extends State<EligibleListingsPage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const Text('Eligible Listings')),
+    appBar: AppBar(
+      title: const Text('Eligible Listings'),
+      actions: [
+        IconButton(
+          tooltip: 'Saved claim attempts',
+          icon: const Icon(Icons.history),
+          onPressed: () async {
+            final actor = _db.auth.currentUser?.id;
+            if (actor == null) return;
+            await Navigator.of(context).push<void>(
+              MaterialPageRoute(builder: (_) => _SavedClaimAttemptsPage(actor)),
+            );
+            if (mounted) _refresh();
+          },
+        ),
+      ],
+    ),
     body: FutureBuilder<List<Map<String, dynamic>>>(
       future: _listings,
       builder: (context, snapshot) {
@@ -1609,6 +1625,76 @@ class _MyClaimsPageState extends State<MyClaimsPage>
   );
 }
 
+class _SavedClaimAttemptsPage extends StatefulWidget {
+  const _SavedClaimAttemptsPage(this.actor);
+
+  final String actor;
+
+  @override
+  State<_SavedClaimAttemptsPage> createState() =>
+      _SavedClaimAttemptsPageState();
+}
+
+class _SavedClaimAttemptsPageState extends State<_SavedClaimAttemptsPage> {
+  late Future<List<MapEntry<String, String>>> _attempts = _load();
+
+  Future<List<MapEntry<String, String>>> _load() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (_db.auth.currentUser?.id != widget.actor) return [];
+    final prefix = claimRequestPrefix(widget.actor);
+    final keys = prefs.getKeys().where((key) => key.startsWith(prefix)).toList()
+      ..sort();
+    return [
+      for (final key in keys)
+        if (prefs.get(key) case final String request when request.isNotEmpty)
+          MapEntry(key.substring(prefix.length), request),
+    ];
+  }
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    appBar: AppBar(title: const Text('Saved claim attempts')),
+    body: FutureBuilder<List<MapEntry<String, String>>>(
+      future: _attempts,
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return const Center(
+            child: Text('Saved attempts could not be loaded.'),
+          );
+        }
+        if (!snapshot.hasData) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        final attempts = snapshot.data!;
+        if (attempts.isEmpty || _db.auth.currentUser?.id != widget.actor) {
+          return const Center(child: Text('No saved claim attempts.'));
+        }
+        return ListView(
+          children: [
+            for (final attempt in attempts)
+              ListTile(
+                title: const Text('Saved claim attempt'),
+                subtitle: Text('Listing ${attempt.key}'),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () async {
+                  await Navigator.of(context).push<void>(
+                    MaterialPageRoute(
+                      builder: (_) => NgoListingDetailsPage(
+                        listing: {'listing_id': attempt.key},
+                        savedRequestId: attempt.value,
+                      ),
+                    ),
+                  );
+                  if (mounted) setState(() => _attempts = _load());
+                },
+              ),
+          ],
+        );
+      },
+    ),
+  );
+}
+
 class NgoListingDetailsPage extends StatefulWidget {
   final Map<String, dynamic> listing;
   final VoidCallback? onClaimConfirmed;
@@ -1618,6 +1704,7 @@ class NgoListingDetailsPage extends StatefulWidget {
   final Future<Object?> Function(String listing, String request)? claimSender;
   final String? Function()? identity;
   final VoidCallback? onSuccess;
+  final String? savedRequestId;
   const NgoListingDetailsPage({
     super.key,
     required this.listing,
@@ -1628,6 +1715,7 @@ class NgoListingDetailsPage extends StatefulWidget {
     this.claimSender,
     this.identity,
     this.onSuccess,
+    this.savedRequestId,
   });
 
   @override
@@ -1636,6 +1724,8 @@ class NgoListingDetailsPage extends StatefulWidget {
 
 class _NgoListingDetailsPageState extends State<NgoListingDetailsPage> {
   bool _availabilityExitScheduled = false;
+  bool _savedAttemptFinished = false;
+  String? _rejectionMessage;
 
   bool _leaveUnavailableListing() {
     if (!mounted || _availabilityExitScheduled) return true;
@@ -1650,9 +1740,10 @@ class _NgoListingDetailsPageState extends State<NgoListingDetailsPage> {
       navigator.pop();
       messenger.hideCurrentSnackBar();
       messenger.showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text(
-            'Donation availability changed\nThis donation is no longer available to claim. ',
+            _rejectionMessage ??
+                'Donation availability changed\nThis donation is no longer available to claim.',
           ),
           duration: Duration(seconds: 8),
         ),
@@ -1725,10 +1816,13 @@ class _NgoListingDetailsPageState extends State<NgoListingDetailsPage> {
   }
 
   Future<void> _claim() async {
+    final savedRequest = widget.savedRequestId;
     if (_claimBusy ||
-        !_availabilityVerified ||
-        _refreshing ||
-        _availabilityExitScheduled) {
+        _savedAttemptFinished ||
+        (savedRequest == null &&
+            (!_availabilityVerified ||
+                _refreshing ||
+                _availabilityExitScheduled))) {
       return;
     }
     final userId = _identity;
@@ -1748,12 +1842,13 @@ class _NgoListingDetailsPageState extends State<NgoListingDetailsPage> {
     setState(() => _claimBusy = true);
     try {
       prefs = await SharedPreferences.getInstance();
-      final key = 'geolock_claim_request_${userId}_$listingId';
+      final key = '${claimRequestPrefix(userId)}$listingId';
       final storage = prefs;
       final response = await sendPersistedClaim<Object?>(
         readRequest: () => storage.getString(key),
         writeRequest: (id) => storage.setString(key, id),
         newRequest: () => const Uuid().v4(),
+        expectedRequest: savedRequest,
         send: (id) async {
           request = id;
           if (_identity != userId) {
@@ -1783,7 +1878,15 @@ class _NgoListingDetailsPageState extends State<NgoListingDetailsPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              rpcStarted
+              error is PostgrestException &&
+                      error.code == 'P0001' &&
+                      const {
+                        'UNAUTHENTICATED',
+                        'ACTIVE_NGO_ONLY',
+                        'REQUEST_AND_LISTING_REQUIRED',
+                      }.contains(error.message)
+                  ? claimRejectionMessage(error.message)
+                  : rpcStarted
                   ? 'Claim outcome is unconfirmed. Retry this same attempt; your saved request will be reused.'
                   : 'The claim could not be prepared safely. No claim request was sent. Please try again.',
             ),
@@ -1795,6 +1898,10 @@ class _NgoListingDetailsPageState extends State<NgoListingDetailsPage> {
       return;
     }
 
+    if (_identity != userId) {
+      if (mounted) setState(() => _claimBusy = false);
+      return;
+    }
     final outcome = result['outcome']?.toString();
     final reason = result['reason_code']?.toString();
     final claimId = result['claim_id']?.toString();
@@ -1837,14 +1944,19 @@ class _NgoListingDetailsPageState extends State<NgoListingDetailsPage> {
       });
     }
     try {
-      await prefs.remove('geolock_claim_request_${userId}_$listingId');
+      final key = '${claimRequestPrefix(userId)}$listingId';
+      if (_identity == userId && prefs.getString(key) == request) {
+        await prefs.remove(key);
+      }
     } catch (_) {}
     if (!mounted) return;
     if (!confirmedSuccess) {
+      _rejectionMessage = claimRejectionMessage(reason);
       if (kDebugMode) {
         debugPrint('Claim rejected: $outcome / $reason / $request');
       }
-      if (outcome == 'CONFLICT' &&
+      if (savedRequest == null &&
+          outcome == 'CONFLICT' &&
           const {
             'CLAIM_CONFLICT',
             'LISTING_EXPIRED',
@@ -1857,15 +1969,12 @@ class _NgoListingDetailsPageState extends State<NgoListingDetailsPage> {
         _claimBusy = false;
         _availabilityVerified = false;
         _conflict = true;
+        _savedAttemptFinished = savedRequest != null;
       });
-      _refreshAvailability();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Donation availability changed. This donation is no longer available to claim. Please refresh the donation list.',
-          ),
-        ),
-      );
+      if (savedRequest == null) _refreshAvailability();
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(_rejectionMessage!)));
       return;
     }
 
@@ -1887,6 +1996,7 @@ class _NgoListingDetailsPageState extends State<NgoListingDetailsPage> {
       setState(() {
         _claimBusy = false;
         _availabilityVerified = false;
+        _savedAttemptFinished = savedRequest != null;
       });
       widget.onSuccess!();
       return;
@@ -1968,7 +2078,28 @@ class _NgoListingDetailsPageState extends State<NgoListingDetailsPage> {
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
+  Widget build(BuildContext context) => widget.savedRequestId != null
+      ? _buildSavedAttempt()
+      : _buildListing(context);
+
+  Widget _buildSavedAttempt() => Scaffold(
+    appBar: AppBar(title: const Text('Saved claim attempt')),
+    body: ListView(
+      padding: const EdgeInsets.all(16),
+      children: [
+        const Text(
+          'Retry using the original request. The server will return a saved result or check whether this attempt can still be completed.',
+        ),
+        if (_rejectionMessage case final String message) Text(message),
+        FilledButton(
+          onPressed: _claimBusy || _savedAttemptFinished ? null : _claim,
+          child: Text(_claimBusy ? 'Checking claim…' : 'Retry saved claim'),
+        ),
+      ],
+    ),
+  );
+
+  Widget _buildListing(BuildContext context) => Scaffold(
     appBar: AppBar(title: const Text('Donation Listing')),
     bottomNavigationBar: SafeArea(
       minimum: const EdgeInsets.fromLTRB(16, 8, 16, 12),
@@ -2788,6 +2919,15 @@ class DonationItemInput {
   final weight = TextEditingController(text: '1');
   String? category;
   String condition = 'GOOD';
+
+  String? nameError(String value) =>
+      value.trim().isEmpty ? 'Enter item name' : null;
+  String? quantityError(String value) => parseDonationQuantity(value) == null
+      ? 'Enter a positive whole number'
+      : null;
+  String? categoryError(String? value, List<DonationCategory> choices) =>
+      choices.any((choice) => choice.id == value) ? null : 'Select category';
+
   void dispose() {
     name.dispose();
     quantity.dispose();
@@ -2814,7 +2954,6 @@ class CreateDonationPage extends StatefulWidget {
 }
 
 class _CreateDonationPageState extends State<CreateDonationPage> {
-  final formKey = GlobalKey<FormState>();
   final title = TextEditingController();
   final description = TextEditingController();
   LocationResult? pickupLocation;
@@ -2846,6 +2985,7 @@ class _CreateDonationPageState extends State<CreateDonationPage> {
         }
         accepted.add(DonationPhotoSelection(id: const Uuid().v4(), file: file));
       }
+      if (!mounted || busy) return;
       setState(() {
         photos.addAll(accepted);
         _resetCreateRequest();
@@ -2872,6 +3012,7 @@ class _CreateDonationPageState extends State<CreateDonationPage> {
           await picked.length() > 5 * 1024 * 1024) {
         throw StateError('Choose a JPG, PNG or WebP photo up to 5 MB.');
       }
+      if (!mounted || busy) return;
       setState(() {
         photos[index] = DonationPhotoSelection(
           id: const Uuid().v4(),
@@ -2889,6 +3030,7 @@ class _CreateDonationPageState extends State<CreateDonationPage> {
   }
 
   void _resetCreateRequest() => createRequestId = const Uuid().v4();
+  void _onInputChanged(String _) => setState(_resetCreateRequest);
 
   void _makeCover(int index) {
     if (index == 0) return;
@@ -2962,19 +3104,37 @@ class _CreateDonationPageState extends State<CreateDonationPage> {
   static const _directPickupHint =
       'Choose a spot where a vehicle can stop (roadside, gate or lobby)';
 
-  double get _previewTotalKg => donationTotalWeightKg(
-    items.map(
-      (item) => (
-        quantity: int.tryParse(item.quantity.text.trim()),
-        unitWeightKg: double.tryParse(item.weight.text.trim()),
+  double? _validatedItemTotal(List<DonationCategory> choices) {
+    if (items.any(
+      (item) =>
+          item.nameError(item.name.text) != null ||
+          item.categoryError(item.category, choices) != null,
+    )) {
+      return null;
+    }
+    return donationTotalWeightKg(
+      items.map(
+        (item) => (
+          quantity: parseDonationQuantity(item.quantity.text),
+          unitWeightGrams: parseDonationUnitWeight(item.weight.text).grams,
+        ),
       ),
-    ),
-  );
+    );
+  }
 
-  bool get _directPickupPreview =>
-      previewCollectionPath(_previewTotalKg) == 'DIRECT_PICKUP';
+  bool _canSubmit(double? itemTotal) {
+    final location = pickupLocation;
+    return !busy &&
+        itemTotal != null &&
+        DonationPhotoRules.titleError(title.text) == null &&
+        DonationPhotoRules.descriptionError(description.text) == null &&
+        DonationPhotoRules.validPhotoCount(photos.length) &&
+        location != null &&
+        location.address.trim().isNotEmpty &&
+        location.roadAccess?.routable == true;
+  }
 
-  Future<void> selectPickupLocation() async {
+  Future<void> selectPickupLocation(bool directPickupPreview) async {
     final selected = await Navigator.push<LocationResult>(
       context,
       MaterialPageRoute(
@@ -2982,11 +3142,11 @@ class _CreateDonationPageState extends State<CreateDonationPage> {
           title: 'Pickup location',
           initialLocation: pickupLocation,
           roadAccess: RoadAccessRequirement.required,
-          hint: _directPickupPreview ? _directPickupHint : null,
+          hint: directPickupPreview ? _directPickupHint : null,
         ),
       ),
     );
-    if (selected != null && mounted) {
+    if (selected != null && mounted && !busy) {
       setState(() {
         pickupLocation = selected;
         _resetCreateRequest();
@@ -2994,47 +3154,16 @@ class _CreateDonationPageState extends State<CreateDonationPage> {
     }
   }
 
-  Future<void> submit() async {
-    if (!formKey.currentState!.validate()) return;
-    if (pickupLocation == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Select and confirm the pickup location.'),
-        ),
-      );
-      return;
-    }
-    if (!DonationPhotoRules.validPhotoCount(photos.length)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Choose between 1 and 3 donation photos.'),
-        ),
-      );
-      return;
-    }
+  Future<void> submit(List<DonationCategory> choices) async {
+    if (busy || !_canSubmit(_validatedItemTotal(choices))) return;
     final payload = <Map<String, dynamic>>[];
     for (final item in items) {
-      final qty = int.tryParse(item.quantity.text.trim());
-      final weight = double.tryParse(item.weight.text.trim());
-      if (item.category == null ||
-          qty == null ||
-          qty <= 0 ||
-          weight == null ||
-          weight <= 0) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              'Complete every item, category, quantity and weight.',
-            ),
-          ),
-        );
-        return;
-      }
       payload.add({
         'category_id': item.category,
         'item_name': item.name.text.trim(),
-        'quantity': qty,
-        'unit_weight_kg': weight,
+        'quantity': parseDonationQuantity(item.quantity.text)!,
+        'unit_weight_kg':
+            parseDonationUnitWeight(item.weight.text).grams! / 1000,
         'item_condition': item.condition,
       });
     }
@@ -3174,8 +3303,10 @@ class _CreateDonationPageState extends State<CreateDonationPage> {
         if (choices.isEmpty) {
           return const Center(child: Text('No active donation categories.'));
         }
+        final total = _validatedItemTotal(choices);
+        final directPickupPreview =
+            total != null && previewCollectionPath(total) == 'DIRECT_PICKUP';
         return Form(
-          key: formKey,
           child: ListView(
             padding: const EdgeInsets.all(16),
             children: [
@@ -3185,7 +3316,8 @@ class _CreateDonationPageState extends State<CreateDonationPage> {
                 maxLength: 80,
                 decoration: const InputDecoration(labelText: 'Donation title'),
                 validator: (v) => DonationPhotoRules.titleError(v ?? ''),
-                onChanged: (_) => _resetCreateRequest(),
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                onChanged: _onInputChanged,
               ),
               TextFormField(
                 controller: description,
@@ -3194,7 +3326,8 @@ class _CreateDonationPageState extends State<CreateDonationPage> {
                 maxLines: 3,
                 decoration: const InputDecoration(labelText: 'Description'),
                 validator: (v) => DonationPhotoRules.descriptionError(v ?? ''),
-                onChanged: (_) => _resetCreateRequest(),
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                onChanged: _onInputChanged,
               ),
               const SizedBox(height: 10),
               Row(
@@ -3268,13 +3401,15 @@ class _CreateDonationPageState extends State<CreateDonationPage> {
                 'Pickup location',
                 style: Theme.of(context).textTheme.titleSmall,
               ),
-              if (_directPickupPreview)
+              if (directPickupPreview)
                 Text(
                   _directPickupHint,
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
               OutlinedButton.icon(
-                onPressed: busy ? null : selectPickupLocation,
+                onPressed: busy
+                    ? null
+                    : () => selectPickupLocation(directPickupPreview),
                 icon: const Icon(Icons.location_on_outlined),
                 label: Text(
                   pickupLocation == null
@@ -3300,6 +3435,7 @@ class _CreateDonationPageState extends State<CreateDonationPage> {
                 final i = entry.key;
                 final item = entry.value;
                 return Card(
+                  key: ObjectKey(item),
                   child: Padding(
                     padding: const EdgeInsets.all(12),
                     child: Column(
@@ -3340,8 +3476,8 @@ class _CreateDonationPageState extends State<CreateDonationPage> {
                                   item.category = v;
                                   _resetCreateRequest();
                                 }),
-                          validator: (v) =>
-                              v == null ? 'Select category' : null,
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
+                          validator: (v) => item.categoryError(v, choices),
                         ),
                         TextFormField(
                           controller: item.name,
@@ -3349,18 +3485,17 @@ class _CreateDonationPageState extends State<CreateDonationPage> {
                           decoration: const InputDecoration(
                             labelText: 'Item name',
                           ),
-                          onChanged: (_) => _resetCreateRequest(),
-                          validator: (v) => (v?.trim().isEmpty ?? true)
-                              ? 'Enter item name'
-                              : null,
+                          onChanged: _onInputChanged,
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
+                          validator: (v) => item.nameError(v ?? ''),
                         ),
                         TextFormField(
                           controller: item.quantity,
                           readOnly: busy,
                           keyboardType: TextInputType.number,
-                          onChanged: (_) => setState(() {
-                            _resetCreateRequest();
-                          }),
+                          onChanged: _onInputChanged,
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
+                          validator: (v) => item.quantityError(v ?? ''),
                           decoration: const InputDecoration(
                             labelText: 'Quantity',
                           ),
@@ -3371,9 +3506,10 @@ class _CreateDonationPageState extends State<CreateDonationPage> {
                           keyboardType: const TextInputType.numberWithOptions(
                             decimal: true,
                           ),
-                          onChanged: (_) => setState(() {
-                            _resetCreateRequest();
-                          }),
+                          onChanged: _onInputChanged,
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
+                          validator: (v) =>
+                              parseDonationUnitWeight(v ?? '').error,
                           decoration: const InputDecoration(
                             labelText: 'Unit weight (kg)',
                           ),
@@ -3416,7 +3552,7 @@ class _CreateDonationPageState extends State<CreateDonationPage> {
                         _resetCreateRequest();
                       }),
               ),
-              CollectionPathPreviewCard(totalKg: _previewTotalKg),
+              CollectionPathPreviewCard(totalKg: total),
               const SizedBox(height: 16),
               if (busy) ...[
                 const LinearProgressIndicator(),
@@ -3424,7 +3560,7 @@ class _CreateDonationPageState extends State<CreateDonationPage> {
                 Text(progressMessage, textAlign: TextAlign.center),
               ],
               FilledButton(
-                onPressed: busy ? null : submit,
+                onPressed: _canSubmit(total) ? () => submit(choices) : null,
                 child: Text(busy ? 'Saving...' : 'Submit Donation'),
               ),
             ],
@@ -3513,12 +3649,14 @@ class _MyDonationsPageState extends State<MyDonationsPage> {
 }
 
 class CollectionPathPreviewCard extends StatelessWidget {
-  final double totalKg;
+  final double? totalKg;
   const CollectionPathPreviewCard({super.key, required this.totalKg});
 
   @override
   Widget build(BuildContext context) {
-    final direct = previewCollectionPath(totalKg) == 'DIRECT_PICKUP';
+    final total = totalKg;
+    final direct =
+        total != null && previewCollectionPath(total) == 'DIRECT_PICKUP';
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8),
       child: ListTile(
@@ -3526,9 +3664,9 @@ class CollectionPathPreviewCard extends StatelessWidget {
           direct ? Icons.local_shipping_outlined : Icons.store_outlined,
         ),
         title: Text(
-          totalKg <= 0
-              ? 'Enter quantities and unit weights to preview the collection path'
-              : collectionPathPreviewText(totalKg),
+          total == null || total <= 0
+              ? 'Complete every item to preview the collection path'
+              : collectionPathPreviewText(total),
         ),
         subtitle: Text(
           'Preview: ${donationDirectMinKgPreview.toStringAsFixed(0)} kg or more '

@@ -28,28 +28,30 @@ class Harness {
   bool holdRefresh = false;
   int successes = 0;
 
-  Widget page({String actor = 'ngo-a'}) => NgoListingDetailsPage(
-    listing: listing,
-    identity: () => actor,
-    routingLoader: () async => true,
-    listingsLoader: () async {
-      reads++;
-      if (holdRefresh && reads > 1) return refresh.future;
-      if (failRead) throw StateError('private diagnostic');
-      return available ? [listing] : [];
-    },
-    detailsLoader: () async => {
-      'images': <Map<String, dynamic>>[],
-      'constituents': <Map<String, dynamic>>[],
-      'listing_discovered_available': true,
-      'progress_status': 'AVAILABLE',
-    },
-    claimSender: (_, request) async {
-      requests.add(request);
-      return send == null ? conflict : await send!();
-    },
-    onSuccess: () => successes++,
-  );
+  Widget page({String actor = 'ngo-a', String? savedRequestId}) =>
+      NgoListingDetailsPage(
+        listing: listing,
+        identity: () => actor,
+        routingLoader: () async => true,
+        listingsLoader: () async {
+          reads++;
+          if (holdRefresh && reads > 1) return refresh.future;
+          if (failRead) throw StateError('private diagnostic');
+          return available ? [listing] : [];
+        },
+        detailsLoader: () async => {
+          'images': <Map<String, dynamic>>[],
+          'constituents': <Map<String, dynamic>>[],
+          'listing_discovered_available': true,
+          'progress_status': 'AVAILABLE',
+        },
+        claimSender: (_, request) async {
+          requests.add(request);
+          return send == null ? conflict : await send!();
+        },
+        onSuccess: () => successes++,
+        savedRequestId: savedRequestId,
+      );
 }
 
 Finder get claim => find.widgetWithText(FilledButton, 'Claim listing');
@@ -68,6 +70,56 @@ Future<void> mount(
 
 void main() {
   setUp(() => SharedPreferences.setMockInitialValues({}));
+
+  testWidgets('saved retry works without discovery and reuses only its UUID', (
+    t,
+  ) async {
+    const request = 'saved-request';
+    SharedPreferences.setMockInitialValues({key: request});
+    final pending = Completer<Object?>();
+    final h = Harness()
+      ..available = false
+      ..send = (() => pending.future);
+    await t.pumpWidget(MaterialApp(home: h.page(savedRequestId: request)));
+    final retry = find.widgetWithText(FilledButton, 'Retry saved claim');
+    final handler = t.widget<FilledButton>(retry).onPressed!;
+    handler();
+    handler();
+    await t.pump();
+    expect(h.requests, [request]);
+    expect(h.reads, 0);
+    expect(claim, findsNothing);
+    pending.complete({...success, 'replayed': true});
+    await t.pumpAndSettle();
+    expect(h.successes, 1);
+    expect((await SharedPreferences.getInstance()).getString(key), isNull);
+  });
+
+  testWidgets('saved retry with missing key makes no RPC call', (t) async {
+    final h = Harness()..available = false;
+    await t.pumpWidget(
+      MaterialApp(home: h.page(savedRequestId: 'old-request')),
+    );
+    await t.tap(find.widgetWithText(FilledButton, 'Retry saved claim'));
+    await t.pumpAndSettle();
+    expect(h.requests, isEmpty);
+    expect((await SharedPreferences.getInstance()).getString(key), isNull);
+  });
+
+  testWidgets('routing rejection displays its typed reason', (t) async {
+    final h = Harness()
+      ..send = (() async => {
+        'outcome': 'INELIGIBLE',
+        'reason_code': 'ROUTE_UNAVAILABLE',
+      });
+    await mount(t, h);
+    await t.tap(claim);
+    await t.pumpAndSettle();
+    expect(
+      find.text('No directed road route is available for this listing.'),
+      findsOneWidget,
+    );
+  });
 
   testWidgets(
     'successful claim keeps confirmation and clears terminal request',
@@ -421,7 +473,7 @@ void main() {
     await t.pumpAndSettle();
     expect(find.byType(NgoListingDetailsPage), findsNothing);
     expect(
-      find.textContaining('Donation availability changed'),
+      find.text('This listing is no longer available to claim.'),
       findsOneWidget,
     );
     expect(discoveryReads, 2);

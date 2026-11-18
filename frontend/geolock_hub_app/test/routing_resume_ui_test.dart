@@ -199,7 +199,10 @@ void main() {
           'automatic_departure': true,
           'combined_generation_enabled': true,
         },
-        combinedPlanner: (body) async {
+        combinedPlanner: (_) async =>
+            fail('Option C: Generate Route never calls /v1/plan-and-authorize'),
+        // Option C: Generate Route uses the advisory /v1/plan path only.
+        planner: (body) async {
           plannedRequests.add(body['request_id'] as String);
           return {
             'kind': 'ADVISORY_CANDIDATE',
@@ -207,6 +210,18 @@ void main() {
             'dispatch_authority_issued': false,
             'ngo_id': 'ngo',
             'snapshot_id': 'new-snapshot',
+            'methods': [
+              for (final m in ['fcfs', 'nearest_neighbour', 'proposed'])
+                {
+                  'method': m,
+                  'validation': {'valid': false, 'metrics': {}},
+                  'plan': {
+                    'method': m,
+                    'dispatch_authority_issued': false,
+                    'routes': [],
+                  },
+                },
+            ],
           };
         },
       );
@@ -242,10 +257,10 @@ void main() {
       await tester.pumpAndSettle();
       expect(snapshotRequests.single, isNot('old-request'));
       expect(plannedRequests, snapshotRequests);
-      expect(
-        (await repo.routeOperation())['infeasible_response']['outcome'],
-        'INFEASIBLE',
-      );
+      // Option C: the advisory result is kept in the planning record; no
+      // combined route operation is created.
+      expect(await repo.routeOperation(), isEmpty);
+      expect((await repo.pendingPlanning())['status'], 'infeasible');
     },
   );
 
@@ -291,6 +306,7 @@ void main() {
           },
           authorizationReader: (_) async => fail('No receipt read expected'),
           combinedPlanner: (_) async => fail('No planner call expected'),
+          planner: (_) async => fail('No planner call expected'),
           authorizationCapabilities: (_) async =>
               fail('No capability call expected'),
         );

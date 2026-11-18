@@ -16,6 +16,14 @@ import re
 from typing import Any
 
 VERSION = "geolock.routing.scenario.v1"
+# Phase 2: per-task lease admission. v1 (whole-horizon lease admission) stays the
+# default and is byte-for-byte unchanged, so E4 and old sealed snapshots replay
+# identically. v2 adds configuration.lease_admission and admits a claim when its
+# own earliest service completion plus the dispatch margin is before its expiry;
+# the solver and validator already enforce completion + margin < expiry per task.
+VERSION_V2 = "geolock.routing.scenario.v2"
+SCHEMA_VERSIONS = {VERSION, VERSION_V2}
+PER_TASK_LEASE_ADMISSION = "PER_TASK_SERVICE_COMPLETION"
 DEV_PROJECT = "rcgyuwiidqvrgbxswhqj"
 DONATION_STATES = {"SUBMITTED", "AVAILABLE", "HUB_ASSIGNED", "AT_HUB", "BATCHED",
                    "CLAIMED", "PICKUP_IN_PROGRESS", "COLLECTED", "CANCELLED"}
@@ -130,8 +138,13 @@ class FrozenScenario:
         return json.loads(self.canonical_json)
 
 
-def _configuration(c: dict) -> None:
-    _obj(c, "version currency planning_horizon_minutes dispatch_margin_minutes objective time_window_policy", "configuration")
+def _configuration(c: dict, schema_version: str = VERSION) -> None:
+    fields = "version currency planning_horizon_minutes dispatch_margin_minutes objective time_window_policy"
+    if schema_version == VERSION_V2:
+        fields += " lease_admission"
+    _obj(c, fields, "configuration")
+    if schema_version == VERSION_V2:
+        _enum(c["lease_admission"], {PER_TASK_LEASE_ADMISSION}, "configuration.lease_admission")
     for key in ("version", "currency"):
         _text(c[key], f"configuration.{key}")
     _number(c["planning_horizon_minutes"], "configuration.planning_horizon_minutes", positive=True)
@@ -214,7 +227,16 @@ def _task(t: dict, path: str) -> None:
                  "WRONG_HUB_PICKUP", path, "authorized source must be the selected hub")
 
 
-def _admission(t: dict, ngo: str, cutoff: datetime, end: datetime) -> tuple[str, ...]:
+def _admission(t: dict, ngo: str, cutoff: datetime, end: datetime, *,
+               per_task: bool = False, margin: timedelta = timedelta(0)) -> tuple[str, ...]:
+    """Planning admission. Must equal SQL routing_private.admissible exactly.
+
+    v1 (per_task=False): lease and listing must outlive cutoff+horizon+margin.
+    v2 (per_task=True): lower-bound test only -- the claim's earliest possible
+    service completion (window start, at or after cutoff, plus service) plus the
+    margin must be strictly before lease expiry. Listing expiry is enforced by the
+    service window. CP-SAT and the validator then decide the actual per-stop fit.
+    """
     reasons = []
     if t["ngo_id"] != ngo or t["claim_ngo_id"] != ngo:
         reasons.append("FOREIGN_OWNER")
@@ -229,9 +251,14 @@ def _admission(t: dict, ngo: str, cutoff: datetime, end: datetime) -> tuple[str,
     expiry = _time(t["lease_expires_at"], "task.lease_expires_at")
     if expiry <= cutoff:
         reasons.append("LEASE_EXPIRED")
+    elif per_task:
+        earliest_start = max(cutoff, _time(t["time_window"]["start"], "task.time_window.start"))
+        if earliest_start + timedelta(minutes=t["service_minutes"]) + margin >= expiry:
+            reasons.append("LEASE_TOO_SHORT_FOR_SERVICE")
     elif expiry <= end:
         reasons.append("INSUFFICIENT_LEASE_TIME")
-    if t["listing_expires_at"] is not None and _time(t["listing_expires_at"], "task.listing_expires_at") <= end:
+    if (not per_task and t["listing_expires_at"] is not None
+            and _time(t["listing_expires_at"], "task.listing_expires_at") <= end):
         reasons.append("LISTING_EXPIRES_BEFORE_HORIZON")
     if t["reconciliation_blocked"]:
         reasons.append("RECONCILIATION_REQUIRED")
@@ -300,7 +327,8 @@ def freeze_scenario(payload: dict) -> FrozenScenario:
     """Validate input and seal a common snapshot. Readiness never means feasibility."""
     _obj(payload, "schema_version planning_run_id scenario_id source ngo_id ngo_active ngo_location_verified_at ngo_location_generation cutoff configuration depot "
          "route_start_location_id route_end_location_id vehicles tasks matrix solver", "scenario")
-    _enum(payload["schema_version"], {VERSION}, "schema_version")
+    _enum(payload["schema_version"], SCHEMA_VERSIONS, "schema_version")
+    per_task = payload["schema_version"] == VERSION_V2
     for key in ("planning_run_id", "scenario_id", "ngo_id"):
         _text(payload[key], key)
     source = _obj(payload["source"], "kind project_ref provenance evidence_ref", "source")
@@ -314,7 +342,7 @@ def freeze_scenario(payload: dict) -> FrozenScenario:
     _integer(payload["ngo_location_generation"], "ngo_location_generation", 0)
     _require(_time(payload["ngo_location_verified_at"], "ngo_location_verified_at") <= cutoff,
              "UNVERIFIED_DEPOT", "ngo_location_verified_at", "location verification must precede snapshot cutoff")
-    _configuration(payload["configuration"])
+    _configuration(payload["configuration"], payload["schema_version"])
     config = payload["configuration"]
     try:
         end = cutoff + timedelta(minutes=config["planning_horizon_minutes"] + config["dispatch_margin_minutes"])
@@ -332,7 +360,8 @@ def freeze_scenario(payload: dict) -> FrozenScenario:
     _unique([d["donation_id"] for t in tasks for d in t["donations"]], "tasks.donations")
     admitted, excluded = [], []
     for task in sorted(tasks, key=lambda t: t["task_id"]):
-        reasons = _admission(task, payload["ngo_id"], cutoff, end)
+        reasons = _admission(task, payload["ngo_id"], cutoff, end, per_task=per_task,
+                             margin=timedelta(minutes=config["dispatch_margin_minutes"]))
         if reasons:
             excluded.append((task["task_id"], reasons))
         else:

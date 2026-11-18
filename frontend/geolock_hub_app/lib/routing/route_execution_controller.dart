@@ -17,7 +17,10 @@ class RouteExecutionController {
       record['status'] == 'retryable_same_request';
 
   static Map<String, dynamic>? currentStop(Map<String, dynamic> detail) {
-    final stops = routingRows(detail['stops']);
+    // Phase 2: a detached stop is no longer part of the route.
+    final stops = routingRows(
+      detail['stops'],
+    ).where((s) => s['detached'] != true).toList();
     final dispatched = stops.where((s) => s['task_status'] == 'DISPATCHED');
     if (dispatched.isNotEmpty) return dispatched.first;
     final nextId = detail['next_executable_task_id'];
@@ -381,6 +384,53 @@ class RouteExecutionController {
     }
   }
 
+  /// Option C: record the backend-confirmed atomic Start Route so the
+  /// existing completion flow continues to the next stop. Sends nothing: the
+  /// first stop was dispatched inside authorize_and_start_my_route, and this
+  /// controller never calls start_pickup for it.
+  Future<void> adoptAtomicStart(Map<String, dynamic> receipt) async {
+    final route = receipt['route_id'];
+    final task = receipt['started_task_id'];
+    final request = receipt['request_id'];
+    if (receipt['contract'] != NgoRoutingRepository.startContract ||
+        route is! String ||
+        task is! String ||
+        request is! String ||
+        receipt['route_status'] != 'IN_PROGRESS') {
+      throw const FormatException('Route start was not confirmed.');
+    }
+    await _exclusive(route, (owner) async {
+      if (receipt['ngo_id'] != owner) {
+        throw const FormatException('Backend ownership mismatch.');
+      }
+      final existing = await _load(owner, route);
+      if (existing.isNotEmpty) {
+        // Replayed receipt: keep the journal, but make sure consent is recorded.
+        if (existing['intent_id'] == null) {
+          await _save({...existing, 'intent_id': request});
+        }
+        return;
+      }
+      final attempt = {
+        'id': request,
+        'request_id': request,
+        'kind': 'start',
+        'task_id': task,
+        'outcome': 'confirmed',
+        'atomic': true,
+      };
+      await _save({
+        ..._base(owner, route),
+        'intent_id': request,
+        'status': 'active',
+        'attempt': attempt,
+        'history': [attempt],
+        'message':
+            'Route started. Complete the current pickup after collection.',
+      });
+    });
+  }
+
   /// Explicit Start Route / Continue intent. Never called by page loading.
   Future<void> startRoute(String route, {bool Function()? canContinue}) =>
       _exclusive(route, (owner) async {
@@ -438,6 +488,26 @@ class RouteExecutionController {
     }
     await _startNext(record, canContinue: canContinue);
   });
+
+  /// Phase 2: remove one infeasible, never-started stop through the protected
+  /// backend operation. Nothing is dispatched here: the next pickup starts
+  /// only on an explicit Continue, after the backend revalidates the route.
+  Future<void> detachStop(String route, String task) =>
+      _exclusive(route, (owner) async {
+        var record = await _load(owner, route);
+        if (held(record)) {
+          throw StateError('Reconcile the uncertain pickup before continuing.');
+        }
+        final receipt = await repository.detachStop(route, task);
+        record = record.isEmpty ? _base(owner, route) : record;
+        await _save({
+          ...record,
+          'status': 'paused',
+          'message': receipt['remaining_feasible'] == true
+              ? 'Pickup removed from the route; its claim is still active. Continue the route when ready.'
+              : 'Pickup removed. Another pickup still cannot be collected in time; review the route before continuing.',
+        });
+      });
 
   /// Defer a never-started pickup only after the protected route read grants it.
   /// The durable request ID doubles as the attempt ID; uncertain writes are

@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 import copy
 import re
 
-from ..contract import VERSION, DEV_PROJECT
+from ..contract import VERSION, VERSION_V2, PER_TASK_LEASE_ADMISSION, DEV_PROJECT
 from ..planner.orchestration import prepare_input, evaluate
 from ..planner.matrices import digest, require
 from ..optimizers.models import ExecutionConfig, Plan, Route, Stop
@@ -43,6 +43,11 @@ def prepare_bundle(bundle):
     require(ngo['user_id'] == s['ngo_id'] and ngo['role'] == 'NGO', 'INVALID_SNAPSHOT_OWNER')
     require(ngo['active_flag'] is True and ngo['location_verified_at'] is not None, 'UNVERIFIED_DEPOT')
     require(type(policy['mandatory']) is bool, 'EXPLICIT_POLICY_REQUIRED')
+    # Phase 2 policies carry lease_admission; older sealed snapshots do not and
+    # are replayed under the original v1 scenario contract, never reinterpreted.
+    lease_rule = policy.get('lease_admission')
+    require(lease_rule in (None, PER_TASK_LEASE_ADMISSION), 'UNSUPPORTED_LEASE_ADMISSION')
+    per_task = lease_rule == PER_TASK_LEASE_ADMISSION
     matrix = m['body']
     require(matrix['source_kind'] == 'OPERATIONAL_ROAD_NETWORK', 'OPERATIONAL_MATRIX_REQUIRED')
     net = matrix['network_snapshot_id']
@@ -102,13 +107,16 @@ def prepare_bundle(bundle):
             donations=[dict(donation_id=d['donation_id'], donation_status=d['donation_status'], state_token=digest(d)) for d in donations], batch=batch))
     # Preserve the Phase A scenario contract field. The optimizer's active
     # objective is versioned explicitly on Plan.optimization_objective.
-    payload = dict(schema_version=VERSION, planning_run_id=s['snapshot_id'], scenario_id=s['snapshot_id'],
+    configuration = dict(version=s['policy_id'], currency='RM', planning_horizon_minutes=policy['horizon_minutes'],
+            dispatch_margin_minutes=policy['dispatch_margin_minutes'], objective='MIN_UNSERVED_THEN_FIXED_PLUS_DISTANCE_COST', time_window_policy='SERVICE_COMPLETION_WITHIN_WINDOW')
+    if per_task:
+        configuration['lease_admission'] = PER_TASK_LEASE_ADMISSION
+    payload = dict(schema_version=VERSION_V2 if per_task else VERSION, planning_run_id=s['snapshot_id'], scenario_id=s['snapshot_id'],
         source=dict(kind='OPERATIONAL_SNAPSHOT', project_ref=DEV_PROJECT,
                     provenance='Proposed sealed DB export; authenticity must be established by transport', evidence_ref='snapshot:'+s['digest']),
         ngo_id=s['ngo_id'], ngo_active=ngo['active_flag'], ngo_location_generation=ngo['location_generation'],
         ngo_location_verified_at=ngo['location_verified_at'], cutoff=s['cutoff'],
-        configuration=dict(version=s['policy_id'], currency='RM', planning_horizon_minutes=policy['horizon_minutes'],
-            dispatch_margin_minutes=policy['dispatch_margin_minutes'], objective='MIN_UNSERVED_THEN_FIXED_PLUS_DISTANCE_COST', time_window_policy='SERVICE_COMPLETION_WITHIN_WINDOW'),
+        configuration=configuration,
         depot=depot, route_start_location_id=depot['location_id'], route_end_location_id=depot['location_id'],
         vehicles=[], tasks=tasks, matrix=matrix, solver=policy['solver'])
     prepared=prepare_input(payload, fleet_rows=raw['vehicles'], held_vehicle_ids=[])

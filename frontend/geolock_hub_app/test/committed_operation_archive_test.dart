@@ -522,15 +522,16 @@ void main() {
           authorizationCapabilities: (_) async => {},
           combinedPlanner: (_) async =>
               throw StateError('No planning allowed in this UI test'),
+          planner: (_) async =>
+              throw StateError('No planning allowed in this UI test'),
         );
         await tester.pumpWidget(
           MaterialApp(home: NgoRoutesPage(repository: repo)),
         );
         await tester.pumpAndSettle();
-        expect(
-          find.textContaining('Previously authorized route retained'),
-          findsOneWidget,
-        );
+        // Wording updated by commit d88e73af ("update claimed detail page").
+        expect(find.text('Saved routing request'), findsOneWidget);
+        expect(find.text('Route authorization confirmed.'), findsOneWidget);
         final checkbox = tester.widget<CheckboxListTile>(
           find.byType(CheckboxListTile),
         );

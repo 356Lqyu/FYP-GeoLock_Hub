@@ -73,8 +73,12 @@ String routingDispatchMessage(Object? reason) => switch (reason) {
   'DISPATCH_AUTHORITY_STALE' ||
   'ROUTE_BINDING_DRIFT' =>
     'Route inputs changed. Refresh; unresolved pickups may require reconciliation.',
-  'DISPATCH_WINDOW_OR_LEASE_EXPIRED' || 'REMAINING_ROUTE_INFEASIBLE' =>
-    'The remaining route no longer fits its pickup windows or leases. Refresh and review the claim.',
+  // Applies to legacy (whole-horizon) and per-task routes; Remove from route
+  // is offered by the backend only where a protected detachment is allowed.
+  'DISPATCH_WINDOW_OR_LEASE_EXPIRED' =>
+    'A later pickup no longer fits its pickup window or claim lease deadline. If Remove from route is offered for it, remove that pickup, then continue.',
+  'REMAINING_ROUTE_INFEASIBLE' =>
+    'The remaining route no longer fits its pickup windows, claim leases or depot return time. If Remove from route is offered, remove a pickup, then continue.',
   _ => 'Pickup is unavailable. Refresh the route and review its claim details.',
 };
 
@@ -1101,6 +1105,229 @@ class NgoRoutingRepository {
     }
   }
 
+  // ── Option C Phase 1: Generate Route → review → Start Route ────────────────
+  //
+  // Generation calls only the advisory /v1/plan path (no authorization). The
+  // attested candidate is held until the NGO presses Start Route, which calls
+  // ONE protected RPC that authorises the candidate (backend AUTO_NOW time) and
+  // dispatches its first stop in the same database transaction. The app never
+  // calls start_pickup for that first stop.
+
+  static const startContract = 'geolock.routing-authorize-start.v1';
+  static const candidateStatusContract = 'geolock.routing-candidate-status.v1';
+
+  /// Plan only. Returns the advisory comparison plus the backend validity
+  /// status of its attested candidate. Never grants dispatch authority.
+  Future<Map<String, dynamic>> generateRoute(
+    List<String> vehicles,
+    String requestId,
+    String policyId,
+  ) async {
+    final owner = identity;
+    if (owner == null) throw StateError('Sign in as an NGO.');
+    if ((await routeOperation()).isNotEmpty) {
+      throw StateError(
+        'Review the saved routing request in Route Support before generating another route.',
+      );
+    }
+    final previous = await pendingPlanning();
+    if (previous.isNotEmpty &&
+        {'rejected', 'candidate_ready', 'infeasible'}.contains(
+          previous['status'],
+        )) {
+      // Archives the finished advisory request locally; nothing is sent.
+      await clearFinishedPlanning();
+    }
+    final result = await plan(vehicles, requestId, policyId);
+    if (identity != owner) throw StateError('Account changed.');
+    if (result['outcome'] == 'INFEASIBLE') return result;
+    final candidate = result['candidate_id'];
+    if (candidate is! String || result['validation_status'] != 'ATTESTED') {
+      throw const FormatException(
+        'The generated route was not independently validated.',
+      );
+    }
+    final status = await candidateStatus(candidate);
+    final pending = await pendingPlanning();
+    await _savePlanning(owner, {...pending, 'candidate_id': candidate});
+    return {...result, 'candidate_status': status};
+  }
+
+  /// Read-only, server-clock validity of a generated candidate.
+  Future<Map<String, dynamic>> candidateStatus(String candidate) async {
+    final owner = identity;
+    if (owner == null) throw StateError('Sign in as an NGO.');
+    final status = _owned(
+      await _call('get_my_route_candidate_status', {'p_candidate': candidate}),
+      owner,
+    );
+    if (status['contract'] != candidateStatusContract ||
+        status['candidate_id'] != candidate ||
+        status['valid_until'] is! String ||
+        status['server_now'] is! String) {
+      throw const FormatException('Route validity was not confirmed.');
+    }
+    return status;
+  }
+
+  String _startKey(String owner, String candidate) =>
+      'ngo_route_start_${owner}_$candidate';
+
+  /// Saved Start Route request for [candidate], if one was ever sent.
+  Future<String?> savedStartRequest(String candidate) async {
+    final owner = identity;
+    if (owner == null) return null;
+    final prefs = await SharedPreferences.getInstance();
+    if (identity != owner) throw StateError('Account changed.');
+    return prefs.getString(_startKey(owner, candidate));
+  }
+
+  Map<String, dynamic> _acceptStart(
+    Object? value,
+    String owner,
+    String request,
+    String candidate,
+  ) {
+    final receipt = _owned(value, owner);
+    if (receipt['contract'] != startContract ||
+        receipt['request_id'] != request ||
+        receipt['candidate_id'] != candidate ||
+        receipt['route_id'] is! String ||
+        receipt['route_status'] != 'IN_PROGRESS' ||
+        receipt['departure_mode'] != 'AUTO_NOW' ||
+        receipt['started_task_id'] is! String) {
+      throw const FormatException('Route start was not confirmed.');
+    }
+    return receipt;
+  }
+
+  /// Read-only receipt lookup for a saved Start Route request.
+  Future<Map<String, dynamic>?> startReceipt(
+    String request,
+    String candidate,
+  ) async {
+    final owner = identity;
+    if (owner == null) throw StateError('Sign in as an NGO.');
+    final row = _owned(
+      await _call('get_my_route_start_receipt', {'p_request': request}),
+      owner,
+    );
+    if (row['request_id'] != request) {
+      throw const FormatException('Route start receipt identity changed.');
+    }
+    if (row['outcome'] == 'NOT_FOUND') return null;
+    if (row['outcome'] != 'FOUND') {
+      throw const FormatException('Route start receipt was not confirmed.');
+    }
+    return _acceptStart(row['result'], owner, request, candidate);
+  }
+
+  /// Reopening the routes page may READ the receipt of a saved Start Route
+  /// request (for example after an uncertain response), never send a start.
+  Future<Map<String, dynamic>?> restoreRouteStart() async {
+    final owner = identity;
+    if (owner == null) return null;
+    final pending = await pendingPlanning();
+    final candidate = pending['candidate_id'];
+    if (candidate is! String) return null;
+    final request = await savedStartRequest(candidate);
+    if (request == null) return null;
+    final receipt = await startReceipt(request, candidate);
+    if (receipt == null || identity != owner) return null;
+    return _finishStart(owner, receipt);
+  }
+
+  Future<Map<String, dynamic>>? _startFlight;
+  String? _startFlightCandidate;
+
+  /// Explicit Start Route. One protected RPC authorises the candidate and
+  /// starts its first stop atomically. The request ID is saved before sending;
+  /// a lost response is recovered from the read-only receipt or by replaying
+  /// the SAME request ID, which the backend answers without a second dispatch.
+  Future<Map<String, dynamic>> authorizeAndStart(String candidate) {
+    if (_startFlight != null) {
+      if (_startFlightCandidate != candidate) {
+        return Future.error(StateError('Another route start is pending.'));
+      }
+      return _startFlight!;
+    }
+    _startFlightCandidate = candidate;
+    final future = _authorizeAndStart(candidate);
+    _startFlight = future;
+    return future.whenComplete(() {
+      _startFlight = null;
+      _startFlightCandidate = null;
+    });
+  }
+
+  Future<Map<String, dynamic>> _authorizeAndStart(String candidate) async {
+    final owner = identity;
+    if (owner == null) throw StateError('Sign in as an NGO.');
+    final prefs = await SharedPreferences.getInstance();
+    final key = _startKey(owner, candidate);
+    final saved = prefs.getString(key);
+    if (saved != null) {
+      final prior = await startReceipt(saved, candidate);
+      if (prior != null) return _finishStart(owner, prior);
+    }
+    final request = saved ?? const Uuid().v4();
+    if (identity != owner || !await prefs.setString(key, request)) {
+      throw StateError('Cannot preserve the route start request. Nothing sent.');
+    }
+    try {
+      final receipt = _acceptStart(
+        await _call('authorize_and_start_my_route', {
+          'p_request': request,
+          'p_candidate': candidate,
+        }),
+        owner,
+        request,
+        candidate,
+      );
+      return _finishStart(owner, receipt);
+    } on PostgrestException {
+      // A database rejection rolled the whole transaction back: no route was
+      // authorised and no stop dispatched. Keep the request ID; replaying it is
+      // safe and returns the same typed rejection or the original receipt.
+      rethrow;
+    } catch (error) {
+      // Transport/parse failure: the transaction may have committed.
+      if (identity != owner) rethrow;
+      try {
+        final recovered = await startReceipt(request, candidate);
+        if (recovered != null) return _finishStart(owner, recovered);
+      } catch (_) {
+        // Fall through: the saved request ID is kept for a safe replay.
+      }
+      throw RoutingRequestFailure(
+        'Route start outcome is not confirmed',
+        code: 'ROUTE_START_OUTCOME_UNKNOWN',
+        phase: 'authorize_and_start',
+        requestId: request,
+        outcomeUnknown: true,
+      );
+    }
+  }
+
+  Future<Map<String, dynamic>> _finishStart(
+    String owner,
+    Map<String, dynamic> receipt,
+  ) async {
+    final pending = await pendingPlanning();
+    if (pending['candidate_id'] == receipt['candidate_id']) {
+      await _savePlanning(owner, {
+        ...pending,
+        'started_route_id': receipt['route_id'],
+      });
+      try {
+        await clearFinishedPlanning();
+      } catch (_) {
+        // Archive is local bookkeeping only; the started route is confirmed.
+      }
+    }
+    return receipt;
+  }
+
   Future<List<String>> authorize(String candidate, DateTime departure) async {
     final owner = identity;
     if (owner == null) throw StateError('Sign in as an NGO.');
@@ -1158,6 +1385,68 @@ class NgoRoutingRepository {
       'p_claim': stops.single['claim_id'],
       if (complete) 'p_handover_confirmed': true,
     });
+  }
+
+  /// Phase 2: protected detachment of one never-started, infeasible stop.
+  /// The request ID is saved before sending and reused until a receipt is
+  /// confirmed; the backend replays a committed detachment for the same ID.
+  Future<Map<String, dynamic>> detachStop(String routeId, String taskId) async {
+    final owner = identity;
+    if (owner == null) throw StateError('Sign in as an NGO.');
+    final row = await detail(routeId); // fresh protected read before mutation
+    final stops = routingRows(
+      row['stops'],
+    ).where((s) => s['task_id'] == taskId).toList();
+    final prefs = await SharedPreferences.getInstance();
+    final key = 'ngo_route_detach_${owner}_${routeId}_$taskId';
+    final saved = prefs.getString(key);
+    if (saved == null &&
+        (row['authorization_confirmed'] != true ||
+            stops.length != 1 ||
+            stops.single['can_detach'] != true)) {
+      throw StateError('The backend has not allowed removing this pickup.');
+    }
+    final request = saved ?? const Uuid().v4();
+    if (identity != owner || !await prefs.setString(key, request)) {
+      throw StateError('Cannot preserve the removal request. Nothing sent.');
+    }
+    late final Object? raw;
+    try {
+      raw = await _call('detach_my_unstarted_stop', {
+        'p_route': routeId,
+        'p_task': taskId,
+        'p_request': request,
+      });
+    } on PostgrestException {
+      rethrow; // rolled back; the saved ID stays safe to replay
+    } catch (_) {
+      throw RoutingRequestFailure(
+        'Pickup removal outcome is not confirmed',
+        code: 'STOP_DETACH_OUTCOME_UNKNOWN',
+        phase: 'detach_stop',
+        requestId: request,
+        outcomeUnknown: true,
+      );
+    }
+    final receipt = _owned(raw, owner);
+    if (receipt['contract'] != 'geolock.routing-detach-stop.v1' ||
+        receipt['request_id'] != request ||
+        receipt['route_id'] != routeId ||
+        receipt['task_id'] != taskId ||
+        receipt['claim_status'] != 'ACTIVE') {
+      throw const FormatException('Pickup removal was not confirmed.');
+    }
+    await prefs.remove(key);
+    return receipt;
+  }
+
+  /// Saved (possibly uncertain) removal request for a stop, if any.
+  Future<String?> pendingDetach(String routeId, String taskId) async {
+    final owner = identity;
+    if (owner == null) return null;
+    final prefs = await SharedPreferences.getInstance();
+    if (identity != owner) throw StateError('Account changed.');
+    return prefs.getString('ngo_route_detach_${owner}_${routeId}_$taskId');
   }
 
   Future<void> deferPickup(

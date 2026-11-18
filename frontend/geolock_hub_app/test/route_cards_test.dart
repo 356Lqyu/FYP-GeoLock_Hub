@@ -345,12 +345,11 @@ void main() {
         expect(find.textContaining('Ready to start pickup'), findsNothing);
       }
       if (mode == 'assigned') {
-        expect(
-          find.text(
-            'Previously authorized route retained. Review it below; this is not a new authorization.',
-          ),
-          findsOneWidget,
-        );
+        // Wording updated by commit d88e73af ("update claimed detail page"):
+        // the retained authorization is now shown as "Saved routing request"
+        // with the shared saved-operation message.
+        expect(find.text('Saved routing request'), findsOneWidget);
+        expect(find.text('Route authorization confirmed.'), findsOneWidget);
         expect(find.text('Route setup needs attention.'), findsNothing);
         expect(
           (await SharedPreferences.getInstance()).getString(
