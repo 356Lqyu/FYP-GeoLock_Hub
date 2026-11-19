@@ -25,9 +25,9 @@ sys.path.insert(0, str(E4))
 from experiments.routing_research.benchmark_v32.adapter import Adapter as TeamAdapter  # noqa: E402
 from experiments.routing_research.benchmark_v32.runner import baseline_plan  # noqa: E402
 from backend.routing.contract import freeze_scenario  # noqa: E402
-from backend.routing.optimizers.methods import proposed
+from backend.routing.planner.methods import proposed
 from backend.routing.validator.validation import validate_plan  # noqa: E402
-from backend.routing.optimizers.models import ExecutionConfig  # noqa: E402
+from backend.routing.route_plan import ExecutionConfig  # noqa: E402
 from experiments.routing_research.algorithms.benchmark import semantic  # noqa: E402
 from run_e4 import run_directory  # noqa: E402
 
@@ -171,9 +171,9 @@ def preflight():
     import scipy
     from ortools.sat.python import cp_model
     from scipy.stats import wilcoxon
-    from backend.routing.optimizers.cp_sat import _optimise
+    from backend.routing.planner.cp_sat import _optimise
     from backend.routing.validator.validation import validate_plan as independent_validator
-    from backend.routing.planner.orchestration import OPERATIONAL_METHODS
+    from backend.routing.planner.planning import OPERATIONAL_METHODS
 
     versions = {p.__name__: p.__version__ for p in (ortools, numpy, scipy, matplotlib)}
     for line in (E4 / 'requirements.txt').read_text(encoding='utf-8').splitlines():
@@ -304,7 +304,7 @@ TITLES = dict(nearest_next='Nearest-Next (baseline 1)', fcfs='First come first s
               or_tools_route_optimiser='OR-Tools route optimiser (proposed, current app)')
 HOW = dict(nearest_next="its own plan_routes(): each vehicle in turn drives to the nearest pickup it can still fit and finish in time",
            fcfs="its own plan_routes(): each vehicle in turn takes pickups in the order they were claimed",
-           or_tools_route_optimiser='backend.routing.optimizers.methods.proposed -> backend/routing/optimizers/cp_sat.py '
+           or_tools_route_optimiser='backend.routing.planner.methods.proposed -> backend/routing/planner/cp_sat.py '
                                     '(Google OR-Tools CP-SAT; the same callable the routing worker uses)')
 
 

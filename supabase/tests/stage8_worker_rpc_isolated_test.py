@@ -15,12 +15,12 @@ import unittest
 import stage8_integration_isolated_test as source
 import psycopg
 
-from backend.routing.worker_service.errors import WorkerError
-from backend.routing.worker_service.graph_cache import GraphCache
-from backend.routing.worker_service.journal import Journal
-from backend.routing.worker_service.orchestrator import RoutingWorker
-from backend.routing.worker_service.transport import RoleRpc
-from backend.routing.worker_service.validator import Validator
+from backend.routing.service.errors import WorkerError
+from backend.routing.road_network.graph_cache import GraphCache
+from backend.routing.service.journal import Journal
+from backend.routing.service.planner_service import RoutingWorker
+from backend.routing.database.supabase_rpc import RoleRpc
+from backend.routing.service.validator_service import Validator
 
 
 class LocalNgoSession:

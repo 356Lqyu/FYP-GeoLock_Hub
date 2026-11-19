@@ -13,7 +13,7 @@ import unittest
 from uuid import uuid4
 
 import route_resolution_isolated_test as base
-from backend.routing.integration.route_resolution import ResolutionApi, RestrictedResolutionApi
+from backend.routing.service.route_resolution import ResolutionApi, RestrictedResolutionApi
 
 
 class BridgeTests(base.ResolutionTests):

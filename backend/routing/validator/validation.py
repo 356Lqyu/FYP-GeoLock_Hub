@@ -8,7 +8,7 @@ import hashlib
 import re
 
 from ..contract import freeze_scenario
-from ..optimizers.models import Plan
+from ..route_plan import Plan
 
 PICKUP_TASK_OBJECTIVE = "MAX_PICKUP_TASKS_THEN_MIN_DIRECTED_ROAD_KM"
 

@@ -11,7 +11,7 @@ import unittest
 
 from backend.routing import ContractError, freeze_scenario
 from backend.routing.contract import PER_TASK_LEASE_ADMISSION, VERSION, VERSION_V2
-from backend.routing.generate_examples import build_mixed
+from backend.routing.tests.generate_fixtures import build_mixed
 
 FIXTURES = Path(__file__).resolve().parent / "fixtures"
 # cutoff 00:05Z, horizon 240, margin 10, service 10, window 00:00-05:00 in build_mixed().

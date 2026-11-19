@@ -1,1 +1,7 @@
 __pycache__/
+# local worker state when GEOLOCK_WORKER_STATE is not set (service/.state), journals and secrets
+.state/
+*.sqlite3*
+*.jsonl
+*.lock
+.env*

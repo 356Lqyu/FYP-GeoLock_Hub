@@ -10,8 +10,8 @@ from unittest.mock import patch
 from .adapter import Adapter, check_settings
 from .runner import baseline_plan, execution_gate, preflight, run
 from backend.routing.validator.validation import validate_plan
-from backend.routing.optimizers.models import ExecutionConfig
-from backend.routing.optimizers.problem import Problem
+from backend.routing.route_plan import ExecutionConfig
+from backend.routing.planner.problem import Problem
 
 
 class AdapterTests(unittest.TestCase):

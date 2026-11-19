@@ -8,7 +8,7 @@ import tempfile
 import unittest
 
 from backend.routing import ContractError, freeze_scenario, load_scenario
-from backend.routing.generate_examples import build_mixed, examples, EXAMPLES
+from backend.routing.tests.generate_fixtures import build_mixed, examples, EXAMPLES
 
 
 class InputContractTests(unittest.TestCase):

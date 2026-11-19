@@ -5,12 +5,12 @@ import unittest
 from unittest.mock import patch
 from ortools.constraint_solver import pywrapcp
 from backend.routing.contract import freeze_scenario
-from backend.routing.generate_examples import build_mixed
-from backend.routing.optimizers.methods import METHODS
+from backend.routing.tests.generate_fixtures import build_mixed
+from backend.routing.planner.methods import METHODS
 from backend.routing.validator.validation import validate_plan
 from experiments.routing_research.algorithms.routing_model import proposed
 from experiments.routing_research.algorithms.scenarios import edge_payloads
-from backend.routing.optimizers.models import ExecutionConfig
+from backend.routing.route_plan import ExecutionConfig
 
 
 class RoutingModelTests(unittest.TestCase):
@@ -90,7 +90,7 @@ class RoutingModelTests(unittest.TestCase):
         self.assertTrue(result.feasible);self.assertTrue(result.solver_statuses[0].startswith('ROUTING_MODEL:'))
 
     def test_routing_model_remains_available_but_is_not_active_proposed_method(self):
-        from backend.routing.optimizers.methods import distance_only,proposed as cp_sat_proposed
+        from backend.routing.planner.methods import distance_only,proposed as cp_sat_proposed
         self.assertIs(METHODS['distance_only'],distance_only)
         self.assertIs(METHODS['proposed'],cp_sat_proposed)
         self.assertIsNot(METHODS['proposed'],proposed)

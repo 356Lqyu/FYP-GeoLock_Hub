@@ -9,8 +9,8 @@ from types import SimpleNamespace
 import zipfile
 
 from backend.routing.contract import VERSION, freeze_scenario
-from backend.routing.generate_examples import token
-from backend.routing.optimizers.problem import Problem
+from backend.routing.tests.generate_fixtures import token
+from backend.routing.planner.problem import Problem
 
 ROOT = Path(__file__).resolve().parents[3]
 

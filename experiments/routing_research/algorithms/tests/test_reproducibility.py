@@ -6,10 +6,10 @@ import unittest
 from unittest.mock import patch
 from zipfile import ZipFile
 from backend.routing.contract import freeze_scenario
-from backend.routing.generate_examples import build_mixed
-from backend.routing.optimizers.methods import proposed
+from backend.routing.tests.generate_fixtures import build_mixed
+from backend.routing.planner.methods import proposed
 from backend.routing.validator.validation import validate_plan
-from backend.routing.optimizers.problem import Problem
+from backend.routing.planner.problem import Problem
 from experiments.routing_research.algorithms import routing_model
 from experiments.routing_research.diagnostics.policy_proposal import classify
 from experiments.routing_research.diagnostics.reproducibility import fixtures,sha,canonical

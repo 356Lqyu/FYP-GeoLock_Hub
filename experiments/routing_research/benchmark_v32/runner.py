@@ -9,11 +9,11 @@ import platform
 from time import perf_counter
 
 from .adapter import Adapter, ROOT, sha
-from backend.routing.optimizers.methods import distance_only, proposed
+from backend.routing.planner.methods import distance_only, proposed
 from backend.routing.validator.validation import validate_plan
 from experiments.routing_research.algorithms.benchmark import semantic
-from backend.routing.optimizers.models import ExecutionConfig, Route, Stop
-from backend.routing.optimizers.problem import Problem, TIME_SCALE
+from backend.routing.route_plan import ExecutionConfig, Route, Stop
+from backend.routing.planner.problem import Problem, TIME_SCALE
 
 
 def baseline_plan(adapter, shared, frozen, method, config):

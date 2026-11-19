@@ -11,9 +11,9 @@ import platform
 import statistics
 import sys
 
-from backend.routing.generate_examples import EXAMPLES
-from backend.routing.optimizers.methods import METHODS
-from backend.routing.optimizers.models import ExecutionConfig
+from backend.routing.tests.generate_fixtures import EXAMPLES
+from backend.routing.planner.methods import METHODS
+from backend.routing.route_plan import ExecutionConfig
 from .scenarios import scenarios
 from backend.routing.validator.validation import validate_plan
 

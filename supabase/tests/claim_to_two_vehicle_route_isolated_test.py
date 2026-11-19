@@ -20,7 +20,7 @@ sys.path.insert(0, str(ROOT))
 
 class ClaimToTwoVehicleTests(stage_b.StageBTests):
     def test_claim_to_concurrent_vehicle_routes_and_independent_completion(self):
-        from backend.routing.integration import solve_bundle, validate_work_item
+        from backend.routing.snapshot import solve_bundle, validate_work_item
         first = self.prepare()
         claim_request = self.query(
             f"SELECT request_id FROM public.donation_claims WHERE claim_id='{first['claim']}';"

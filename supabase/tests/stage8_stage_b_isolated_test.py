@@ -161,15 +161,15 @@ class StageBTests(runtime.CompatibilityTests):
         v=self.jrpc(f"public.register_my_vehicle('{self.req()}','LOCAL VAN','VAN',100,10,1,240,true)")
         # Reuse the exact existing planning/attestation seam, after the real
         # protected creation path above. The road graph remains synthetic.
-        from backend.routing.generate_examples import build_mixed
+        from backend.routing.tests.generate_fixtures import build_mixed
         import ortools
-        from backend.routing.integration import solve_bundle,validate_work_item
+        from backend.routing.snapshot import solve_bundle,validate_work_item
         from dataclasses import asdict
         solver=build_mixed()['solver'];solver['version']=ortools.__version__;solver['time_limit_seconds']=1
         policy=dict(mandatory=True,horizon_minutes=240,dispatch_margin_minutes=5,direct_service_minutes=10,hub_service_minutes=10,solver=solver,execution=dict(fixed_cost_weight=1,distance_cost_weight=1,deterministic_seconds_per_pass=.05))
         pid=self.rpc(f"public.install_routing_policy('{self.req()}',{self.literal(policy)})",role='geolock_graph_worker')
         gid=self.rpc(f"public.freeze_routing_graph('{self.req()}','OSM-OPS-ISOLATED-SYNTHETIC','LOCAL EXPLICIT EDGE TIMES','EXACT_MAX_6_DECIMALS')",role='geolock_graph_worker')
-        from backend.routing.integration.graph_worker import matrix_from_export
+        from backend.routing.road_network.graph_export import matrix_from_export
         exported=self.jrpc(f"public.read_frozen_routing_graph('{gid}',NULL,NULL)",role='geolock_graph_worker')
         matrix=matrix_from_export(exported['graph'],exported['nodes'],exported['edges'],['101','102'])
         mid=self.rpc(f"public.store_routing_matrix('{self.req()}','{gid}',{self.literal(matrix)})",role='geolock_graph_worker')

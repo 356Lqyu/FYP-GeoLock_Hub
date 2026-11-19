@@ -17,7 +17,7 @@ import uuid
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from backend.routing.worker_service.transport import NoRedirect
+from backend.routing.database.supabase_rpc import NoRedirect
 
 PROJECT = 'rcgyuwiidqvrgbxswhqj'
 BASE = 'https://' + PROJECT + '.supabase.co'

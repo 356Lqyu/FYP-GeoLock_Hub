@@ -16,7 +16,7 @@ import stage8_c1_fleet_isolated_test as base
 
 ROOT = base.ROOT
 sys.path.insert(0, str(ROOT))
-from backend.routing.integration import prepare_bundle, solve_bundle, validate_work_item
+from backend.routing.snapshot import prepare_bundle, solve_bundle, validate_work_item
 
 HERE = ROOT/'docs/stage8/integration'
 E = json.loads((HERE/'dev-preparation-evidence.json').read_text())
@@ -152,7 +152,7 @@ class IntegrationTests(unittest.TestCase):
                 ('claim_leases',f"lease_id='{leid}'",dict(lease_id=le2,claim_id=c2)),
                 ('pickup_tasks',f"task_id='{tid}'",dict(task_id=t2,claim_id=c2,listing_id=l2))]:
                 self.query(f"INSERT INTO public.{table} SELECT (jsonb_populate_record(NULL::public.{table},to_jsonb(x)||{self.literal(changes)})).* FROM public.{table} x WHERE {where};")
-        from backend.routing.generate_examples import build_mixed
+        from backend.routing.tests.generate_fixtures import build_mixed
         import ortools
         solver=build_mixed()['solver']; solver['version']=ortools.__version__; solver['time_limit_seconds']=3
         policy=dict(mandatory=True,horizon_minutes=120,dispatch_margin_minutes=5,direct_service_minutes=1,hub_service_minutes=2,
@@ -309,7 +309,7 @@ class IntegrationTests(unittest.TestCase):
         self.assertEqual(self.query('SELECT inventory_status FROM public.hub_inventory;'),'COLLECTED')
 
     def test_multi_donation_hub_is_one_pickup_task_with_full_batch_weight(self):
-        from backend.routing.integration import solve_bundle
+        from backend.routing.snapshot import solve_bundle
         f=self.prepare(hub=True,hub_members=2)
         observation=f['bundle']['snapshot']['body']['observations'][0]
         self.assertEqual(len(f['bundle']['snapshot']['body']['observations']),1)

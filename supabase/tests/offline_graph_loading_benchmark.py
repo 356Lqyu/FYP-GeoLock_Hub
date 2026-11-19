@@ -10,8 +10,8 @@ from uuid import uuid4
 
 ROOT=Path(__file__).resolve().parents[2]
 sys.path.insert(0,str(ROOT))
-from backend.routing.planner.matrices import freeze_graph,build_matrix
-from backend.routing.worker_service.transport import encode
+from backend.routing.road_network.matrix import freeze_graph,build_matrix
+from backend.routing.database.supabase_rpc import encode
 
 
 def main():

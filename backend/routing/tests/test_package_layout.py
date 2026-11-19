@@ -4,11 +4,12 @@ from pathlib import Path
 import unittest
 from unittest.mock import patch
 
-from backend.routing.integration import worker
-from backend.routing.optimizers import cp_sat, methods, models
-from backend.routing.planner import matrices, orchestration
+from backend.routing import snapshot as worker
+from backend.routing import route_plan as models
+from backend.routing.planner import cp_sat, methods, planning as orchestration
+from backend.routing.road_network import matrix as matrices
 from backend.routing.validator import validate_plan, validate_work_item
-from backend.routing.worker_service.validator import validator_build
+from backend.routing.service.validator_service import validator_build
 
 
 class PackageLayoutTests(unittest.TestCase):
@@ -36,7 +37,7 @@ class PackageLayoutTests(unittest.TestCase):
     def test_validator_fingerprint_uses_canonical_source_bytes(self):
         root = Path(__file__).resolve().parents[1]
         paths = [root / name for name in (
-            "contract.py", "validator/validation.py", "integration/worker.py",
+            "contract.py", "validator/validation.py", "snapshot.py",
         )]
         expected = hashlib.sha256(b"".join(p.read_bytes() for p in paths)).hexdigest()
         self.assertEqual(validator_build(), "geolock-independent-validator:" + expected)

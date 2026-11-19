@@ -159,7 +159,7 @@ class Harness:
         self.check('deterministic_equal_distance_tie',f"SELECT to_jsonb('{before}'='{after}');",True)
 
     def matrix_test(self):
-        from backend.routing.integration.graph_worker import matrix_from_export
+        from backend.routing.road_network.graph_export import matrix_from_export
         self.sql('DELETE FROM public.road_network_edges; INSERT INTO public.road_network_edges(source_node,target_node,road_km,travel_minutes) VALUES(101,102,19.9999,20),(102,101,2,3);')
         # Match the production export's explicit PG_REAL_OUTPUT_0 projection.
         nodes=json.loads(self.sql('SELECT jsonb_agg(to_jsonb(n) ORDER BY osm_node_id) FROM public.road_network_nodes n;'))

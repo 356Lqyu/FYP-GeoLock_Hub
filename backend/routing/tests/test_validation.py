@@ -3,8 +3,8 @@ import unittest
 from unittest.mock import patch
 
 from backend.routing.contract import freeze_scenario, load_scenario
-from backend.routing.generate_examples import EXAMPLES
-from backend.routing.optimizers.baselines import fcfs
+from backend.routing.tests.generate_fixtures import EXAMPLES
+from backend.routing.planner.baselines import fcfs
 from backend.routing.validator.validation import validate_plan
 
 
@@ -39,7 +39,7 @@ class IndependentValidatorTests(unittest.TestCase):
         self.assertEqual(v.metrics["total_route_minutes"], 19)
 
     def test_validator_does_not_call_solver_feasibility_helper(self):
-        with patch("backend.routing.optimizers.problem.Problem.schedule", side_effect=RuntimeError("must not call")):
+        with patch("backend.routing.planner.problem.Problem.schedule", side_effect=RuntimeError("must not call")):
             self.assertTrue(validate_plan(self.s, self.p).valid)
 
     def test_solver_optimal_status_does_not_override_invalid_route(self):
@@ -48,13 +48,13 @@ class IndependentValidatorTests(unittest.TestCase):
         self.rejects(bad, "DUPLICATE_TASK")
 
     def test_pickup_task_objective_is_independently_recomputed(self):
-        from backend.routing.optimizers.methods import proposed
+        from backend.routing.planner.methods import proposed
         plan = proposed(self.s)
         self.assertEqual(validate_plan(self.s, plan).metrics["served_pickup_task_count"], 1)
         self.rejects(replace(plan, pickup_task_objective_value=2), "OPTIMIZATION_COVERAGE")
 
     def test_distance_objective_is_independently_recomputed(self):
-        from backend.routing.optimizers.methods import proposed
+        from backend.routing.planner.methods import proposed
         plan = proposed(self.s)
         self.rejects(replace(plan, secondary_objective_scaled=plan.secondary_objective_scaled + 1),
                      "OPTIMIZATION_DISTANCE")

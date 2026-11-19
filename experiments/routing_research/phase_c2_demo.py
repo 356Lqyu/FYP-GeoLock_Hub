@@ -4,9 +4,9 @@ from dataclasses import asdict
 import json
 from pathlib import Path
 
-from backend.routing.generate_examples import build_mixed
-from backend.routing.planner.matrices import freeze_graph, build_matrix
-from backend.routing.planner.orchestration import prepare_input, evaluate
+from backend.routing.tests.generate_fixtures import build_mixed
+from backend.routing.road_network.matrix import freeze_graph, build_matrix
+from backend.routing.planner.planning import prepare_input, evaluate
 
 
 def demonstration():

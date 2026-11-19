@@ -7,14 +7,14 @@ import unittest
 from unittest.mock import patch
 
 from backend.routing.contract import freeze_scenario, load_scenario
-from backend.routing.generate_examples import build_mixed, EXAMPLES
-from backend.routing.optimizers.methods import METHODS, distance_only, proposed
-from backend.routing.optimizers.baselines import fcfs, nearest_neighbour
+from backend.routing.tests.generate_fixtures import build_mixed, EXAMPLES
+from backend.routing.planner.methods import METHODS, distance_only, proposed
+from backend.routing.planner.baselines import fcfs, nearest_neighbour
 from backend.routing.validator.validation import validate_plan
 from experiments.routing_research.algorithms.benchmark import check_phase_a, run_benchmark, semantic
-from backend.routing.optimizers.models import ExecutionConfig
+from backend.routing.route_plan import ExecutionConfig
 from experiments.routing_research.algorithms.scenarios import scenarios, edge_payloads
-from backend.routing.optimizers.methods import proposed as cp_sat_proposed
+from backend.routing.planner.methods import proposed as cp_sat_proposed
 
 
 class AlgorithmsTests(unittest.TestCase):

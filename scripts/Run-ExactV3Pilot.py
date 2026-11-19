@@ -16,10 +16,10 @@ import xml.etree.ElementTree as ET
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from backend.routing.worker_service.errors import WorkerError, check
-from backend.routing.worker_service.staged import ExactRouteWorkflow
-from backend.routing.worker_service.staged_client import StagedPilotClient
-from backend.routing.worker_service.transport import NoRedirect, encode
+from backend.routing.service.errors import WorkerError, check
+from backend.routing.service.exact_pilot import ExactRouteWorkflow
+from backend.routing.service.exact_pilot_client import StagedPilotClient
+from backend.routing.database.supabase_rpc import NoRedirect, encode
 
 PROJECT = 'rcgyuwiidqvrgbxswhqj'
 MANIFEST = ROOT / 'docs/stage8/functional-routing/V3_EXACT_ROUTE_PILOT.proposed.json'

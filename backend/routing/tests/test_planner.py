@@ -4,11 +4,11 @@ import unittest
 from unittest.mock import patch
 
 from backend.routing.contract import ContractError
-from backend.routing.generate_examples import build_mixed
-from backend.routing.optimizers.methods import proposed, OPERATIONAL_METHODS
-from backend.routing.planner.matrices import freeze_graph, build_matrix
-from backend.routing.planner.orchestration import prepare_input, evaluate
-from backend.routing.planner.matrices import FrozenGraph
+from backend.routing.tests.generate_fixtures import build_mixed
+from backend.routing.planner.methods import proposed, OPERATIONAL_METHODS
+from backend.routing.road_network.matrix import freeze_graph, build_matrix
+from backend.routing.planner.planning import prepare_input, evaluate
+from backend.routing.road_network.matrix import FrozenGraph
 
 
 def graph(complete=True,edges=None):
@@ -138,7 +138,7 @@ class OrchestrationTests(unittest.TestCase):
 
     def test_tampered_solver_output_rejected(self):
         prepared=prepare_input(build_mixed()); plan=proposed(prepared.snapshot)
-        with patch('backend.routing.planner.orchestration.OPERATIONAL_METHODS',dict(OPERATIONAL_METHODS,proposed=lambda s,c:replace(plan,dispatch_authority_issued=True))):
+        with patch('backend.routing.planner.planning.OPERATIONAL_METHODS',dict(OPERATIONAL_METHODS,proposed=lambda s,c:replace(plan,dispatch_authority_issued=True))):
             with self.assertRaises(ContractError): evaluate(prepared)
 
     def test_missing_hold_facts_fail_closed(self):

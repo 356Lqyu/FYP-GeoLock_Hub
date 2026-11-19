@@ -6,7 +6,7 @@ and their purposes are recorded in provenance, not inferred road measurements.
 
 from copy import deepcopy
 from backend.routing.contract import freeze_scenario, load_scenario
-from backend.routing.generate_examples import build_mixed, EXAMPLES
+from backend.routing.tests.generate_fixtures import build_mixed, EXAMPLES
 
 
 def edge_payloads():

@@ -6,7 +6,7 @@ import sys
 import unittest
 
 import stage8_integration_isolated_test as source
-from backend.routing.integration.worker import timestamp
+from backend.routing.snapshot import timestamp
 
 
 def microseconds(delta):

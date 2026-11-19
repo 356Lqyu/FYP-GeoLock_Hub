@@ -14,12 +14,12 @@ import tempfile
 
 ROOT=Path(__file__).resolve().parents[2]
 sys.path.insert(0,str(ROOT))
-from backend.routing.worker_service.connection_diagnostic_native17 import configure_client
+from backend.routing.database.libpq_client import configure_client
 _NATIVE_HANDLE,_NATIVE_CLIENT=configure_client()
-from backend.routing.worker_service.connection_diagnostic import IDENTITY_SQL
-from backend.routing.worker_service.native_readonly_session import NativeReadOnlySession
-from backend.routing.worker_service.readonly_pilot_probe import ReadOnlyGraphRpc
-from backend.routing.worker_service.errors import WorkerError
+from backend.routing.diagnostics.connection_check import IDENTITY_SQL
+from backend.routing.diagnostics.readonly_session import NativeReadOnlySession
+from backend.routing.diagnostics.pilot_benchmark_probe import ReadOnlyGraphRpc
+from backend.routing.service.errors import WorkerError
 import psycopg
 from psycopg.pq import TransactionStatus
 from psycopg import pq
@@ -101,9 +101,9 @@ def main():
         # Narrow native runtime factory regression on THIS owned synthetic cluster.
         # No application activation and no external connection. Dummy functions
         # support catalog ACL checks only and are never invoked.
-        from backend.routing.worker_service.native_worker import NativeRpcFactory,check_connection
-        from backend.routing.worker_service.native_service_connection import approved_profile
-        from backend.routing.worker_service.transport import RPCS
+        from backend.routing.service.start_worker import NativeRpcFactory,check_connection
+        from backend.routing.database.native_connection import approved_profile
+        from backend.routing.database.supabase_rpc import RPCS
         with psycopg.connect(**params,user='postgres',autocommit=True) as admin:
             for role,login in [('geolock_planner','geolock_planner_login'),('geolock_validator','geolock_validator_login')]:
                 admin.execute('CREATE ROLE '+role+' NOLOGIN')

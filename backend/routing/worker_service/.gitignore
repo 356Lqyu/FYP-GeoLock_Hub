@@ -1,5 +1,0 @@
-.state/
-*.sqlite3*
-*.jsonl
-*.lock
-.env*

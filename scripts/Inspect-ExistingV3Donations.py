@@ -10,8 +10,8 @@ import uuid
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from backend.routing.worker_service.errors import WorkerError, check
-from backend.routing.worker_service.transport import BASE, JsonHttp, SupabaseAuth, encode
+from backend.routing.service.errors import WorkerError, check
+from backend.routing.database.supabase_rpc import BASE, JsonHttp, SupabaseAuth, encode
 
 OWNER = '8e50bc66-7a8d-4791-bc6b-640682daa496'
 V3 = '604d6303-ff33-4cdb-a37a-4442f5005f8f'

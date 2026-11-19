@@ -14,7 +14,7 @@ from unittest.mock import patch
 from google.protobuf import text_format
 from ortools.constraint_solver import routing_enums_pb2,pywrapcp
 from backend.routing.contract import freeze_scenario
-from backend.routing.integration.worker import decode_plan
+from backend.routing.snapshot import decode_plan
 from experiments.routing_research.algorithms import benchmark
 from backend.routing.validator.validation import validate_plan
 from .reproducibility import canonical,sha,save,blocked

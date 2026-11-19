@@ -10,7 +10,7 @@ import tempfile
 
 ROOT=Path(__file__).resolve().parents[2]
 sys.path.insert(0,str(ROOT))
-from backend.routing.worker_service.connection_diagnostic_native17 import configure_client
+from backend.routing.database.libpq_client import configure_client
 _HANDLE,_CLIENT=configure_client()
 import psycopg
 

@@ -25,12 +25,12 @@ ROOT=assembly.ROOT
 sys.path.insert(0,str(ROOT))
 import psycopg
 from psycopg.rows import dict_row
-from backend.routing.worker_service.transport import RoleRpc,JsonHttp
-from backend.routing.worker_service.validator import Validator,RemoteValidator
-from backend.routing.worker_service.graph_cache import GraphCache
-from backend.routing.worker_service.journal import Journal
-from backend.routing.worker_service.orchestrator import RoutingWorker
-from backend.routing.worker_service.server import Application,make_handler
+from backend.routing.database.supabase_rpc import RoleRpc,JsonHttp
+from backend.routing.service.validator_service import Validator,RemoteValidator
+from backend.routing.road_network.graph_cache import GraphCache
+from backend.routing.service.journal import Journal
+from backend.routing.service.planner_service import RoutingWorker
+from backend.routing.service.http_api import Application,make_handler
 from http.server import ThreadingHTTPServer
 
 NAMESPACE=UUID('116a91b7-31b8-4a5c-8816-731954eeed25')

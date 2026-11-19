@@ -25,12 +25,12 @@ ROOT=assembly.ROOT
 sys.path.insert(0,str(ROOT))
 import psycopg
 from psycopg.rows import dict_row
-from backend.routing.worker_service.transport import RoleRpc, JsonHttp
-from backend.routing.worker_service.graph_cache import GraphCache
-from backend.routing.worker_service.validator import Validator, RemoteValidator
-from backend.routing.worker_service.orchestrator import RoutingWorker, step_id
-from backend.routing.worker_service.journal import Journal
-from backend.routing.worker_service.server import Application, make_handler
+from backend.routing.database.supabase_rpc import RoleRpc, JsonHttp
+from backend.routing.road_network.graph_cache import GraphCache
+from backend.routing.service.validator_service import Validator, RemoteValidator
+from backend.routing.service.planner_service import RoutingWorker, step_id
+from backend.routing.service.journal import Journal
+from backend.routing.service.http_api import Application, make_handler
 from http.server import ThreadingHTTPServer
 
 MIGRATION='docs/stage8/stage-a/forward-migrations/20261104_routing_automatic_departure.sql'
@@ -291,7 +291,7 @@ class AutomaticTests(unittest.TestCase):
         self.assertEqual(self.session.rpc('get_my_routing_authorization_receipt',{'p_request':self.aid})['outcome'],'NOT_FOUND')
 
     def test_missing_attestation_cannot_authorize(self):
-        from backend.routing.worker_service.errors import WorkerError
+        from backend.routing.service.errors import WorkerError
         self.prepare()
         class RejectBeforeAttestation:
             def validate(inner,*args): raise WorkerError('SYNTHETIC_VALIDATION_REJECTED',422)

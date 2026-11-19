@@ -39,10 +39,10 @@ $secure = $null; $ptr = [IntPtr]::Zero; $plain = $null; $dsn = $null; $process =
 if ($PasswordTransportCheck) { Write-Host 'OFFLINE equality check only: enter the same value twice. No network/authentication or saved report.' }
 try {
     if ($NativeServiceProbe) {
-        $info.Arguments = '-B -m backend.routing.worker_service.native_service_probe --run --matrix --timeout-seconds 600 --max-memory-mb 4096'
+        $info.Arguments = '-B -m backend.routing.diagnostics.graph_probe --run --matrix --timeout-seconds 600 --max-memory-mb 4096'
     } elseif ($NativeServiceDiagnostic) {
         # No PowerShell password conversion or DSN environment variable at all.
-        $info.Arguments = '-B -m backend.routing.worker_service.native_service_diagnostic'
+        $info.Arguments = '-B -m backend.routing.diagnostics.native_service_check'
     } elseif ($Run -or $ConnectionDiagnostic -or $PasswordTransportCheck) {
         $secure = Read-Host 'Dedicated geolock_graph_login database password (hidden)' -AsSecureString
         if ($secure.Length -eq 0) { throw 'Empty password: no connection attempted' }
@@ -52,16 +52,16 @@ try {
         $info.EnvironmentVariables['GEOLOCK_GRAPH_DSN'] = $dsn
         if ($PasswordTransportCheck) {
             $info.EnvironmentVariables['GEOLOCK_PASSWORD_REFERENCE'] = $plain
-            $info.Arguments = '-B -m backend.routing.worker_service.connection_diagnostic_native17 --password-transport-check'
+            $info.Arguments = '-B -m backend.routing.database.libpq_client --password-transport-check'
         } elseif ($ConnectionDiagnostic) {
-            $info.Arguments = '-B -m backend.routing.worker_service.connection_diagnostic_native17'
+            $info.Arguments = '-B -m backend.routing.database.libpq_client'
         } else {
-            $info.Arguments = '-B -m backend.routing.worker_service.readonly_pilot_probe --run --matrix --timeout-seconds 300'
+            $info.Arguments = '-B -m backend.routing.diagnostics.pilot_benchmark_probe --run --matrix --timeout-seconds 300'
         }
     } else {
         # Synthetic placeholder is used only for local conninfo parsing; never connects.
         $info.EnvironmentVariables['GEOLOCK_GRAPH_DSN'] = New-GraphProbeDsn -Password 'OFFLINE_PLACEHOLDER_NEVER_AUTHENTICATE'
-        $info.Arguments = '-B -m backend.routing.worker_service.readonly_pilot_probe'
+        $info.Arguments = '-B -m backend.routing.diagnostics.pilot_benchmark_probe'
     }
     if (!$PasswordTransportCheck) {
         Write-Host 'Target: DEV rcgyuwiidqvrgbxswhqj; session pooler 5432; geolock_graph_login; TLS verify-full.'

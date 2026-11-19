@@ -27,7 +27,7 @@ def execute(payload,trace_native=True):
     from google.protobuf import text_format
     import ortools
     from backend.routing.contract import freeze_scenario
-    from backend.routing.optimizers.methods import proposed
+    from backend.routing.planner.methods import proposed
     from backend.routing.validator.validation import validate_plan
     from experiments.routing_research.algorithms.benchmark import semantic
     snapshot=freeze_scenario(payload);calls=[];native=pywrapcp.RoutingModel.SolveWithParameters
@@ -53,9 +53,9 @@ def execute(payload,trace_native=True):
         captured_at=datetime.now(timezone.utc).isoformat())
 
 def fixtures():
-    from backend.routing.generate_examples import build_mixed,task,location,token
+    from backend.routing.tests.generate_fixtures import build_mixed,task,location,token
     from experiments.routing_research.algorithms.scenarios import edge_payloads
-    from backend.routing.planner.matrices import freeze_graph, build_matrix
+    from backend.routing.road_network.matrix import freeze_graph, build_matrix
     import ortools
     cases={}
     p=build_mixed();p['vehicles']=p['vehicles'][:1];p['tasks']=p['tasks'][:1];cases['one_pickup']=p
@@ -90,7 +90,7 @@ def run(out,short=False):
     if out.exists() or not out.resolve().is_relative_to(ROOT):raise ValueError('New workspace output directory required')
     out.mkdir(parents=True);cases=fixtures()
     if short:
-        from backend.routing.generate_examples import build_mixed
+        from backend.routing.tests.generate_fixtures import build_mixed
         p=build_mixed();p['solver']['time_limit_seconds']=.2;cases={'historical_mixed_short':p}
     repetitions=20 if short else 3
     save(out/'protocol.json',dict(scope='B3_DIAGNOSTIC_NOT_CHAPTER5',repetitions=repetitions,
@@ -128,7 +128,7 @@ def compare(out):
 def warm_short(out):
     if out.exists():raise ValueError('New output required')
     out.mkdir(parents=True)
-    from backend.routing.generate_examples import build_mixed
+    from backend.routing.tests.generate_fixtures import build_mixed
     payload=build_mixed();payload['solver']['time_limit_seconds']=.2
     save(out/'warm_mixed.input.json',payload)
     for i in range(60):
