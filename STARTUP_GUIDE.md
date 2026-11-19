@@ -57,7 +57,7 @@ $plannerListeners = @(netstat -ano -p tcp | Select-String ':8787\s+.*LISTENING')
 if ($LASTEXITCODE -ne 0) { throw 'Port inspection failed. Do not start.' }
 if ($plannerListeners.Count -gt 0) { $plannerListeners; throw '8787 already occupied. Do not start a duplicate planner; inspect Terminal 5.' }
 $plannerApproval = Read-Host 'Reference for this already-approved planner startup'
-& '.\backend\routing\worker_service\windows\Start-Worker.ps1' -Mode planner -GraphId 'eab1f7ee-a8e0-4bed-a0e1-2c4bff024936' -Activate -ApprovalRef $plannerApproval -EnableCombinedWorkflow -EnableExactWorkflow
+& '.\backend\routing\windows\Start-Worker.ps1' -Mode planner -GraphId 'eab1f7ee-a8e0-4bed-a0e1-2c4bff024936' -Activate -ApprovalRef $plannerApproval -EnableCombinedWorkflow -EnableExactWorkflow
 ```
 
 Enter dedicated graph and planner database passwords only at their native hidden
@@ -81,7 +81,7 @@ $validatorListeners = @(netstat -ano -p tcp | Select-String ':8788\s+.*LISTENING
 if ($LASTEXITCODE -ne 0) { throw 'Port inspection failed. Do not start.' }
 if ($validatorListeners.Count -gt 0) { $validatorListeners; throw '8788 already occupied. Leave a healthy validator running; inspect Terminal 5.' }
 $validatorApproval = Read-Host 'Reference for this already-approved validator startup'
-& '.\backend\routing\worker_service\windows\Start-Worker.ps1' -Mode validator -Activate -ApprovalRef $validatorApproval
+& '.\backend\routing\windows\Start-Worker.ps1' -Mode validator -Activate -ApprovalRef $validatorApproval
 ```
 
 Enter only the dedicated validator database password at the native hidden prompt.

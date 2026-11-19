@@ -40,11 +40,11 @@ Set-Location 'C:\Users\User\Downloads\FYP-GeoLock_Hub'
 py -3.12 --version
 # New laptop only; do not recreate an existing working venv:
 py -3.12 -m venv .venv-stage8
-& .\.venv-stage8\Scripts\python.exe -m pip install -r .\backend\routing\worker_service\requirements.txt
+& .\.venv-stage8\Scripts\python.exe -m pip install -r .\backend\routing\requirements.txt
 & .\.venv-stage8\Scripts\python.exe -m pip check
 ```
 
-On other laptops change only `Set-Location` to that person's checkout. Dependencies are pinned by `worker_service/requirements.txt` and `worker_service/requirements-lock.txt`, including OR-Tools 9.15.6755 and psycopg 3.3.6. Do not regenerate pins or upgrade the solver to fix an installation error. Installing packages uses the configured package index but does not access DEV. A venv activation command is unnecessary because every command uses its explicit Python path.
+On other laptops change only `Set-Location` to that person's checkout. Dependencies are pinned by `backend/routing/requirements.txt` and `backend/routing/requirements-lock.txt`, including OR-Tools 9.15.6755 and psycopg 3.3.6. Do not regenerate pins or upgrade the solver to fix an installation error. Installing packages uses the configured package index but does not access DEV. A venv activation command is unnecessary because every command uses its explicit Python path.
 
 If local PowerShell policy blocks trusted project scripts, review them and, if organizational policy permits, use a session-only policy:
 
@@ -63,11 +63,11 @@ For unchanged native behavior, an administrator must arrange the public, indepen
 ## 4. Verify setup without accessing DEV
 
 ```powershell
-.\backend\routing\worker_service\windows\Test-LocalRoutingSetup.ps1
-& .\.venv-stage8\Scripts\python.exe -B -m unittest discover -s backend/routing/worker_service/tests -t . -q
+.\backend\routing\windows\Test-LocalRoutingSetup.ps1
+& .\.venv-stage8\Scripts\python.exe -B -m unittest discover -s backend/routing/tests/service -t . -q
 ```
 
-The setup check clears activation/database variables **in its child processes**, imports no encrypted profiles and starts isolated disabled APIs on temporary ports. It GETs only `/health` and stops its own children. Existing services on 8787/8788 are left alone. Expected result: `PASS`, native client `NOT CONNECTED`, both health results `DISABLED`. Worker test discovery includes the Windows SQLite journal regression under `worker_service/tests`.
+The setup check clears activation/database variables **in its child processes**, imports no encrypted profiles and starts isolated disabled APIs on temporary ports. It GETs only `/health` and stops its own children. Existing services on 8787/8788 are left alone. Expected result: `PASS`, native client `NOT CONNECTED`, both health results `DISABLED`. Worker test discovery includes the Windows SQLite journal regression under `backend/routing/tests/service`.
 
 ## 5. Credentials and saved configuration (approved operator only)
 
@@ -87,7 +87,7 @@ The native launcher currently fixes these three LOGIN names. Independently revoc
 For a newly approved host, once the native prerequisites are satisfied:
 
 ```powershell
-.\backend\routing\worker_service\windows\Save-WorkerConfig.ps1
+.\backend\routing\windows\Save-WorkerConfig.ps1
 ```
 
 Answer **Y** for session pooler, use the exact host from the pinned profile, enter the exact CA path above, then use the masked prompts for authorized credentials and DEV publishable key. Existing graph UUID: `eab1f7ee-a8e0-4bed-a0e1-2c4bff024936` (historically approved; current availability is not freshly verified here). Never initialize/refreeze graphs or replay migrations to set up another laptop. The wizard refuses to overwrite existing profiles. Do not delete them to get past that protection. Profiles/state are outside Git under `$env:LOCALAPPDATA\GeoLockHubRoutingDev`.
@@ -116,16 +116,16 @@ No activation or DB call occurs during saving. The saved passwords exist for his
 From the repository root, check the saved worker profiles and Flutter launcher paths without activation. Run the worker checks as the operator who saved the profiles.
 
 ```powershell
-.\backend\routing\worker_service\windows\Start-Worker.ps1 -Mode validator -CheckConfig
-.\backend\routing\worker_service\windows\Start-Worker.ps1 -Mode planner -CheckConfig
+.\backend\routing\windows\Start-Worker.ps1 -Mode validator -CheckConfig
+.\backend\routing\windows\Start-Worker.ps1 -Mode planner -CheckConfig
 .\scripts\Run-RoutingDev.ps1 -CheckConfig
 ```
 
 These checks do not start workers, alter ADB mappings, launch Flutter, or connect to DEV. `-CheckConnection` is a separate read-only **live DEV** check that requires approval. Never combine it with `-Activate`. It writes a local diagnostic receipt under `results/worker-runtime-connections/`.
 
 ```powershell
-.\backend\routing\worker_service\windows\Start-Worker.ps1 -Mode validator -CheckConnection
-.\backend\routing\worker_service\windows\Start-Worker.ps1 -Mode planner -CheckConnection
+.\backend\routing\windows\Start-Worker.ps1 -Mode validator -CheckConnection
+.\backend\routing\windows\Start-Worker.ps1 -Mode planner -CheckConnection
 ```
 
 ### Normal startup after setup and approval
@@ -142,7 +142,7 @@ Get-NetTCPConnection -State Listen -ErrorAction SilentlyContinue |
 
    ```powershell
    $validatorApproval = Read-Host 'Current approved DEV validator reference'
-   .\backend\routing\worker_service\windows\Start-Worker.ps1 -Mode validator -Activate -ApprovalRef $validatorApproval
+   .\backend\routing\windows\Start-Worker.ps1 -Mode validator -Activate -ApprovalRef $validatorApproval
    ```
 
    From terminal 3, check the existing listener before starting the planner. Expect `ACTIVE` and DEV project `rcgyuwiidqvrgbxswhqj`.
@@ -156,7 +156,7 @@ Get-NetTCPConnection -State Listen -ErrorAction SilentlyContinue |
    ```powershell
    $graphId = Read-Host 'Approved frozen DEV graph UUID'
    $plannerApproval = Read-Host 'Current approved DEV planner reference'
-   .\backend\routing\worker_service\windows\Start-Worker.ps1 -Mode planner -GraphId $graphId -Activate -ApprovalRef $plannerApproval -EnableCombinedWorkflow
+   .\backend\routing\windows\Start-Worker.ps1 -Mode planner -GraphId $graphId -Activate -ApprovalRef $plannerApproval -EnableCombinedWorkflow
    ```
 
    `-EnableCombinedWorkflow` enables the normal Flutter Generate & Authorize flow. The separate exact pilot is outside this Quick Start. From terminal 3, check the planner listener. `ACTIVE` confirms the HTTP listener is enabled. It does not prove graph readiness, current database permissions, or a successful route.
