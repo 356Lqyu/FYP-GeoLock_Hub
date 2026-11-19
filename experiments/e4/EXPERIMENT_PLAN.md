@@ -18,7 +18,7 @@ All three methods receive the same 500 task IDs. A task is admitted when it may 
 | FCFS | Takes the oldest feasible task next. |
 | OR-Tools CP-SAT | Maximizes the number of served pickups, then minimizes total road distance at that number. |
 
-The planner uses the shared [backend optimizer](../../backend/routing/optimizers/cp_sat.py). All methods use directed road distances, start and return at the depot, make at most one trip per vehicle, obey capacity and pickup windows, and use a 240-minute route limit with 10 minutes of service per stop.
+The planner uses the shared [backend optimizer](../../backend/routing/planner/cp_sat.py). All methods use directed road distances, start and return at the depot, make at most one trip per vehicle, obey capacity and pickup windows, and use a 240-minute route limit with 10 minutes of service per stop.
 
 ## 4. Measures
 

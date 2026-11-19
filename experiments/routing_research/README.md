@@ -31,7 +31,7 @@ The [v3.2 benchmark package](benchmark_v32/README.md) contains the standalone v3
 
 ## Offline algorithms and tests
 
-`algorithms/` contains the paired benchmark, synthetic scenarios, plan serializer, and alternate RoutingModel solver. E4 uses the plan serializer with the shared production CP-SAT optimiser and independent validator. The Windows service continues to use the method registry in `backend.routing.optimizers.methods`.
+`algorithms/` contains the paired benchmark, synthetic scenarios, plan serializer, and alternate RoutingModel solver. E4 uses the plan serializer with the shared production CP-SAT optimiser and independent validator. The Windows service continues to use the method registry in `backend.routing.planner.methods`.
 
 ```powershell
 & $python -B -m experiments.routing_research.algorithms.benchmark --help

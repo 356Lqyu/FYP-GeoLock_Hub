@@ -76,9 +76,10 @@ def run(adapter, output, execute=False):
     manifest.update(status='EXPERIMENT_RUN', experiment_executed=True, python=platform.python_version(),
         methods=['teammate_fcfs','teammate_nearest_next','distance_only','proposed'],
         source_sha256={str(p.relative_to(ROOT)):sha(p) for directory in
-            (Path(__file__).resolve().parent, ROOT/'backend/routing/optimizers', ROOT/'backend/routing/validator', ROOT/'experiments/routing_research/algorithms')
+            (Path(__file__).resolve().parent, ROOT/'backend/routing/planner', ROOT/'backend/routing/validator', ROOT/'experiments/routing_research/algorithms')
             for p in sorted(directory.glob('*.py'))})
     manifest['source_sha256'].update({str(ROOT/'backend/routing/contract.py'):sha(ROOT/'backend/routing/contract.py'),
+        str(ROOT/'backend/routing/route_plan.py'):sha(ROOT/'backend/routing/route_plan.py'),
         **{str(adapter.root/'baseline implementation/source code'/f'{name}_baseline.py'):
         sha(adapter.root/'baseline implementation/source code'/f'{name}_baseline.py') for name in adapter.modules}})
     import ortools
