@@ -55,6 +55,9 @@ and the trim step are no longer needed and were removed. The provenance text ins
 `output/operational_road_coverage.sql` still names that trim step; it is kept as it
 is so the file hashes in `manifest.json` stay valid.
 
+The files in `output/` use LF line endings (set in `.gitattributes`), so the hashes in
+`manifest.json` match on Windows, Mac, Linux and GitHub.
+
 ## Why the switch needs care: the routing freeze
 
 The routing worker froze the road tables when its graph was created. The triggers

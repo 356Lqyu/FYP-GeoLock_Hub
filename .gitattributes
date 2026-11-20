@@ -1,0 +1,2 @@
+# Road network snapshot: keep LF everywhere so manifest.json hashes match
+supabase/road_network/output/* text eol=lf

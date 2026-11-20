@@ -503,13 +503,13 @@ def main() -> None:
 
     log("Writing outputs")
     with nodes_csv.open("w", newline="", encoding="utf-8") as f:
-        w = csv.writer(f)
+        w = csv.writer(f, lineterminator="\n")  # LF, same bytes on every OS
         w.writerow(["osm_node_id", "network_snapshot_id", "latitude", "longitude",
                     "component_id", "active_flag"])
         for nid, la, lo in zip(nodes.tolist(), n_lat.tolist(), n_lon.tolist()):
             w.writerow([nid, snapshot, f"{la:.7f}", f"{lo:.7f}", 0, "true"])
     with edges_csv.open("w", newline="", encoding="utf-8") as f:
-        w = csv.writer(f)
+        w = csv.writer(f, lineterminator="\n")  # LF, same bytes on every OS
         w.writerow(["source_node", "target_node", "road_km", "travel_minutes"])
         for row in zip(src.tolist(), dst.tolist(), km.tolist(), minutes.tolist()):
             w.writerow(row)
