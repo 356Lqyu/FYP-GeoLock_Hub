@@ -1,14 +1,24 @@
 #!/usr/bin/env python3
 """Build the OPERATIONAL road network that Supabase uses to snap live locations.
 
-Input : a Geofabrik OpenStreetMap extract (.osm.pbf). Nothing else.
-Output: CSV/SQL files in the exact column layout of
+The app serves Kuala Lumpur, Putrajaya and Selangor only, so only the roads of these
+three areas are built. This keeps the database small enough for the Supabase Free plan.
+
+Input : the Geofabrik extract malaysia-singapore-brunei-<yymmdd>.osm.pbf in input/.
+        The newest .osm.pbf in input/ is used. Nothing else is read.
+Output: output/ with CSV/SQL files in the exact column layout of
         supabase/migrations/20261020_operational_road_node_resolution.sql
         (road_network_coverage, road_network_nodes, road_network_edges).
 
+Run:    python build_operational_road_network.py
+
 Rules (FYP report section 3.3.1 and 3.3.5.1):
-  * Study area: the 11 Peninsular Malaysia states plus the Federal Territories of
-    Kuala Lumpur and Putrajaya, taken from the OSM state boundaries in the extract.
+  * Service area: Selangor, Kuala Lumpur and Putrajaya, taken from the OSM state
+    boundaries in the extract. Putrajaya is kept because it sits inside Selangor;
+    leaving it out would make a hole that blocks pickups and routes through it.
+  * Roads are kept up to ROAD_BAND_DEG (about 2 km) outside the service area, so a
+    point near the border still finds a road node within 500 m. Users can only pick
+    locations inside the service area itself (coverage_area).
   * Only drivable ways; one-way restrictions and inactive/closed ways respected.
   * Edge travel time = length / OSM maxspeed when usable, else the default speed
     of the road class (SPEED_KMH below). No live traffic.
@@ -18,8 +28,8 @@ Rules (FYP report section 3.3.1 and 3.3.5.1):
   * Pass-through points are contracted (shortest paths verified unchanged), but a
     node is kept at least every --max-spacing-m metres (default 350 m) so a point
     beside a road still finds a node well within 500 m.
-  * Default excludes highway=service (driveways, car parks): it halves the network
-    and pickups snap to the public road instead (see README "Sizing").
+  * highway=service (driveways, car parks) is left out: it halves the network and
+    pickups snap to the public road instead.
 
 This pipeline never reads `benchmark dataset/`, `baseline implementation/` or
 `experiments/`. The benchmark builds its own frozen research graph; the live app
@@ -27,7 +37,6 @@ uses only this snapshot.
 """
 from __future__ import annotations
 
-import argparse
 import csv
 import hashlib
 import json
@@ -36,7 +45,6 @@ import platform
 import re
 import sys
 import time
-import zipfile
 from array import array
 from datetime import datetime, timezone
 from pathlib import Path
@@ -46,27 +54,22 @@ import osmium
 import shapely
 from scipy.sparse import csr_matrix
 from scipy.sparse.csgraph import connected_components
+from scipy.spatial import cKDTree
 from shapely import wkb
 from shapely.geometry import MultiPolygon, Polygon
 from shapely.ops import unary_union
 
-# ISO 3166-2 codes of the study area (report 3.3.1). Sabah, Sarawak, Labuan excluded.
-STUDY_AREA = {
-    "MY-01": "Johor", "MY-02": "Kedah", "MY-03": "Kelantan", "MY-04": "Melaka",
-    "MY-05": "Negeri Sembilan", "MY-06": "Pahang", "MY-07": "Pulau Pinang",
-    "MY-08": "Perak", "MY-09": "Perlis", "MY-10": "Selangor", "MY-11": "Terengganu",
-    "MY-14": "Kuala Lumpur", "MY-16": "Putrajaya",
-}
-# Generous bounding box of Peninsular Malaysia (Borneo starts east of 109 E).
-BBOX = (99.4, 0.8, 104.9, 6.9)  # min lon, min lat, max lon, max lat
-# Several OSM state boundaries follow the coastline, so clipping roads to them would
-# cut the Penang bridges (isolating Penang Island) and reclaimed coastal land. Roads
-# are therefore clipped to the states plus a coastal band of BRIDGE_BAND_DEG, minus
-# Singapore and the band along the Thai land border (north of THAI_BORDER_BAND_LAT).
-# Locations themselves must still fall inside the states (coverage_area).
-BRIDGE_BAND_DEG = 0.05            # ~5.5 km: Penang bridges are <= ~4.5 km from shore
-EXCLUDED_NEIGHBOUR_ISO = "SG"
-THAI_BORDER_BAND_LAT = 5.6        # Penang bridges lie at 5.27-5.36 N
+HERE = Path(__file__).resolve().parent
+INPUT_DIR = HERE / "input"
+OUT_DIR = HERE / "output"
+
+# Service area (ISO 3166-2). Putrajaya stays: it sits inside Selangor.
+SERVICE_AREA = {"MY-10": "Selangor", "MY-14": "Kuala Lumpur", "MY-16": "Putrajaya"}
+SNAPSHOT_SUFFIX = "-KLSEL"   # snapshot id = OSM-OPS-<extract date>-KLSEL
+ROAD_BAND_DEG = 0.02         # about 2.2 km of road kept outside the service area
+SIMPLIFY_DEG = 0.0005        # coverage polygon simplification (about 55 m)
+MAX_SPACING_M = 350.0        # keep a node at least this often along a road chain
+EXCLUDED_HIGHWAY = frozenset({"service"})  # left out to fit the Free plan
 
 # Default speed (km/h) per drivable highway class when maxspeed is absent/unusable.
 SPEED_KMH = {
@@ -148,53 +151,40 @@ def log(msg: str) -> None:
     print(f"[{time.strftime('%H:%M:%S')}] {msg}", flush=True)
 
 
-# 1. Study-area polygon ------------------------------------------------------
+# 1. Service-area polygon ----------------------------------------------------
 
-def build_study_area(pbf: Path, simplify_deg: float):
+def build_service_area(pbf: Path):
+    """Coverage = the three OSM state boundaries. Road area = coverage plus a band."""
     factory = osmium.geom.WKBFactory()
-    parts, found, neighbour = [], {}, None
-    fp = osmium.FileProcessor(pbf).with_areas(
-        osmium.filter.TagFilter(("admin_level", "4"), ("admin_level", "2")))
+    parts, found = [], {}
+    fp = osmium.FileProcessor(pbf).with_areas(osmium.filter.TagFilter(("admin_level", "4")))
     for obj in fp:
         if not obj.is_area() or obj.from_way():
             continue
-        if (obj.tags.get("admin_level") == "2"
-                and obj.tags.get("ISO3166-1") == EXCLUDED_NEIGHBOUR_ISO
-                and obj.tags.get("boundary") == "administrative"):
-            neighbour = wkb.loads(factory.create_multipolygon(obj), hex=True)
-            found[EXCLUDED_NEIGHBOUR_ISO] = obj.orig_id()
-            continue
         code = obj.tags.get("ISO3166-2")
-        if code not in STUDY_AREA or obj.tags.get("boundary") != "administrative":
+        if code not in SERVICE_AREA or obj.tags.get("boundary") != "administrative":
             continue
-        geom = wkb.loads(factory.create_multipolygon(obj), hex=True)
-        parts.append(geom)
+        parts.append(wkb.loads(factory.create_multipolygon(obj), hex=True))
         found[code] = obj.orig_id()
-    missing = sorted(set(STUDY_AREA) - set(found)) + ([] if neighbour else [EXCLUDED_NEIGHBOUR_ISO])
+    missing = sorted(set(SERVICE_AREA) - set(found))
     if missing:
-        sys.exit(f"Study-area boundaries missing from the extract: {missing}")
+        sys.exit(f"Service-area boundaries missing from the extract: {missing}")
     area = shapely.make_valid(unary_union(parts))
-    band = (area.simplify(simplify_deg).buffer(BRIDGE_BAND_DEG)
-            .difference(shapely.make_valid(neighbour))
-            .difference(shapely.box(BBOX[0], THAI_BORDER_BAND_LAT, BBOX[2], BBOX[3]))
-            .intersection(shapely.box(*BBOX)))
-    road_area = shapely.make_valid(area.union(band))
-    simplified = shapely.make_valid(area.simplify(simplify_deg, preserve_topology=True))
-    polys = [g for g in getattr(simplified, "geoms", [simplified]) if isinstance(g, Polygon)]
-    if isinstance(simplified, MultiPolygon):
-        polys = list(simplified.geoms)
-    coverage = MultiPolygon(polys)
+    simplified = shapely.make_valid(area.simplify(SIMPLIFY_DEG, preserve_topology=True))
+    coverage = MultiPolygon([g for g in getattr(simplified, "geoms", [simplified])
+                             if isinstance(g, Polygon) and not g.is_empty])
     if not coverage.is_valid or coverage.is_empty:
-        sys.exit("Study-area polygon is invalid after simplification.")
+        sys.exit("Service-area polygon is invalid after simplification.")
+    road_area = shapely.make_valid(area.buffer(ROAD_BAND_DEG))
     return road_area, coverage, found
 
 
 # 2. Drivable ways -----------------------------------------------------------
 
-def read_drivable_ways(pbf: Path, excluded=frozenset()):
+def read_drivable_ways(pbf: Path, bbox, excluded=frozenset()):
     ids, lats, lons = array("q"), array("d"), array("d")
     offsets, speeds, dirs = array("q", [0]), array("f"), array("b")
-    min_lon, min_lat, max_lon, max_lat = BBOX
+    min_lon, min_lat, max_lon, max_lat = bbox
     fp = (osmium.FileProcessor(pbf, osmium.osm.NODE | osmium.osm.WAY)
           .with_locations()
           .with_filter(osmium.filter.EntityFilter(osmium.osm.WAY))
@@ -415,25 +405,33 @@ def verify_shortest_paths(full, reduced, nodes, samples=25, limit_km=25.0, seed=
             "max_distance_difference_m": round(max_diff_m, 3)}
 
 
-# 5. Main --------------------------------------------------------------------
+# 5. Snap check -------------------------------------------------------------
+
+def snap_grid_check(coverage, n_lat, n_lon, step_deg=0.01):
+    """On a ~1 km grid over the service area: how many points find a node within 500 m.
+    Forest reserves, wetlands and the sea have no road nearby, so not every point can."""
+    min_lon, min_lat, max_lon, max_lat = coverage.bounds
+    gx, gy = np.meshgrid(np.arange(min_lon, max_lon, step_deg), np.arange(min_lat, max_lat, step_deg))
+    inside = shapely.contains_xy(coverage, gx.ravel(), gy.ravel())
+    scale = np.cos(np.radians((min_lat + max_lat) / 2))
+    pts = np.c_[gy.ravel()[inside], gx.ravel()[inside] * scale]
+    dist_m = cKDTree(np.c_[n_lat, n_lon * scale]).query(pts)[0] * 111_320
+    return {"grid_step_deg": step_deg, "points_in_coverage": int(inside.sum()),
+            "routable_points": int((dist_m <= MAX_SNAP_DISTANCE_M).sum())}
+
+
+# 6. Main --------------------------------------------------------------------
+
+def find_pbf() -> Path:
+    files = sorted(INPUT_DIR.glob("*.osm.pbf"), key=lambda p: p.stat().st_mtime)
+    if not files:
+        sys.exit(f"No .osm.pbf found in {INPUT_DIR}. Download the Geofabrik extract first "
+                 "(see README).")
+    return files[-1].resolve()
+
 
 def main() -> None:
-    here = Path(__file__).resolve().parent
-    ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    ap.add_argument("--pbf", type=Path, required=True, help="Geofabrik .osm.pbf extract")
-    ap.add_argument("--snapshot-id", help="default: OSM-OPS-<extract date>")
-    ap.add_argument("--out", type=Path, default=here / "output")
-    ap.add_argument("--max-spacing-m", type=float, default=350.0,
-                    help="keep a node at least this often along a road chain")
-    ap.add_argument("--simplify-deg", type=float, default=0.0005,
-                    help="study-area polygon simplification (~55 m)")
-    ap.add_argument("--exclude-highway", nargs="*", default=["service"], choices=sorted(SPEED_KMH),
-                    help="drivable classes left out to fit the database plan (default: service; "
-                         "pass the flag with no value to keep every class)")
-    ap.add_argument("--zip", action="store_true", help="also write a zip of the outputs")
-    args = ap.parse_args()
-
-    pbf = args.pbf.resolve()
+    pbf = find_pbf()
     for forbidden in ("benchmark dataset", "baseline implementation", "experiments"):
         if forbidden in str(pbf).replace("\\", "/"):
             sys.exit(f"Refusing input inside '{forbidden}': operational data must be separate.")
@@ -443,22 +441,18 @@ def main() -> None:
     header.close()
     extract_date = (osm_timestamp[:10].replace("-", "") if osm_timestamp
                     else datetime.now(timezone.utc).strftime("%Y%m%d"))
-    snapshot = args.snapshot_id or f"OSM-OPS-{extract_date}"
-    if not snapshot.startswith("OSM-OPS-"):
-        sys.exit("Snapshot id must start with OSM-OPS- (migration constraint).")
-    args.out.mkdir(parents=True, exist_ok=True)
+    snapshot = f"OSM-OPS-{extract_date}{SNAPSHOT_SUFFIX}"
+    OUT_DIR.mkdir(parents=True, exist_ok=True)
 
-    log(f"Study area from {pbf.name}")
-    area, coverage, relations = build_study_area(pbf, args.simplify_deg)
-    log(f"  {len(relations) - 1} state boundaries (+ {EXCLUDED_NEIGHBOUR_ISO} excluded), "
-        f"{shapely.get_num_coordinates(coverage)} coverage vertices")
+    log(f"Service area from {pbf.name}")
+    area, coverage, relations = build_service_area(pbf)
+    log(f"  {len(relations)} state boundaries, {shapely.get_num_coordinates(coverage)} coverage vertices")
 
     log("Reading drivable ways (with node locations)")
-    excluded = frozenset(args.exclude_highway)
-    ids, lats, lons, offsets, speeds, dirs, n_ways = read_drivable_ways(pbf, excluded)
+    ids, lats, lons, offsets, speeds, dirs, n_ways = read_drivable_ways(pbf, area.bounds, EXCLUDED_HIGHWAY)
     log(f"  {n_ways} ways, {len(ids)} node references")
 
-    log("Clipping to the study area")
+    log("Clipping to the service area and its road band")
     valid = ~np.isnan(lats)
     shapely.prepare(area)
     uniq, inv = np.unique(ids, return_inverse=True)
@@ -470,10 +464,10 @@ def main() -> None:
     inside = u_inside[inv] & valid
     log(f"  {int(u_inside.sum())} of {len(uniq)} distinct nodes inside")
 
-    log(f"Contracting chains (keep a node at least every {args.max_spacing_m:.0f} m)")
+    log(f"Contracting chains (keep a node at least every {MAX_SPACING_M:.0f} m)")
     full = segments(ids, lats, lons, offsets, speeds, dirs, inside)
     log(f"  {len(full[0])} directed OSM segments")
-    src, dst, km, minutes, contraction = contract(*full, args.max_spacing_m)
+    src, dst, km, minutes, contraction = contract(*full, MAX_SPACING_M)
     log(f"  {contraction['osm_nodes']} OSM nodes -> {contraction['kept_before_connectivity']} kept, "
         f"{len(src)} directed edges")
 
@@ -499,11 +493,13 @@ def main() -> None:
     km = np.maximum(np.round(km, 5), 0.00001)          # road_km > 0 check
     minutes = np.maximum(np.round(minutes, 4), 0.0001)  # travel_minutes > 0 check
 
-    nodes_csv = args.out / "road_network_nodes.csv"
-    edges_csv = args.out / "road_network_edges.csv"
-    coverage_sql = args.out / "operational_road_coverage.sql"
-    activate_sql = args.out / "activate_snapshot.sql"
-    manifest_path = args.out / "manifest.json"
+    grid = snap_grid_check(coverage, n_lat, n_lon)
+    log(f"  snap grid: {grid}")
+
+    nodes_csv = OUT_DIR / "road_network_nodes.csv"
+    edges_csv = OUT_DIR / "road_network_edges.csv"
+    coverage_sql = OUT_DIR / "operational_road_coverage.sql"
+    manifest_path = OUT_DIR / "manifest.json"
 
     log("Writing outputs")
     with nodes_csv.open("w", newline="", encoding="utf-8") as f:
@@ -520,13 +516,15 @@ def main() -> None:
 
     pbf_md5, pbf_sha = md5_of(pbf), sha256_of(pbf)
     builder_sha = sha256_of(Path(__file__).resolve())
-    provenance = (f"OPERATIONAL; OpenStreetMap via Geofabrik {pbf.name}; md5={pbf_md5}; "
+    provenance = (f"OPERATIONAL; Kuala Lumpur, Selangor, Putrajaya; "
+                  f"OpenStreetMap via Geofabrik {pbf.name}; md5={pbf_md5}; "
                   f"osm_timestamp={osm_timestamp}; licence=ODbL-1.0; "
                   f"builder=build_operational_road_network.py sha256={builder_sha[:16]}")
     wkt = shapely.to_wkt(coverage, rounding_precision=6)
     coverage_sql.write_text(
         "-- Generated by supabase/road_network/build_operational_road_network.py\n"
-        "-- Registers the snapshot (not approved, not active). Run before importing nodes/edges.\n"
+        "-- Registers the KL, Putrajaya and Selangor snapshot (not approved, not active).\n"
+        "-- Run before importing nodes/edges.\n"
         "begin;\n"
         "insert into public.road_network_coverage\n"
         "  (network_snapshot_id, coverage_area, max_snap_distance_m, provenance,\n"
@@ -536,29 +534,6 @@ def main() -> None:
         f"  {MAX_SNAP_DISTANCE_M}, '{provenance}', 'OPERATIONAL', {len(nodes)}, {len(src)})\n"
         "on conflict (network_snapshot_id) do nothing;\n"
         "commit;\n", encoding="utf-8")
-    activate_sql.write_text(
-        "-- Approve and activate the imported snapshot, then re-resolve open records.\n"
-        "-- Stops (and changes nothing) if the imported counts differ from manifest.json.\n"
-        "begin;\n"
-        "do $$\n"
-        "declare v_nodes bigint; v_edges bigint;\n"
-        "begin\n"
-        f"  select count(*) into v_nodes from public.road_network_nodes where network_snapshot_id = '{snapshot}';\n"
-        "  select count(*) into v_edges from public.road_network_edges e\n"
-        "    join public.road_network_nodes n on n.osm_node_id = e.source_node\n"
-        f"   where n.network_snapshot_id = '{snapshot}';\n"
-        f"  if v_nodes <> {len(nodes)} or v_edges <> {len(src)} then\n"
-        f"    raise exception 'SNAPSHOT_COUNT_MISMATCH: nodes % of {len(nodes)}, edges % of {len(src)}', v_nodes, v_edges;\n"
-        "  end if;\n"
-        "end $$;\n"
-        "update public.road_network_coverage set active_flag = false\n"
-        f" where active_flag and network_snapshot_id <> '{snapshot}';\n"
-        "update public.road_network_coverage\n"
-        "   set approved_at = coalesce(approved_at, clock_timestamp()), active_flag = true\n"
-        f" where network_snapshot_id = '{snapshot}';\n"
-        "commit;\n"
-        "select public.geolock_backfill_road_nodes();\n", encoding="utf-8")
-
     manifest = {
         "network_snapshot_id": snapshot,
         "dataset_kind": "OPERATIONAL",
@@ -566,25 +541,25 @@ def main() -> None:
         "source": {"provider": "Geofabrik", "file": pbf.name, "md5": pbf_md5,
                    "sha256": pbf_sha, "osm_replication_timestamp": osm_timestamp,
                    "licence": "ODbL 1.0, (c) OpenStreetMap contributors"},
-        "study_area": {"iso3166": relations, "names": STUDY_AREA,
-                       "roads_clipped_to": f"states + {BRIDGE_BAND_DEG} deg coastal band, minus "
-                                           f"{EXCLUDED_NEIGHBOUR_ISO} and lat > {THAI_BORDER_BAND_LAT}",
-                       "simplify_deg": args.simplify_deg,
-                       "vertices": int(shapely.get_num_coordinates(coverage))},
+        "service_area": {"osm_relations": relations, "names": SERVICE_AREA,
+                         "border_source": "OSM state boundaries of the extract",
+                         "road_band_deg": ROAD_BAND_DEG, "simplify_deg": SIMPLIFY_DEG,
+                         "vertices": int(shapely.get_num_coordinates(coverage))},
         "graph_filter": {"highway_speed_kmh": {k: v for k, v in SPEED_KMH.items()
-                                               if k not in excluded},
-                         "excluded_highway": sorted(excluded),
+                                               if k not in EXCLUDED_HIGHWAY},
+                         "excluded_highway": sorted(EXCLUDED_HIGHWAY),
                          "excluded_service": sorted(EXCLUDED_SERVICE),
                          "excluded_access": sorted(NO_ACCESS),
                          "oneway": "yes/1/true forward, -1 reverse, reversible excluded, "
                                    "motorway and roundabout implied one-way",
                          "maxspeed": "numeric km/h or mph within 5-130 km/h, else class default"},
         "contraction": {**contraction,
-                        "kept": "junctions, dead ends, one-way changes, study-area exits "
+                        "kept": "junctions, dead ends, one-way changes, road-band exits "
                                 "and a node at least every max_spacing_m along a chain"},
         "snap_rule": {"max_snap_distance_m": MAX_SNAP_DISTANCE_M,
                       "report_section": "3.3.5.1"},
         "connectivity": conn,
+        "snap_grid_check": grid,
         "counts": {"ways": int(n_ways), "nodes": int(len(nodes)), "edges": int(len(src))},
         "files": {p.name: sha256_of(p) for p in (nodes_csv, edges_csv, coverage_sql)},
         "builder": {"sha256": builder_sha, "python": platform.python_version(),
@@ -593,12 +568,6 @@ def main() -> None:
     }
     manifest_path.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
 
-    if args.zip:
-        zpath = args.out / f"geolock_road_network_data_{snapshot}.zip"
-        with zipfile.ZipFile(zpath, "w", zipfile.ZIP_DEFLATED) as z:
-            for p in (nodes_csv, edges_csv, coverage_sql, activate_sql, manifest_path):
-                z.write(p, p.name)
-        log(f"  {zpath.name}")
     log(f"Done: {snapshot}, {len(nodes)} nodes, {len(src)} edges, "
         f"{manifest['elapsed_s']} s")
 
