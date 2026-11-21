@@ -133,11 +133,11 @@ class RouteResolutionRepository {
     return RouteResolutionRepository(
       enabled:
           const bool.fromEnvironment('GEOLOCK_ROUTE_RESOLUTION_ENABLED') &&
-          SupabaseConfig.environment == 'dev',
+          SupabaseConfig.routingEnabled,
       identity: () => client.auth.currentUser?.id,
       rpc: (name, params) async {
-        if (SupabaseConfig.environment != 'dev') {
-          throw StateError('Route resolution is DEV only.');
+        if (!SupabaseConfig.routingEnabled) {
+          throw StateError('Route resolution is not enabled for this build.');
         }
         return client.rpc(name, params: params);
       },

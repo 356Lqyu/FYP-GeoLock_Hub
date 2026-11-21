@@ -10,5 +10,7 @@ void main() {
     );
     expect(SupabaseConfig.publishableKey, startsWith('sb_publishable_'));
     expect(SupabaseConfig.isConfigured, isTrue);
+    expect(SupabaseConfig.projectRef, 'rcgyuwiidqvrgbxswhqj');
+    expect(SupabaseConfig.routingEnabled, isTrue);
   });
 }

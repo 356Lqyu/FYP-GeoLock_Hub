@@ -114,20 +114,21 @@ class NgoRoutingRepository {
         ? RoutingWorkerClient(
             baseUrl: apiUrl.trim(),
             accessToken: () => client.auth.currentSession?.accessToken,
+            expectedProjectRef: SupabaseConfig.projectRef,
           )
         : null;
     PlanCall? devCall(PlanCall? call) => call == null
         ? null
         : (body) {
-            if (SupabaseConfig.environment != 'dev') {
-              throw StateError('Routing is DEV only.');
+            if (!SupabaseConfig.routingEnabled) {
+              throw StateError('Routing is not enabled for this build.');
             }
             return call(body);
           };
     return NgoRoutingRepository(
       rpc: (name, params) async {
-        if (SupabaseConfig.environment != 'dev') {
-          throw StateError('Routing is DEV only.');
+        if (!SupabaseConfig.routingEnabled) {
+          throw StateError('Routing is not enabled for this build.');
         }
         return client.rpc(name, params: params);
       },
@@ -141,23 +142,23 @@ class NgoRoutingRepository {
       savedPlanner: direct == null
           ? null
           : (body) async {
-              if (SupabaseConfig.environment != 'dev') {
-                throw StateError('Routing is DEV only.');
+              if (!SupabaseConfig.routingEnabled) {
+                throw StateError('Routing is not enabled for this build.');
               }
               return direct.savedResult(body);
             },
       planner: direct != null
           ? (body) async {
-              if (SupabaseConfig.environment != 'dev') {
-                throw StateError('Routing is DEV only.');
+              if (!SupabaseConfig.routingEnabled) {
+                throw StateError('Routing is not enabled for this build.');
               }
               return direct.plan(body);
             }
           : function.isEmpty
           ? null
           : (body) async {
-              if (SupabaseConfig.environment != 'dev') {
-                throw StateError('Routing is DEV only.');
+              if (!SupabaseConfig.routingEnabled) {
+                throw StateError('Routing is not enabled for this build.');
               }
               final response = await client.functions.invoke(
                 function,
@@ -174,7 +175,8 @@ class NgoRoutingRepository {
   final RpcCall _rpc;
   final String? plannerConfigurationError;
   String get plannerConfigurationMessage => switch (plannerConfigurationError) {
-    'PLANNER_DEV_BUILD_REQUIRED' => 'Routing requires the DEV app build.',
+    'PLANNER_DEV_BUILD_REQUIRED' =>
+      'Routing requires the DEV or KL/Selangor app build.',
     'PLANNER_URL_REJECTED' =>
       'The planner URL in this build is invalid or disallowed. Install a verified DEV routing build.',
     _ =>

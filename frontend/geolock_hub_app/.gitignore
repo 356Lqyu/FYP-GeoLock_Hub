@@ -46,3 +46,6 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# NEW (KL/Selangor) project build settings: copy klsel-config.example.json; never commit.
+klsel-config.json

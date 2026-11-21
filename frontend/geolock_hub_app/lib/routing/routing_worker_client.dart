@@ -36,8 +36,19 @@ class RoutingWorkerClient {
     required this.accessToken,
     http.Client? client,
     this.timeout = const Duration(seconds: 150),
+    this.expectedProjectRef = devProjectRef,
   }) : _client = client ?? http.Client();
   final String baseUrl;
+
+  /// The project the planner must report in /health (DEV unless configured).
+  final String expectedProjectRef;
+  static const devProjectRef = 'rcgyuwiidqvrgbxswhqj';
+
+  /// Supabase environments that have routing workers, and their project refs.
+  static const routingProjects = {
+    'dev': devProjectRef,
+    'klsel': 'ppwmdsyoesvhgmqiaoxa',
+  };
   final String? Function() accessToken;
   final http.Client _client;
   final Duration timeout;
@@ -48,9 +59,12 @@ class RoutingWorkerClient {
     required String environment,
     bool debug = kDebugMode,
   }) {
-    if (environment != 'dev') return 'PLANNER_DEV_BUILD_REQUIRED';
+    final project = routingProjects[environment];
+    if (project == null) return 'PLANNER_DEV_BUILD_REQUIRED';
     if (value.trim().isEmpty) return 'PLANNER_URL_MISSING';
-    if (!allowedUrl(value.trim(), debug: debug)) return 'PLANNER_URL_REJECTED';
+    if (!allowedUrl(value.trim(), debug: debug, projectRef: project)) {
+      return 'PLANNER_URL_REJECTED';
+    }
     return null;
   }
 
@@ -73,7 +87,11 @@ class RoutingWorkerClient {
     return 'CLIENT_IO_ERROR';
   }
 
-  static bool allowedUrl(String value, {bool debug = kDebugMode}) {
+  static bool allowedUrl(
+    String value, {
+    bool debug = kDebugMode,
+    String projectRef = devProjectRef,
+  }) {
     final uri = Uri.tryParse(value);
     if (uri == null ||
         uri.host.isEmpty ||
@@ -84,7 +102,7 @@ class RoutingWorkerClient {
       return false;
     }
     if (uri.host.endsWith('.supabase.co') &&
-        uri.host != 'rcgyuwiidqvrgbxswhqj.supabase.co') {
+        uri.host != '$projectRef.supabase.co') {
       return false;
     }
     return uri.scheme == 'https' ||
@@ -95,7 +113,7 @@ class RoutingWorkerClient {
 
   /// Auth-free connectivity/project check. No snapshot or planning RPC is sent.
   Future<void> checkReady() async {
-    if (!allowedUrl(baseUrl)) {
+    if (!allowedUrl(baseUrl, projectRef: expectedProjectRef)) {
       throw StateError('Configure an approved routing worker URL.');
     }
     try {
@@ -108,9 +126,9 @@ class RoutingWorkerClient {
       if (response.statusCode != 200 ||
           value is! Map ||
           value['status'] != 'ACTIVE' ||
-          value['project_ref'] != 'rcgyuwiidqvrgbxswhqj') {
+          value['project_ref'] != expectedProjectRef) {
         throw RoutingRequestFailure(
-          'Planner is not ACTIVE for the intended DEV project. No new snapshot was requested',
+          'Planner is not ACTIVE for the intended project. No new snapshot was requested',
           code: 'PLANNER_HEALTH_REJECTED',
           phase: 'planner_health',
           httpStatus: response.statusCode,
@@ -152,7 +170,7 @@ class RoutingWorkerClient {
       _post('/v1/planning-result', body);
 
   Future<Object?> _post(String path, Map<String, dynamic> body) async {
-    if (!allowedUrl(baseUrl)) {
+    if (!allowedUrl(baseUrl, projectRef: expectedProjectRef)) {
       throw StateError('Configure an HTTPS routing worker URL.');
     }
     final token = accessToken();

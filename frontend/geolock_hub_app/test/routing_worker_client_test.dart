@@ -374,6 +374,72 @@ void main() {
       expect((result as Map)['dispatch_authority_issued'], isFalse);
     },
   );
+  test('the NEW KL/Selangor build has its own project and planner check', () {
+    const klsel = 'ppwmdsyoesvhgmqiaoxa';
+    expect(RoutingWorkerClient.routingProjects['klsel'], klsel);
+    expect(
+      RoutingWorkerClient.configurationErrorCode(
+        'http://127.0.0.1:8787',
+        environment: 'klsel',
+        debug: true,
+      ),
+      isNull,
+    );
+    expect(
+      RoutingWorkerClient.configurationErrorCode(
+        'https://rcgyuwiidqvrgbxswhqj.supabase.co',
+        environment: 'klsel',
+      ),
+      'PLANNER_URL_REJECTED',
+    );
+    expect(
+      RoutingWorkerClient.allowedUrl(
+        'https://$klsel.supabase.co',
+        projectRef: klsel,
+      ),
+      isTrue,
+    );
+    expect(
+      RoutingWorkerClient.allowedUrl('https://$klsel.supabase.co'),
+      isFalse,
+    );
+    expect(
+      RoutingWorkerClient.allowedUrl('https://rcgyuwiidqvrgbxswhqj.supabase.co'),
+      isTrue,
+    );
+  });
+  test(
+    'a KL/Selangor client accepts only a planner ACTIVE for the new project',
+    () async {
+      for (final reported in ['ppwmdsyoesvhgmqiaoxa', 'rcgyuwiidqvrgbxswhqj']) {
+        final client = RoutingWorkerClient(
+          baseUrl: 'http://127.0.0.1:8787',
+          accessToken: () => 'SYNTHETIC_TOKEN',
+          expectedProjectRef: 'ppwmdsyoesvhgmqiaoxa',
+          client: MockClient(
+            (request) async => http.Response(
+              jsonEncode({'status': 'ACTIVE', 'project_ref': reported}),
+              200,
+            ),
+          ),
+        );
+        if (reported == 'ppwmdsyoesvhgmqiaoxa') {
+          await client.checkReady();
+        } else {
+          await expectLater(
+            client.checkReady(),
+            throwsA(
+              isA<RoutingRequestFailure>().having(
+                (e) => e.code,
+                'code',
+                'PLANNER_HEALTH_REJECTED',
+              ),
+            ),
+          );
+        }
+      }
+    },
+  );
   test('untrusted cleartext and shared-project endpoints are rejected', () {
     expect(RoutingWorkerClient.allowedUrl('http://192.168.1.4:8787'), isFalse);
     expect(

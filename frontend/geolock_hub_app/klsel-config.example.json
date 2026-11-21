@@ -1,0 +1,6 @@
+{
+  "GEOLOCK_SUPABASE_ENV": "klsel",
+  "GEOLOCK_SUPABASE_URL": "https://ppwmdsyoesvhgmqiaoxa.supabase.co",
+  "GEOLOCK_SUPABASE_PUBLISHABLE_KEY": "sb_publishable_REPLACE_WITH_NEW_PROJECT_PUBLISHABLE_KEY",
+  "GEOLOCK_ROUTING_API_URL": "http://127.0.0.1:8787"
+}
