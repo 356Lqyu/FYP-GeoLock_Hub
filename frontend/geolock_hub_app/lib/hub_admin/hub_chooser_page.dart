@@ -494,7 +494,8 @@ class _ConfirmSheet extends StatelessWidget {
             const Text(
               'Come any time the hub is open that day; no appointment needed. If you do '
               'not come by closing time, the booking ends and you can choose a hub and '
-              'day again.',
+              'day again. You can cancel the donation until the hub opens on your '
+              'drop-off day; after that, cancelling waits until the booking expires.',
               style: TextStyle(color: HubColors.muted),
             ),
             const SizedBox(height: 16),

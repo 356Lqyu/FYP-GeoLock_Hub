@@ -219,6 +219,13 @@ class HubOperatingHours {
   /// Opening times on a date, e.g. "9:00 AM – 1:00 PM, 2:00 PM – 5:00 PM" or "Closed".
   String textOn(DateTime day) => dayText(hubDayKey(day));
 
+  /// First opening time on a date, in minutes after midnight, or null when closed.
+  int? firstOpenMinuteOn(DateTime day) {
+    final slots = days[hubDayKey(day)] ?? const <HubTimeSlot>[];
+    if (slots.isEmpty) return null;
+    return slots.map((slot) => slot.openMinute).reduce((a, b) => a < b ? a : b);
+  }
+
   /// Last closing time on a date ("17:00"), or null when closed that day.
   String? lastCloseOn(DateTime day) {
     final slots = days[hubDayKey(day)] ?? const <HubTimeSlot>[];
@@ -757,6 +764,31 @@ class HubPassReservation {
   /// The day the donor said they will bring the donation.
   final DateTime? dropOffDay;
 
+  /// When the donor can no longer cancel in the app: the hub's first opening time on
+  /// the drop-off day (Malaysia time). From then the items may already be at the
+  /// counter before the staff confirm receipt.
+  DateTime? get cancelClosesAt {
+    final day = dropOffDay;
+    if (day == null) return null;
+    final dayStart = DateTime.utc(day.year, day.month, day.day)
+        .subtract(const Duration(hours: 8));
+    final open = hours.firstOpenMinuteOn(day);
+    return open == null ? dayStart : dayStart.add(Duration(minutes: open));
+  }
+
+  /// True while the hub is open on the drop-off day and the booking has not expired.
+  /// The app hides "Cancel donation" during this time. After the booking expires
+  /// without a receipt, the donor can cancel or choose a hub again.
+  bool get dropOffWindowOpen {
+    final closes = cancelClosesAt;
+    final ends = expiresAt;
+    if (status != HubDropOffStatus.awaiting || closes == null || ends == null) {
+      return false;
+    }
+    final now = DateTime.now().toUtc();
+    return !now.isBefore(closes) && now.isBefore(ends);
+  }
+
   HubPassReservation.fromJson(Map<String, dynamic> json)
     : reservationId = json['reservation_id'].toString(),
       referenceCode = json['reference_code']?.toString() ?? '',
@@ -1196,6 +1228,20 @@ class HubService {
     return hubRows(
       body['hubs'],
     ).map((row) => HubOption.fromRow(row, rankingMode: mode)).toList();
+  }
+
+  /// Cancels the donor's own donation before the hub has received it. The database
+  /// releases an active hub booking in the same transaction, so the space is freed at
+  /// once. Reuse the same [requestId] when retrying the same tap.
+  static Future<void> cancelDonation(String donationId, String requestId) async {
+    final response = await _db.rpc(
+      'cancel_donation',
+      params: {'p_donation': donationId, 'p_request': requestId},
+    );
+    final result = hubObject(response);
+    if (result['outcome'] != 'SUCCESS') {
+      throw StateError(result['reason_code']?.toString() ?? 'CANCELLATION_NOT_PERMITTED');
+    }
   }
 
   /// Books [hubId] for the drop-off [day]: the space is held until the hub's last

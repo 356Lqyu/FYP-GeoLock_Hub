@@ -26,6 +26,7 @@ import 'donation_photo_errors.dart';
 import 'donation_status.dart';
 import 'hub_admin/hub_chooser_page.dart';
 import 'hub_admin/hub_dropoff_pass.dart';
+import 'hub_admin/hub_service.dart' as hub;
 import 'status_timeline.dart';
 import 'donor_claim_history.dart';
 import 'claim_pickup_detail_reader.dart';
@@ -2879,7 +2880,11 @@ class DonationPhotoSelection {
 }
 
 class CreateDonationPage extends StatefulWidget {
-  const CreateDonationPage({super.key});
+  /// A cancelled donation (get_my_donation_detail plus 'images') to copy into the
+  /// form for "Donate again". The donor checks it and submits a new donation.
+  final Map<String, dynamic>? copyFrom;
+
+  const CreateDonationPage({super.key, this.copyFrom});
   @override
   State<CreateDonationPage> createState() => _CreateDonationPageState();
 }
@@ -2895,6 +2900,113 @@ class _CreateDonationPageState extends State<CreateDonationPage> {
   String progressMessage = '';
   String createRequestId = const Uuid().v4();
   final photos = <DonationPhotoSelection>[];
+  bool copiedFromCancelled = false;
+  bool copyingPhotos = false;
+
+  @override
+  void initState() {
+    super.initState();
+    final source = widget.copyFrom;
+    if (source != null) _copyFrom(source);
+  }
+
+  /// Fills the form from a cancelled donation. The old donation stays cancelled;
+  /// this always creates a new donation with a new request ID.
+  void _copyFrom(Map<String, dynamic> source) {
+    copiedFromCancelled = true;
+    title.text = source['title']?.toString() ?? '';
+    description.text = source['description']?.toString() ?? '';
+    final lat = double.tryParse('${source['latitude']}');
+    final lon = double.tryParse('${source['longitude']}');
+    final address = source['pickup_address']?.toString() ?? '';
+    if (lat != null && lon != null && address.isNotEmpty) {
+      pickupLocation = LocationResult(
+        address: address,
+        latitude: lat,
+        longitude: lon,
+        method: LocationSelectionMethod.mapPin,
+      );
+    }
+    final rows = (source['items'] as List? ?? const []).whereType<Map>();
+    if (rows.isNotEmpty) {
+      for (final item in items) {
+        item.dispose();
+      }
+      items.clear();
+      for (final row in rows) {
+        final input = DonationItemInput();
+        input.name.text = row['item_name']?.toString() ?? '';
+        input.quantity.text = '${row['quantity'] ?? 1}';
+        input.weight.text = _plainKg(row['unit_weight_kg']);
+        input.category = row['category_id']?.toString();
+        final condition = row['item_condition']?.toString();
+        if (const {'NEW', 'GOOD', 'FAIR'}.contains(condition)) {
+          input.condition = condition!;
+        }
+        items.add(input);
+      }
+    }
+    WidgetsBinding.instance.addPostFrameCallback((_) => _copyPhotos(source));
+  }
+
+  static String _plainKg(Object? value) {
+    final kg = double.tryParse('$value');
+    if (kg == null || kg <= 0) return '1';
+    return kg.toStringAsFixed(3).replaceFirst(RegExp(r'\.?0+$'), '');
+  }
+
+  /// Downloads the cancelled donation's photos (the donor can still read them) to
+  /// temporary files, so they upload as new photos of the new donation.
+  Future<void> _copyPhotos(Map<String, dynamic> source) async {
+    final paths = (source['images'] as List? ?? const [])
+        .whereType<Map>()
+        .map((image) => image['storage_path']?.toString() ?? '')
+        .where((path) => path.isNotEmpty)
+        .take(3)
+        .toList();
+    if (paths.isEmpty || !mounted) return;
+    setState(() => copyingPhotos = true);
+    final storage = _db.storage.from('geolock-donation-images');
+    final copied = <DonationPhotoSelection>[];
+    var failed = 0;
+    try {
+      final folder = await Directory.systemTemp.createTemp('geolock_donate_again_');
+      for (final path in paths) {
+        try {
+          final ext = path.split('.').last.toLowerCase();
+          if (!const {'jpg', 'jpeg', 'png', 'webp'}.contains(ext)) {
+            failed++;
+            continue;
+          }
+          final bytes = await storage.download(path);
+          final id = const Uuid().v4();
+          final file = File('${folder.path}/$id.$ext');
+          await file.writeAsBytes(bytes, flush: true);
+          copied.add(DonationPhotoSelection(id: id, file: XFile(file.path)));
+        } catch (_) {
+          failed++;
+        }
+      }
+    } catch (_) {
+      failed = paths.length;
+    }
+    if (!mounted) return;
+    setState(() {
+      copyingPhotos = false;
+      photos.addAll(copied.take(3 - photos.length));
+      _resetCreateRequest();
+    });
+    if (failed > 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            '$failed photo${failed == 1 ? '' : 's'} could not be copied. '
+            'Add ${failed == 1 ? 'it' : 'them'} again before submitting.',
+          ),
+        ),
+      );
+    }
+  }
 
   Future<void> _pickDonationImages() async {
     try {
@@ -3066,6 +3178,12 @@ class _CreateDonationPageState extends State<CreateDonationPage> {
   }
 
   Future<void> submit() async {
+    if (copyingPhotos) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Copying your photos, please wait.')),
+      );
+      return;
+    }
     if (!formKey.currentState!.validate()) return;
     if (pickupLocation == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -3245,11 +3363,33 @@ class _CreateDonationPageState extends State<CreateDonationPage> {
         if (choices.isEmpty) {
           return const Center(child: Text('No active donation categories.'));
         }
+        // A copied item whose category is no longer active must be chosen again.
+        final activeIds = choices.map((choice) => choice.id).toSet();
+        for (final item in items) {
+          if (item.category != null && !activeIds.contains(item.category)) {
+            item.category = null;
+          }
+        }
         return Form(
           key: formKey,
           child: ListView(
             padding: const EdgeInsets.all(16),
             children: [
+              if (copiedFromCancelled)
+                Card(
+                  color: const Color(0xffe4f2ed),
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Text(
+                      copyingPhotos
+                          ? 'Copied from your cancelled donation. Copying photos…'
+                          : 'Copied from your cancelled donation. Confirm the pickup '
+                                'location again, check the items and photos, then submit. '
+                                'This creates a new donation; you choose a hub and day '
+                                'after it is saved.',
+                    ),
+                  ),
+                ),
               TextFormField(
                 controller: title,
                 readOnly: busy,
@@ -3721,6 +3861,15 @@ class _DonationDetailPageState extends State<DonationDetailPage> {
       throw StateError('Donation not found or you do not have access to it.');
     }
     final detail = Map<String, dynamic>.from(response);
+    // Hub bookings: read the booked day and the hub's opening hours, so the app can
+    // close cancelling while the hub is open on the drop-off day.
+    if (detail['status'] == 'HUB_ASSIGNED') {
+      try {
+        detail['hub_pass'] = await hub.HubService.dropOffPass(widget.donationId);
+      } catch (_) {
+        // The page stays usable; cancel_donation still checks custody and state.
+      }
+    }
     var auditEvents = <Map<String, dynamic>>[];
     String? auditError;
     try {
@@ -3833,6 +3982,15 @@ class _DonationDetailPageState extends State<DonationDetailPage> {
     }
   }
 
+  /// A cancelled donation cannot come back. "Donate again" opens a new donation
+  /// form filled with the same items, photos and pickup location.
+  Future<void> _donateAgain(Map<String, dynamic> donation) async {
+    await Navigator.push<void>(
+      context,
+      MaterialPageRoute(builder: (_) => CreateDonationPage(copyFrom: donation)),
+    );
+  }
+
   Future<void> _cancel() async {
     final confirmed = await showDialog<bool>(
       context: context,
@@ -3854,6 +4012,28 @@ class _DonationDetailPageState extends State<DonationDetailPage> {
       ),
     );
     if (confirmed != true || !mounted) return;
+    // Check the drop-off window again just before cancelling: the hub may have
+    // opened since this page was loaded.
+    try {
+      final pass = await hub.HubService.dropOffPass(widget.donationId);
+      if (pass.reservation?.dropOffWindowOpen == true) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                'Your drop-off day has started, so the donation cannot be '
+                'cancelled now. You can cancel or choose again after the '
+                'booking expires.',
+              ),
+            ),
+          );
+          setState(() => _detail = _load());
+        }
+        return;
+      }
+    } catch (_) {
+      // Not a hub booking, or the read failed: cancel_donation still decides.
+    }
     setState(() => _busy = true);
     try {
       final response = await _db.rpc(
@@ -3966,10 +4146,21 @@ class _DonationDetailPageState extends State<DonationDetailPage> {
         final hubHistoryIsClear = reservations.every(
           (reservation) => reservation['receipt_status'] == null,
         );
+        final hubPass = d['hub_pass'] as hub.HubDropOffPass?;
+        final dropOffWindowOpen =
+            hubPass?.reservation?.dropOffWindowOpen ?? false;
         final cancellable =
+            !dropOffWindowOpen &&
             !hasReceipt &&
             !hasInventory &&
-            ((d['status'] == 'SUBMITTED' && reservations.isEmpty) ||
+            // SUBMITTED may carry old bookings that expired or were released
+            // (an expired booking returns the donation to SUBMITTED).
+            ((d['status'] == 'SUBMITTED' &&
+                    reservations.every(
+                      (reservation) =>
+                          reservation['status'] == 'EXPIRED' ||
+                          reservation['status'] == 'RELEASED',
+                    )) ||
                 (d['status'] == 'AVAILABLE' &&
                     d['collection_path'] == 'DIRECT_PICKUP' &&
                     d['listing_status'] == 'AVAILABLE' &&
@@ -3987,7 +4178,7 @@ class _DonationDetailPageState extends State<DonationDetailPage> {
         final statusLabel =
             d['status'] == 'HUB_ASSIGNED' &&
                 latestReservationStatus == 'EXPIRED'
-            ? 'Hub reservation expired'
+            ? 'Awaiting hub selection · last booking expired'
             : donationStatusLabel(
                 status: d['status']?.toString(),
                 collectionPath: d['collection_path']?.toString(),
@@ -4171,6 +4362,8 @@ class _DonationDetailPageState extends State<DonationDetailPage> {
                 ),
               ),
             ),
+            if (dropOffWindowOpen)
+              _DropOffWindowNotice(reopensAt: hubPass?.reservation?.expiresAt),
             if (needsHub || cancellable)
               _DonorDetailActions(
                 isBusy: _busy,
@@ -4179,6 +4372,8 @@ class _DonationDetailPageState extends State<DonationDetailPage> {
                 onChooseHub: _reserveHub,
                 onCancel: _cancel,
               ),
+            if (d['status'] == 'CANCELLED')
+              _DonateAgainAction(onPressed: () => _donateAgain(d)),
           ],
         );
       },
@@ -5133,6 +5328,88 @@ class _DonorItemRow extends StatelessWidget {
       ],
     );
   }
+}
+
+class _DonateAgainAction extends StatelessWidget {
+  final VoidCallback onPressed;
+
+  const _DonateAgainAction({required this.onPressed});
+
+  @override
+  Widget build(BuildContext context) => SafeArea(
+    top: false,
+    child: Container(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 10),
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        border: Border(top: BorderSide(color: Color(0xffe2ebe6))),
+      ),
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 680),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                'This donation is cancelled and cannot be booked again. To give '
+                'these items, start a new donation with the same details.',
+              ),
+              const SizedBox(height: 10),
+              SizedBox(
+                width: double.infinity,
+                child: FilledButton.icon(
+                  onPressed: onPressed,
+                  icon: const Icon(Icons.replay),
+                  label: const Text('Donate again'),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
+/// Shown instead of the cancel button while the hub is open on the drop-off day.
+class _DropOffWindowNotice extends StatelessWidget {
+  final DateTime? reopensAt;
+
+  const _DropOffWindowNotice({required this.reopensAt});
+
+  @override
+  Widget build(BuildContext context) => SafeArea(
+    top: false,
+    child: Container(
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 10),
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        border: Border(top: BorderSide(color: Color(0xffe2ebe6))),
+      ),
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 680),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Icon(Icons.lock_clock_outlined, size: 20),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  'Your drop-off day has started, so this donation cannot be '
+                  'cancelled in the app right now. Your items may already be with '
+                  'the hub before the staff record them. If you are not coming, '
+                  'you can cancel or choose again after the booking expires'
+                  '${reopensAt == null ? '' : ' at ${hub.hubCloseLabel(reopensAt)}'}.',
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
 }
 
 class _DonorDetailActions extends StatelessWidget {
