@@ -2,6 +2,7 @@
 [CmdletBinding()]
 param([ValidateSet('DEV','KLSEL')][string]$Environment = 'DEV')
 $ErrorActionPreference = 'Stop'
+$Environment = $Environment.ToUpperInvariant()  # ValidateSet is case-insensitive; the registry is not
 $root = (Resolve-Path (Join-Path $PSScriptRoot '../../..')).Path
 $python = Join-Path $root '.venv-stage8/Scripts/python.exe'
 if (-not (Test-Path -LiteralPath $python)) { throw 'Create .venv-stage8 with Python 3.12 and install backend/routing/requirements.txt first.' }

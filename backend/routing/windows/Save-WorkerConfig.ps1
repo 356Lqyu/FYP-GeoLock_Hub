@@ -5,6 +5,7 @@
 [CmdletBinding()]
 param([ValidateSet('DEV','KLSEL')][string]$Environment = 'DEV')
 $ErrorActionPreference = 'Stop'
+$Environment = $Environment.ToUpperInvariant()  # ValidateSet is case-insensitive; the registry is not
 $environments = @{
     DEV   = @{ Project = 'rcgyuwiidqvrgbxswhqj'; Directory = 'GeoLockHubRoutingDev'; Label = 'DEV'; GraphId = $null
               Service = $null }

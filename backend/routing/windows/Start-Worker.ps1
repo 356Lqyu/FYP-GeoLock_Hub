@@ -12,6 +12,7 @@ param(
     [switch]$WarmGraph
 )
 $ErrorActionPreference = 'Stop'
+$Environment = $Environment.ToUpperInvariant()  # ValidateSet is case-insensitive; the registry is not
 if ($EnableCombinedWorkflow -and (-not $Activate -or $Mode -ne 'planner')) { throw 'Combined workflow requires explicit planner activation approval.' }
 if ($EnableExactWorkflow -and (-not $Activate -or $Mode -ne 'planner')) { throw 'Exact workflow requires explicit planner activation approval.' }
 if ($CheckConnection -and ($Activate -or $CheckConfig)) { throw 'Read-only connection check must be invoked separately, without activation.' }

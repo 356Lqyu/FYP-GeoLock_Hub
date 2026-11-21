@@ -112,7 +112,8 @@ def main():
         parser.add_argument('--mode',choices=('planner','validator'),default='planner')
         parser.add_argument('--check-runtime-connection',action='store_true')
         args,unknown=parser.parse_known_args()
-        factory=NativeRpcFactory(read_only=args.check_runtime_connection)
+        # --warm-graph only reads the frozen graph: its sessions are forced read-only too.
+        factory=NativeRpcFactory(read_only=args.check_runtime_connection or '--warm-graph' in unknown)
         if args.check_runtime_connection:
             if unknown or os.environ.get('GEOLOCK_ROUTING_ALLOW_DEV_WRITES')=='APPROVED':raise ValueError('READ_ONLY_CHECK_REQUIRES_ACTIVATION_UNSET')
             from ..environment import active

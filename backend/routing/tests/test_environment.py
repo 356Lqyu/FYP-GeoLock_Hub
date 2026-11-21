@@ -281,6 +281,30 @@ class NativeProfileTests(unittest.TestCase):
                              ('aws-0-ap-northeast-2.pooler.supabase.com', 'C:/Users/User/Downloads/prod-ca-2021.crt'))
 
 
+class WarmGraphTests(unittest.TestCase):
+    def factory_read_only(self, argv):
+        import sys
+        from backend.routing.service import start_worker
+        seen = {}
+        class Factory:
+            def __init__(self, read_only=False): seen['read_only'] = read_only
+            def close(self): pass
+        class Handle:
+            def close(self): pass
+        with mock.patch.object(sys, 'argv', ['start_worker'] + argv), \
+             mock.patch('backend.routing.database.libpq_client.configure_client', return_value=(Handle(), {})), \
+             mock.patch.object(start_worker, 'NativeRpcFactory', Factory), \
+             mock.patch('backend.routing.service.http_api.main', lambda **kw: None):
+            self.assertEqual(start_worker.main(), 0)
+        return seen['read_only']
+
+    def test_warm_graph_sessions_are_read_only(self):
+        self.assertTrue(self.factory_read_only(['--mode', 'planner', '--warm-graph']))
+
+    def test_normal_planner_start_is_unchanged(self):
+        self.assertFalse(self.factory_read_only(['--mode', 'planner']))
+
+
 class DevOnlyToolTests(unittest.TestCase):
     def test_pilot_benchmark_probe_refuses_the_new_project(self):
         from backend.routing.diagnostics import pilot_benchmark_probe
