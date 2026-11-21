@@ -48,7 +48,8 @@ $validator=Join-Path $directory 'validator.synthetic.clixml'
 'SYNTHETIC validator untouched' | Set-Content -LiteralPath $validator
 $old=Get-Content -LiteralPath $file -Raw
 $validatorBefore=Get-Content -LiteralPath $validator -Raw
-foreach($bad in @('sb_secret_SYNTHETIC','sb_publishable_','sb_publishable_SYNTHETIC with spaces')) {
+foreach($bad in @('sb_secret_SYNTHETIC','sb_publishable_','sb_publishable_SYNTHETIC with spaces',
+                  [string][char]0x16,('sb_publishable_SYNTHETIC'+[char]0x16))) {  # captured Ctrl+V
     $rejected=$false
     try { $null=Set-ProtectedPlannerKey $file (ConvertTo-SecureString $bad -AsPlainText -Force) } catch {$rejected=$true}
     if(!$rejected -or (Get-Content -LiteralPath $file -Raw) -cne $old) {throw 'Invalid-input preservation regression.'}

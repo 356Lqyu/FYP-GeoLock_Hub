@@ -55,7 +55,23 @@ if ($Environment -ne 'DEV') { $ca = $ca.Replace('\', '/') }
 $graph = Read-Host -AsSecureString 'Password set with password geolock_graph_login'
 $planner = Read-Host -AsSecureString 'Password set with password geolock_planner_login'
 $validator = Read-Host -AsSecureString 'Password set with password geolock_validator_login'
-$publishable = Read-Host -AsSecureString ($label + ' sb_publishable_ key (masked; NOT a service-role key)')
+if ($Environment -eq 'DEV') {
+    $publishable = Read-Host -AsSecureString ($label + ' sb_publishable_ key (masked; NOT a service-role key)')
+} else {
+    # Paste-safe hidden console input and the sb_publishable_ format check, reused unchanged from
+    # Update-PlannerPublishableKey.ps1 (the functions its offline and console-paste tests exercise).
+    # A malformed key stops here, before pg_service.conf or any profile is written.
+    $keyTokens = $null; $keyErrors = $null
+    $keyAst = [Management.Automation.Language.Parser]::ParseFile((Join-Path $PSScriptRoot 'Update-PlannerPublishableKey.ps1'), [ref]$keyTokens, [ref]$keyErrors)
+    if ($keyErrors.Count) { throw 'Update-PlannerPublishableKey.ps1 syntax failure. No configuration written.' }
+    foreach ($helper in @('Read-PublishableKeyHidden', 'Assert-PublishableKey')) {
+        $fn = $keyAst.Find({ param($n) $n -is [Management.Automation.Language.FunctionDefinitionAst] -and $n.Name -eq $helper }, $true)
+        if ($null -eq $fn) { throw ('Missing helper ' + $helper + '. No configuration written.') }
+        Invoke-Expression $fn.Extent.Text
+    }
+    $publishable = Read-PublishableKeyHidden $label
+    Assert-PublishableKey $publishable $label
+}
 if ($Environment -eq 'DEV') {
     $graphId = (Read-Host 'Existing approved frozen graph UUID, or Enter if not initialized').Trim()
     if ($graphId) {
