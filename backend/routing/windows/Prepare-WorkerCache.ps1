@@ -2,6 +2,12 @@
 [CmdletBinding()]
 param([string]$StateDirectory=(Join-Path $env:LOCALAPPDATA 'GeoLockHubRoutingDev\state'))
 $ErrorActionPreference='Stop'
+# DEV ONLY. Never copy DEV's cache into another environment: the new project's cache is built
+# from its own frozen graph (Start-Worker.ps1 -Environment KLSEL -WarmGraph).
+$resolvedState=[IO.Path]::GetFullPath($StateDirectory)
+if ($resolvedState -match 'GeoLockHubRouting(?!Dev\\)' -or (Test-Path -LiteralPath (Join-Path $resolvedState 'environment.json'))) {
+    throw 'DEV cache preparation only: refusing a non-DEV state directory. No copy performed.'
+}
 $root=(Resolve-Path (Join-Path $PSScriptRoot '../../..')).Path
 $graph='eab1f7ee-a8e0-4bed-a0e1-2c4bff024936'
 $digest='5e06dab0fb4d2b97ac53fd9a1178dc46aa6b98811aefbaef96528c604a04012a'

@@ -18,6 +18,14 @@ def main():
     # Child processes cannot inherit activation, credentials or libpq overrides.
     env = {k: v for k, v in os.environ.items()
            if not k.upper().startswith(('GEOLOCK_', 'PG', 'PSYCOPG_'))}
+    # Only the non-secret environment selection (and its service-profile path) passes through.
+    if str(ROOT) not in sys.path:
+        sys.path.insert(0, str(ROOT))
+    from backend.routing.environment import active, ENVIRONMENT_VARIABLE, SERVICE_FILE_VARIABLE
+    environment = active()
+    for name in (ENVIRONMENT_VARIABLE, SERVICE_FILE_VARIABLE):
+        if os.environ.get(name):
+            env[name] = os.environ[name]
     env['PYTHONDONTWRITEBYTECODE'] = '1'
     results = []
     def child(label, args):
@@ -58,7 +66,7 @@ def main():
                     with opener.open(f'http://127.0.0.1:{port}/health', timeout=1) as response:
                         value = json.load(response)
                         assert response.status == 200 and value == {
-                            'project_ref': 'rcgyuwiidqvrgbxswhqj', 'status': 'DISABLED'}
+                            'project_ref': environment.project_ref, 'status': 'DISABLED'}
                     result.update(status='PASS', health=value)
                     break
                 except (OSError, ValueError):
@@ -74,7 +82,7 @@ def main():
                 process.wait(timeout=5)
         result['child_stopped'] = process.poll() is not None
         results.append(result)
-    print(json.dumps(dict(status='PASS' if ok else 'FAIL', checks=results,
+    print(json.dumps(dict(status='PASS' if ok else 'FAIL', environment=environment.name, checks=results,
         dev_access=False, activation=False, saved_profiles_read=False,
         live_ports_or_journals_used=False), indent=2))
     return 0 if ok else 1
