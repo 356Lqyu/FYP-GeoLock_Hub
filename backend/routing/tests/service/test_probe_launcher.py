@@ -29,10 +29,12 @@ class ProbeLauncherTests(unittest.TestCase):
         for shell in (shutil.which('pwsh'),):
             path=str(LAUNCHER).replace("'","''")
             quoted=','.join("'"+s.replace("'","''")+"'" for s in samples)
+            # Escape non-ASCII as \uXXXX so stdout is pure ASCII whatever the console code page
+            # (redirected pwsh output uses the OEM code page on Windows); decoding stays strict UTF-8.
             code=("$t=$null;$e=$null;$a=[System.Management.Automation.Language.Parser]::ParseFile('"+path+"',[ref]$t,[ref]$e);"
                   "if($e.Count){throw 'Parser failed'};"
                   "$f=$a.Find({param($n) $n -is [System.Management.Automation.Language.FunctionDefinitionAst] -and $n.Name -eq 'New-GraphProbeDsn'},$true);"
-                  "Invoke-Expression $f.Extent.Text; @("+quoted+") | ForEach-Object { New-GraphProbeDsn -Password $_ } | ConvertTo-Json")
+                  "Invoke-Expression $f.Extent.Text; @("+quoted+") | ForEach-Object { New-GraphProbeDsn -Password $_ } | ConvertTo-Json -EscapeHandling EscapeNonAscii")
             command=base64.b64encode(code.encode('utf-16-le')).decode()
             result=subprocess.run([shell,'-NoProfile','-EncodedCommand',command],capture_output=True,text=True,encoding='utf-8',check=True)
             for dsn,password in zip(json.loads(result.stdout),samples):
