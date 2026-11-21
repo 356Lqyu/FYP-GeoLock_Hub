@@ -9,7 +9,8 @@ from datetime import datetime, timedelta
 import copy
 import re
 
-from .contract import VERSION, VERSION_V2, PER_TASK_LEASE_ADMISSION, DEV_PROJECT
+from .contract import VERSION, VERSION_V2, PER_TASK_LEASE_ADMISSION
+from .environment import active_project_ref
 from .planner.planning import prepare_input, evaluate
 from .road_network.matrix import digest, require
 from .route_plan import ExecutionConfig, Plan, Route, Stop
@@ -112,7 +113,7 @@ def prepare_bundle(bundle):
     if per_task:
         configuration['lease_admission'] = PER_TASK_LEASE_ADMISSION
     payload = dict(schema_version=VERSION_V2 if per_task else VERSION, planning_run_id=s['snapshot_id'], scenario_id=s['snapshot_id'],
-        source=dict(kind='OPERATIONAL_SNAPSHOT', project_ref=DEV_PROJECT,
+        source=dict(kind='OPERATIONAL_SNAPSHOT', project_ref=active_project_ref(),
                     provenance='Proposed sealed DB export; authenticity must be established by transport', evidence_ref='snapshot:'+s['digest']),
         ngo_id=s['ngo_id'], ngo_active=ngo['active_flag'], ngo_location_generation=ngo['location_generation'],
         ngo_location_verified_at=ngo['location_verified_at'], cutoff=s['cutoff'],

@@ -7,7 +7,13 @@ from uuid import UUID
 from ..service.errors import WorkerError, check
 
 DEV = 'rcgyuwiidqvrgbxswhqj'
-BASE = 'https://' + DEV + '.supabase.co'
+BASE = 'https://' + DEV + '.supabase.co'  # DEV default; see project_base()
+
+
+def project_base():
+    """Supabase URL of the active environment (DEV unless GEOLOCK_ENVIRONMENT selects another)."""
+    from ..environment import active
+    return active().supabase_url
 RPCS = {
     'geolock_graph_worker': {
         'read_frozen_routing_graph': ('uuid', 'bigint', 'integer'),
@@ -73,11 +79,15 @@ class RoleRpc:
             values = conninfo_to_dict(dsn)
         except Exception:
             raise WorkerError('INVALID_OR_MISSING_DATABASE_DRIVER_CONFIG', 503) from None
+        from ..environment import active
+        environment = active()
+        project = environment.project_ref
         host, user = values.get('host', ''), values.get('user', '')
-        direct = host == 'db.' + DEV + '.supabase.co'
-        pooled = host.endswith('.pooler.supabase.com') and user.endswith('.' + DEV)
+        direct = host == 'db.' + project + '.supabase.co'
+        pooled = host.endswith('.pooler.supabase.com') and user.endswith('.' + project)
         login = user.split('.')[0]
-        check((direct or pooled) and ',' not in host and not values.get('hostaddr'), 'DEV_DATABASE_TARGET_REQUIRED', 503)
+        check((direct or pooled) and ',' not in host and not values.get('hostaddr'),
+              'DEV_DATABASE_TARGET_REQUIRED' if environment.is_dev else 'ENVIRONMENT_DATABASE_TARGET_REQUIRED', 503)
         check(login.startswith('geolock_') and login.endswith('_login'), 'DEDICATED_WORKER_LOGIN_REQUIRED', 503)
         check(values.get('sslmode') == 'verify-full' and bool(values.get('sslrootcert')), 'VERIFIED_DATABASE_TLS_REQUIRED', 503)
         check(values.get('dbname', 'postgres') == 'postgres' and values.get('port', '5432') in ('5432','6543'), 'INVALID_DATABASE_TARGET', 503)
@@ -202,24 +212,25 @@ class NgoSession:
                'get_my_routing_authorization_receipt', 'get_my_routing_overview',
                'begin_my_routing_snapshot'}
 
-    def __init__(self, user_id, token, key, http):
-        self.user_id, self._token, self._key, self._http = user_id, token, key, http
+    def __init__(self, user_id, token, key, http, base=BASE):
+        self.user_id, self._token, self._key, self._http, self._base = user_id, token, key, http, base
 
     def rpc(self, name, params=None):
         check(name in self.ALLOWED, 'USER_RPC_NOT_ALLOWED', 403)
-        return self._http.request(BASE+'/rest/v1/rpc/'+name, token=self._token, key=self._key, body=params or {})
+        return self._http.request(self._base+'/rest/v1/rpc/'+name, token=self._token, key=self._key, body=params or {})
 
 
 class SupabaseAuth:
-    def __init__(self, publishable_key, http=None):
+    def __init__(self, publishable_key, http=None, base=None):
         check(publishable_key.startswith('sb_publishable_'), 'PUBLISHABLE_KEY_REQUIRED', 503)
         self._key, self._http = publishable_key, http or JsonHttp()
+        self._base = base or project_base()
 
     def verify(self, bearer):
         check(type(bearer) is str and bearer.startswith('Bearer ') and 1 <= len(bearer[7:]) <= 8192, 'AUTHENTICATION_REQUIRED', 401)
         token = bearer[7:]
-        value = self._http.request(BASE+'/auth/v1/user', token=token, key=self._key)
-        session = NgoSession(uuid(value.get('id')), token, self._key, self._http)
+        value = self._http.request(self._base+'/auth/v1/user', token=token, key=self._key)
+        session = NgoSession(uuid(value.get('id')), token, self._key, self._http, self._base)
         # Executes the existing NGO-only RPC under the caller's real verified JWT.
         session.rpc('list_my_vehicles')
         return session

@@ -12,6 +12,7 @@ from uuid import uuid4
 from ..service.errors import check
 from ..service.safe_failure import safe_failure
 from ..database.supabase_rpc import RoleRpc
+from ..environment import active as active_environment
 
 GRAPH='eab1f7ee-a8e0-4bed-a0e1-2c4bff024936'
 DIGEST='5e06dab0fb4d2b97ac53fd9a1178dc46aa6b98811aefbaef96528c604a04012a'
@@ -41,8 +42,18 @@ def write(path,value):
     path.write_text(json.dumps(value,indent=2)+'\n',encoding='utf-8')
 
 
+def expected_target(environment):
+    """DEV: pinned host and CA. Other environments: the values in their checked service profile."""
+    if environment.is_dev:
+        return environment.pinned_pooler_host, environment.pinned_ca_path
+    from ..database.native_connection import approved_profile
+    profile=approved_profile()
+    return profile['host'], profile['sslrootcert']
+
+
 def diagnose(dsn, report, save=lambda:None, *, connect=None):
     conn=None; began=False; start=time.monotonic()
+    environment=active_environment()
     def phase(value):
         report['phase']=value; save()
     def failure(error,operation):
@@ -54,10 +65,11 @@ def diagnose(dsn, report, save=lambda:None, *, connect=None):
         import psycopg
         report['client']=dict(psycopg=psycopg.__version__,implementation=psycopg.pq.__impl__,libpq_version=psycopg.pq.version())
         params=conninfo_to_dict(dsn)
-        check(params['host']=='aws-0-ap-northeast-2.pooler.supabase.com'
-              and params['user']=='geolock_graph_login.rcgyuwiidqvrgbxswhqj'
+        host,ca=expected_target(environment)
+        check(params['host']==host
+              and params['user']=='geolock_graph_login.'+environment.project_ref
               and params.get('port')=='5432' and params.get('dbname')=='postgres'
-              and params.get('sslrootcert')=='C:/Users/User/Downloads/prod-ca-2021.crt',
+              and params.get('sslrootcert')==ca,
               'APPROVED_GRAPH_CONNECTION_REQUIRED',503)
         report['tls_client_mode']='verify-full'
         report['connection_settings']={k:params[k] for k in ('host','port','dbname','user','sslmode','sslrootcert')}
@@ -88,18 +100,18 @@ def diagnose(dsn, report, save=lambda:None, *, connect=None):
               and permissions['memberships']==['geolock_graph_worker'], 'GRAPH_PERMISSION_SCOPE_MISMATCH',503)
         phase('read_frozen_manifest_and_tail_sample')
         page=conn.execute('SELECT public.read_frozen_routing_graph(%s::uuid,%s::bigint,%s::integer)',
-                          (GRAPH,AFTER_NODE,AFTER_EDGE)).fetchone()[0]
+                          (environment.graph_id,environment.tail_after_node,environment.tail_after_edge)).fetchone()[0]
         manifest=page['graph']
         report['observed_graph']={k:manifest[k] for k in
             ('graph_id','content_digest','coverage_snapshot','node_count','edge_count','precision_policy','float_output_profile')}
         phase('validate_manifest_and_sample')
-        check(manifest['graph_id']==GRAPH and manifest['content_digest']==DIGEST
-              and manifest['coverage_snapshot']=='OSM-OPS-20261018' and manifest['node_count']==926414
-              and manifest['edge_count']==2145828 and manifest['precision_policy']=='EXACT_MAX_6_DECIMALS'
+        check(manifest['graph_id']==environment.graph_id and manifest['content_digest']==environment.graph_digest
+              and manifest['coverage_snapshot']==environment.coverage_snapshot and manifest['node_count']==environment.node_count
+              and manifest['edge_count']==environment.edge_count and manifest['precision_policy']=='EXACT_MAX_6_DECIMALS'
               and manifest['float_output_profile']=='PG_REAL_OUTPUT_0','FROZEN_MANIFEST_MISMATCH',409)
-        check([n['osm_node_id'] for n in page['nodes']]==NODE_IDS
-              and [e['edge_id'] for e in page['edges']]==EDGE_IDS,'BOUNDED_TAIL_SAMPLE_MISMATCH',409)
-        check(all(n['active_flag'] and n['network_snapshot_id']=='OSM-OPS-20261018' for n in page['nodes']),
+        check([n['osm_node_id'] for n in page['nodes']]==list(environment.tail_node_ids)
+              and [e['edge_id'] for e in page['edges']]==list(environment.tail_edge_ids),'BOUNDED_TAIL_SAMPLE_MISMATCH',409)
+        check(all(n['active_flag'] and n['network_snapshot_id']==environment.coverage_snapshot for n in page['nodes']),
               'SAMPLE_NODE_SCOPE_MISMATCH',409)
         report['observed_sample']={'nodes':page['nodes'],'edges':page['edges']}
         report['manifest_matches']=True
@@ -137,8 +149,10 @@ def main(*, child_module=None, connection_factory=None, dsn_override=None, passw
     root=Path(__file__).resolve().parents[3]
     target=root/'results/worker-connection-diagnostics'/(datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')+'-'+uuid4().hex[:6])
     target.mkdir(parents=True,exist_ok=False)
-    report={'status':'INCOMPLETE','phase':'child_start','expected_graph_id':GRAPH,
-            'expected_digest':DIGEST,'observed_graph':None,'database_writes':False,
+    environment=active_environment()
+    report={'status':'INCOMPLETE','phase':'child_start','environment':environment.name,
+            'expected_graph_id':environment.graph_id,
+            'expected_digest':environment.graph_digest,'observed_graph':None,'database_writes':False,
             'activation':False,'full_graph_load':False,'matrix_computation':False,'rollback_completed':False}
     report['connection_transport']=transport_label
     write(target/'result.json',report)

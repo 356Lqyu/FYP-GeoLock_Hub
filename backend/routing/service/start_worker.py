@@ -1,4 +1,5 @@
 """Windows runtime entrypoint: pinned native libpq; passwords stay native bytes.
+The environment (DEV default) comes from GEOLOCK_ENVIRONMENT; see environment.py.
 
 --check-runtime-connection is independently READ ONLY and never starts a server.
 Normal activation remains guarded by server.py. No secret-bearing DSNs required.
@@ -27,7 +28,8 @@ class NativeRpcFactory:
         logins={'geolock_graph_worker':'geolock_graph_login','geolock_planner':'geolock_planner_login','geolock_validator':'geolock_validator_login'}
         if role not in logins or self.closed:raise ValueError('NATIVE_RUNTIME_ROLE_REJECTED')
         expected={k:settings[k] for k in ('host','port','dbname','sslmode')}
-        expected['user']=logins[role]+'.rcgyuwiidqvrgbxswhqj'
+        from ..environment import active
+        expected['user']=logins[role]+'.'+active().project_ref
         if set(values)!=set(expected)|{'sslrootcert'} or any(values.get(k)!=v for k,v in expected.items()) or Path(values['sslrootcert']).resolve()!=Path(settings['sslrootcert']).resolve():
             raise ValueError('NATIVE_RUNTIME_CONFIG_MISMATCH')
         RoleRpc.validate_dsn(dsn)
@@ -113,8 +115,10 @@ def main():
         factory=NativeRpcFactory(read_only=args.check_runtime_connection)
         if args.check_runtime_connection:
             if unknown or os.environ.get('GEOLOCK_ROUTING_ALLOW_DEV_WRITES')=='APPROVED':raise ValueError('READ_ONLY_CHECK_REQUIRES_ACTIVATION_UNSET')
-            from ..database.supabase_rpc import DEV
-            if os.environ.get('GEOLOCK_PROJECT_REF')!=DEV:raise ValueError('DEV_PROJECT_REQUIRED')
+            from ..environment import active
+            environment=active()
+            if os.environ.get('GEOLOCK_PROJECT_REF')!=environment.project_ref:
+                raise ValueError('DEV_PROJECT_REQUIRED' if environment.is_dev else 'ENVIRONMENT_PROJECT_REQUIRED')
             roles=['geolock_validator'] if args.mode=='validator' else ['geolock_planner','geolock_graph_worker']
             dsns={'geolock_planner':'GEOLOCK_PLANNER_DSN','geolock_graph_worker':'GEOLOCK_GRAPH_DSN','geolock_validator':'GEOLOCK_VALIDATOR_DSN'}
             reports=[]

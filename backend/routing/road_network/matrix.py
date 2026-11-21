@@ -11,7 +11,8 @@ import json
 import re
 from time import perf_counter
 
-from ..contract import DEV_PROJECT, ContractError
+from ..contract import ContractError
+from ..environment import active_project_ref
 
 
 def require(ok,code):
@@ -50,7 +51,7 @@ class FrozenGraph:
 
 def freeze_graph(*,nodes,edges,snapshot_id,kind,complete,project_ref=None,speed_profile):
     require(kind in {'SYNTHETIC_BENCHMARK','OPERATIONAL_ROAD_NETWORK'},'INVALID_GRAPH_PROVENANCE')
-    require(project_ref==(DEV_PROJECT if kind=='OPERATIONAL_ROAD_NETWORK' else None),'INVALID_PROJECT_SCOPE')
+    require(project_ref==(active_project_ref() if kind=='OPERATIONAL_ROAD_NETWORK' else None),'INVALID_PROJECT_SCOPE')
     require(isinstance(snapshot_id,str) and bool(snapshot_id.strip()),'INVALID_GRAPH_SNAPSHOT')
     require(kind!='OPERATIONAL_ROAD_NETWORK' or snapshot_id.startswith('OSM-OPS-'),'INVALID_GRAPH_SNAPSHOT')
     require(type(complete) is bool,'INVALID_GRAPH_COMPLETENESS')

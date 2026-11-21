@@ -1,5 +1,5 @@
 """Assemble complete frozen RPC pages, then reuse C2's directed path builder."""
-from ..contract import DEV_PROJECT
+from ..environment import active_project_ref
 from .matrix import freeze_graph, build_matrix, require
 from ..snapshot import token
 from time import perf_counter
@@ -29,7 +29,7 @@ def matrix_from_export(manifest, nodes, edges, required_nodes, *, profile=None):
     mark('graph_conversion_and_freeze')
     graph=freeze_graph(nodes=sorted(selected),edges=[dict(edge_id=str(e['edge_id']),source_node=str(e['source_node']),target_node=str(e['target_node']),
              road_km=e['road_km'],travel_minutes=e['travel_minutes']) for e in edges if str(e['source_node']) in selected and str(e['target_node']) in selected],
-             snapshot_id=manifest['coverage_snapshot'],kind='OPERATIONAL_ROAD_NETWORK',complete=True,project_ref=DEV_PROJECT,
+             snapshot_id=manifest['coverage_snapshot'],kind='OPERATIONAL_ROAD_NETWORK',complete=True,project_ref=active_project_ref(),
              speed_profile=manifest['speed_profile'])
     del selected
     mark('matrix_build')

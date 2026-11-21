@@ -52,7 +52,7 @@ integration.
 | Object | Required data and semantics |
 |---|---|
 | Scenario | schema_version, planning_run_id, scenario_id, source, ngo_id, ngo_active, ngo_location_verified_at, ngo_location_generation, cutoff, configuration, depot, route_start_location_id, route_end_location_id, vehicles, tasks, matrix, solver |
-| Source | kind (`SYNTHETIC_BENCHMARK` or `OPERATIONAL_SNAPSHOT`), project_ref, provenance, evidence_ref. Synthetic project_ref is null; operational scope is DEV rcgyuwiidqvrgbxswhqj only. |
+| Source | kind (`SYNTHETIC_BENCHMARK` or `OPERATIONAL_SNAPSHOT`), project_ref, provenance, evidence_ref. Synthetic project_ref is null; operational scope is the active environment's project only (DEV rcgyuwiidqvrgbxswhqj by default; see ENVIRONMENTS.md). |
 | Configuration | version, currency/cost-unit label, positive planning_horizon_minutes, nonnegative dispatch_margin_minutes, objective, time_window_policy |
 | Objective | `MIN_UNSERVED_THEN_FIXED_PLUS_DISTANCE_COST`: primary admitted-task coverage, then sum of used-vehicle fixed costs plus vehicle-specific distance cost times km. This declares the proposed method/evaluation priority; comparator strategies are recorded separately. |
 | Time-window policy | `SERVICE_COMPLETION_WITHIN_WINDOW`; each service must finish within its pickup window. Waiting is allowed in later route validation. |

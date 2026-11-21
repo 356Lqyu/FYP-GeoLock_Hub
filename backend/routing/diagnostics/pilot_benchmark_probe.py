@@ -140,6 +140,9 @@ def child(target, matrix, *, connection_factory=None, dsn_override=None):
 
 def main(*, child_module=None, connection_factory=None, dsn_override=None,password_reader=None,
          default_timeout=300,default_memory=None):
+    from ..environment import active
+    # DEV-only: diagnostic nodes and cursors come from DEV's native capture evidence.
+    check(active().is_dev,'DEV_ONLY_DIAGNOSTIC',503)
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--run',action='store_true')
     parser.add_argument('--matrix',action='store_true',help='Two real C2 matrices, entirely in local memory; no storage RPC')

@@ -24,7 +24,7 @@ VERSION = "geolock.routing.scenario.v1"
 VERSION_V2 = "geolock.routing.scenario.v2"
 SCHEMA_VERSIONS = {VERSION, VERSION_V2}
 PER_TASK_LEASE_ADMISSION = "PER_TASK_SERVICE_COMPLETION"
-DEV_PROJECT = "rcgyuwiidqvrgbxswhqj"
+DEV_PROJECT = "rcgyuwiidqvrgbxswhqj"  # DEV default; the active environment decides (environment.py)
 DONATION_STATES = {"SUBMITTED", "AVAILABLE", "HUB_ASSIGNED", "AT_HUB", "BATCHED",
                    "CLAIMED", "PICKUP_IN_PROGRESS", "COLLECTED", "CANCELLED"}
 CLAIM_STATES = {"ACTIVE", "RELEASED", "EXPIRED", "COMPLETED", "CANCELLED", "RECONCILIATION_REQUIRED"}
@@ -335,8 +335,9 @@ def freeze_scenario(payload: dict) -> FrozenScenario:
     _enum(source["kind"], {"SYNTHETIC_BENCHMARK", "OPERATIONAL_SNAPSHOT"}, "source.kind")
     for key in ("provenance", "evidence_ref"):
         _text(source[key], "source."+key)
-    _require(source["project_ref"] == (None if source["kind"] == "SYNTHETIC_BENCHMARK" else DEV_PROJECT),
-             "INVALID_PROJECT_SCOPE", "source.project_ref", "only DEV operational snapshots or project-free benchmarks are accepted")
+    from .environment import active_project_ref
+    _require(source["project_ref"] == (None if source["kind"] == "SYNTHETIC_BENCHMARK" else active_project_ref()),
+             "INVALID_PROJECT_SCOPE", "source.project_ref", "only the active environment's operational snapshots or project-free benchmarks are accepted")
     cutoff = _time(payload["cutoff"], "cutoff")
     _require(_bool(payload["ngo_active"], "ngo_active"), "INACTIVE_NGO", "ngo_active", "requesting NGO must be active")
     _integer(payload["ngo_location_generation"], "ngo_location_generation", 0)

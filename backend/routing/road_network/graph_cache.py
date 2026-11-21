@@ -12,9 +12,19 @@ from ..database.supabase_rpc import encode, uuid
 
 
 class GraphCache:
-    def __init__(self, rpc, graph_id, directory, *, max_edges=3_000_000, progress=None):
+    def __init__(self, rpc, graph_id, directory, *, max_edges=3_000_000, progress=None, expected=None):
         self.rpc, self.graph_id = rpc, uuid(graph_id)
         self.directory = Path(directory)
+        # expected: the environment's approved frozen-graph manifest (environment.graph_manifest()).
+        # None keeps the original DEV behaviour. When given, the graph ID must match and the
+        # directory must not hold another graph's cache (never reuse a different project's cache).
+        self.expected = dict(expected) if expected is not None else None
+        if self.expected is not None:
+            check(uuid(self.expected['graph_id'])==self.graph_id,'ENVIRONMENT_GRAPH_ID_MISMATCH',503)
+            if self.directory.exists():
+                foreign=[p.name for p in self.directory.iterdir()
+                         if p.suffix in ('.jsonl','.sha256','.partial') and p.name.split('.')[0]!=self.graph_id]
+                check(not foreign,'FOREIGN_GRAPH_CACHE_PRESENT',503)
         self.directory.mkdir(parents=True,exist_ok=True)
         self.max_edges = max_edges
         self._lock = threading.Lock()
@@ -44,6 +54,8 @@ class GraphCache:
     def _check_manifest(self,g):
         check(g['graph_id']==self.graph_id and 0<=g['edge_count']<=self.max_edges and 0<g['node_count']<=3_000_000,'GRAPH_SCOPE_REJECTED',422)
         check(g['coverage_snapshot'].startswith('OSM-OPS-') and g['float_output_profile']=='PG_REAL_OUTPUT_0','UNAPPROVED_GRAPH_PROFILE',422)
+        if self.expected is not None:
+            check(all(g.get(k)==v for k,v in self.expected.items()),'ENVIRONMENT_GRAPH_MANIFEST_MISMATCH',409)
 
     def load(self):
         with self._lock:

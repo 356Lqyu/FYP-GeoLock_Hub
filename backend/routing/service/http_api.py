@@ -1,4 +1,5 @@
-"""Small authenticated DEV API. Default startup is disabled and performs no DB I/O."""
+"""Small authenticated routing API (DEV by default; GEOLOCK_ENVIRONMENT selects another).
+Default startup is disabled and performs no DB I/O."""
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 import argparse
@@ -17,6 +18,7 @@ from .journal import Journal
 from .planner_service import RoutingWorker
 from .exact_pilot import ExactRouteWorkflow
 from ..database.supabase_rpc import DEV, RoleRpc, SupabaseAuth, encode, uuid
+from ..environment import active as active_environment
 from .validator_service import Validator, RemoteValidator
 
 
@@ -45,8 +47,9 @@ def body_json(raw):
 
 
 class Application:
-    def __init__(self, *, auth=None, worker=None, validator=None, validator_token=None, active=False, combined_enabled=False, exact_enabled=False):
+    def __init__(self, *, auth=None, worker=None, validator=None, validator_token=None, active=False, combined_enabled=False, exact_enabled=False, project_ref=DEV):
         self.auth,self.worker,self.validator=auth,worker,validator
+        self.project_ref=project_ref
         self._validator_token=validator_token
         self.active=active
         self.combined_enabled=combined_enabled
@@ -104,13 +107,35 @@ class Application:
         finally: self._slots.release()
 
 
+def isolated_state_root(value, environment):
+    """Non-DEV environments: an explicit state folder stamped with its environment.
+
+    Refuses a folder already used by another environment (its journal or graph cache),
+    so DEV's journal and DEV's graph cache are never reused by another project."""
+    check(bool(value) and Path(value).is_absolute(),'ENVIRONMENT_STATE_DIRECTORY_REQUIRED',503)
+    root=Path(value);marker=root/'environment.json'
+    identity={'environment':environment.name,'project_ref':environment.project_ref,'graph_id':environment.graph_id}
+    if marker.exists():
+        try:recorded=json.loads(marker.read_text(encoding='utf-8'))
+        except ValueError:recorded=None
+        check(recorded==identity,'STATE_DIRECTORY_BELONGS_TO_ANOTHER_ENVIRONMENT',503)
+    else:
+        check(not any((root/name).exists() for name in ('journal','graphs')),'STATE_DIRECTORY_BELONGS_TO_ANOTHER_ENVIRONMENT',503)
+        root.mkdir(parents=True,exist_ok=True)
+        marker.write_text(json.dumps(identity,sort_keys=True)+'\n',encoding='utf-8')
+    return root
+
+
 def application_from_env(mode, env=os.environ, *, rpc_factory=RoleRpc):
-    # Import/startup alone cannot write to DEV. An operator must explicitly
+    # Import/startup alone cannot write to any project. An operator must explicitly
     # activate after deployment approval and provision scoped credentials.
+    try:environment=active_environment(env)
+    except ValueError:raise WorkerError('UNKNOWN_GEOLOCK_ENVIRONMENT',503) from None
     if env.get('GEOLOCK_ROUTING_ALLOW_DEV_WRITES')!='APPROVED':
-        return Application(active=False)
+        return Application(active=False,project_ref=environment.project_ref)
     check(bool(env.get('GEOLOCK_ROUTING_ACTIVATION_REF','').strip()),'ACTIVATION_RECEIPT_REQUIRED',503)
-    check(env.get('GEOLOCK_PROJECT_REF')==DEV,'DEV_PROJECT_REQUIRED',503)
+    check(env.get('GEOLOCK_PROJECT_REF')==environment.project_ref,
+          'DEV_PROJECT_REQUIRED' if environment.is_dev else 'ENVIRONMENT_PROJECT_REQUIRED',503)
     try:
         def runtime_rpc(dsn,role):
             rpc=rpc_factory(dsn,role)
@@ -122,17 +147,25 @@ def application_from_env(mode, env=os.environ, *, rpc_factory=RoleRpc):
         token=env['GEOLOCK_VALIDATOR_TOKEN'];check(len(token)>=32,'VALIDATOR_SECRET_REQUIRED',503)
         if mode=='validator':
             dsn=env['GEOLOCK_VALIDATOR_DSN'];RoleRpc.validate_dsn(dsn)
-            return Application(validator=Validator(runtime_rpc(dsn,'geolock_validator'),max_age_seconds=age),validator_token=token,active=True)
+            return Application(validator=Validator(runtime_rpc(dsn,'geolock_validator'),max_age_seconds=age),validator_token=token,active=True,
+                               project_ref=environment.project_ref)
         gd,pd=env['GEOLOCK_GRAPH_DSN'],env['GEOLOCK_PLANNER_DSN']
         RoleRpc.validate_dsn(gd);RoleRpc.validate_dsn(pd)
         check(gd!=pd,'SEPARATE_DATABASE_LOGINS_REQUIRED',503)
-        root=Path(env.get('GEOLOCK_WORKER_STATE',str(Path(__file__).parent/'.state')))
-        graph=GraphCache(runtime_rpc(gd,'geolock_graph_worker'),env['GEOLOCK_GRAPH_ID'],root/'graphs')
+        if environment.is_dev:
+            root=Path(env.get('GEOLOCK_WORKER_STATE',str(Path(__file__).parent/'.state')))
+            graph=GraphCache(runtime_rpc(gd,'geolock_graph_worker'),env['GEOLOCK_GRAPH_ID'],root/'graphs')
+        else:
+            check(env.get('GEOLOCK_GRAPH_ID')==environment.graph_id,'ENVIRONMENT_GRAPH_ID_MISMATCH',503)
+            root=isolated_state_root(env.get('GEOLOCK_WORKER_STATE'),environment)
+            graph=GraphCache(runtime_rpc(gd,'geolock_graph_worker'),environment.graph_id,root/'graphs',
+                             expected=environment.graph_manifest())
         worker=RoutingWorker(runtime_rpc(pd,'geolock_planner'),graph,
             RemoteValidator(env['GEOLOCK_VALIDATOR_URL'],token),Journal(root/'journal'),max_age_seconds=age,observe=request_event)
-        return Application(auth=SupabaseAuth(env['GEOLOCK_SUPABASE_PUBLISHABLE_KEY']),worker=worker,active=True,
+        return Application(auth=SupabaseAuth(env['GEOLOCK_SUPABASE_PUBLISHABLE_KEY'],base=environment.supabase_url),worker=worker,active=True,
                            combined_enabled=env.get('GEOLOCK_COMBINED_ROUTE_ENABLED')=='APPROVED',
-                           exact_enabled=env.get('GEOLOCK_EXACT_ROUTE_ENABLED')=='APPROVED')
+                           exact_enabled=env.get('GEOLOCK_EXACT_ROUTE_ENABLED')=='APPROVED',
+                           project_ref=environment.project_ref)
     except WorkerError: raise
     except Exception: raise WorkerError('MISSING_OR_INVALID_WORKER_CONFIGURATION',503) from None
 
@@ -153,7 +186,7 @@ def make_handler(app, *, origins=()):
             self.end_headers();self.wfile.write(raw)
         def do_GET(self):
             self._send(200 if self.path=='/health' else 404,
-              {'status':'ACTIVE' if app.active else 'DISABLED','project_ref':DEV} if self.path=='/health' else {'error':{'code':'NOT_FOUND'}})
+              {'status':'ACTIVE' if app.active else 'DISABLED','project_ref':app.project_ref} if self.path=='/health' else {'error':{'code':'NOT_FOUND'}})
         def do_OPTIONS(self):
             if self.headers.get('Origin') not in origins:
                 self._send(403,{'error':{'code':'ORIGIN_NOT_ALLOWED'}});return
@@ -201,7 +234,7 @@ def main(*,rpc_factory=RoleRpc):
     try:
         app=application_from_env(args.mode,rpc_factory=rpc_factory)
         if args.check_config:
-            print(encode({'mode':args.mode,'project_ref':DEV,'status':'CONFIGURED_NOT_CONNECTED' if app.active else 'DISABLED'}));return
+            print(encode({'mode':args.mode,'project_ref':app.project_ref,'status':'CONFIGURED_NOT_CONNECTED' if app.active else 'DISABLED'}));return
         if args.warm_graph:
             check(app.active and app.worker is not None,'ACTIVATED_PLANNER_REQUIRED',503)
             manifest,nodes,edges=app.worker.graph.load()
@@ -215,7 +248,7 @@ def main(*,rpc_factory=RoleRpc):
         if cert and key:
             context=ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER);context.minimum_version=ssl.TLSVersion.TLSv1_2
             context.load_cert_chain(cert,key);server.socket=context.wrap_socket(server.socket,server_side=True)
-        print(encode({'mode':args.mode,'status':'ACTIVE' if app.active else 'DISABLED','project_ref':DEV}),flush=True)
+        print(encode({'mode':args.mode,'status':'ACTIVE' if app.active else 'DISABLED','project_ref':app.project_ref}),flush=True)
         try: server.serve_forever()
         finally: server.server_close()
     except WorkerError as e:
