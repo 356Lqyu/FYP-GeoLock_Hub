@@ -1,6 +1,7 @@
 import 'claim_coordination.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' show PostgrestException;
 import 'package:uuid/uuid.dart';
 import '../claim_card.dart';
 import 'ngo_fleet_page.dart';
@@ -12,6 +13,7 @@ import 'routing_diagnostics_page.dart';
 import 'route_display_formatters.dart';
 import 'route_card_view.dart';
 import 'route_execution_controller.dart';
+import 'reconciliation_status.dart';
 import 'routing_policy_display.dart';
 
 class NgoRoutesPage extends StatefulWidget {
@@ -45,6 +47,12 @@ class _NgoRoutesPageState extends NgoSessionPage<NgoRoutesPage> {
   // Option C: generated (advisory, attested) route held until Start Route.
   Map<String, dynamic>? _generated;
   Map<String, dynamic>? _candidateStatus;
+
+  /// Terminal Start Route rejection for the CURRENT generated candidate
+  /// (`candidate_id`, `code`, `detail`). Survives the refresh that re-reads
+  /// candidate status, because that status is clock-based and cannot see a
+  /// claim that changed after planning. Cleared with the candidate.
+  Map<String, String?>? _proposalRejection;
   bool _starting = false;
   Timer? _validityTicker;
   DateTime? _validUntilLocal;
@@ -162,6 +170,7 @@ class _NgoRoutesPageState extends NgoSessionPage<NgoRoutesPage> {
   void _clearGenerated() {
     _generated = null;
     _candidateStatus = null;
+    _proposalRejection = null;
     _validityTicker?.cancel();
     _validityTicker = null;
     _validUntilLocal = null;
@@ -214,6 +223,7 @@ class _NgoRoutesPageState extends NgoSessionPage<NgoRoutesPage> {
       }
       return 'This route was already started. Open it under Your pickup routes.';
     }
+    if (_rejectedProposal != null) return proposalExpiredTitle;
     if (status['single_route'] != true) {
       return 'This plan needs more than one vehicle. Select one vehicle and generate again.';
     }
@@ -225,6 +235,28 @@ class _NgoRoutesPageState extends NgoSessionPage<NgoRoutesPage> {
     }
     if (!actionsEnabled) return 'Refresh to confirm the route is still valid.';
     return null;
+  }
+
+  /// The saved terminal rejection, only if it belongs to the shown candidate.
+  Map<String, String?>? get _rejectedProposal {
+    final rejection = _proposalRejection;
+    final candidate = _generated?['candidate_id'];
+    if (rejection == null || candidate is! String) return null;
+    return rejection['candidate_id'] == candidate ? rejection : null;
+  }
+
+  /// Confirmed expiry: a terminal Start rejection, or the backend's own
+  /// server-clock deadline (`expired`, mirrored by the countdown). An unknown
+  /// network outcome or failed status read is never treated as expiry.
+  bool get _proposalExpired {
+    final status = _candidateStatus;
+    if (_generated == null || status == null) return false;
+    if (status['started_route_id'] is String) return false;
+    if (_rejectedProposal != null) return true;
+    if (status['contract'] != NgoRoutingRepository.candidateStatusContract) {
+      return false;
+    }
+    return status['expired'] == true || _validityRemaining == Duration.zero;
   }
 
   @override
@@ -403,7 +435,27 @@ class _NgoRoutesPageState extends NgoSessionPage<NgoRoutesPage> {
     String? routeId;
     try {
       await perform(() async {
-        final receipt = await repository.authorizeAndStart(candidate);
+        final Map<String, dynamic> receipt;
+        try {
+          receipt = await repository.authorizeAndStart(candidate);
+        } on PostgrestException catch (rejection) {
+          // A database rejection rolled the whole start back. Only codes that
+          // are final for this candidate become "proposal expired"; anything
+          // else (and every timeout/unknown outcome) keeps the existing path.
+          if (!proposalTerminalRejections.contains(rejection.message)) {
+            rethrow;
+          }
+          if (mounted) {
+            setState(
+              () => _proposalRejection = {
+                'candidate_id': candidate,
+                'code': rejection.message,
+                'detail': rejection.details?.toString(),
+              },
+            );
+          }
+          return;
+        }
         await _startExecutor.adoptAtomicStart(receipt);
         routeId = receipt['route_id'] as String;
       });
@@ -430,6 +482,68 @@ class _NgoRoutesPageState extends NgoSessionPage<NgoRoutesPage> {
       ),
     );
     if (mounted) await reload();
+  }
+
+  /// Confirmed-expiry notice. Generate New Route only plans (advisory
+  /// /v1/plan with a fresh request ID); it never starts the new route.
+  Widget _expiredProposalNotice(
+    BuildContext context,
+    Map<String, dynamic> status,
+  ) {
+    final rejection = _rejectedProposal;
+    final code = rejection?['code'];
+    final detail = rejection?['detail'];
+    final deadlineReason = rejection == null ? status['deadline_reason'] : null;
+    final reason = proposalExpiredReason(
+      code: code,
+      detail: detail,
+      deadlineReason: deadlineReason,
+    );
+    return Card(
+      key: const Key('route-proposal-expired'),
+      color: Theme.of(context).colorScheme.errorContainer,
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              proposalExpiredTitle,
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 4),
+            Text(
+              proposalExpiredMessage(
+                code: code,
+                detail: detail,
+                deadlineReason: deadlineReason,
+              ),
+              key: const Key('route-proposal-expired-message'),
+            ),
+            if (reason != null)
+              Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: Text(
+                  reason,
+                  key: const Key('route-proposal-expired-reason'),
+                ),
+              ),
+            const SizedBox(height: 8),
+            FilledButton.icon(
+              key: const Key('generate-new-route'),
+              onPressed:
+                  !_generating && !_starting && _generationBlocker == null
+                  ? _generate
+                  : null,
+              icon: const Icon(Icons.refresh),
+              label: const Text('Generate New Route'),
+            ),
+            if (!_generating && _generationBlocker != null)
+              Text(_generationBlocker!),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _generatedRouteCard(BuildContext context) {
@@ -473,7 +587,9 @@ class _NgoRoutesPageState extends NgoSessionPage<NgoRoutesPage> {
             ),
             if (limitedBy != null)
               Text(limitedBy, key: const Key('generated-route-deadline-reason')),
-            if (blocker != null)
+            if (_proposalExpired)
+              _expiredProposalNotice(context, status)
+            else if (blocker != null)
               Text(blocker, key: const Key('start-route-blocker')),
             const SizedBox(height: 8),
             FilledButton.icon(
@@ -816,10 +932,15 @@ class NgoRouteDetailPage extends StatefulWidget {
     required this.routeId,
     this.repository,
     this.mapBuilder,
+    this.coordinationRepository,
   });
   final String routeId;
   final RoutingMapBuilder? mapBuilder;
   final NgoRoutingRepository? repository;
+
+  /// Reconciliation reads/submissions for "View Reconciliation". Defaults to
+  /// the live participant-scoped repository; injected only by tests.
+  final ClaimCoordinationRepository? coordinationRepository;
   @override
   State<NgoRouteDetailPage> createState() => _NgoRouteDetailPageState();
 }
@@ -987,6 +1108,101 @@ class _NgoRouteDetailPageState extends NgoSessionPage<NgoRouteDetailPage> {
 
   Map<String, dynamic>? get _currentStop =>
       _route == null ? null : RouteExecutionController.currentStop(_route!);
+
+  /// The NGO's own claim cards for this route's stops (display evidence only).
+  Map<String, ClaimCard> get _claimCardsById => {
+    for (final row in _resolutionClaims)
+      if (row['claim_id'] is String)
+        row['claim_id'] as String: ClaimCard.fromJson(row),
+  };
+
+  /// The backend's next executable stop, only while an unresolved earlier
+  /// pickup blocks dispatch. Never derived locally.
+  String? get _blockedNextTaskId =>
+      _route?['dispatch_block_reason'] == 'PREVIOUS_PICKUP_UNRESOLVED'
+      ? (_route?['next_executable_task_id'] as String?)
+      : null;
+
+  Future<void> _openStopReconciliation(Map<String, dynamic> stop) async {
+    final claim = stop['claim_id'];
+    if (claim is! String) return;
+    await Navigator.push<void>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ClaimReconciliationPage(
+          claimId: claim,
+          title: 'Stop ${stop['stop_order']} reconciliation',
+          viewerRole: 'NGO',
+          sourceType: stop['source_type'] as String?,
+          routeNotice: stop['task_status'] == 'DISPATCHED'
+              ? 'While this pickup is unresolved, the next pickup on this route stays blocked.'
+              : null,
+          repository: widget.coordinationRepository,
+        ),
+      ),
+    );
+    // Reconciliation may have changed the route: re-read authoritative detail.
+    if (mounted) await reload();
+  }
+
+  /// In-card notice for a stop whose backend state needs attention, or null.
+  Widget? _stopNotice(BuildContext context, Map<String, dynamic> s) {
+    final blockedNext = _blockedNextTaskId;
+    if (stopHasOpenReconciliation(s)) {
+      return Card(
+            key: Key('stop-reconciliation-${s['task_id']}'),
+            color: Theme.of(context).colorScheme.errorContainer,
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Stop ${s['stop_order']} — ${GeoLockStatusText.reconciliationRequired}',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: 4),
+                  Text(stopReconciliationMessage(s)),
+                  if (s['task_status'] == 'DISPATCHED' && blockedNext != null)
+                    const Text(
+                      'The next pickup is blocked until this pickup is resolved.',
+                      key: Key('stop-reconciliation-blocks-next'),
+                    ),
+                  if (s['can_defer'] == true)
+                    const Text(
+                      'You may skip it for now below; it stays assigned until reconciliation finishes.',
+                    ),
+                  const SizedBox(height: 8),
+                  OutlinedButton.icon(
+                    key: Key('view-reconciliation-${s['task_id']}'),
+                    onPressed: s['claim_id'] is String && !busy
+                        ? () => _openStopReconciliation(s)
+                        : null,
+                    icon: const Icon(Icons.fact_check_outlined),
+                    label: const Text('View Reconciliation'),
+                  ),
+                ],
+              ),
+            ),
+          );
+    }
+    if (s['lease_expired_pending_recovery'] == true &&
+        s['task_status'] == 'DISPATCHED') {
+      return Card(
+            key: Key('stop-expiry-pending-${s['task_id']}'),
+            child: ListTile(
+              leading: const Icon(Icons.hourglass_top),
+              title: Text(
+                'Stop ${s['stop_order']} — ${GeoLockStatusText.expiredAwaitingRecovery}',
+              ),
+              subtitle: const Text(
+                "This pickup's lease expired after dispatch. The backend has not opened reconciliation yet; refresh shortly.",
+              ),
+            ),
+          );
+    }
+    return null;
+  }
 
   bool get _canContinue =>
       mounted &&
@@ -1200,28 +1416,20 @@ class _NgoRouteDetailPageState extends NgoSessionPage<NgoRouteDetailPage> {
                   children: [
                     Chip(
                       label: Text(
-                        s['detached'] == true
-                            ? 'Removed from route — claim kept'
-                            : s['lease_expired_pending_recovery'] == true
-                            ? 'Waiting for expiry recovery'
-                            : s['deferred_status'] == 'RESOLVED_UNCOLLECTED'
-                            ? 'Not collected — resolved'
-                            : s['deferred_for_reconciliation'] == true
-                            ? 'Needs reconciliation'
-                            : s['needs_reconciliation'] == true
-                            ? 'Needs reconciliation'
-                            : s['task_status'] == 'COLLECTED'
-                            ? 'Completed pickup'
-                            : _route?['route_status'] == 'CANCELLED'
-                            ? 'Not started'
-                            : s['task_id'] == _currentStop?['task_id']
-                            ? s['task_status'] == 'DISPATCHED'
-                                  ? 'Current pickup'
-                                  : 'Next pickup — not started'
-                            : 'Upcoming pickup',
+                        routeStopLabel(
+                          s,
+                          routeStatus: _route?['route_status'] as String?,
+                          currentTaskId: _currentStop?['task_id'] as String?,
+                          claimStatus:
+                              _claimCardsById[s['claim_id']]?.claimStatus,
+                          leaseIsExpired:
+                              _claimCardsById[s['claim_id']]?.leaseIsExpired,
+                          blockedNextTaskId: _blockedNextTaskId,
+                        ),
                       ),
                     ),
                     Text('${s['stop_order']}. ${s['title'] ?? 'Pickup'}'),
+                    ?_stopNotice(context, s),
                     Text(
                       '${s['source_type'] == 'HUB_BATCH' ? 'Community hub pickup' : 'Pickup'} · ${routeLoadText(s['load_kg'])} kg',
                     ),
@@ -1251,7 +1459,13 @@ class _NgoRouteDetailPageState extends NgoSessionPage<NgoRouteDetailPage> {
                       const Text(
                         'The lease has expired, but the protected backend recovery process has not opened reconciliation yet. Refresh later; skip remains unavailable until the backend authorizes deferral.',
                       ),
-                    if (!_isTerminal && s['detached'] != true)
+                    if (s['deferred_status'] == 'RESOLVED_UNCOLLECTED')
+                      const Text(
+                        'Not collected. The backend has finalized this pickup; no action is needed.',
+                      ),
+                    if (!_isTerminal &&
+                        s['detached'] != true &&
+                        s['deferred_status'] != 'RESOLVED_UNCOLLECTED')
                       Wrap(
                         spacing: 8,
                         children: [
@@ -1383,9 +1597,12 @@ class _NgoRouteDetailPageState extends NgoSessionPage<NgoRouteDetailPage> {
               ),
             ),
           ],
+          // Cancel is offered only for a route the backend still reports as
+          // AUTHORISED (never started) AND cancellable. Option C starts the
+          // first stop atomically, so a normal IN_PROGRESS route never shows it.
           if (!_isTerminal &&
-              !(_route?['route_status'] == 'CANCELLED' &&
-                  _route?['cancellation_outcome'] == 'NO_COLLECTION'))
+              _route?['route_status'] == 'AUTHORISED' &&
+              _route?['can_cancel'] == true)
             TextButton(
               onPressed: authorized && _route?['can_cancel'] == true
                   ? () async {

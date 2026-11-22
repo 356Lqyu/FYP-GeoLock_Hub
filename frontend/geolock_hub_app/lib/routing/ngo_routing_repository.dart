@@ -67,7 +67,11 @@ String routingDispatchMessage(Object? reason) => switch (reason) {
   'BEFORE_AUTHORIZED_DEPARTURE' =>
     'Pickup can start at the authorized departure time. Refresh when ready.',
   'PREVIOUS_PICKUP_UNRESOLVED' =>
-    'Complete the pickup already in progress before starting the next stop.',
+    'Complete the pickup already in progress before starting the next stop. If that pickup requires reconciliation, the next pickup stays blocked until it is resolved.',
+  'VEHICLE_AT_DEPOT_CHECKPOINT_REQUIRED' =>
+    'A dispatched pickup was resolved without collection. Confirm the vehicle is back at the NGO depot before the next pickup.',
+  'WHOLE_ROUTE_INTERRUPTION_REQUIRES_RECONCILIATION' =>
+    'This route has an open interruption case. Pickups stay blocked until it is resolved.',
   'STOP_ORDER_REQUIRED' => 'Follow the stop order in this route.',
   'DISPATCH_SOURCE_STALE' ||
   'DISPATCH_AUTHORITY_STALE' ||

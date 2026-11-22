@@ -46,27 +46,6 @@ String claimDetailsErrorMessage(Object error) {
   return 'Claim details are temporarily unavailable. Refresh and try again.';
 }
 
-Future<Map<String, dynamic>?> _readClaimReconciliationReceipt(
-  String requestId,
-) async {
-  final response = await _db.rpc(
-    'get_my_claim_reconciliation_receipt',
-    params: {'p_request': requestId},
-  );
-  if (response is! Map) {
-    throw const FormatException('Invalid claim reconciliation receipt.');
-  }
-  final receipt = Map<String, dynamic>.from(response);
-  if (receipt['request_id'] != requestId) {
-    throw StateError('Claim reconciliation receipt request identity changed.');
-  }
-  if (receipt['found'] == false) return null;
-  if (receipt['found'] != true || receipt['result'] is! Map) {
-    throw StateError('Claim reconciliation receipt is not confirmed.');
-  }
-  return receipt;
-}
-
 String _safePhotoDiagnostic(Object error) => error
     .toString()
     .replaceAll(RegExp(r'https?://[^\s)\]}>]+'), '[URL redacted]')
@@ -343,6 +322,12 @@ class MyClaimsPage extends StatefulWidget {
   actionRunner;
   final Widget Function(String claimId)? detailBuilder;
   final Widget Function()? routesBuilder;
+
+  /// Test seam for the reconciliation page; defaults to the live v2 panel.
+  final Widget Function(ClaimCard card)? reconciliationBuilder;
+
+  /// Repository for the default reconciliation page (live when null).
+  final ClaimCoordinationRepository? coordinationRepository;
   const MyClaimsPage({
     super.key,
     this.refreshSignal = 0,
@@ -350,6 +335,8 @@ class MyClaimsPage extends StatefulWidget {
     this.actionRunner,
     this.detailBuilder,
     this.routesBuilder,
+    this.reconciliationBuilder,
+    this.coordinationRepository,
   });
   @override
   State<MyClaimsPage> createState() => _MyClaimsPageState();
@@ -1162,6 +1149,8 @@ class _MyReconciliationCasesPageState extends State<MyReconciliationCasesPage> {
                     const SizedBox(height: 8),
                     ClaimCoordinationPanel(
                       claimId: row['claim_id'] as String,
+                      viewerRole: widget.role,
+                      sourceType: row['source_type'] as String?,
                       onChanged: () async {
                         if (mounted) setState(() => _cases = _load());
                       },
@@ -1365,13 +1354,37 @@ class _MyClaimsPageState extends State<MyClaimsPage>
     }
   }
 
+  Future<void> _openReconciliation(ClaimCard card) async {
+    await Navigator.push<void>(
+      context,
+      MaterialPageRoute(
+        builder: (_) =>
+            widget.reconciliationBuilder?.call(card) ??
+            ClaimReconciliationPage(
+              claimId: card.claimId,
+              title: card.title ?? 'Handover reconciliation',
+              viewerRole: 'NGO',
+              sourceType: card.sourceType,
+              routeNotice: card.taskStatus == 'DISPATCHED'
+                  ? 'While this pickup is unresolved, the next pickup on its route stays blocked.'
+                  : null,
+              repository: widget.coordinationRepository,
+            ),
+      ),
+    );
+    if (mounted) await _reader.refresh();
+  }
+
   Future<void> _openDetails(ClaimCard card) async {
     await Navigator.push<void>(
       context,
       MaterialPageRoute(
         builder: (_) =>
             widget.detailBuilder?.call(card.claimId) ??
-            ClaimPickupDetailPage(claimId: card.claimId),
+            ClaimPickupDetailPage(
+              claimId: card.claimId,
+              coordinationRepository: widget.coordinationRepository,
+            ),
       ),
     );
     if (mounted) await _reader.refresh();
@@ -1459,6 +1472,7 @@ class _MyClaimsPageState extends State<MyClaimsPage>
                       key: ValueKey('claims-tab-${tab.name}'),
                       label: Text(switch (tab) {
                         ClaimTab.active => 'Active',
+                        ClaimTab.reconciliation => 'Reconciliation',
                         ClaimTab.expired => 'Expired',
                         ClaimTab.history => 'History',
                         ClaimTab.all => 'All',
@@ -1558,10 +1572,24 @@ class _MyClaimsPageState extends State<MyClaimsPage>
           ),
           if (card.releaseReason != null)
             Text('Release reason: ${card.releaseReason}'),
-          if (card.displayStatus == ClaimDisplayStatus.reconciliation)
+          if (card.displayStatus == ClaimDisplayStatus.reconciliation) ...[
             const Text(
               'The listing is not available while handover remains unresolved.',
             ),
+            if (card.taskStatus == 'DISPATCHED')
+              const Text(
+                'Pickup was dispatched. The next pickup on its route stays blocked until this is resolved.',
+              ),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: FilledButton.tonalIcon(
+                key: ValueKey('claim-reconciliation-${card.claimId}'),
+                onPressed: () => _openReconciliation(card),
+                icon: const Icon(Icons.fact_check_outlined),
+                label: const Text('View reconciliation'),
+              ),
+            ),
+          ],
           if (card.tab == ClaimTab.expired)
             const Text(
               'Expiry does not release this claim or reopen its listing. The database controls recovery.',
@@ -2303,11 +2331,16 @@ class ClaimPickupDetailPage extends StatefulWidget {
   final String claimId;
   final ClaimPickupDetailReader? reader;
   final Future<String> Function(String path)? photoUrlResolver;
+
+  /// Reconciliation reads/submissions for the linked reconciliation page.
+  /// Defaults to the live participant-scoped repository; injected by tests.
+  final ClaimCoordinationRepository? coordinationRepository;
   const ClaimPickupDetailPage({
     super.key,
     required this.claimId,
     this.reader,
     this.photoUrlResolver,
+    this.coordinationRepository,
   });
 
   @override
@@ -2317,7 +2350,6 @@ class ClaimPickupDetailPage extends StatefulWidget {
 class _ClaimPickupDetailPageState extends State<ClaimPickupDetailPage>
     with WidgetsBindingObserver {
   late Future<Map<String, dynamic>> _detail = _load();
-  bool _reconciliationBusy = false;
   Timer? _leaseRefresh;
   int _generation = 0;
   StreamSubscription<AuthState>? _authSubscription;
@@ -2388,7 +2420,12 @@ class _ClaimPickupDetailPageState extends State<ClaimPickupDetailPage>
           'COMPLETED',
           'CANCELLED',
         }.contains(presentation.claimStatus) ||
-        presentation.tab != ClaimTab.active ||
+        // Reconciliation claims moved to their own My Claims section but
+        // still need the operational detail that carries their actions.
+        !const {
+          ClaimTab.active,
+          ClaimTab.reconciliation,
+        }.contains(presentation.tab) ||
         presentation.displayStatus == ClaimDisplayStatus.needsReview ||
         (presentation.claimStatus == 'ACTIVE' && !presentation.isValidActive);
 
@@ -2486,74 +2523,29 @@ class _ClaimPickupDetailPageState extends State<ClaimPickupDetailPage>
     return result;
   }
 
-  Future<void> _submitReconciliation(bool handoverConfirmed) async {
-    if (_reconciliationBusy) return;
-    setState(() => _reconciliationBusy = true);
-    String? requestId;
-    try {
-      final choice = handoverConfirmed ? 'yes' : 'no';
-      final prefs = await SharedPreferences.getInstance();
-      final key =
-          'geolock_reconcile_${_db.auth.currentUser?.id}_${widget.claimId}_$choice';
-      final savedRequestId = prefs.getString(key) ?? const Uuid().v4();
-      requestId = savedRequestId;
-      if (!await prefs.setString(key, savedRequestId)) {
-        throw StateError('Unable to preserve request. No statement was sent.');
-      }
-      final receipt = await _readClaimReconciliationReceipt(savedRequestId);
-      late final Map<String, dynamic> result;
-      if (receipt != null) {
-        if (receipt['claim_id'] != widget.claimId ||
-            receipt['handover_confirmed'] != handoverConfirmed) {
-          throw StateError(
-            'Saved statement receipt does not match this claim and choice.',
-          );
-        }
-        result = Map<String, dynamic>.from(receipt['result'] as Map);
-      } else {
-        final response = await _db.rpc(
-          'submit_claim_reconciliation',
-          params: {
-            'p_claim': widget.claimId,
-            'p_handover_confirmed': handoverConfirmed,
-            'p_request': savedRequestId,
-          },
-        );
-        if (response is! Map) {
-          throw const FormatException('Reconciliation outcome missing.');
-        }
-        result = Map<String, dynamic>.from(response);
-      }
-      if (result['outcome'] == null) {
-        throw const FormatException('Reconciliation outcome is missing.');
-      }
-      if (!await prefs.remove(key)) {
-        throw StateError('Confirmed outcome could not be archived locally.');
-      }
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            '${result['outcome']}: ${result['reason_code'] ?? 'Evidence recorded'}',
-          ),
+  /// Opens the single reconciliation interface (v2 panel) for this claim and
+  /// re-reads the claim when the NGO returns.
+  Future<void> _openReconciliation({
+    required String? title,
+    required String? sourceType,
+    required String? taskStatus,
+  }) async {
+    await Navigator.push<void>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ClaimReconciliationPage(
+          claimId: widget.claimId,
+          title: title ?? 'Handover reconciliation',
+          viewerRole: 'NGO',
+          sourceType: sourceType,
+          routeNotice: taskStatus == 'DISPATCHED'
+              ? 'While this pickup is unresolved, the next pickup on its route stays blocked.'
+              : null,
+          repository: widget.coordinationRepository,
         ),
-      );
-    } catch (error) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Reconciliation was not confirmed; retry will reuse request ${requestId ?? '(not saved)'}. ${claimDetailsErrorMessage(error)}',
-            ),
-          ),
-        );
-      }
-    } finally {
-      if (mounted) {
-        _refreshDetail();
-        setState(() => _reconciliationBusy = false);
-      }
-    }
+      ),
+    );
+    if (mounted) _refreshDetail();
   }
 
   Widget _buildClaimHistory(
@@ -2686,15 +2678,6 @@ class _ClaimPickupDetailPageState extends State<ClaimPickupDetailPage>
               style: Theme.of(context).textTheme.titleMedium,
             ),
             Chip(label: Text(presentation?.badge ?? 'Status Needs Review')),
-            if (claimStatus == 'RECONCILIATION_REQUIRED' &&
-                widget.reader == null)
-              ClaimCoordinationPanel(
-                claimId: widget.claimId,
-                onChanged: () async {
-                  _refreshDetail();
-                  await _detail;
-                },
-              ),
             _claimDetailRow('Claim', friendlyWorkflowStatus(claimStatus)),
             _claimDetailRow(
               'Listing availability',
@@ -2721,8 +2704,10 @@ class _ClaimPickupDetailPageState extends State<ClaimPickupDetailPage>
               style: Theme.of(context).textTheme.titleMedium,
             ),
             _claimDetailRow('Pickup task', friendlyWorkflowStatus(taskStatus)),
-            if (isReconciliationRequired && widget.reader != null)
+            if (isReconciliationRequired ||
+                claimStatus == 'RECONCILIATION_REQUIRED')
               Card(
+                key: const Key('claim-reconciliation-notice'),
                 color: const Color(0xfffff0e8),
                 child: Padding(
                   padding: const EdgeInsets.all(14),
@@ -2734,31 +2719,24 @@ class _ClaimPickupDetailPageState extends State<ClaimPickupDetailPage>
                         leading: Icon(Icons.warning_amber_rounded),
                         title: Text('Handover requires reconciliation'),
                         subtitle: Text(
-                          'This claim is unresolved. Do not treat the listing as available.',
+                          'This claim is unresolved. Do not treat the listing as available. '
+                          'Review the case and submit your handover statement in View Reconciliation.',
                         ),
                       ),
-                      const SizedBox(height: 4),
-                      Wrap(
-                        spacing: 8,
-                        runSpacing: 6,
-                        children: [
-                          FilledButton.tonal(
-                            onPressed: _reconciliationBusy
-                                ? null
-                                : () => _submitReconciliation(true),
-                            child: const Text('Confirm handover'),
-                          ),
-                          OutlinedButton(
-                            onPressed: _reconciliationBusy
-                                ? null
-                                : () => _submitReconciliation(false),
-                            child: const Text('Confirm no handover'),
-                          ),
-                        ],
-                      ),
+                      if (taskStatus == 'DISPATCHED')
+                        const Text(
+                          'Pickup was dispatched. The next pickup on its route stays blocked until this is resolved.',
+                        ),
                       const SizedBox(height: 6),
-                      const Text(
-                        'The donor or hub administrator must also submit matching evidence. Some cases remain under trusted review.',
+                      FilledButton.tonalIcon(
+                        key: const Key('claim-detail-view-reconciliation'),
+                        onPressed: () => _openReconciliation(
+                          title: card?['title']?.toString(),
+                          sourceType: data['source_type']?.toString(),
+                          taskStatus: taskStatus,
+                        ),
+                        icon: const Icon(Icons.fact_check_outlined),
+                        label: const Text('View Reconciliation'),
                       ),
                     ],
                   ),
@@ -3881,6 +3859,10 @@ class DonationDetailPage extends StatefulWidget {
   final Future<Map<String, dynamic>> Function()? detailLoader;
   final RouteResolutionRepository? outcomeRepository;
 
+  /// Reconciliation reads for the status link / reconciliation page.
+  /// Defaults to the live participant-scoped repository; injected by tests.
+  final ClaimCoordinationRepository? coordinationRepository;
+
   /// Opens the hub chooser once the page appears (after a new hub donation).
   final bool openHubSelection;
   const DonationDetailPage({
@@ -3889,6 +3871,7 @@ class DonationDetailPage extends StatefulWidget {
     this.openHubSelection = false,
     this.detailLoader,
     this.outcomeRepository,
+    this.coordinationRepository,
   });
   @override
   State<DonationDetailPage> createState() => _DonationDetailPageState();
@@ -4323,9 +4306,14 @@ class _DonationDetailPageState extends State<DonationDetailPage> {
                             onConfirmed: _refreshAfterConfirmedDonationAction,
                           )
                         else
-                          ClaimCoordinationPanel(
+                          // Status + link only; statements are submitted in
+                          // the single reconciliation interface.
+                          ReconciliationLink(
                             donationId: widget.donationId,
-                            onChanged: _refreshAfterConfirmedDonationAction,
+                            viewerRole: 'DONOR',
+                            sourceType: 'DIRECT_DONATION',
+                            repository: widget.coordinationRepository,
+                            onReturn: _refreshAfterConfirmedDonationAction,
                           ),
                       if (d['pickup_address']?.toString().isNotEmpty == true)
                         Padding(

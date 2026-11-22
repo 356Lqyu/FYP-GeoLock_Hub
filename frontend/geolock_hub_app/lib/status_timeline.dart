@@ -215,7 +215,7 @@ String friendlyWorkflowStatus(Object? value) {
     'EXPIRED': 'Expired',
     'RELEASED': 'Released',
     'COMPLETED': 'Completed',
-    'RECONCILIATION_REQUIRED': 'Needs Reconciliation',
+    'RECONCILIATION_REQUIRED': 'Reconciliation required',
     'CONSUMED': 'Used for Receipt',
     'STORED': 'Stored at Hub',
     'PUBLISHED': 'Published',
@@ -227,7 +227,7 @@ String friendlyWorkflowStatus(Object? value) {
     'PENDING_NODE': 'Road Check Pending',
     'UNVERIFIED': 'Not Verified for Routing',
     'OPEN': 'Open',
-    'MANUAL_REVIEW': 'Manual Review',
+    'MANUAL_REVIEW': 'Under review',
     'RESOLVED_COLLECTED': 'Resolved · Collected',
     'RESOLVED_RELEASED': 'Resolved · Released',
   };

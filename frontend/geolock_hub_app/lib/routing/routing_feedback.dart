@@ -134,6 +134,105 @@ String deadlineExpiredMessage(Object? reason) => switch (reason) {
   _ => 'This generated route expired. Generate a new route to continue.',
 };
 
+/// Start Route rejections that are final for THIS generated candidate.
+///
+/// `authorize_and_start_my_route` raises these after rolling the whole
+/// transaction back (nothing authorized or dispatched). Each one depends only
+/// on facts that cannot revert for the same candidate: the database clock has
+/// passed a deadline, or a claim/task/vehicle/depot changed after planning.
+/// Transport failures, timeouts and unknown outcomes are never listed here.
+const proposalTerminalRejections = {
+  'CANDIDATE_EXPIRED',
+  'CANDIDATE_DEADLINE_PASSED',
+  'STOP_LEASE_INSUFFICIENT',
+  'LEASE_TOO_SHORT',
+  'PLAN_STALE_TASK',
+  'PLAN_STALE_VEHICLE',
+  'PLAN_STALE_NGO',
+  'UNAUTHORIZED_TASK',
+  'DISPATCH_WINDOW_OR_LEASE_EXPIRED',
+  'DISPATCH_SOURCE_STALE',
+  'REMAINING_ROUTE_INFEASIBLE',
+};
+
+/// Rejections that concern a pickup claim (lease timing or claim/task change),
+/// as opposed to the vehicle, depot, validity window or route limit.
+const _proposalClaimRejections = {
+  'STOP_LEASE_INSUFFICIENT',
+  'LEASE_TOO_SHORT',
+  'PLAN_STALE_TASK',
+  'UNAUTHORIZED_TASK',
+  'DISPATCH_WINDOW_OR_LEASE_EXPIRED',
+  'DISPATCH_SOURCE_STALE',
+};
+
+const proposalExpiredTitle = 'Route proposal expired';
+const proposalClaimsInvalidMessage =
+    'One or more pickup claims are no longer valid. This route cannot be started. '
+    'Generate a new route using your remaining available pickups.';
+
+/// Body text for an expired/unstartable proposal. [code] is a terminal Start
+/// rejection (if Start was pressed); otherwise [deadlineReason] comes from
+/// `get_my_route_candidate_status` once its server-clock deadline has passed.
+/// [detail] is the rejection DETAIL (`CANDIDATE_DEADLINE_PASSED` carries the
+/// deadline reason there).
+String proposalExpiredMessage({
+  String? code,
+  String? detail,
+  Object? deadlineReason,
+}) {
+  final reason = code == 'CANDIDATE_DEADLINE_PASSED'
+      ? detail
+      : code == null
+      ? deadlineReason
+      : null;
+  if (_proposalClaimRejections.contains(code) || reason == 'LEASE') {
+    return proposalClaimsInvalidMessage;
+  }
+  return switch (code) {
+    'PLAN_STALE_VEHICLE' =>
+      'The selected vehicle changed after this route was generated. This route cannot be started. Generate a new route.',
+    'PLAN_STALE_NGO' =>
+      'Your NGO depot details changed after this route was generated. This route cannot be started. Generate a new route.',
+    'REMAINING_ROUTE_INFEASIBLE' =>
+      'This route no longer fits its pickup windows, claim leases or depot return time. Generate a new route.',
+    'CANDIDATE_EXPIRED' =>
+      'This route proposal passed its validity window before it was started. Nothing was reserved. Generate a new route.',
+    _ => deadlineExpiredMessage(reason),
+  };
+}
+
+/// Why the proposal expired, when the backend states it precisely. Returns
+/// null when the evidence does not name a specific cause.
+String? proposalExpiredReason({
+  String? code,
+  String? detail,
+  Object? deadlineReason,
+}) {
+  final reason = code == 'CANDIDATE_DEADLINE_PASSED'
+      ? detail
+      : code == null
+      ? deadlineReason
+      : null;
+  if (reason == 'LEASE' ||
+      code == 'STOP_LEASE_INSUFFICIENT' ||
+      code == 'LEASE_TOO_SHORT') {
+    return "Confirmed by the database: a claim's lease no longer leaves enough time for its pickup.";
+  }
+  if (code == 'PLAN_STALE_TASK' ||
+      code == 'UNAUTHORIZED_TASK' ||
+      code == 'DISPATCH_SOURCE_STALE') {
+    return 'Confirmed by the database: a claim or pickup changed after this route was generated (for example it was released, cancelled or reassigned).';
+  }
+  if (code == 'DISPATCH_WINDOW_OR_LEASE_EXPIRED') {
+    return "Confirmed by the database: the first pickup's claim lease or pickup window no longer allows it.";
+  }
+  if (reason == 'SERVICE_WINDOW') {
+    return 'Confirmed by the database: a donor pickup window has closed.';
+  }
+  return null;
+}
+
 String stopInfeasibleMessage(Object? reason) => switch (reason) {
   'LEASE' =>
     'This pickup can no longer finish before its claim deadline (with the 15-minute margin). Remove it from the route to continue.',

@@ -61,7 +61,7 @@ void main() {
       expect(
         card.tab,
         entry.key == 'RECONCILIATION_REQUIRED'
-            ? ClaimTab.active
+            ? ClaimTab.reconciliation
             : entry.key == 'EXPIRED'
             ? ClaimTab.expired
             : ClaimTab.history,
@@ -78,11 +78,11 @@ void main() {
           'lease_status': 'RECONCILIATION_REQUIRED',
         }),
       ).badge,
-      'Needs Reconciliation',
+      'Reconciliation required',
     );
     expect(
       ClaimCard.fromJson(cardJson({'case_status': 'MANUAL_REVIEW'})).tab,
-      ClaimTab.active,
+      ClaimTab.reconciliation,
     );
     expect(
       ClaimCard.fromJson(
@@ -219,7 +219,7 @@ void main() {
     expect(find.text('Owned claim'), findsOneWidget);
     await tester.tap(find.byKey(const ValueKey('claims-tab-expired')));
     await tester.pumpAndSettle();
-    expect(find.text('Expired — Recovery Pending'), findsOneWidget);
+    expect(find.text('Expired, awaiting recovery'), findsOneWidget);
     expect(find.text('Start Pickup'), findsNothing);
     expect(find.byKey(const ValueKey('claim-routes-expired')), findsNothing);
     expect(
@@ -474,7 +474,15 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    expect(find.text('Needs Reconciliation'), findsOneWidget);
+    // Reconciliation claims have their own section in My Claims.
+    expect(find.text('Reconciliation required'), findsNothing);
+    await tester.tap(find.byKey(const ValueKey('claims-tab-reconciliation')));
+    await tester.pumpAndSettle();
+    expect(find.text('Reconciliation required'), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('claim-reconciliation-claim-1')),
+      findsOneWidget,
+    );
     expect(find.text('Start Pickup'), findsNothing);
     expect(find.byKey(const ValueKey('claim-routes-claim-1')), findsNothing);
     expect(find.text('Claim details'), findsOneWidget);

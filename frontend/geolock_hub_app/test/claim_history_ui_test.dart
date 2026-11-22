@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:geolock_hub_app/claim_pickup_detail_reader.dart';
 import 'package:geolock_hub_app/donation_pages.dart';
+import 'package:geolock_hub_app/routing/claim_coordination.dart';
 import 'package:geolock_hub_app/routing/route_resolution_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -467,7 +468,7 @@ void main() {
       );
       await tester.pumpAndSettle();
       expect(
-        find.widgetWithText(Chip, 'Expired — Recovery Pending'),
+        find.widgetWithText(Chip, 'Expired, awaiting recovery'),
         findsOneWidget,
       );
       expect(
@@ -562,32 +563,73 @@ void main() {
     );
   }
 
-  testWidgets('reconciliation-required claim retains its protected actions', (
-    tester,
-  ) async {
-    tester.view.physicalSize = const Size(1000, 2200);
-    tester.view.devicePixelRatio = 1;
-    addTearDown(tester.view.resetPhysicalSize);
-    addTearDown(tester.view.resetDevicePixelRatio);
-    final detail = {
-      ...releasedDetail(),
-      'claim_status': 'RECONCILIATION_REQUIRED',
-      'lease_status': 'RECONCILIATION_REQUIRED',
-      'listing_status': 'CLAIMED',
-    };
-    final reader = _FakeClaimDetailReader(detail: detail);
-    await tester.pumpWidget(
-      MaterialApp(
-        home: ClaimPickupDetailPage(claimId: 'claim-released', reader: reader),
-      ),
-    );
-    await tester.pumpAndSettle();
-    expect(find.text('Handover requires reconciliation'), findsOneWidget);
-    expect(find.text('Confirm handover'), findsOneWidget);
-    expect(find.text('Confirm no handover'), findsOneWidget);
-    expect(find.text('Test address'), findsNothing);
-    await tester.pumpWidget(const SizedBox());
-  });
+  testWidgets(
+    'reconciliation-required claim links to the single reconciliation interface',
+    (tester) async {
+      tester.view.physicalSize = const Size(1000, 2200);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      final detail = {
+        ...releasedDetail(),
+        'claim_status': 'RECONCILIATION_REQUIRED',
+        'lease_status': 'RECONCILIATION_REQUIRED',
+        'listing_status': 'CLAIMED',
+      };
+      final reader = _FakeClaimDetailReader(detail: detail);
+      final coordinationReads = <String>[];
+      final coordination = ClaimCoordinationRepository(
+        identity: () => 'ngo-user',
+        rpc: (name, params) async {
+          coordinationReads.add(name);
+          expect(name, 'get_my_claim_coordination');
+          return {
+            'contract': 'geolock.claim-coordination.v2',
+            'claim_id': 'claim-released',
+            'case_id': 'case-1',
+            'case_status': 'OPEN',
+            'evidence_round': 1,
+            'evidence_version': 1,
+            'blocker': 'AWAITING_COUNTERPART',
+            'can_submit': true,
+            'can_resolve': false,
+            'can_request_review': false,
+            'can_accept_review': false,
+            'review_waiting': false,
+            'statements': <dynamic>[],
+          };
+        },
+      );
+      await tester.pumpWidget(
+        MaterialApp(
+          home: ClaimPickupDetailPage(
+            claimId: 'claim-released',
+            reader: reader,
+            coordinationRepository: coordination,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      // Concise notice only: no response form on the claim detail page.
+      expect(find.text('Handover requires reconciliation'), findsOneWidget);
+      expect(find.text('Confirm handover'), findsNothing);
+      expect(find.text('Confirm no handover'), findsNothing);
+      expect(find.widgetWithText(FilledButton, 'Handover'), findsNothing);
+      expect(find.widgetWithText(OutlinedButton, 'No Handover'), findsNothing);
+      expect(coordinationReads, isEmpty, reason: 'no embedded panel read');
+      expect(find.text('Test address'), findsNothing);
+      // The link opens the existing v2 panel, which owns the statements.
+      final link = find.byKey(const Key('claim-detail-view-reconciliation'));
+      await tester.ensureVisible(link);
+      await tester.pumpAndSettle();
+      await tester.tap(link);
+      await tester.pumpAndSettle();
+      expect(coordinationReads, ['get_my_claim_coordination']);
+      expect(find.widgetWithText(FilledButton, 'Handover'), findsOneWidget);
+      expect(find.widgetWithText(OutlinedButton, 'No Handover'), findsOneWidget);
+      await tester.pumpWidget(const SizedBox());
+    },
+  );
 
   testWidgets(
     'claim detail retry refresh uses a synchronous setState callback',
