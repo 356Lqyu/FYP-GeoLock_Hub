@@ -92,6 +92,7 @@ def build_matrix(graph,node_order,*,unavailable_policy='FAIL_SCENARIO',profile=N
     if profile:profile(dict(stats))
     data=graph.to_dict()
     mark('digest_verification')
+    # Check that the graph still matches the frozen data before calculating routes.
     require(digest(data)==graph.sha256,'GRAPH_DIGEST_MISMATCH')
     require(type(data) is dict and set(data)=={'version','nodes','edges','snapshot_id','kind','complete','project_ref','speed_profile','authority'},'INVALID_GRAPH_CONTRACT')
     mark('contract_reconstruction')
@@ -102,10 +103,12 @@ def build_matrix(graph,node_order,*,unavailable_policy='FAIL_SCENARIO',profile=N
     require(set(node_order)<=set(data['nodes']),'UNKNOWN_GRAPH_NODE')
     require(unavailable_policy in {'FAIL_SCENARIO','FORBID_ARC'},'INVALID_UNAVAILABLE_POLICY')
     mark('adjacency_construction')
+    # Add each road edge only in its recorded direction.
     adjacency={n:[] for n in data['nodes']}
     for edge in data['edges']:
         adjacency[edge['source_node']].append(edge)
     mark('directed_search')
+    # Rows and columns use the same node order, so each cell represents one directed trip.
     distances=[]; durations=[]; statuses=[]
     for source in node_order:
         search_started=perf_counter();remaining=set(node_order)

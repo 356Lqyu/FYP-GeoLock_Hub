@@ -14,6 +14,7 @@ SAFE_INTEGER = 2**53 - 1  # exact reporting as well as conservative CP-SAT bound
 
 
 def exact(value, scale=1):
+    # Convert to solver units without rounding a value that cannot be represented.
     d = Decimal(str(value)) * scale
     if not d.is_finite() or d != d.to_integral_value() or abs(d) > SAFE_INTEGER:
         raise ValueError(f"UNSUPPORTED_PRECISION_OR_RANGE: {value} at scale {scale}")
@@ -43,6 +44,7 @@ class Problem:
             if any(len(part) > 6 and any(c != "0" for c in part[6:]) for part in re.findall(r"[.,]([0-9]+)", timestamp)):
                 raise ValueError("UNSUPPORTED_TIMESTAMP_PRECISION: sub-microsecond timestamp")
         self.cutoff = datetime.fromisoformat(self.p["cutoff"].replace("Z", "+00:00"))
+        # The snapshot has already decided which tasks and vehicles can be planned.
         self.tasks = {t["task_id"]: t for t in self.p["tasks"] if t["task_id"] in snapshot.admitted_task_ids}
         self.fleet = {v["vehicle_id"]: v for v in self.p["vehicles"] if v["vehicle_id"] in snapshot.available_vehicle_ids}
         self.matrix = self.p["matrix"]
@@ -69,6 +71,7 @@ class Problem:
             if arc is None:
                 return None, "ROUTE_UNAVAILABLE"
             arrival = now + arc[1]
+            # Early arrival means waiting until the pickup window opens.
             start = max(arrival, offset(task["time_window"]["start"], self.cutoff))
             now = start + exact(task["service_minutes"], TIME_SCALE)
             if now > offset(task["time_window"]["end"], self.cutoff):
@@ -80,6 +83,7 @@ class Problem:
                 return None, "CAPACITY"
             stops.append(Stop(tid, task["pickup"]["location_id"], node, arrival, start, now, load/MASS_SCALE))
             current = node
+        # A stop only fits if the vehicle can still get back to the depot in time.
         home = self.arc(current, self.depot)
         if home is None:
             return None, "ROUTE_UNAVAILABLE"
@@ -93,6 +97,7 @@ class Problem:
     def finish(self, method, routes, config, *, status=None, reasons=None, **metadata):
         served = {stop.task_id for route in routes for stop in route.stops}
         unserved = tuple(sorted(set(self.tasks)-served))
+        # Missing an optional pickup can leave a usable partial plan.
         mandatory_missed = any(self.tasks[t]["mandatory"] for t in unserved)
         if status is None:
             status = "INFEASIBLE" if mandatory_missed else "PARTIAL" if unserved else "COMPLETE"

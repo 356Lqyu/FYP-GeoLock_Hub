@@ -14,6 +14,7 @@ def proposed(snapshot, config=ExecutionConfig()):
     return _optimise(snapshot, "proposed", config)
 
 
+# The live planner uses these three methods. The broader registry is available to other callers.
 OPERATIONAL_METHODS = {"fcfs": fcfs, "nearest_neighbour": nearest_neighbour, "proposed": proposed}
 
 METHODS = {"fcfs": fcfs, "nearest_neighbour": nearest_neighbour,

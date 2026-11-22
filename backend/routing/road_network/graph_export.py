@@ -24,6 +24,7 @@ def matrix_from_export(manifest, nodes, edges, required_nodes, *, profile=None):
     require(manifest['float_output_profile']=='PG_REAL_OUTPUT_0','UNREVIEWED_FLOAT_PROJECTION')
     require(len(nodes)==manifest['node_count'] and len(edges)==manifest['edge_count'],'INCOMPLETE_GRAPH_EXPORT')
     require(len({n['osm_node_id'] for n in nodes})==len(nodes) and len({e['edge_id'] for e in edges})==len(edges),'DUPLICATE_GRAPH_ROWS')
+    # Only active nodes in the manifest's coverage enter the path search.
     selected={str(n['osm_node_id']) for n in nodes if n['active_flag'] and n['network_snapshot_id']==manifest['coverage_snapshot']}
     require(bool(selected),'EMPTY_APPROVED_GRAPH')
     mark('graph_conversion_and_freeze')

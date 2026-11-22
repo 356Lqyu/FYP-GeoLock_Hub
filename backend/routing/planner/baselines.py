@@ -26,6 +26,7 @@ def _greedy(snapshot, method, config):
                     return (arc[0] if arc is not None else float("inf"), tid)
                 order = sorted(remaining, key=key)
             chosen = None
+            # Try pickups in the method's order and keep the first one that fits the whole trip.
             for tid in order:
                 candidate, reason = problem.schedule(vid, route_ids+[tid])
                 if candidate is not None:
