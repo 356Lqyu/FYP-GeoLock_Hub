@@ -120,6 +120,11 @@ const _errorText = {
   'HUB_RESERVATION_NOT_EXPIRED':
       'Your current booking is still active. Drop off on the booked day, or wait until it ends.',
   'DONATION_NOT_HUB_ELIGIBLE': 'This donation can no longer be taken to a hub.',
+  'CANCELLATION_NOT_PERMITTED':
+      'This donation can no longer be cancelled because the hub has received it or an NGO has claimed it.',
+  'ALREADY_CANCELLED': 'This donation was already cancelled.',
+  'HUB_RESERVATION_CHANGED': 'The booking changed while you were cancelling. Refresh and try again.',
+  'DONATION_HAS_ACTIVE_CLAIM': 'An NGO has already claimed this donation, so it cannot be cancelled.',
   'DONATION_HAS_PHYSICAL_CUSTODY': 'The hub has already received this donation.',
   'RESERVATION_NOT_ACTIVE':
       'This booking has ended or was cancelled. The donor must book again.',

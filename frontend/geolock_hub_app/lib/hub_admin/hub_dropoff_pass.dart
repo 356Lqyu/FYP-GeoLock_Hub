@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:uuid/uuid.dart';
 
 import 'hub_service.dart';
 import 'hub_widgets.dart';
@@ -56,12 +57,17 @@ class _HubDropOffCardState extends State<HubDropOffCard> {
     widget.onChanged?.call();
   }
 
-  void _openPass() => Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (_) => HubDropOffPassPage(donationId: widget.donationId),
-    ),
-  );
+  Future<void> _openPass() async {
+    final cancelled = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => HubDropOffPassPage(donationId: widget.donationId),
+      ),
+    );
+    if (cancelled != true || !mounted) return;
+    setState(() => _pass = HubService.dropOffPass(widget.donationId));
+    widget.onChanged?.call();
+  }
 
   @override
   Widget build(BuildContext context) => FutureBuilder<HubDropOffPass>(
@@ -224,6 +230,47 @@ class HubDropOffPassPage extends StatefulWidget {
 class _HubDropOffPassPageState extends State<HubDropOffPassPage> {
   late Future<HubDropOffPass> _pass = HubService.dropOffPass(widget.donationId);
   Timer? _tick;
+  String _cancelRequestId = const Uuid().v4();
+  bool _cancelling = false;
+
+  /// The donor can no longer come: cancel the donation and free the hub space now,
+  /// instead of holding it until the hub closes.
+  Future<void> _cancel(HubPassReservation r) async {
+    if (r.dropOffWindowOpen) {
+      hubToast(
+        context,
+        'Your drop-off day has started, so the donation cannot be cancelled now. '
+        'You can cancel or choose again after the booking expires.',
+      );
+      await _refresh();
+      return;
+    }
+    final day = r.dropOffDay;
+    final ok = await hubConfirm(
+      context,
+      title: 'Cancel this donation?',
+      message:
+          'Your booking at ${r.hubName}${day == null ? '' : ' ${hubOnDay(day)}'} will be '
+          'released straight away so the space can go to another donor. The donation '
+          'is then closed and cannot be booked again. If you only need another day or '
+          'hub, keep the donation and book again after this booking ends.',
+      confirmLabel: 'Cancel donation',
+      destructive: true,
+    );
+    if (!ok || !mounted) return;
+    setState(() => _cancelling = true);
+    try {
+      await HubService.cancelDonation(widget.donationId, _cancelRequestId);
+      if (!mounted) return;
+      hubToast(context, 'Donation cancelled. The hub space has been released.');
+      Navigator.pop(context, true);
+    } catch (error) {
+      _cancelRequestId = const Uuid().v4(); // a new attempt is a new request
+      if (mounted) hubToast(context, hubErrorMessage(error));
+    } finally {
+      if (mounted) setState(() => _cancelling = false);
+    }
+  }
 
   @override
   void initState() {
@@ -356,11 +403,44 @@ class _HubDropOffPassPageState extends State<HubDropOffPassPage> {
             ),
             const HubSectionTitle('Cannot make it?'),
             HubCard(
-              child: Text(
-                'If you do not come by ${hubCloseLabel(r.expiresAt)}'
-                '${booked == null ? '' : ' ${hubOnDay(booked)}'}, the booking ends and the '
-                'space is given back. You can then choose a hub and day again from the '
-                'donation page, or cancel the donation there.',
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'If you do not come by ${hubCloseLabel(r.expiresAt)}'
+                    '${booked == null ? '' : ' ${hubOnDay(booked)}'}, the booking ends and the '
+                    'space is given back. You can then choose a hub and day again from the '
+                    'donation page.',
+                  ),
+                  const SizedBox(height: 8),
+                  if (r.dropOffWindowOpen)
+                    Text(
+                      'Your drop-off day has started, so this donation cannot be '
+                      'cancelled in the app right now. Your items may already be with '
+                      'the hub before the staff record them. If you are not coming, '
+                      'you can cancel or choose again after the booking expires at '
+                      '${hubCloseLabel(r.expiresAt)}.',
+                    )
+                  else ...[
+                    const Text(
+                      'If you no longer want to donate these items, cancel now so the hub '
+                      'can give the space to someone else. You can cancel until the hub '
+                      'opens on your drop-off day.',
+                    ),
+                    const SizedBox(height: 10),
+                    SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton.icon(
+                        onPressed: _cancelling ? null : () => _cancel(r),
+                        icon: const Icon(Icons.close),
+                        label: Text(_cancelling ? 'Cancelling…' : 'Cancel donation'),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: Theme.of(context).colorScheme.error,
+                        ),
+                      ),
+                    ),
+                  ],
+                ],
               ),
             ),
           ],

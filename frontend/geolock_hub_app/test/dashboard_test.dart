@@ -292,7 +292,7 @@ void main() {
     );
     expect(
       donationStatusLabel(status: 'HUB_ASSIGNED', reservationStatus: 'EXPIRED'),
-      'Hub Reservation Expired',
+      'Awaiting Hub Selection',
     );
     // Legacy rows can be displayed safely during migration rollout, but the
     // application no longer treats VALIDATED as an operational state.

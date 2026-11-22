@@ -341,6 +341,141 @@ void main() {
     await tester.pumpWidget(const SizedBox.shrink());
   });
 
+  testWidgets('Donate Again waits for photos and fresh location confirmation', (
+    tester,
+  ) async {
+    const activeCategory = 'ea085f22-e2d4-4fa0-93db-e516b12b8c28';
+    final copy = Completer<List<DonationPhotoSelection>>();
+    final copiedPaths = <String>[];
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(900, 2000);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+    SharedPreferences.setMockInitialValues({});
+    await tester.runAsync(() async {
+      final supabase = await Supabase.initialize(
+        url: 'http://localhost:54321',
+        publishableKey: 'offline-test-key',
+        authOptions: const FlutterAuthClientOptions(
+          autoRefreshToken: false,
+          detectSessionInUri: false,
+        ),
+        httpClient: MockClient((request) async {
+          final path = request.url.path;
+          if (path.endsWith('/get_active_donation_categories')) {
+            return http.Response(
+              jsonEncode([
+                {'category_id': activeCategory, 'category_name': 'Clothing'},
+              ]),
+              200,
+              headers: {'content-type': 'application/json'},
+              request: request,
+            );
+          }
+          throw StateError('Unexpected mock request: $path');
+        }),
+      );
+      addTearDown(supabase.dispose);
+    });
+    await tester.pumpWidget(
+      MaterialApp(
+        home: CreateDonationPage(
+          photoCopier: (paths) {
+            copiedPaths.addAll(paths);
+            return copy.future;
+          },
+          copyFrom: const {
+            'title': 'Packed clothes',
+            'description': 'Clean and ready',
+            'latitude': 3.1,
+            'longitude': 101.6,
+            'pickup_address': 'Prior pickup',
+            'items': [
+              {
+                'item_name': 'Shirts',
+                'quantity': 2,
+                'unit_weight_kg': 5,
+                'category_id': 'inactive-category',
+              },
+            ],
+            'images': [
+              {'storage_path': 'donor/old-photo.png'},
+            ],
+          },
+        ),
+      ),
+    );
+    final dynamic state = tester.state(find.byType(CreateDonationPage));
+    await tester.runAsync(() async {
+      await (state.categories as Future<List<DonationCategory>>).timeout(
+        const Duration(seconds: 5),
+      );
+    });
+    await tester.pumpAndSettle();
+    expect(copiedPaths, ['donor/old-photo.png']);
+    expect(state.title.text, 'Packed clothes');
+    expect(state.items.single.name.text, 'Shirts');
+    expect(state.items.single.category, isNull);
+    expect(state.pickupLocation.address, 'Prior pickup');
+    expect(state.pickupLocation.roadAccess, isNull);
+    FilledButton submitButton() => tester.widget<FilledButton>(
+      find.widgetWithText(FilledButton, 'Submit Donation'),
+    );
+    expect(submitButton().onPressed, isNull);
+    await tester.tap(find.byType(DropdownButtonFormField<String>).first);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Clothing').last);
+    await tester.pumpAndSettle();
+    expect(find.text(collectionPathPreviewText(10)), findsOneWidget);
+
+    final priorLocation = state.pickupLocation as LocationResult;
+    final photos = state.photos as List<DonationPhotoSelection>;
+    final manualPhoto = DonationPhotoSelection(
+      id: 'manual-photo',
+      file: XFile('web/icons/Icon-192.png'),
+    );
+    photos.add(manualPhoto);
+    state.pickupLocation = const LocationResult(
+      address: 'Confirmed pickup',
+      latitude: 3.1,
+      longitude: 101.6,
+      method: LocationSelectionMethod.mapPin,
+      roadAccess: RoadAccessResult(routable: true),
+    );
+    await tester.enterText(
+      find.widgetWithText(TextField, 'Donation title'),
+      'Packed clothes updated',
+    );
+    await tester.pump();
+    expect(submitButton().onPressed, isNull);
+    photos.remove(manualPhoto);
+    state.pickupLocation = priorLocation;
+
+    final copiedPhoto = DonationPhotoSelection(
+      id: 'new-copy',
+      file: XFile('web/icons/Icon-192.png'),
+    );
+    copy.complete([copiedPhoto]);
+    await tester.pumpAndSettle();
+    expect(photos, [copiedPhoto]);
+    expect(submitButton().onPressed, isNull);
+
+    state.pickupLocation = const LocationResult(
+      address: 'Confirmed pickup',
+      latitude: 3.1,
+      longitude: 101.6,
+      method: LocationSelectionMethod.mapPin,
+      roadAccess: RoadAccessResult(routable: true),
+    );
+    await tester.enterText(
+      find.widgetWithText(TextField, 'Donation title'),
+      'Packed clothes ready',
+    );
+    await tester.pumpAndSettle();
+    expect(submitButton().onPressed, isNotNull);
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+
   group('location picker road access', () {
     const initial = LocationResult(
       address: 'Laut, Selat Melaka',

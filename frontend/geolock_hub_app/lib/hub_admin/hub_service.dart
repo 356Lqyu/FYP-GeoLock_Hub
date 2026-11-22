@@ -10,6 +10,10 @@ import 'package:uuid/uuid.dart';
 import '../supabase_config.dart';
 
 const hubRankingApiUrl = String.fromEnvironment('GEOLOCK_AI_URL');
+// Set only after the operator has verified this origin serves the KLSEL project.
+const _approvedKlselRankingUrl = String.fromEnvironment(
+  'GEOLOCK_APPROVED_KLSEL_AI_URL',
+);
 const hostedRankingApiUrl = 'https://geolock-hub-ranking.onrender.com';
 const _localRankingApis = ['http://127.0.0.1:8000', 'http://10.0.2.2:8000'];
 
@@ -218,6 +222,13 @@ class HubOperatingHours {
 
   /// Opening times on a date, e.g. "9:00 AM – 1:00 PM, 2:00 PM – 5:00 PM" or "Closed".
   String textOn(DateTime day) => dayText(hubDayKey(day));
+
+  /// First opening time on a date, in minutes after midnight, or null when closed.
+  int? firstOpenMinuteOn(DateTime day) {
+    final slots = days[hubDayKey(day)] ?? const <HubTimeSlot>[];
+    if (slots.isEmpty) return null;
+    return slots.map((slot) => slot.openMinute).reduce((a, b) => a < b ? a : b);
+  }
 
   /// Last closing time on a date ("17:00"), or null when closed that day.
   String? lastCloseOn(DateTime day) {
@@ -757,6 +768,31 @@ class HubPassReservation {
   /// The day the donor said they will bring the donation.
   final DateTime? dropOffDay;
 
+  /// When the donor can no longer cancel in the app: the hub's first opening time on
+  /// the drop-off day (Malaysia time). From then the items may already be at the
+  /// counter before the staff confirm receipt.
+  DateTime? get cancelClosesAt {
+    final day = dropOffDay;
+    if (day == null) return null;
+    final dayStart = DateTime.utc(day.year, day.month, day.day)
+        .subtract(const Duration(hours: 8));
+    final open = hours.firstOpenMinuteOn(day);
+    return open == null ? dayStart : dayStart.add(Duration(minutes: open));
+  }
+
+  /// True while the hub is open on the drop-off day and the booking has not expired.
+  /// The app hides "Cancel donation" during this time. After the booking expires
+  /// without a receipt, the donor can cancel or choose a hub again.
+  bool get dropOffWindowOpen {
+    final closes = cancelClosesAt;
+    final ends = expiresAt;
+    if (status != HubDropOffStatus.awaiting || closes == null || ends == null) {
+      return false;
+    }
+    final now = DateTime.now().toUtc();
+    return !now.isBefore(closes) && now.isBefore(ends);
+  }
+
   HubPassReservation.fromJson(Map<String, dynamic> json)
     : reservationId = json['reservation_id'].toString(),
       referenceCode = json['reference_code']?.toString() ?? '',
@@ -1143,14 +1179,15 @@ class HubService {
   static Future<String?> _rankingApi() async {
     if (_workingApi != null) return _workingApi;
     final lastMiss = _lastMiss;
-    if (lastMiss != null && DateTime.now().difference(lastMiss).inSeconds < 60) {
+    if (lastMiss != null &&
+        DateTime.now().difference(lastMiss).inSeconds < 60) {
       return null;
     }
-    final candidates = [
-      if (hubRankingApiUrl.isNotEmpty) hubRankingApiUrl,
-      if (hostedRankingApiUrl.isNotEmpty) hostedRankingApiUrl,
-      ..._localRankingApis,
-    ].map((url) => url.replaceFirst(RegExp(r'/+$'), ''));
+    final candidates = rankingApiCandidates(
+      environment: SupabaseConfig.environment,
+      configuredUrl: hubRankingApiUrl,
+      approvedKlselUrl: _approvedKlselRankingUrl,
+    );
     for (final url in candidates) {
       // A sleeping Render free server needs 30-60 s to wake up; this PC answers at once.
       final wait = url.startsWith('https') ? 60 : 2;
@@ -1161,11 +1198,39 @@ class HubService {
         if (response.statusCode == 200) return _workingApi = url;
         debugPrint('[HubRanking] $url/health returned ${response.statusCode}');
       } catch (error) {
-        debugPrint('[HubRanking] $url/health failed: $error'); // try the next one
+        debugPrint(
+          '[HubRanking] $url/health failed: $error',
+        ); // try the next one
       }
     }
     _lastMiss = DateTime.now();
     return null;
+  }
+
+  @visibleForTesting
+  static List<String> rankingApiCandidates({
+    required String environment,
+    required String configuredUrl,
+    required String approvedKlselUrl,
+  }) {
+    if (environment == 'klsel') {
+      final uri = Uri.tryParse(approvedKlselUrl.trim());
+      if (uri == null ||
+          uri.scheme != 'https' ||
+          uri.host.isEmpty ||
+          uri.userInfo.isNotEmpty ||
+          (uri.path.isNotEmpty && uri.path != '/') ||
+          uri.hasQuery ||
+          uri.hasFragment) {
+        return const [];
+      }
+      return [uri.origin];
+    }
+    return [
+      if (configuredUrl.isNotEmpty) configuredUrl,
+      if (hostedRankingApiUrl.isNotEmpty) hostedRankingApiUrl,
+      ..._localRankingApis,
+    ].map((url) => url.replaceFirst(RegExp(r'/+$'), '')).toList();
   }
 
   static Future<List<HubOption>> _aiRankedHubOptions(
@@ -1175,19 +1240,26 @@ class HubService {
   ) async {
     final token = _db.auth.currentSession?.accessToken;
     if (token == null) throw StateError('Not signed in.');
-    final response = await http
-        .post(
-          Uri.parse('$base/v1/hub-ranking'),
-          headers: {
-            'Authorization': 'Bearer $token',
-            'Content-Type': 'application/json',
-          },
-          body: jsonEncode({'donation_id': donationId, 'dropoff_date': date}),
-        )
-        .timeout(const Duration(seconds: 45));
+    final request = http.Request('POST', Uri.parse('$base/v1/hub-ranking'))
+      ..followRedirects = SupabaseConfig.environment != 'klsel'
+      ..headers.addAll({
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      })
+      ..body = jsonEncode({'donation_id': donationId, 'dropoff_date': date});
+    final client = http.Client();
+    final http.Response response;
+    try {
+      response = await client
+          .send(request)
+          .then(http.Response.fromStream)
+          .timeout(const Duration(seconds: 45));
+    } finally {
+      client.close();
+    }
     if (response.statusCode != 200) {
       throw HttpException(
-        'Hub ranking service returned ${response.statusCode}: ${response.body}',
+        'Hub ranking service returned ${response.statusCode}',
       );
     }
     debugPrint('[HubRanking] AI ranking OK from $base');
@@ -1196,6 +1268,20 @@ class HubService {
     return hubRows(
       body['hubs'],
     ).map((row) => HubOption.fromRow(row, rankingMode: mode)).toList();
+  }
+
+  /// Cancels the donor's own donation before the hub has received it. The database
+  /// releases an active hub booking in the same transaction, so the space is freed at
+  /// once. Reuse the same [requestId] when retrying the same tap.
+  static Future<void> cancelDonation(String donationId, String requestId) async {
+    final response = await _db.rpc(
+      'cancel_donation',
+      params: {'p_donation': donationId, 'p_request': requestId},
+    );
+    final result = hubObject(response);
+    if (result['outcome'] != 'SUCCESS') {
+      throw StateError(result['reason_code']?.toString() ?? 'CANCELLATION_NOT_PERMITTED');
+    }
   }
 
   /// Books [hubId] for the drop-off [day]: the space is held until the hub's last

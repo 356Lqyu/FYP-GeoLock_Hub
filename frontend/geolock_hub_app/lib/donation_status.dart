@@ -13,8 +13,10 @@ String donationStatusLabel({
       (status == 'SUBMITTED' || status == 'VALIDATED')) {
     return 'Awaiting Hub Selection';
   }
+  // The booking expired, so no hub is holding space: the donor chooses a hub
+  // and day again, exactly as from SUBMITTED.
   if (status == 'HUB_ASSIGNED' && reservationStatus == 'EXPIRED') {
-    return 'Hub Reservation Expired';
+    return 'Awaiting Hub Selection';
   }
   if (status == 'HUB_ASSIGNED' && reservationStatus == 'ACTIVE') {
     return 'Awaiting Drop-off';

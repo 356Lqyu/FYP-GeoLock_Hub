@@ -1,0 +1,5 @@
+# Road network snapshot: keep LF everywhere so manifest.json hashes match
+supabase/road_network/output/* text eol=lf
+
+# The routing worker checks the tracked DEV service profile by SHA-256.
+docs/stage8/stage-a/deployment-preparation/routing-initialization/pg_service.proposed.conf text eol=lf
