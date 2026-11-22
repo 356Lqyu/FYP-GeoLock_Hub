@@ -14,6 +14,8 @@ import 'location/road_routing.dart';
 import 'location/location_picker_page.dart';
 import 'location/location_result.dart';
 import 'routing/ngo_routes_page.dart';
+import 'routing/claim_coordination.dart';
+import 'routing/reconciliation_status.dart';
 import 'auth/auth_pages.dart' as hub_auth;
 import 'hub_admin/hub_admin_controller.dart';
 import 'hub_admin/hub_dropoff_page.dart';
@@ -23,6 +25,7 @@ import 'hub_admin/hub_notification_page.dart';
 import 'hub_admin/hub_service.dart';
 import 'hub_admin/hub_service_rules_page.dart';
 import 'hub_admin/hub_widgets.dart';
+import 'ui/geolock_role_style.dart';
 
 const _mint = Color(0xffedfbf7);
 const _green = Color(0xff2f806c);
@@ -336,7 +339,10 @@ class _DonorHomePageState extends State<DonorHomePage> {
   }
 
   @override
-  Widget build(BuildContext context) => RefreshIndicator(
+  Widget build(BuildContext context) =>
+      GeoRoleTheme(child: _buildRolePage(context));
+
+  Widget _buildRolePage(BuildContext context) => RefreshIndicator(
     onRefresh: _refresh,
     child: ListView(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 28),
@@ -496,10 +502,21 @@ bool _active(String? s) => const {
 class DonorMyDonationsPage extends StatefulWidget {
   final int refreshSignal;
   final Future<List<Map<String, dynamic>>> Function()? donationsLoader;
+
+  /// Open handover-reconciliation cases for the signed-in donor
+  /// (`get_my_reconciliation_cases`: donor-scoped, DIRECT_DONATION only).
+  final Future<List<Map<String, dynamic>>> Function()?
+  reconciliationCasesLoader;
+
+  /// Reconciliation reads/submissions for View Reconciliation; injected by
+  /// tests, otherwise the live participant-scoped repository.
+  final ClaimCoordinationRepository? coordinationRepository;
   const DonorMyDonationsPage({
     super.key,
     this.refreshSignal = 0,
     this.donationsLoader,
+    this.reconciliationCasesLoader,
+    this.coordinationRepository,
   });
   @override
   State<DonorMyDonationsPage> createState() => _DonorMyDonationsPageState();
@@ -509,9 +526,20 @@ class _DonorMyDonationsPageState extends State<DonorMyDonationsPage> {
   late Future<List<Map<String, dynamic>>> _data = _load();
   final _search = TextEditingController();
   String _filter = 'All';
+
+  /// donation_id → case_status of the donor's OPEN / MANUAL_REVIEW cases.
+  /// Null until read; never inferred from donation status.
+  Map<String, String>? _caseStatus;
+
+  /// donation_id → claim_id of that open case (opens the reconciliation page).
+  Map<String, String> _caseClaim = const {};
+  bool _casesUnavailable = false;
+  int _casesGeneration = 0;
+  static const _reconciliationFilter = 'Reconciliation';
   static const _filters = [
     'All',
     'Active',
+    _reconciliationFilter,
     'At Hub',
     'Claimed',
     'Picked Up',
@@ -529,7 +557,63 @@ class _DonorMyDonationsPageState extends State<DonorMyDonationsPage> {
     }
   }
 
+  /// Display-only read; a failure never hides donations or grants actions.
+  Future<void> _refreshCases() async {
+    final generation = ++_casesGeneration;
+    final loader =
+        widget.reconciliationCasesLoader ??
+        (widget.donationsLoader != null
+            ? null
+            : () async {
+                final response = await _dashboardDb.rpc(
+                  'get_my_reconciliation_cases',
+                );
+                if (response is! List) {
+                  throw const FormatException(
+                    'Invalid reconciliation inbox response.',
+                  );
+                }
+                return response
+                    .map((row) => Map<String, dynamic>.from(row as Map))
+                    .toList();
+              });
+    if (loader == null) return;
+    try {
+      final rows = await loader();
+      if (!mounted || generation != _casesGeneration) return;
+      setState(() {
+        final direct = [
+          for (final row in rows)
+            if (row['donation_id'] != null &&
+                row['source_type'] == 'DIRECT_DONATION')
+              row,
+        ];
+        _caseStatus = {
+          for (final row in direct)
+            row['donation_id'].toString(): '${row['case_status']}',
+        };
+        _caseClaim = {
+          for (final row in direct)
+            if (row['claim_id'] != null)
+              row['donation_id'].toString(): row['claim_id'].toString(),
+        };
+        _casesUnavailable = false;
+      });
+    } catch (_) {
+      if (!mounted || generation != _casesGeneration) return;
+      setState(() => _casesUnavailable = true);
+    }
+  }
+
+  String? _caseLabel(Map<String, dynamic> d) =>
+      switch (_caseStatus?[d['donation_id']?.toString()]) {
+        'MANUAL_REVIEW' => GeoLockStatusText.underReview,
+        'OPEN' => GeoLockStatusText.reconciliationRequired,
+        _ => null,
+      };
+
   Future<List<Map<String, dynamic>>> _load() async {
+    unawaited(_refreshCases());
     if (widget.donationsLoader != null) return widget.donationsLoader!();
     final response = await _dashboardDb.rpc('get_my_donation_dashboard_v2');
     if (response is! List) {
@@ -551,6 +635,8 @@ class _DonorMyDonationsPageState extends State<DonorMyDonationsPage> {
     }
     return switch (_filter) {
       'Active' => _active(status),
+      _reconciliationFilter =>
+        _caseStatus?.containsKey(d['donation_id']?.toString()) == true,
       'At Hub' => status == 'AT_HUB' || status == 'BATCHED',
       'Claimed' => status == 'CLAIMED',
       'Picked Up' => status == 'PICKUP_IN_PROGRESS' || status == 'COLLECTED',
@@ -567,7 +653,10 @@ class _DonorMyDonationsPageState extends State<DonorMyDonationsPage> {
   }
 
   @override
-  Widget build(BuildContext context) => Column(
+  Widget build(BuildContext context) =>
+      GeoRoleTheme(child: _buildRolePage(context));
+
+  Widget _buildRolePage(BuildContext context) => Column(
     children: [
       Padding(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
@@ -627,6 +716,22 @@ class _DonorMyDonationsPageState extends State<DonorMyDonationsPage> {
               return const Center(child: CircularProgressIndicator());
             }
             final rows = snapshot.data!.where(_matches).toList();
+            if (_filter == _reconciliationFilter &&
+                (_casesUnavailable || rows.isEmpty)) {
+              return EmptyStateCard(
+                icon: Icons.fact_check_outlined,
+                title: _casesUnavailable
+                    ? 'Reconciliation status unavailable'
+                    : 'No handover reconciliation needed',
+                message: _casesUnavailable
+                    ? 'Pull to refresh or try again later. Your donations are unchanged.'
+                    : 'Donations whose pickup handover needs your statement appear here.',
+                actionLabel: _casesUnavailable ? 'Retry' : null,
+                onAction: _casesUnavailable
+                    ? () => setState(() => _data = _load())
+                    : null,
+              );
+            }
             if (rows.isEmpty) {
               final noDonations = snapshot.data!.isEmpty;
               return EmptyStateCard(
@@ -661,7 +766,8 @@ class _DonorMyDonationsPageState extends State<DonorMyDonationsPage> {
                 itemCount: rows.length,
                 itemBuilder: (context, index) {
                   final donation = rows[index];
-                  return DonationSummaryCard(
+                  final caseLabel = _caseLabel(donation);
+                  final card = DonationSummaryCard(
                     donation: donation,
                     onTap: () =>
                         Navigator.push(
@@ -674,6 +780,46 @@ class _DonorMyDonationsPageState extends State<DonorMyDonationsPage> {
                         ).then((_) {
                           if (mounted) setState(() => _data = _load());
                         }),
+                  );
+                  if (caseLabel == null) return card;
+                  final claim = _caseClaim[donation['donation_id']?.toString()];
+                  return Column(
+                    key: ValueKey(
+                      'donation-reconciliation-${donation['donation_id']}',
+                    ),
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Wrap(
+                        spacing: 8,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        children: [
+                          GeoStatusChip('Handover · $caseLabel'),
+                          if (claim != null)
+                            FilledButton.tonalIcon(
+                              key: ValueKey(
+                                'donation-view-reconciliation-${donation['donation_id']}',
+                              ),
+                              onPressed: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => ClaimReconciliationPage(
+                                    claimId: claim,
+                                    title: '${donation['title'] ?? 'Donation'}',
+                                    viewerRole: 'DONOR',
+                                    sourceType: 'DIRECT_DONATION',
+                                    repository: widget.coordinationRepository,
+                                  ),
+                                ),
+                              ).then((_) {
+                                if (mounted) setState(() => _data = _load());
+                              }),
+                              icon: const Icon(Icons.open_in_new),
+                              label: const Text('View Reconciliation'),
+                            ),
+                        ],
+                      ),
+                      card,
+                    ],
                   );
                 },
               ),
@@ -826,7 +972,10 @@ class _NgoHomePageState extends State<NgoHomePage> with WidgetsBindingObserver {
   }
 
   @override
-  Widget build(BuildContext context) => RefreshIndicator(
+  Widget build(BuildContext context) =>
+      GeoRoleTheme(child: _buildRolePage(context));
+
+  Widget _buildRolePage(BuildContext context) => RefreshIndicator(
     onRefresh: _refreshAndWait,
     child: ListView(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 28),
@@ -1772,7 +1921,10 @@ class _DonorImpactPageState extends State<DonorImpactPage> {
   }
 
   @override
-  Widget build(
+  Widget build(BuildContext context) =>
+      GeoRoleTheme(child: _buildRolePage(context));
+
+  Widget _buildRolePage(
     BuildContext context,
   ) => FutureBuilder<List<Map<String, dynamic>>>(
     future: _data,
@@ -2745,7 +2897,16 @@ class DashboardStatCard extends StatelessWidget {
       padding: const EdgeInsets.all(14),
       child: Row(
         children: [
-          Icon(icon, color: _green),
+          // Hub Admin stat-tile icon: tinted rounded square (HubStatTile).
+          Container(
+            width: 38,
+            height: 38,
+            decoration: BoxDecoration(
+              color: _green.withValues(alpha: .12),
+              borderRadius: BorderRadius.circular(11),
+            ),
+            child: Icon(icon, color: _green, size: 20),
+          ),
           const SizedBox(width: 10),
           Expanded(
             child: Column(

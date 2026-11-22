@@ -1,5 +1,7 @@
+import 'routing/reconciliation_status.dart';
+
 /// Presentation only: no derived state authorizes a database transition.
-enum ClaimTab { active, expired, history, all }
+enum ClaimTab { active, reconciliation, expired, history, all }
 
 enum ClaimDisplayStatus {
   active,
@@ -83,6 +85,7 @@ class ClaimCard {
   }
 
   ClaimTab get tab => switch (displayStatus) {
+    ClaimDisplayStatus.reconciliation => ClaimTab.reconciliation,
     ClaimDisplayStatus.expiredPending ||
     ClaimDisplayStatus.expired => ClaimTab.expired,
     ClaimDisplayStatus.collected ||
@@ -98,13 +101,18 @@ class ClaimCard {
   bool get canComplete => isValidActive && taskStatus == 'DISPATCHED';
   String get badge => switch (displayStatus) {
     ClaimDisplayStatus.active => 'Active',
-    ClaimDisplayStatus.expiredPending => 'Expired — Recovery Pending',
+    ClaimDisplayStatus.expiredPending =>
+      GeoLockStatusText.expiredAwaitingRecovery,
     ClaimDisplayStatus.expired => 'Expired',
-    ClaimDisplayStatus.reconciliation => 'Needs Reconciliation',
+    ClaimDisplayStatus.reconciliation =>
+      GeoLockStatusText.reconciliationRequired,
     ClaimDisplayStatus.collected => 'Collected',
     ClaimDisplayStatus.completed => 'Completed',
     ClaimDisplayStatus.cancelled => 'Cancelled',
-    ClaimDisplayStatus.released => 'Released',
+    ClaimDisplayStatus.released =>
+      releaseReason == 'EXPIRED_SAFE_RELEASE'
+          ? GeoLockStatusText.expiredReleased
+          : 'Released',
     ClaimDisplayStatus.needsReview => 'Status Needs Review',
   };
 }

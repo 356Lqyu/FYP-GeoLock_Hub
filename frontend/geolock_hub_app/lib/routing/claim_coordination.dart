@@ -4,6 +4,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uuid/uuid.dart';
 import 'ngo_routing_repository.dart' show RpcCall, routingObject, routingRows;
+import 'reconciliation_status.dart';
+import '../ui/geolock_role_style.dart';
 
 /// Durable actor-scoped requests. Reads never retry a mutation automatically.
 class ClaimCoordinationRepository {
@@ -208,8 +210,18 @@ class ClaimCoordinationPanel extends StatefulWidget {
     this.donationId,
     this.repository,
     this.onChanged,
+    this.viewerRole,
+    this.sourceType,
   });
   final String? claimId, donationId;
+
+  /// 'NGO', 'DONOR' or 'HUB_ADMIN' — display only (who the counterpart is and
+  /// whose statement is which). Authorization stays with the backend flags.
+  final String? viewerRole;
+
+  /// 'DIRECT_DONATION' or 'HUB_BATCH' when known, so an NGO sees the donor or
+  /// the hub administrator as its counterpart.
+  final String? sourceType;
   final ClaimCoordinationRepository? repository;
   final Future<void> Function()? onChanged;
   @override
@@ -390,6 +402,13 @@ class _ClaimCoordinationPanelState extends State<ClaimCoordinationPanel> {
         children: [
           if (_error != null) Text(_error!),
           for (final row in snap.data!) ...[
+            ReconciliationSummaryView(
+              summary: reconciliationSummary(
+                row,
+                viewerRole: widget.viewerRole,
+                sourceType: widget.sourceType,
+              ),
+            ),
             Text(claimCoordinationMessage(row)),
             Text('Evidence round ${row['evidence_round']}'),
             for (final s in routingRows(row['statements']))
@@ -457,6 +476,210 @@ class _ClaimCoordinationPanelState extends State<ClaimCoordinationPanel> {
       );
     },
   );
+}
+
+/// Compact, backend-derived case summary shown above the coordination actions.
+class ReconciliationSummaryView extends StatelessWidget {
+  const ReconciliationSummaryView({super.key, required this.summary});
+  final ReconciliationSummary summary;
+
+  String _responded(bool? value) => value == null
+      ? 'Not shown'
+      : value
+      ? 'Submitted'
+      : 'Not yet submitted';
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    key: const Key('reconciliation-summary'),
+    padding: const EdgeInsets.only(bottom: 6),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // NGO / Donor pages get the shared tinted pill; Hub Admin (no
+        // GeoRoleScope) keeps the plain chip it had before.
+        if (GeoRoleScope.active(context))
+          GeoStatusChip(summary.status, key: const Key('reconciliation-status'))
+        else
+          Chip(
+            key: const Key('reconciliation-status'),
+            label: Text(summary.status),
+          ),
+        if (!summary.resolved) ...[
+          if (summary.viewerResponded != null)
+            Text('Your statement (this round): ${_responded(summary.viewerResponded)}'),
+          if (summary.counterpartResponded != null)
+            Text(
+              'Statement from the ${summary.counterpart} (this round): ${_responded(summary.counterpartResponded)}',
+            ),
+        ],
+        Text(
+          'Next: ${summary.nextAction}',
+          key: const Key('reconciliation-next-action'),
+        ),
+      ],
+    ),
+  );
+}
+
+/// The single place where a participant reviews a case and answers
+/// Handover / No Handover, reusing the participant-scoped v2 panel (evidence
+/// version/round checks, saved request IDs, receipt recovery, duplicate
+/// guard). Opens one claim, or every case of a donor's donation (resolved
+/// cases included, as `get_my_donation_coordination` returns them).
+class ClaimReconciliationPage extends StatelessWidget {
+  const ClaimReconciliationPage({
+    super.key,
+    this.claimId,
+    this.donationId,
+    this.title,
+    this.viewerRole,
+    this.sourceType,
+    this.routeNotice,
+    this.repository,
+  }) : assert((claimId == null) != (donationId == null));
+  final String? claimId, donationId;
+  final String? title, viewerRole, sourceType, routeNotice;
+  final ClaimCoordinationRepository? repository;
+
+  @override
+  Widget build(BuildContext context) =>
+      GeoRoleTheme(child: _buildRolePage(context));
+
+  Widget _buildRolePage(BuildContext context) => Scaffold(
+    appBar: AppBar(title: Text(title ?? 'Handover reconciliation')),
+    body: ListView(
+      padding: const EdgeInsets.all(16),
+      children: [
+        if (routeNotice != null)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: Text(routeNotice!, key: const Key('reconciliation-route-notice')),
+          ),
+        ClaimCoordinationPanel(
+          claimId: claimId,
+          donationId: donationId,
+          viewerRole: viewerRole,
+          sourceType: sourceType,
+          repository: repository,
+        ),
+      ],
+    ),
+  );
+}
+
+/// Read-only status notice with a link to [ClaimReconciliationPage]. It shows
+/// the backend case status but never the Handover / No Handover controls, so
+/// a detail page does not duplicate the reconciliation form. Renders nothing
+/// when the donation has no reconciliation case.
+class ReconciliationLink extends StatefulWidget {
+  const ReconciliationLink({
+    super.key,
+    required this.donationId,
+    this.viewerRole,
+    this.sourceType,
+    this.repository,
+    this.onReturn,
+  });
+  final String donationId;
+  final String? viewerRole, sourceType;
+  final ClaimCoordinationRepository? repository;
+  final Future<void> Function()? onReturn;
+  @override
+  State<ReconciliationLink> createState() => _ReconciliationLinkState();
+}
+
+class _ReconciliationLinkState extends State<ReconciliationLink> {
+  late Future<List<Map<String, dynamic>>> _rows = _load();
+
+  Future<List<Map<String, dynamic>>> _load() async {
+    final repo = widget.repository ?? ClaimCoordinationRepository.live();
+    return repo.donation(widget.donationId);
+  }
+
+  @override
+  void didUpdateWidget(covariant ReconciliationLink oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.donationId != widget.donationId ||
+        oldWidget.repository != widget.repository) {
+      _rows = _load();
+    }
+  }
+
+  Future<void> _open() async {
+    await Navigator.push<void>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ClaimReconciliationPage(
+          donationId: widget.donationId,
+          viewerRole: widget.viewerRole,
+          sourceType: widget.sourceType,
+          repository: widget.repository,
+        ),
+      ),
+    );
+    if (!mounted) return;
+    setState(() => _rows = _load());
+    await widget.onReturn?.call();
+  }
+
+  @override
+  Widget build(BuildContext context) =>
+      FutureBuilder<List<Map<String, dynamic>>>(
+        future: _rows,
+        builder: (context, snap) {
+          if (snap.hasError) {
+            return Card(
+              key: const Key('reconciliation-link-unavailable'),
+              child: ListTile(
+                leading: const Icon(Icons.sync_problem),
+                title: const Text('Reconciliation status unavailable'),
+                subtitle: const Text('Custody remains protected.'),
+                trailing: TextButton(
+                  onPressed: () => setState(() => _rows = _load()),
+                  child: const Text('Retry'),
+                ),
+              ),
+            );
+          }
+          final rows = snap.data;
+          if (rows == null || rows.isEmpty) return const SizedBox.shrink();
+          final summary = reconciliationSummary(
+            rows.first,
+            viewerRole: widget.viewerRole,
+            sourceType: widget.sourceType,
+          );
+          return Card(
+            key: const Key('reconciliation-link'),
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      const Icon(Icons.fact_check_outlined),
+                      const SizedBox(width: 8),
+                      const Expanded(child: Text('Handover reconciliation')),
+                      GeoStatusChip(summary.status),
+                    ],
+                  ),
+                  if (rows.length > 1)
+                    Text('${rows.length} cases for this donation'),
+                  Text(summary.nextAction),
+                  const SizedBox(height: 6),
+                  FilledButton.tonalIcon(
+                    key: const Key('open-reconciliation'),
+                    onPressed: _open,
+                    icon: const Icon(Icons.open_in_new),
+                    label: const Text('View Reconciliation'),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      );
 }
 
 class VehicleDepotCheckpoint extends StatefulWidget {

@@ -50,6 +50,7 @@ def prepare_input(payload,*,fleet_rows=None,held_vehicle_ids=None):
             seen.add(vid)
             for flag in ('active_flag','available_for_planning'):
                 require(type(row.get(flag)) is bool,'INVALID_VEHICLE_FLAG')
+            # Keep an exclusion reason so a missing vehicle can be explained in the result.
             reason=('DEACTIVATED' if not row['active_flag'] else 'UNAVAILABLE' if not row['available_for_planning']
                     else 'ACTIVE_ROUTE_HOLD' if vid in held_vehicle_ids else None)
             if 'eligible_for_planning' in row:
@@ -106,6 +107,7 @@ def evaluate(prepared,config=ExecutionConfig()):
     snapshot=prepared.snapshot
     require(freeze_scenario(snapshot.to_dict()['input'])==snapshot,'INPUT_DIGEST_MISMATCH')
     results=[]; candidate=None
+    # Every method sees the same frozen input, so their results can be compared.
     for method,solve in OPERATIONAL_METHODS.items():
         plan=solve(snapshot,config)
         require(isinstance(plan,Plan),'INVALID_SOLVER_RESULT')
@@ -114,6 +116,7 @@ def evaluate(prepared,config=ExecutionConfig()):
         require(validation.valid,'INDEPENDENT_VALIDATION_FAILED')
         require(plan.method==method and not plan.dispatch_authority_issued,'INVALID_SOLVER_AUTHORITY')
         results.append((method,plan,validation))
+        # The baselines are for comparison. Only a feasible CP-SAT plan becomes a candidate.
         if method=='proposed' and validation.feasible and plan.feasible and plan.routes:
             candidate=plan
     return Comparison(snapshot.sha256,tuple(results),candidate)

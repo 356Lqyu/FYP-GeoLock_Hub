@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'ngo_routing_repository.dart';
 import 'routing_page_support.dart';
+import '../ui/geolock_role_style.dart';
 
 class NgoFleetPage extends StatefulWidget {
   const NgoFleetPage({super.key, this.repository});
@@ -39,7 +40,10 @@ class _NgoFleetPageState extends NgoSessionPage<NgoFleetPage> {
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
+  Widget build(BuildContext context) =>
+      GeoRoleTheme(child: _buildRolePage(context));
+
+  Widget _buildRolePage(BuildContext context) => Scaffold(
     appBar: AppBar(
       title: const Text('NGO vehicles'),
       actions: [

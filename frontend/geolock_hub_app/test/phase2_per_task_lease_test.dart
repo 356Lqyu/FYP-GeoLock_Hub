@@ -237,8 +237,14 @@ void main() {
             .onPressed,
         isNull,
       );
+      // Server-clock LEASE deadline: shown as a confirmed expired proposal.
+      expect(find.text('Route proposal expired'), findsOneWidget);
       expect(
-        find.textContaining('no longer has enough time left'),
+        find.textContaining('pickup claims are no longer valid'),
+        findsOneWidget,
+      );
+      expect(
+        find.textContaining("a claim's lease no longer leaves enough time"),
         findsOneWidget,
       );
       expect(b.calls, isNot(contains('authorize_and_start_my_route')));

@@ -103,7 +103,7 @@ void main() {
       addTearDown(tester.view.resetDevicePixelRatio);
       final l = WidgetLane()..reconciliationNeeded[0] = true;
       await open(tester, l);
-      expect(find.text('Needs reconciliation'), findsOneWidget);
+      expect(find.text('Reconciliation required'), findsOneWidget);
       final skip = find.byKey(const Key('defer-pickup-t0'));
       await tester.ensureVisible(skip);
       await tester.tap(skip);
@@ -121,7 +121,7 @@ void main() {
       expect(l.writes, ['defer:0']);
       expect(l.states[0], 'PLANNED');
       expect(l.deferred[0], isTrue);
-      expect(find.text('Needs reconciliation'), findsOneWidget);
+      expect(find.text('Reconciliation required'), findsOneWidget);
 
       await tester.tap(find.text('Start Route'));
       await tester.pumpAndSettle();
@@ -135,7 +135,7 @@ void main() {
   ) async {
     final l = WidgetLane()..expiryPendingRecovery = true;
     await open(tester, l);
-    expect(find.text('Waiting for expiry recovery'), findsOneWidget);
+    expect(find.text('Expired, awaiting recovery'), findsOneWidget);
     expect(
       find.textContaining(
         'protected backend recovery process has not opened reconciliation yet',
@@ -154,13 +154,33 @@ void main() {
       ..lostDeferBeforeCommit = 0;
     await open(tester, l);
     await tester.ensureVisible(find.byKey(const Key('defer-pickup-t0')));
+    // The in-card reconciliation notice moves the button below the 800x600
+    // viewport; lay out the scrolled list before tapping.
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('defer-pickup-t0')));
     await tester.pumpAndSettle();
+    expect(find.text('Skip this pickup for now?'), findsOneWidget);
     await tester.tap(find.text('Confirm'));
     await tester.pumpAndSettle();
-    expect(find.byKey(const Key('retry-saved-deferral')), findsOneWidget);
     final firstRequest = l.deferRequestIds.single;
+    // App state, independent of scroll position: the unknown outcome was
+    // reconciled to a same-request retry and nothing was resent.
+    final prefs = await SharedPreferences.getInstance();
+    final saved =
+        jsonDecode(prefs.getString('ngo_route_execution_ngo_route')!) as Map;
+    expect(saved['status'], 'retryable_same_request');
+    expect((saved['attempt'] as Map)['request_id'], firstRequest);
+    expect(l.deferRequestIds, [firstRequest]);
+    // The recovery card sits above the stop cards; the list is still scrolled
+    // down to the stop that was skipped, so scroll back up to it.
+    await tester.scrollUntilVisible(
+      find.byKey(const Key('retry-saved-deferral')),
+      -200,
+      scrollable: find.byType(Scrollable).first,
+    );
+    expect(find.byKey(const Key('retry-saved-deferral')), findsOneWidget);
     await tester.ensureVisible(find.text('Recover saved request'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Recover saved request'));
     await tester.pumpAndSettle();
     expect(l.deferRequestIds, [firstRequest, firstRequest]);

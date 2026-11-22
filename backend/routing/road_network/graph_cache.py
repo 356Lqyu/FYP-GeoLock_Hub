@@ -62,6 +62,7 @@ class GraphCache:
             if self._loaded is not None: return self._loaded
             path = self.directory/(self.graph_id+'.jsonl')
             seal = self.directory/(self.graph_id+'.sha256')
+            # Check the current database manifest even when the graph is already cached on disk.
             first = self._page(None,None)
             manifest = first['graph']; self._check_manifest(manifest)
             nodes,edges = [],[]
@@ -70,6 +71,7 @@ class GraphCache:
                 h=hashlib.sha256()
                 with path.open('rb') as f:
                     for line in f: h.update(line)
+                # This hash checks the disk file. The manifest check ties it to the selected graph.
                 check(h.hexdigest()==seal.read_text().strip(),'GRAPH_CACHE_INTEGRITY_FAILED',503)
                 with path.open(encoding='utf-8') as f:
                     for line in f:

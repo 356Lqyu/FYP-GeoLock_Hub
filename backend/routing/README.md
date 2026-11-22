@@ -1,157 +1,171 @@
-# GeoLock Hub routing
+# GeoLock Hub Routing Backend
 
-This folder plans pickup routes for an NGO's vehicles and makes sure no route is driven unless it has been checked.
+GeoLock Hub generates collection routes for non-governmental organisations
+(NGOs) from donation pickups they have claimed. It uses the road network for
+Kuala Lumpur, Selangor and Putrajaya, Google OR-Tools CP-SAT to plan routes, and
+a separate validator to check the proposed routes before the NGO can start them.
 
-The route itself is built by **Google OR-Tools CP-SAT**. It first collects as many pickup tasks as possible, then keeps the road distance as low as possible. A separate **validator** process re-checks every route on its own. **PostgreSQL (Supabase) alone** decides whether a checked route may start.
+## How It Works
 
-```
-Flutter "Generate Route"
-   → planner service     reads the sealed database snapshot, builds road matrices, runs FCFS,
-                         nearest-neighbour and CP-SAT, stores the CP-SAT candidate
-   → validator service   rebuilds the input from the database and checks the candidate again,
-                         then attests its digest
-   ← attested candidate, valid for 60 minutes (advisory only: nothing is reserved yet)
+1. The NGO selects **Generate Route** in Flutter. The app asks Supabase to prepare
+   a snapshot, which is a record of the data for this planning request.
+2. The planner reads that snapshot from Supabase. It includes eligible pickup
+   tasks, vehicle information and the NGO's depot.
+3. The road network module calculates road distances and travel times between
+   the depot and pickup locations.
+4. The planner runs the three routing methods on the same input and saves the
+   feasible CP-SAT proposal for validation.
+5. The independent validator reads the proposal and its inputs from Supabase.
+   It checks the route and records the result.
+6. Flutter displays the validated proposal for the NGO to review.
+7. The NGO selects **Start Route**. Flutter asks Supabase to authorise the
+   proposal and start the first pickup in one database transaction.
+8. The NGO uses Flutter to record pickups, confirm the return to the depot
+   and close the route.
 
-Flutter "Start Route"    authorize_and_start_my_route (database RPC, one transaction):
-                         authorises the candidate at "now" and dispatches the first stop
-Each stop                start_pickup → complete_pickup (database RPCs)
-Close                    close_my_collected_route / close_my_resolved_route
-```
+**Generate Route** produces a proposal for review. Dispatch begins only when the
+NGO selects **Start Route** and Supabase approves the request.
 
-## Folders
+### Planner and Validator
 
-```
+The planner uses CP-SAT to find routes. The validator runs as a separate process
+and reads the saved proposal and original inputs from Supabase. It checks the
+stop order, timings, vehicle loads and return to the depot by recalculating the
+route details directly. This gives the app an independent check before the
+proposal is shown. Supabase handles the decision to authorise and start it.
+
+## Routing Algorithms
+
+All three methods use the same pickup tasks, vehicles and road travel data so
+their results can be compared on equal terms.
+
+- **First Come, First Served (FCFS)** considers the oldest pickup task first
+  and adds it when it fits the current route.
+- **Nearest Neighbour** tries the closest remaining pickup by road distance.
+  It adds the closest one that fits the route.
+- **OR-Tools CP-SAT** is the proposed method. It considers how to assign pickups
+  across vehicles and in what order to visit them. It first aims to serve the
+  most eligible pickup tasks. For the same number of tasks, it aims to minimise
+  the configured routing cost, which is the total road distance in the current
+  system.
+
+Each method accounts for vehicle capacity, pickup time windows, road distance
+and travel time, and the maximum duration for each vehicle's depot-to-depot
+route. The app uses the checked CP-SAT result as its proposal. FCFS and Nearest
+Neighbour provide comparison results.
+
+## Project Structure
+
+```text
 backend/routing/
-├── README.md               this file
-├── CONTRACT.md             full specification of the sealed routing input (fields, admission rules, matrices)
-├── requirements.txt        worker dependencies (psycopg) + the lock file below
-├── requirements-lock.txt   pinned Python 3.12 environment, including OR-Tools 9.15.6755
-├── __main__.py             python -m backend.routing <scenario.json>: check one scenario file
-├── contract.py             the routing input contract: schema, admission rules, freeze and digest
-├── route_plan.py           Plan / Route / Stop / ExecutionConfig, shared by the planner and the validator
-├── snapshot.py             sealed database snapshot → planner input; decodes stored plans
-│
-├── road_network/           road graph → directed distance and time matrices
-│   ├── graph_cache.py      downloads the frozen graph through a read-only RPC; immutable local cache
-│   ├── graph_export.py     turns graph pages into the matrix builder's input
-│   └── matrix.py           shortest road distance, with travel time measured on the same path
-├── planner/                builds route candidates (no database, no HTTP)
-│   ├── planning.py         prepares the input, runs the three methods and compares them
-│   ├── methods.py          method registry (fcfs, nearest_neighbour, proposed; distance_only for research)
-│   ├── cp_sat.py           the proposed OR-Tools CP-SAT model
-│   ├── baselines.py        FCFS and nearest-neighbour baselines
-│   └── problem.py          solver-side view of the problem and schedule construction
-├── validator/              independent checks; imports nothing from planner/
-│   └── validation.py       recomputes windows, loads, capacity, duration and distance from the sealed input
-├── database/               how the services talk to Supabase / PostgreSQL
-│   ├── supabase_rpc.py     whitelisted role RPCs and NGO JWT verification; no direct table writes
-│   ├── native_connection.py  libpq service connection, passwords kept as native bytes
-│   ├── libpq_client.py     loads the pinned native libpq 17 before the driver
-│   └── password_input.py   hidden console password read
-├── service/                the two running processes
-│   ├── start_worker.py     entry point used by windows/Start-Worker.ps1 (planner or validator)
-│   ├── http_api.py         small loopback HTTP API (disabled unless activated)
-│   ├── planner_service.py  snapshot → matrix → candidate → validation → authorisation request
-│   ├── validator_service.py  separate validator process: re-reads the work item and attests it
-│   ├── exact_pilot.py      opt-in exact-scope pilot workflow
-│   ├── exact_pilot_client.py  operator client for that pilot (used by scripts/Run-ExactV3Pilot.py)
-│   ├── flutter_response.py   shapes results for the Flutter app (never a dispatch response)
-│   ├── route_resolution.py   default-disabled route-resolution adapter
-│   ├── journal.py          crash-resumable local SQLite journal (safe retries and recovery)
-│   ├── errors.py           WorkerError and check()
-│   └── safe_failure.py     redacted failure reports (no secrets or raw error text)
-├── diagnostics/            read-only connection checks and probes; they never start a service
-├── windows/                Windows setup, launch and operator checks (PowerShell)
-│   ├── Save-WorkerConfig.ps1   save encrypted planner/validator profiles (once)
-│   ├── Start-Worker.ps1        start, check config or check connection
-│   ├── Prepare-WorkerCache.ps1, Test-LocalRoutingSetup.ps1, Update-PlannerPublishableKey.ps1, ...
-│   └── create_worker_logins.manual.sql, verify_worker_roles.readonly.sql
-├── worker_service/windows/Start-Worker.ps1   forwarder kept so the old command still works
-└── tests/                  offline tests (no Supabase connection)
-    ├── fixtures/           9 synthetic scenarios; tests/generate_fixtures.py makes them
-    ├── test_*.py           contract, planner, validator, road matrices, snapshot, Flutter shape
-    └── service/test_*.py   services, database adapters, diagnostics, Windows helpers
+|-- contract.py
+|-- environment.py
+|-- route_plan.py
+|-- snapshot.py
+|-- requirements.txt
+|-- planner/
+|   |-- planning.py
+|   |-- baselines.py
+|   +-- cp_sat.py
+|-- validator/
+|   +-- validation.py
+|-- road_network/
+|   |-- graph_cache.py
+|   +-- matrix.py
+|-- service/
+|   |-- planner_service.py
+|   +-- validator_service.py
+|-- database/
+|   +-- supabase_rpc.py
+|-- windows/
+|-- diagnostics/
++-- tests/
 ```
 
-## How the parts work together
+| Folder | Responsibility |
+| --- | --- |
+| `planner/` | Prepares the routing input and runs the three methods. |
+| `validator/` | Checks proposed routes against their original inputs. |
+| `road_network/` | Loads the road network and calculates distances and travel times. |
+| `service/` | Runs the planner and validator services and returns results to Flutter. |
+| `database/` | Connects the workers to Supabase and calls database functions. |
+| `windows/` | Provides PowerShell scripts for setup and worker startup. |
+| `diagnostics/` | Provides tools for checking worker setup and connections. |
+| `tests/` | Contains offline tests and sample routing scenarios. |
 
-| Part | Runs as | Database login (role) | Allowed RPCs |
-|---|---|---|---|
-| Planner service | `Start-Worker.ps1 -Mode planner` (port 8787) | `geolock_planner_login` | `read_pending_routing_snapshot`, `read_routing_snapshot_bundle`, `seal_routing_snapshot`, `submit_routing_candidate` |
-| Road network (inside the planner) | same process | `geolock_graph_login` | `read_frozen_routing_graph`, `store_routing_matrix` |
-| Validator service | `Start-Worker.ps1 -Mode validator` (port 8788) | `geolock_validator_login` | `read_routing_work_item`, `attest_routing_candidate` |
-| Authorisation, dispatch, detach, recovery | **database only** (called by Flutter as the NGO) | NGO JWT | `authorize_and_start_my_route`, `start_pickup`, `complete_pickup`, `detach_my_unstarted_stop`, `recover_expired_claims` (cron) |
+| Root file | Responsibility |
+| --- | --- |
+| `contract.py` | Defines and checks the data that the routing process expects. |
+| `environment.py` | Identifies the Supabase project and road network for each environment. |
+| `route_plan.py` | Defines the shared representation of routes, stops and results. |
+| `snapshot.py` | Converts saved database data into routing inputs and reads saved plans. |
+| `requirements.txt` | Lists the pinned Python dependencies for the workers. |
 
-Further rules:
-- **No dispatch from the worker.** The planner never grants route authority, and no worker endpoint can dispatch, claim, pick up or write tables directly.
-- **Attestation only after validation.** A candidate is `ATTESTED` only after the validator, with its own login, re-reads the work item and checks it.
-- **Validator fingerprint.** The validator signs its report with `validator_build`, a SHA-256 of `contract.py` + `validator/validation.py` + `snapshot.py`.
-- **Per-task lease admission (Phase 2).** Under policy v2, a task is admitted when its lease outlasts the time needed to reach and serve it, plus the margin. The rule is identical in Python (`contract.py`, scenario v2) and SQL.
-- **Detachment.** A future stop whose lease becomes too short can be detached with `detach_my_unstarted_stop`. The claim stays active and can be planned again.
+## Technologies Used
 
-## Start the planner and validator (Windows)
+- **Python 3.12** runs the planner, validator and offline tests.
+- **Google OR-Tools CP-SAT** searches for feasible routes under the routing constraints.
+- **Supabase PostgreSQL** stores pickups, vehicles, proposals and route progress.
+- **Flutter** lets NGOs generate, review, start and complete collection routes.
+- **OpenStreetMap** provides the road data for the KLSEL service area.
+- **PowerShell** starts and checks the workers on Windows.
 
-Full setup, USB and shutdown steps are in [docs/LOCAL_ROUTING_WINDOWS.md](../../docs/LOCAL_ROUTING_WINDOWS.md). Start from the repository root:
+<a name="start-the-planner-and-validator-windows"></a>
+
+## Running the Backend
+
+Run these commands from the repository root in PowerShell. They assume the
+`.venv-stage8` Python environment and both KLSEL worker profiles are set up.
+
+1. Run the offline setup check.
+
+   ```powershell
+   .\backend\routing\windows\Test-LocalRoutingSetup.ps1 -Environment KLSEL
+   ```
+
+2. Start the validator in a separate terminal.
+
+   ```powershell
+   .\backend\routing\windows\Start-Worker.ps1 -Environment KLSEL -Mode validator -Activate -ApprovalRef 'APPROVED_REFERENCE'
+   ```
+
+3. Start the planner in another terminal.
+
+   ```powershell
+   .\backend\routing\windows\Start-Worker.ps1 -Environment KLSEL -Mode planner -Activate -ApprovalRef 'APPROVED_REFERENCE'
+   ```
+
+4. Check both workers from a third terminal. Both should report `ACTIVE` and
+   the KLSEL project reference (`ppwmdsyoesvhgmqiaoxa`).
+
+   ```powershell
+   Invoke-RestMethod 'http://127.0.0.1:8788/health'
+   Invoke-RestMethod 'http://127.0.0.1:8787/health'
+   ```
+
+<a name="what-each-switch-does"></a>
+
+Replace `APPROVED_REFERENCE` in each startup command with the actual approved
+reference. `-Environment` selects the project and profiles, `-Mode` chooses
+the worker, and `-Activate` enables it for routing requests.
+
+Set Flutter to use the KLSEL Supabase project and point
+`GEOLOCK_ROUTING_API_URL` at the planner address reachable from the device.
+The planner uses port 8787, while port 8788 is for the validator. For profile
+setup, device connection and troubleshooting, see the
+[Windows routing guide](../../docs/LOCAL_ROUTING_WINDOWS.md).
+
+## Testing
+
+Run the offline suite from the repository root.
 
 ```powershell
-# once: Python 3.12 environment and encrypted profiles
-& .\.venv-stage8\Scripts\python.exe -m pip install -r .\backend\routing\requirements.txt
-.\backend\routing\windows\Save-WorkerConfig.ps1
-
-# safe checks (no activation)
-.\backend\routing\windows\Start-Worker.ps1 -Mode validator -CheckConfig
-.\backend\routing\windows\Start-Worker.ps1 -Mode planner   -CheckConfig
-.\backend\routing\windows\Start-Worker.ps1 -Mode validator -CheckConnection
-.\backend\routing\windows\Start-Worker.ps1 -Mode planner   -CheckConnection
-
-# start (validator first, each in its own window)
-.\backend\routing\windows\Start-Worker.ps1 -Mode validator -Activate -ApprovalRef $validatorApproval
-.\backend\routing\windows\Start-Worker.ps1 -Mode planner -GraphId $graphId -Activate -ApprovalRef $plannerApproval -EnableCombinedWorkflow
+$env:PYTHONDONTWRITEBYTECODE = "1"
+& .\.venv-stage8\Scripts\python.exe -B -m unittest discover -s backend/routing/tests -t . -v
 ```
 
-The old path `.\backend\routing\worker_service\windows\Start-Worker.ps1` forwards to the new one with the same parameters. Profiles and worker state stay in `%LOCALAPPDATA%\GeoLockHubRoutingDev`.
+The suite uses sample scenarios and simulated service responses to check road
+distances and times, planning constraints, independent validation, and worker
+behaviour. It runs without a live Supabase connection.
 
-## Run the offline tests
 
-```powershell
-& .\.venv-stage8\Scripts\python.exe -B -m unittest discover -s backend/routing -t . -v
-python -m backend.routing backend/routing/tests/fixtures/mixed.json        # check one scenario
-python -m backend.routing.tests.generate_fixtures --check                  # fixtures are reproducible
-```
-
-Some tests need Windows (the native libpq 17 client, the pinned CA file, Windows SQLite behaviour). On Linux they fail or are skipped.
-
-## Retries and failures
-
-- **What the planner accepts.** `POST /v1/plan` takes only `{request_id, snapshot_id}` with the NGO's bearer token. Client-supplied plans, NGO IDs and success flags are rejected.
-- **Journal first.** The journal saves exact matrix and plan payloads **before** any database write. Deterministic request IDs and OS locks handle duplicates, crashes and lost replies.
-- **What to retry.** Repeat the same request after a retryable error. After a stale or conflict error, create a new snapshot.
-- **Infeasible results** contain the real engine comparisons and no candidate.
-- **Missing or unreachable road arcs** fail closed before a matrix is stored.
-- **Database failures stay failures.** An authorisation failure in PostgreSQL is returned as a failure or as an unknown outcome, never as a success.
-
-## Where things moved (20 Nov 2026 restructure)
-
-Only file locations and import lines changed; routing behaviour did not. Older documents under `docs/` still use the old paths.
-
-| Old path | New path |
-|---|---|
-| `contracts/__init__.py`, `integration/__init__.py`, `optimizers/__init__.py` | removed (they only re-exported other modules) |
-| `generate_examples.py` | `tests/generate_fixtures.py` |
-| `optimizers/models.py` | `route_plan.py` |
-| `integration/worker.py` | `snapshot.py` |
-| `integration/graph_worker.py`, `planner/matrices.py`, `worker_service/graph_cache.py` | `road_network/graph_export.py`, `road_network/matrix.py`, `road_network/graph_cache.py` |
-| `planner/orchestration.py` | `planner/planning.py` |
-| `optimizers/cp_sat.py`, `baselines.py`, `methods.py`, `problem.py` | `planner/` (same names) |
-| `worker_service/transport.py`, `native_service_connection.py`, `connection_diagnostic_native17.py`, `password_transport_check.py` | `database/supabase_rpc.py`, `native_connection.py`, `libpq_client.py`, `password_input.py` |
-| `worker_service/native_worker.py`, `server.py`, `orchestrator.py`, `validator.py` | `service/start_worker.py`, `http_api.py`, `planner_service.py`, `validator_service.py` |
-| `worker_service/staged.py`, `staged_client.py` | `service/exact_pilot.py`, `exact_pilot_client.py` |
-| `integration/presentation.py`, `route_resolution.py` | `service/flutter_response.py`, `route_resolution.py` |
-| `worker_service/journal.py`, `errors.py`, `probe_diagnostics.py` | `service/journal.py`, `errors.py`, `safe_failure.py` |
-| `worker_service/connection_diagnostic.py`, `native_service_diagnostic.py`, `native_service_probe.py`, `native_readonly_session.py`, `readonly_pilot_probe.py`, `probe_resources.py` | `diagnostics/connection_check.py`, `native_service_check.py`, `graph_probe.py`, `readonly_session.py`, `pilot_benchmark_probe.py`, `probe_resources.py` |
-| `worker_service/windows/*`, `worker_service/requirements*.txt` | `windows/*`, `requirements*.txt` |
-| `worker_service/tests/*`, `integration/tests/*` | `tests/service/*`, `tests/*` (`test_worker.py` → `test_snapshot.py`) |
-
-`python -m` module names follow the file moves. For example, `backend.routing.worker_service.readonly_pilot_probe` is now `backend.routing.diagnostics.pilot_benchmark_probe`.
-
-The exact source bytes that the published E4 results recorded are kept in `experiments/e4/experiment_result/published_provenance/e4_sources/`.

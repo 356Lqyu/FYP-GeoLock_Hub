@@ -49,6 +49,7 @@ def _optimise(snapshot, method, config):
         raise ValueError("UNSUPPORTED_TOTAL_MASS")
     for vi, vid in enumerate(vids):
         v = problem.fleet[vid]
+        # The return time must fit both the planning window and the vehicle's limit.
         horizon = min(problem.horizon, exact(v["max_route_minutes"], TIME_SCALE))
         used = model.new_bool_var(f"used_{vi}")
         ys = [model.new_bool_var(f"visit_{vi}_{i}") for i in range(n)]
@@ -56,6 +57,7 @@ def _optimise(snapshot, method, config):
             assigned[vi, i] = y
             model.add(y <= used)
         model.add(sum(ys) >= used)
+        # Only pickups assigned to this vehicle count towards its total load.
         model.add(sum(weights[i]*ys[i] for i in range(n)) <= exact(v["capacity_kg"], MASS_SCALE))
         starts = [model.new_int_var(0, horizon, f"start_{vi}_{i}") for i in range(n)]
         returned = model.new_int_var(0, horizon, f"return_{vi}")
@@ -64,12 +66,14 @@ def _optimise(snapshot, method, config):
             task = problem.tasks[tid]
             service = exact(task["service_minutes"], TIME_SCALE)
             earliest = max(0, offset(task["time_window"]["start"], problem.cutoff))
+            # Finish service by closing time and leave the margin before the lease expires.
             latest = min(offset(task["time_window"]["end"], problem.cutoff)-service,
                          offset(task["lease_expires_at"], problem.cutoff)-problem.margin-service-1)
             model.add(starts[i] >= earliest).only_enforce_if(ys[i])
             model.add(starts[i] <= latest).only_enforce_if(ys[i])
             model.add(starts[i] == 0).only_enforce_if(ys[i].Not())
         nodes = [problem.depot] + [problem.tasks[t]["pickup"]["road_node_id"] for t in ids]
+        # Node 0 is the depot. A self-loop lets the circuit skip an unused node.
         circuit = [(0, 0, used.Not())] + [(i+1, i+1, ys[i].Not()) for i in range(n)]
         arcs = {}
         for i in range(n+1):
@@ -100,6 +104,7 @@ def _optimise(snapshot, method, config):
         raise ValueError("UNSUPPORTED_OBJECTIVE_RANGE")
     for i, tid in enumerate(ids):
         visits = sum(assigned[vi, i] for vi in range(len(vids)))
+        # Across the whole fleet, visit each task at most once and every mandatory task once.
         model.add(visits == 1 if problem.tasks[tid]["mandatory"] else visits <= 1)
     served = sum(assigned.values())
     model.maximize(served)
@@ -116,12 +121,14 @@ def _optimise(snapshot, method, config):
         s.parameters.max_time_in_seconds = problem.p["solver"]["time_limit_seconds"]/2
         return s
 
+    # First find a route set that covers as many pickups as the solver can find.
     first = solver()
     first_status = first.solve(model)
     statuses = [first.status_name(first_status)]
     solver_runtime = first.wall_time
     metadata = dict(solver_version=ortools.__version__, solver_statuses=tuple(statuses),
                     solver_runtime_seconds=solver_runtime)
+    # A timeout with no route found is different from proving that no route fits.
     if first_status not in (cp_model.OPTIMAL, cp_model.FEASIBLE):
         if first_status == cp_model.MODEL_INVALID:
             raise ValueError("INVALID_SOLVER_MODEL: "+first.response_stats())
@@ -138,6 +145,7 @@ def _optimise(snapshot, method, config):
     gap, bound, objective = None, None, None
     coverage = sum(first.value(y) for y in assigned.values())
     coverage_bound = first.best_objective_bound
+    # Keep that pickup count fixed while the second pass looks for shorter routes.
     model.add(served == coverage)
     model.minimize(sum(distance_terms))
     second = solver()
@@ -146,6 +154,7 @@ def _optimise(snapshot, method, config):
     solver_runtime += second.wall_time
     if second_status in (cp_model.MODEL_INVALID, cp_model.INFEASIBLE):
         raise RuntimeError("FIXED_COVERAGE_MODEL_INCONSISTENT: "+second.response_stats())
+    # If the distance pass times out without a solution, keep the first pass's routes.
     if second_status in (cp_model.OPTIMAL, cp_model.FEASIBLE):
         chosen = second
         secondary_optimal = second_status == cp_model.OPTIMAL
@@ -165,6 +174,7 @@ def _optimise(snapshot, method, config):
                 raise RuntimeError("INVALID_SOLVER_CIRCUIT")
             ordered.append(node)
             node = nexts[node]
+        # Turn the chosen stop order into a concrete schedule using the shared timing rules.
         route, reason = problem.schedule(vid, [ids[i-1] for i in ordered])
         if route is None:
             raise RuntimeError("SOLVER_SCHEDULE_INCONSISTENT: "+str(reason))

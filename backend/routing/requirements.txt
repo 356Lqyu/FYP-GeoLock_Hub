@@ -1,2 +1,21 @@
--r requirements-lock.txt
+# GeoLock Hub routing workers (planner and validator). Python 3.12 x64, Windows.
+# Install from the repository root:
+#   & .\.venv-stage8\Scripts\python.exe -m pip install -r .\backend\routing\requirements.txt
+# Exact versions captured from the Phase B Python 3.12 Windows execution environment.
+# Do not upgrade or regenerate them: windows/local_setup_check.py checks OR-Tools 9.15.6755
+# and psycopg 3.3.6, and the routing tests were verified with this set.
+
+# Route optimisation: OR-Tools and its pinned dependencies
+absl-py==2.5.1
+immutabledict==4.3.1
+numpy==2.5.4
+ortools==9.15.6755
+pandas==3.1.0
+protobuf==6.33.6
+python-dateutil==3.0.0
+six==1.17.0
+typing_extensions==4.16.0
+tzdata==2026.5
+
+# PostgreSQL / Supabase driver used by the workers
 psycopg[binary]==3.3.6
