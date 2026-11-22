@@ -5,6 +5,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uuid/uuid.dart';
 import 'ngo_routing_repository.dart' show RpcCall, routingObject, routingRows;
 import 'reconciliation_status.dart';
+import '../ui/geolock_role_style.dart';
 
 /// Durable actor-scoped requests. Reads never retry a mutation automatically.
 class ClaimCoordinationRepository {
@@ -495,10 +496,15 @@ class ReconciliationSummaryView extends StatelessWidget {
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Chip(
-          key: const Key('reconciliation-status'),
-          label: Text(summary.status),
-        ),
+        // NGO / Donor pages get the shared tinted pill; Hub Admin (no
+        // GeoRoleScope) keeps the plain chip it had before.
+        if (GeoRoleScope.active(context))
+          GeoStatusChip(summary.status, key: const Key('reconciliation-status'))
+        else
+          Chip(
+            key: const Key('reconciliation-status'),
+            label: Text(summary.status),
+          ),
         if (!summary.resolved) ...[
           if (summary.viewerResponded != null)
             Text('Your statement (this round): ${_responded(summary.viewerResponded)}'),
@@ -537,7 +543,10 @@ class ClaimReconciliationPage extends StatelessWidget {
   final ClaimCoordinationRepository? repository;
 
   @override
-  Widget build(BuildContext context) => Scaffold(
+  Widget build(BuildContext context) =>
+      GeoRoleTheme(child: _buildRolePage(context));
+
+  Widget _buildRolePage(BuildContext context) => Scaffold(
     appBar: AppBar(title: Text(title ?? 'Handover reconciliation')),
     body: ListView(
       padding: const EdgeInsets.all(16),
@@ -652,7 +661,7 @@ class _ReconciliationLinkState extends State<ReconciliationLink> {
                       const Icon(Icons.fact_check_outlined),
                       const SizedBox(width: 8),
                       const Expanded(child: Text('Handover reconciliation')),
-                      Chip(label: Text(summary.status)),
+                      GeoStatusChip(summary.status),
                     ],
                   ),
                   if (rows.length > 1)

@@ -15,6 +15,7 @@ import 'route_card_view.dart';
 import 'route_execution_controller.dart';
 import 'reconciliation_status.dart';
 import 'routing_policy_display.dart';
+import '../ui/geolock_role_style.dart';
 
 class NgoRoutesPage extends StatefulWidget {
   const NgoRoutesPage({
@@ -499,9 +500,10 @@ class _NgoRoutesPageState extends NgoSessionPage<NgoRoutesPage> {
       detail: detail,
       deadlineReason: deadlineReason,
     );
-    return Card(
+    return GeoNoticeCard(
       key: const Key('route-proposal-expired'),
-      color: Theme.of(context).colorScheme.errorContainer,
+      tone: GeoTone.danger,
+      padding: EdgeInsets.zero,
       child: Padding(
         padding: const EdgeInsets.all(12),
         child: Column(
@@ -509,7 +511,7 @@ class _NgoRoutesPageState extends NgoSessionPage<NgoRoutesPage> {
           children: [
             Text(
               proposalExpiredTitle,
-              style: Theme.of(context).textTheme.titleMedium,
+              style: geoTitleStyle(context),
             ),
             const SizedBox(height: 4),
             Text(
@@ -564,7 +566,7 @@ class _NgoRoutesPageState extends NgoSessionPage<NgoRoutesPage> {
           children: [
             Text(
               'Generated route — not started',
-              style: Theme.of(context).textTheme.titleMedium,
+              style: geoTitleStyle(context),
             ),
             const SizedBox(height: 4),
             const Text(
@@ -616,7 +618,10 @@ class _NgoRoutesPageState extends NgoSessionPage<NgoRoutesPage> {
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
+  Widget build(BuildContext context) =>
+      GeoRoleTheme(child: _buildRolePage(context));
+
+  Widget _buildRolePage(BuildContext context) => Scaffold(
     appBar: AppBar(
       title: const Text('Pickup routes'),
       actions: [
@@ -791,10 +796,7 @@ class _NgoRoutesPageState extends NgoSessionPage<NgoRoutesPage> {
           ),
           if (_generated != null) _generatedRouteCard(context),
           const SizedBox(height: 20),
-          Text(
-            'Your pickup routes',
-            style: Theme.of(context).textTheme.titleLarge,
-          ),
+          const GeoSectionTitle('Your pickup routes'),
           for (final r in routingRows(_overview?['routes'] ?? []))
             PickupRouteCard(
               overview: r,
@@ -1149,9 +1151,10 @@ class _NgoRouteDetailPageState extends NgoSessionPage<NgoRouteDetailPage> {
   Widget? _stopNotice(BuildContext context, Map<String, dynamic> s) {
     final blockedNext = _blockedNextTaskId;
     if (stopHasOpenReconciliation(s)) {
-      return Card(
+      return GeoNoticeCard(
             key: Key('stop-reconciliation-${s['task_id']}'),
-            color: Theme.of(context).colorScheme.errorContainer,
+            tone: GeoTone.danger,
+            padding: EdgeInsets.zero,
             child: Padding(
               padding: const EdgeInsets.all(12),
               child: Column(
@@ -1159,7 +1162,7 @@ class _NgoRouteDetailPageState extends NgoSessionPage<NgoRouteDetailPage> {
                 children: [
                   Text(
                     'Stop ${s['stop_order']} — ${GeoLockStatusText.reconciliationRequired}',
-                    style: Theme.of(context).textTheme.titleMedium,
+                    style: geoTitleStyle(context),
                   ),
                   const SizedBox(height: 4),
                   Text(stopReconciliationMessage(s)),
@@ -1188,8 +1191,10 @@ class _NgoRouteDetailPageState extends NgoSessionPage<NgoRouteDetailPage> {
     }
     if (s['lease_expired_pending_recovery'] == true &&
         s['task_status'] == 'DISPATCHED') {
-      return Card(
+      return GeoNoticeCard(
             key: Key('stop-expiry-pending-${s['task_id']}'),
+            tone: GeoTone.warning,
+            padding: EdgeInsets.zero,
             child: ListTile(
               leading: const Icon(Icons.hourglass_top),
               title: Text(
@@ -1228,7 +1233,10 @@ class _NgoRouteDetailPageState extends NgoSessionPage<NgoRouteDetailPage> {
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
+  Widget build(BuildContext context) =>
+      GeoRoleTheme(child: _buildRolePage(context));
+
+  Widget _buildRolePage(BuildContext context) => Scaffold(
     appBar: AppBar(
       title: const Text('Route details'),
       actions: [
@@ -1259,7 +1267,7 @@ class _NgoRouteDetailPageState extends NgoSessionPage<NgoRouteDetailPage> {
                 children: [
                   Text(
                     '${routeStatusLabel(_route?['route_status'])} · ${_route?['vehicle_label'] ?? 'Assigned vehicle'}',
-                    style: Theme.of(context).textTheme.titleMedium,
+                    style: geoTitleStyle(context),
                   ),
                   const SizedBox(height: 8),
                   Text(
@@ -1414,18 +1422,16 @@ class _NgoRouteDetailPageState extends NgoSessionPage<NgoRouteDetailPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Chip(
-                      label: Text(
-                        routeStopLabel(
-                          s,
-                          routeStatus: _route?['route_status'] as String?,
-                          currentTaskId: _currentStop?['task_id'] as String?,
-                          claimStatus:
-                              _claimCardsById[s['claim_id']]?.claimStatus,
-                          leaseIsExpired:
-                              _claimCardsById[s['claim_id']]?.leaseIsExpired,
-                          blockedNextTaskId: _blockedNextTaskId,
-                        ),
+                    GeoStatusChip(
+                      routeStopLabel(
+                        s,
+                        routeStatus: _route?['route_status'] as String?,
+                        currentTaskId: _currentStop?['task_id'] as String?,
+                        claimStatus:
+                            _claimCardsById[s['claim_id']]?.claimStatus,
+                        leaseIsExpired:
+                            _claimCardsById[s['claim_id']]?.leaseIsExpired,
+                        blockedNextTaskId: _blockedNextTaskId,
                       ),
                     ),
                     Text('${s['stop_order']}. ${s['title'] ?? 'Pickup'}'),

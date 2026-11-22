@@ -30,6 +30,7 @@ import 'hub_admin/hub_service.dart' as hub;
 import 'status_timeline.dart';
 import 'donor_claim_history.dart';
 import 'claim_pickup_detail_reader.dart';
+import 'ui/geolock_role_style.dart';
 
 final _db = Supabase.instance.client;
 
@@ -175,7 +176,10 @@ class _EligibleListingsPageState extends State<EligibleListingsPage> {
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
+  Widget build(BuildContext context) =>
+      GeoRoleTheme(child: _buildRolePage(context));
+
+  Widget _buildRolePage(BuildContext context) => Scaffold(
     appBar: AppBar(
       title: const Text('Eligible Listings'),
       actions: [
@@ -1453,7 +1457,10 @@ class _MyClaimsPageState extends State<MyClaimsPage>
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) =>
+      GeoRoleTheme(child: _buildRolePage(context));
+
+  Widget _buildRolePage(BuildContext context) {
     final rows = _reader.cards
         .where((c) => _selectedTab == ClaimTab.all || c.tab == _selectedTab)
         .toList();
@@ -1544,7 +1551,7 @@ class _MyClaimsPageState extends State<MyClaimsPage>
                   children: [
                     Text(
                       card.title ?? card.sourceType ?? 'Claim',
-                      style: Theme.of(context).textTheme.titleMedium,
+                      style: geoTitleStyle(context),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -1554,7 +1561,7 @@ class _MyClaimsPageState extends State<MyClaimsPage>
               ),
             ],
           ),
-          Chip(label: Text(card.badge)),
+          GeoStatusChip(card.badge),
           if (widget.actionRunner == null &&
               (card.canStart || card.canComplete))
             const Text(
@@ -2107,7 +2114,10 @@ class _NgoListingDetailsPageState extends State<NgoListingDetailsPage> {
   }
 
   @override
-  Widget build(BuildContext context) => widget.savedRequestId != null
+  Widget build(BuildContext context) =>
+      GeoRoleTheme(child: _buildRolePage(context));
+
+  Widget _buildRolePage(BuildContext context) => widget.savedRequestId != null
       ? _buildSavedAttempt()
       : _buildListing(context);
 
@@ -2595,7 +2605,10 @@ class _ClaimPickupDetailPageState extends State<ClaimPickupDetailPage>
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
+  Widget build(BuildContext context) =>
+      GeoRoleTheme(child: _buildRolePage(context));
+
+  Widget _buildRolePage(BuildContext context) => Scaffold(
     appBar: AppBar(title: const Text('Claimed Pickup Details')),
     body: FutureBuilder<Map<String, dynamic>>(
       future: _detail,
@@ -2677,7 +2690,7 @@ class _ClaimPickupDetailPageState extends State<ClaimPickupDetailPage>
               'My Claim Status',
               style: Theme.of(context).textTheme.titleMedium,
             ),
-            Chip(label: Text(presentation?.badge ?? 'Status Needs Review')),
+            GeoStatusChip(presentation?.badge ?? 'Status Needs Review'),
             _claimDetailRow('Claim', friendlyWorkflowStatus(claimStatus)),
             _claimDetailRow(
               'Listing availability',
@@ -2706,9 +2719,10 @@ class _ClaimPickupDetailPageState extends State<ClaimPickupDetailPage>
             _claimDetailRow('Pickup task', friendlyWorkflowStatus(taskStatus)),
             if (isReconciliationRequired ||
                 claimStatus == 'RECONCILIATION_REQUIRED')
-              Card(
+              GeoNoticeCard(
                 key: const Key('claim-reconciliation-notice'),
-                color: const Color(0xfffff0e8),
+                tone: GeoTone.danger,
+                padding: EdgeInsets.zero,
                 child: Padding(
                   padding: const EdgeInsets.all(14),
                   child: Column(
@@ -3377,7 +3391,10 @@ class _CreateDonationPageState extends State<CreateDonationPage> {
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
+  Widget build(BuildContext context) =>
+      GeoRoleTheme(child: _buildRolePage(context));
+
+  Widget _buildRolePage(BuildContext context) => Scaffold(
     appBar: AppBar(title: const Text('Create Donation')),
     body: FutureBuilder<List<DonationCategory>>(
       future: categories,
@@ -4124,7 +4141,10 @@ class _DonationDetailPageState extends State<DonationDetailPage> {
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
+  Widget build(BuildContext context) =>
+      GeoRoleTheme(child: _buildRolePage(context));
+
+  Widget _buildRolePage(BuildContext context) => Scaffold(
     backgroundColor: const Color(0xfff5f8f6),
     appBar: AppBar(
       title: const Text('Donation details'),

@@ -25,6 +25,7 @@ import 'hub_admin/hub_notification_page.dart';
 import 'hub_admin/hub_service.dart';
 import 'hub_admin/hub_service_rules_page.dart';
 import 'hub_admin/hub_widgets.dart';
+import 'ui/geolock_role_style.dart';
 
 const _mint = Color(0xffedfbf7);
 const _green = Color(0xff2f806c);
@@ -338,7 +339,10 @@ class _DonorHomePageState extends State<DonorHomePage> {
   }
 
   @override
-  Widget build(BuildContext context) => RefreshIndicator(
+  Widget build(BuildContext context) =>
+      GeoRoleTheme(child: _buildRolePage(context));
+
+  Widget _buildRolePage(BuildContext context) => RefreshIndicator(
     onRefresh: _refresh,
     child: ListView(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 28),
@@ -649,7 +653,10 @@ class _DonorMyDonationsPageState extends State<DonorMyDonationsPage> {
   }
 
   @override
-  Widget build(BuildContext context) => Column(
+  Widget build(BuildContext context) =>
+      GeoRoleTheme(child: _buildRolePage(context));
+
+  Widget _buildRolePage(BuildContext context) => Column(
     children: [
       Padding(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
@@ -786,13 +793,7 @@ class _DonorMyDonationsPageState extends State<DonorMyDonationsPage> {
                         spacing: 8,
                         crossAxisAlignment: WrapCrossAlignment.center,
                         children: [
-                          Chip(
-                            avatar: const Icon(
-                              Icons.fact_check_outlined,
-                              size: 18,
-                            ),
-                            label: Text('Handover · $caseLabel'),
-                          ),
+                          GeoStatusChip('Handover · $caseLabel'),
                           if (claim != null)
                             FilledButton.tonalIcon(
                               key: ValueKey(
@@ -971,7 +972,10 @@ class _NgoHomePageState extends State<NgoHomePage> with WidgetsBindingObserver {
   }
 
   @override
-  Widget build(BuildContext context) => RefreshIndicator(
+  Widget build(BuildContext context) =>
+      GeoRoleTheme(child: _buildRolePage(context));
+
+  Widget _buildRolePage(BuildContext context) => RefreshIndicator(
     onRefresh: _refreshAndWait,
     child: ListView(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 28),
@@ -1917,7 +1921,10 @@ class _DonorImpactPageState extends State<DonorImpactPage> {
   }
 
   @override
-  Widget build(
+  Widget build(BuildContext context) =>
+      GeoRoleTheme(child: _buildRolePage(context));
+
+  Widget _buildRolePage(
     BuildContext context,
   ) => FutureBuilder<List<Map<String, dynamic>>>(
     future: _data,
@@ -2890,7 +2897,16 @@ class DashboardStatCard extends StatelessWidget {
       padding: const EdgeInsets.all(14),
       child: Row(
         children: [
-          Icon(icon, color: _green),
+          // Hub Admin stat-tile icon: tinted rounded square (HubStatTile).
+          Container(
+            width: 38,
+            height: 38,
+            decoration: BoxDecoration(
+              color: _green.withValues(alpha: .12),
+              borderRadius: BorderRadius.circular(11),
+            ),
+            child: Icon(icon, color: _green, size: 20),
+          ),
           const SizedBox(width: 10),
           Expanded(
             child: Column(

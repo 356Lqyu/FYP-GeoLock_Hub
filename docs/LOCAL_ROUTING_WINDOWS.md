@@ -2,6 +2,18 @@
 
 7 November 2026 MYT. This is the selected workflow for the owner, routing teammate and supervisor. No Render, Docker, Linux, cloud worker or PostgreSQL journal redesign is required. Supabase remains the existing remote Auth/database: this is laptop-based computation, not an internet-free app. No commands in the live-session sections below were executed during this review.
 
+> **Current configuration: KLSEL (NEW project `ppwmdsyoesvhgmqiaoxa`, frozen graph `19c44bd2-8871-4eca-bf6b-4262f1bf766d`).**
+> This guide was written for DEV (`rcgyuwiidqvrgbxswhqj`), and every command example below is a **DEV** command. The prerequisites, safety rules, USB, stop and recovery advice apply to both environments.
+>
+> For KLSEL:
+> - Add `-Environment KLSEL` to every `Start-Worker.ps1`, `Save-WorkerConfig.ps1` and `Test-LocalRoutingSetup.ps1` command. They default to DEV.
+> - KLSEL uses its own folder, `%LOCALAPPDATA%\GeoLockHubRoutingKLSEL`, which holds its own `pg_service.conf` written by `Save-WorkerConfig.ps1 -Environment KLSEL`, instead of the hash-pinned DEV profile described in section 3.
+> - Don't pass `-GraphId`; KLSEL sets its frozen graph itself.
+> - The current app needs neither `-EnableCombinedWorkflow` nor `-EnableExactWorkflow`.
+> - Build the app with `--dart-define-from-file=klsel-config.json`. `scripts\Run-RoutingDev.ps1` is DEV-only.
+>
+> The exact KLSEL commands are in [backend/routing/README.md](../backend/routing/README.md#start-the-planner-and-validator-windows) and [STARTUP_GUIDE.md](../STARTUP_GUIDE.md#current-klsel-startup).
+
 ## 1. What runs where
 
 ```text
@@ -44,7 +56,7 @@ py -3.12 -m venv .venv-stage8
 & .\.venv-stage8\Scripts\python.exe -m pip check
 ```
 
-On other laptops change only `Set-Location` to that person's checkout. Dependencies are pinned by `backend/routing/requirements.txt` and `backend/routing/requirements-lock.txt`, including OR-Tools 9.15.6755 and psycopg 3.3.6. Do not regenerate pins or upgrade the solver to fix an installation error. Installing packages uses the configured package index but does not access DEV. A venv activation command is unnecessary because every command uses its explicit Python path.
+On other laptops change only `Set-Location` to that person's checkout. Dependencies are pinned in one file, `backend/routing/requirements.txt` (the former `requirements-lock.txt` was merged into it on 22 Nov 2026 with the same versions), including OR-Tools 9.15.6755 and psycopg 3.3.6. Do not regenerate pins or upgrade the solver to fix an installation error. Installing packages uses the configured package index but does not access DEV. A venv activation command is unnecessary because every command uses its explicit Python path.
 
 If local PowerShell policy blocks trusted project scripts, review them and, if organizational policy permits, use a session-only policy:
 
@@ -96,7 +108,10 @@ No activation or DB call occurs during saving. The saved passwords exist for his
 
 <a id="quick-start-windows-routing-android-flutter-app"></a>
 
-## Quick Start — Windows Routing + Android Flutter App
+## Quick Start — Windows Routing + Android Flutter App (DEV)
+
+This Quick Start uses DEV. For KLSEL, follow [STARTUP_GUIDE.md](../STARTUP_GUIDE.md#current-klsel-startup).
+
 
 **Release status: the seven-folder routing release remains undeployed pending DEV validator compatibility and cutover approval.** Use this sequence only for an explicitly approved checkout, DEV session, and graph. The earlier references `DEV-GROUP1-EXACT-20261030` and `DEV-VALIDATOR-RESTORE-20261029` are historical examples. Obtain current approval for each role before activation. Supplying an approval string to the launcher does not itself grant approval.
 
@@ -159,7 +174,7 @@ Get-NetTCPConnection -State Listen -ErrorAction SilentlyContinue |
    .\backend\routing\windows\Start-Worker.ps1 -Mode planner -GraphId $graphId -Activate -ApprovalRef $plannerApproval -EnableCombinedWorkflow
    ```
 
-   `-EnableCombinedWorkflow` enables the normal Flutter Generate & Authorize flow. The separate exact pilot is outside this Quick Start. From terminal 3, check the planner listener. `ACTIVE` confirms the HTTP listener is enabled. It does not prove graph readiness, current database permissions, or a successful route.
+   `-EnableCombinedWorkflow` enables `/v1/plan-and-authorize`, the earlier Generate & Authorize flow. The current app does not call it: it generates through `/v1/plan` and starts routes with the database RPC `authorize_and_start_my_route`, so the flag is optional for DEV and not used for KLSEL. The separate exact pilot is outside this Quick Start. From terminal 3, check the planner listener. `ACTIVE` confirms the HTTP listener is enabled. It does not prove graph readiness, current database permissions, or a successful route.
 
    ```powershell
    Invoke-RestMethod 'http://127.0.0.1:8787/health' -TimeoutSec 5
