@@ -296,7 +296,7 @@ class _DonorHomePageState extends State<DonorHomePage> {
 
   Future<List<Map<String, dynamic>>> _loadDonations() async {
     if (widget.donationsLoader != null) return widget.donationsLoader!();
-    final response = await _dashboardDb.rpc('get_my_donation_dashboard_v2');
+    final response = await _dashboardDb.rpc('get_my_donation_dashboard_v3');
     if (response is! List) {
       throw const FormatException(
         'Donation dashboard RPC returned an invalid response.',
@@ -533,10 +533,11 @@ class _DonorMyDonationsPageState extends State<DonorMyDonationsPage> {
   /// Null until read; never inferred from donation status.
   Map<String, String>? _caseStatus;
 
-  /// donation_id → claim_id of that open case (opens the reconciliation page).
-  Map<String, String> _caseClaim = const {};
+  /// donation_id → claim_id → status for cases with a reconciliation action.
+  Map<String, Map<String, String>> _caseClaims = const {};
   bool _casesUnavailable = false;
   int _casesGeneration = 0;
+  static const _caseReadTimeout = Duration(seconds: 15);
   static const _reconciliationFilter = 'Reconciliation';
   static const _filters = [
     'All',
@@ -584,47 +585,73 @@ class _DonorMyDonationsPageState extends State<DonorMyDonationsPage> {
       return;
     }
     try {
-      final rows = await loader();
+      final rows = await loader().timeout(_caseReadTimeout);
       if (!mounted || generation != _casesGeneration) return;
+      final statuses = <String, String>{};
+      final claims = <String, Map<String, String>>{};
+      for (final row in rows) {
+        final source = row['source_type'];
+        final status = row['case_status'];
+        if (source is! String ||
+            source.isEmpty ||
+            status is! String ||
+            status.isEmpty) {
+          throw const FormatException('Incomplete reconciliation case.');
+        }
+        if (source != 'DIRECT_DONATION' ||
+            !const {'OPEN', 'MANUAL_REVIEW'}.contains(status)) {
+          continue;
+        }
+        final donation = row['donation_id'];
+        if (donation is! String || donation.trim().isEmpty) {
+          throw const FormatException(
+            'Reconciliation case has no donation ID.',
+          );
+        }
+        statuses[donation] = status;
+        if (row['claim_id'] case final String claim
+            when claim.trim().isNotEmpty) {
+          (claims[donation] ??= {})[claim] = status;
+        }
+      }
       setState(() {
-        final direct = [
-          for (final row in rows)
-            if (row['donation_id'] != null &&
-                row['source_type'] == 'DIRECT_DONATION' &&
-                const {'OPEN', 'MANUAL_REVIEW'}.contains(row['case_status']))
-              row,
-        ];
-        _caseStatus = {
-          for (final row in direct)
-            row['donation_id'].toString(): '${row['case_status']}',
-        };
-        _caseClaim = {
-          for (final row in direct)
-            if (row['claim_id'] != null)
-              row['donation_id'].toString(): row['claim_id'].toString(),
-        };
+        _caseStatus = statuses;
+        _caseClaims = claims;
         _casesUnavailable = false;
       });
-    } catch (_) {
+    } catch (error) {
       if (!mounted || generation != _casesGeneration) return;
+      if (kDebugMode) {
+        final reason = error is PostgrestException
+            ? 'PostgREST code ${error.code}'
+            : error.runtimeType.toString();
+        debugPrint('Donor reconciliation inbox read failed ($reason).');
+      }
       setState(() => _casesUnavailable = true);
     }
   }
 
+  void _retryCases() {
+    setState(() => _casesUnavailable = false);
+    unawaited(_refreshCases());
+  }
+
   String? _caseLabel(Map<String, dynamic> d) =>
-      switch (_caseStatus?[d['donation_id']?.toString()]) {
-        'MANUAL_REVIEW' => GeoLockStatusText.underReview,
-        'OPEN' => GeoLockStatusText.reconciliationRequired,
-        _ => null,
-      };
+      _handoverLabel(_caseStatus?[d['donation_id']?.toString()]);
+
+  String? _handoverLabel(String? status) => switch (status) {
+    'MANUAL_REVIEW' => GeoLockStatusText.underReview,
+    'OPEN' => GeoLockStatusText.reconciliationRequired,
+    _ => null,
+  };
 
   Future<List<Map<String, dynamic>>> _load() async {
     _caseStatus = null;
-    _caseClaim = const {};
+    _caseClaims = const {};
     _casesUnavailable = false;
     unawaited(_refreshCases());
     if (widget.donationsLoader != null) return widget.donationsLoader!();
-    final response = await _dashboardDb.rpc('get_my_donation_dashboard_v2');
+    final response = await _dashboardDb.rpc('get_my_donation_dashboard_v3');
     if (response is! List) {
       throw const FormatException(
         'Donation dashboard RPC returned an invalid response.',
@@ -699,10 +726,12 @@ class _DonorMyDonationsPageState extends State<DonorMyDonationsPage> {
                 final rows = snapshot.data;
                 String chipLabel(String filter) {
                   if (rows == null) return filter;
-                  if (filter == _reconciliationFilter &&
-                      (_caseStatus == null ||
-                          snapshot.connectionState != ConnectionState.done)) {
-                    return '$filter (—)';
+                  if (filter == _reconciliationFilter) {
+                    if (_casesUnavailable) return '$filter (—)';
+                    if (_caseStatus == null ||
+                        snapshot.connectionState != ConnectionState.done) {
+                      return '$filter (…)';
+                    }
                   }
                   final count = rows
                       .where((row) => _matchesStatus(row, filter))
@@ -718,6 +747,7 @@ class _DonorMyDonationsPageState extends State<DonorMyDonationsPage> {
                           padding: const EdgeInsets.only(right: 8),
                           child: ChoiceChip(
                             key: ValueKey('donations-filter-$filter'),
+                            shape: geoFilterChipShape,
                             label: Text(chipLabel(filter)),
                             selected: filter == _filter,
                             onSelected: (_) => setState(() => _filter = filter),
@@ -752,10 +782,9 @@ class _DonorMyDonationsPageState extends State<DonorMyDonationsPage> {
                 return EmptyStateCard(
                   icon: Icons.fact_check_outlined,
                   title: 'Reconciliation status unavailable',
-                  message:
-                      'Pull to refresh or try again later. Your donations are unchanged.',
+                  message: 'Try reading your reconciliation cases again.',
                   actionLabel: 'Retry',
-                  onAction: () => setState(() => _data = _load()),
+                  onAction: _retryCases,
                 );
               }
               if (_caseStatus == null ||
@@ -805,60 +834,60 @@ class _DonorMyDonationsPageState extends State<DonorMyDonationsPage> {
                 itemCount: rows.length,
                 itemBuilder: (context, index) {
                   final donation = rows[index];
+                  final id = donation['donation_id'].toString();
                   final caseLabel = _caseLabel(donation);
-                  final card = DonationSummaryCard(
+                  final claims = _caseClaims[id] ?? const <String, String>{};
+
+                  void refreshOnReturn() {
+                    if (mounted) {
+                      setState(() {
+                        _data = _load();
+                      });
+                    }
+                  }
+
+                  Future<void> openDetails() async {
+                    await Navigator.push<void>(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => DonationDetailPage(donationId: id),
+                      ),
+                    );
+                    refreshOnReturn();
+                  }
+
+                  return DonationSummaryCard(
                     donation: donation,
-                    onTap: () =>
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => DonationDetailPage(
-                              donationId: donation['donation_id'].toString(),
-                            ),
-                          ),
-                        ).then((_) {
-                          if (mounted) setState(() => _data = _load());
-                        }),
-                  );
-                  if (caseLabel == null) return card;
-                  final claim = _caseClaim[donation['donation_id']?.toString()];
-                  return Column(
-                    key: ValueKey(
-                      'donation-reconciliation-${donation['donation_id']}',
-                    ),
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Wrap(
-                        spacing: 8,
-                        crossAxisAlignment: WrapCrossAlignment.center,
-                        children: [
-                          GeoStatusChip('Handover · $caseLabel'),
-                          if (claim != null)
-                            FilledButton.tonalIcon(
-                              key: ValueKey(
-                                'donation-view-reconciliation-${donation['donation_id']}',
-                              ),
-                              onPressed: () => Navigator.push(
+                    onTap: openDetails,
+                    reconciliation: caseLabel == null
+                        ? null
+                        : _DonorHandoverNotice(
+                            key: ValueKey('donation-reconciliation-$id'),
+                            fallbackStatus: caseLabel,
+                            claims: {
+                              for (final entry in claims.entries)
+                                entry.key: _handoverLabel(entry.value)!,
+                            },
+                            donationId: id,
+                            onDetails: openDetails,
+                            onReconciliation: (claim) async {
+                              await Navigator.push<void>(
                                 context,
                                 MaterialPageRoute(
                                   builder: (_) => ClaimReconciliationPage(
                                     claimId: claim,
-                                    title: '${donation['title'] ?? 'Donation'}',
+                                    title:
+                                        donation['title']?.toString() ??
+                                        'Donation',
                                     viewerRole: 'DONOR',
                                     sourceType: 'DIRECT_DONATION',
                                     repository: widget.coordinationRepository,
                                   ),
                                 ),
-                              ).then((_) {
-                                if (mounted) setState(() => _data = _load());
-                              }),
-                              icon: const Icon(Icons.open_in_new),
-                              label: const Text('View Reconciliation'),
-                            ),
-                        ],
-                      ),
-                      card,
-                    ],
+                              );
+                              refreshOnReturn();
+                            },
+                          ),
                   );
                 },
               ),
@@ -990,7 +1019,7 @@ class _NgoHomePageState extends State<NgoHomePage> with WidgetsBindingObserver {
     // legacy discover_eligible_listings RPC omits titles, images and routing
     // readiness, so using it here produced incomplete dashboard cards.
     final rows = widget.listingsLoader == null
-        ? await _dashboardDb.rpc('discover_eligible_listing_cards')
+        ? await _dashboardDb.rpc('discover_eligible_listing_cards_v2')
         : await widget.listingsLoader!();
     if (rows is! List) {
       throw const FormatException(
@@ -2122,74 +2151,72 @@ class _RoleProfilePageState extends State<RoleProfilePage> {
   }
 
   Future<void> _editProfile(Map<String, dynamic> profile) async {
-    final name = TextEditingController(text: '${profile['full_name'] ?? ''}');
-    final phone = TextEditingController(
-      text: '${profile['phone_number'] ?? ''}',
-    );
-    final ngoName = TextEditingController(text: '${profile['ngo_name'] ?? ''}');
-    try {
-      final values = await showDialog<List<String>>(
+    if (widget.role == 'DONOR') {
+      final saved = await showDialog<bool>(
         context: context,
-        builder: (dialogContext) => AlertDialog(
-          title: const Text('Edit profile'),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextField(
-                  controller: name,
-                  decoration: const InputDecoration(labelText: 'Full name'),
-                ),
-                TextField(
-                  controller: phone,
-                  decoration: const InputDecoration(labelText: 'Phone number'),
-                ),
-                if (widget.role == 'NGO') ...[
-                  TextField(
-                    controller: ngoName,
-                    decoration: const InputDecoration(labelText: 'NGO name'),
-                  ),
-                ],
-                const SizedBox(height: 8),
-                const Text(
-                  'Email and account role are managed by Supabase Auth and cannot be changed here.',
-                ),
-              ],
+        builder: (_) => _DonorEditProfileDialog(
+          name: profile['full_name']?.toString() ?? '',
+          phone: profile['phone_number']?.toString() ?? '',
+          onSave: (name, phone) => _saveProfile(name, phone, null),
+        ),
+      );
+      if (saved == true && mounted) _refresh();
+      return;
+    }
+    final isNgo = widget.role == 'NGO';
+    var name = '${profile['full_name'] ?? ''}';
+    var phone = '${profile['phone_number'] ?? ''}';
+    var ngoName = '${profile['ngo_name'] ?? ''}';
+    try {
+      final saved = await showDialog<bool>(
+        context: context,
+        builder: (dialogContext) => _ProfileEditDialog(
+          title: 'Edit profile',
+          onSave: () => Navigator.pop(dialogContext, true),
+          children: [
+            _ProfileEditField(
+              label: 'Full name',
+              initialValue: name,
+              onChanged: (value) => name = value,
+              keyboardType: TextInputType.name,
+              inputAction: TextInputAction.next,
             ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(dialogContext),
-              child: const Text('Cancel'),
+            _ProfileEditField(
+              label: 'Phone number',
+              initialValue: phone,
+              onChanged: (value) => phone = value,
+              keyboardType: TextInputType.phone,
+              inputAction: isNgo ? TextInputAction.next : TextInputAction.done,
             ),
-            FilledButton(
-              onPressed: () => Navigator.pop(dialogContext, [
-                name.text,
-                phone.text,
-                ngoName.text,
-              ]),
-              child: const Text('Save'),
-            ),
+            if (isNgo)
+              _ProfileEditField(
+                label: 'NGO name',
+                initialValue: ngoName,
+                onChanged: (value) => ngoName = value,
+                keyboardType: TextInputType.text,
+                inputAction: TextInputAction.done,
+              ),
+            const Text('Email address and account role cannot be changed here.'),
           ],
         ),
       );
-      if (values == null) return;
-      await _dashboardDb.rpc(
-        'update_my_profile',
-        params: {
-          'p_full_name': values[0].trim(),
-          'p_phone': values[1].trim().isEmpty ? null : values[1].trim(),
-          'p_ngo_name': widget.role == 'NGO' ? values[2].trim() : null,
-        },
-      );
+      if (saved != true) return;
+      await _saveProfile(name, phone, isNgo ? ngoName.trim() : null);
       if (mounted) _refresh();
     } catch (error) {
       if (mounted) _showProfileError(error);
-    } finally {
-      name.dispose();
-      phone.dispose();
-      ngoName.dispose();
     }
+  }
+
+  Future<void> _saveProfile(String name, String phone, String? ngoName) async {
+    await _dashboardDb.rpc(
+      'update_my_profile',
+      params: {
+        'p_full_name': name.trim(),
+        'p_phone': phone.trim().isEmpty ? null : phone.trim(),
+        'p_ngo_name': ngoName,
+      },
+    );
   }
 
   Future<void> _changeNgoLocation(Map<String, dynamic> profile) async {
@@ -2241,66 +2268,48 @@ class _RoleProfilePageState extends State<RoleProfilePage> {
   }
 
   Future<void> _editHub(Map<String, dynamic> hub) async {
-    final name = TextEditingController(text: '${hub['hub_name'] ?? ''}');
-    final capacity = TextEditingController(text: '${hub['capacity_kg'] ?? ''}');
+    var name = '${hub['hub_name'] ?? ''}';
+    var capacity = '${hub['capacity_kg'] ?? ''}';
     try {
-      final values = await showDialog<List<String>>(
+      final saved = await showDialog<bool>(
         context: context,
-        builder: (dialogContext) => AlertDialog(
-          title: const Text('Edit hub details'),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextField(
-                  controller: name,
-                  decoration: const InputDecoration(labelText: 'Hub name'),
-                ),
-                TextField(
-                  controller: capacity,
-                  keyboardType: const TextInputType.numberWithOptions(
-                    decimal: true,
-                  ),
-                  decoration: const InputDecoration(
-                    labelText: 'Storage capacity (kg)',
-                    helperText: '50ΓÇô250 kg',
-                    suffixText: 'kg',
-                  ),
-                ),
-                const SizedBox(height: 8),
-                const Text(
-                  'Capacity can only change while the hub has no stored donations, active drop-offs or open batches.',
-                ),
-              ],
+        builder: (dialogContext) => _ProfileEditDialog(
+          title: 'Edit hub details',
+          onSave: () => Navigator.pop(dialogContext, true),
+          children: [
+            _ProfileEditField(
+              label: 'Hub name',
+              initialValue: name,
+              onChanged: (value) => name = value,
+              keyboardType: TextInputType.text,
+              inputAction: TextInputAction.next,
             ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(dialogContext),
-              child: const Text('Cancel'),
+            _ProfileEditField(
+              label: 'Storage capacity (kg)',
+              initialValue: capacity,
+              onChanged: (value) => capacity = value,
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              inputAction: TextInputAction.done,
+              helperText: '50\u2013250 kg',
+              suffixText: 'kg',
             ),
-            FilledButton(
-              onPressed: () =>
-                  Navigator.pop(dialogContext, [name.text, capacity.text]),
-              child: const Text('Save'),
+            const Text(
+              'Capacity can only change while the hub has no stored donations, active drop-offs or open batches.',
             ),
           ],
         ),
       );
-      if (values == null) return;
-      final capacityKg = double.tryParse(values[1].trim());
-      if (values[0].trim().isEmpty ||
+      if (saved != true) return;
+      final capacityKg = double.tryParse(capacity.trim());
+      if (name.trim().isEmpty ||
           capacityKg == null ||
           capacityKg < 50 ||
           capacityKg > 250) {
         throw StateError('Enter a hub name and a capacity from 50 to 250 kg.');
       }
-      await _saveHub(hub, name: values[0].trim(), capacityKg: capacityKg);
+      await _saveHub(hub, name: name.trim(), capacityKg: capacityKg);
     } catch (error) {
       if (mounted) _showProfileError(error);
-    } finally {
-      name.dispose();
-      capacity.dispose();
     }
   }
 
@@ -2489,18 +2498,16 @@ class _RoleProfilePageState extends State<RoleProfilePage> {
             ),
           ),
           const SizedBox(height: 10),
-          Align(
-            alignment: Alignment.centerRight,
-            child: OutlinedButton.icon(
-              onPressed: () => _editProfile(profile),
-              icon: const Icon(Icons.edit_outlined),
-              label: const Text('Edit profile'),
-            ),
-          ),
-          const SizedBox(height: 16),
           _ProfileSection(
             title: 'Account information',
             icon: Icons.person_outline,
+            headerAction: IconButton(
+              onPressed: () => _editProfile(profile),
+              tooltip: 'Edit profile',
+              color: _green,
+              icon: const Icon(Icons.edit_outlined, size: 20),
+              constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+            ),
             children: [
               _ProfileField(
                 icon: Icons.badge_outlined,
@@ -2676,16 +2683,226 @@ String _profileDate(Object? value) {
       '${local.month.toString().padLeft(2, '0')}/${local.year}';
 }
 
+class _DonorEditProfileDialog extends StatefulWidget {
+  const _DonorEditProfileDialog({
+    required this.name,
+    required this.phone,
+    required this.onSave,
+  });
+
+  final String name;
+  final String phone;
+  final Future<void> Function(String name, String phone) onSave;
+
+  @override
+  State<_DonorEditProfileDialog> createState() =>
+      _DonorEditProfileDialogState();
+}
+
+class _DonorEditProfileDialogState extends State<_DonorEditProfileDialog> {
+  final _form = GlobalKey<FormState>();
+  late final _name = TextEditingController(text: widget.name);
+  late final _phone = TextEditingController(text: widget.phone);
+  bool _saving = false;
+  bool _saveFailed = false;
+
+  @override
+  void dispose() {
+    _name.dispose();
+    _phone.dispose();
+    super.dispose();
+  }
+
+  Future<void> _save() async {
+    if (_saving || !_form.currentState!.validate()) return;
+    FocusScope.of(context).unfocus();
+    setState(() {
+      _saving = true;
+      _saveFailed = false;
+    });
+    try {
+      await widget.onSave(_name.text, _phone.text);
+      if (mounted) Navigator.pop(context, true);
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _saving = false;
+        _saveFailed = true;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) => PopScope(
+    canPop: !_saving,
+    child: _ProfileEditDialog(
+      title: 'Edit profile',
+      formKey: _form,
+      saving: _saving,
+      onSave: _save,
+      children: [
+        _ProfileEditField(
+          label: 'Full name',
+          controller: _name,
+          enabled: !_saving,
+          keyboardType: TextInputType.name,
+          inputAction: TextInputAction.next,
+          validator: (value) => value == null || value.trim().isEmpty
+              ? 'Full name is required.'
+              : null,
+        ),
+        _ProfileEditField(
+          label: 'Phone number',
+          controller: _phone,
+          enabled: !_saving,
+          keyboardType: TextInputType.phone,
+          inputAction: TextInputAction.done,
+        ),
+        const Text('Email address and account role cannot be changed here.'),
+        if (_saveFailed)
+          Semantics(
+            liveRegion: true,
+            child: Text(
+              'Profile change was not confirmed. Try again.',
+              style: TextStyle(color: Theme.of(context).colorScheme.error),
+            ),
+          ),
+      ],
+    ),
+  );
+}
+
+class _ProfileEditDialog extends StatelessWidget {
+  const _ProfileEditDialog({
+    required this.title,
+    required this.children,
+    required this.onSave,
+    this.formKey,
+    this.saving = false,
+  });
+
+  final String title;
+  final List<Widget> children;
+  final VoidCallback onSave;
+  final GlobalKey<FormState>? formKey;
+  final bool saving;
+
+  @override
+  Widget build(BuildContext context) {
+    final fields = Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: 16,
+      children: children,
+    );
+    return AlertDialog(
+      scrollable: true,
+      backgroundColor: Colors.white,
+      insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      title: Text(title),
+      content: formKey == null ? fields : Form(key: formKey, child: fields),
+      actions: [
+        TextButton(
+          onPressed: saving ? null : () => Navigator.pop(context),
+          child: const Text('Cancel'),
+        ),
+        FilledButton(
+          style: FilledButton.styleFrom(backgroundColor: _green),
+          onPressed: saving ? null : onSave,
+          child: saving
+              ? const SizedBox.square(
+                  dimension: 20,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    semanticsLabel: 'Saving profile',
+                  ),
+                )
+              : const Text('Save'),
+        ),
+      ],
+    );
+  }
+}
+
+class _ProfileEditField extends StatelessWidget {
+  const _ProfileEditField({
+    required this.label,
+    required this.keyboardType,
+    required this.inputAction,
+    this.controller,
+    this.initialValue,
+    this.onChanged,
+    this.validator,
+    this.enabled = true,
+    this.helperText,
+    this.suffixText,
+  });
+
+  final String label;
+  final TextInputType keyboardType;
+  final TextInputAction inputAction;
+  final TextEditingController? controller;
+  final String? initialValue;
+  final ValueChanged<String>? onChanged;
+  final FormFieldValidator<String>? validator;
+  final bool enabled;
+  final String? helperText;
+  final String? suffixText;
+
+  @override
+  Widget build(BuildContext context) {
+    final border = OutlineInputBorder(borderRadius: BorderRadius.circular(12));
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: Theme.of(context).textTheme.labelLarge),
+        const SizedBox(height: 6),
+        Semantics(
+          label: label,
+          child: TextFormField(
+            controller: controller,
+            initialValue: initialValue,
+            onChanged: onChanged,
+            enabled: enabled,
+            keyboardType: keyboardType,
+            textInputAction: inputAction,
+            validator: validator,
+            decoration: InputDecoration(
+              filled: true,
+              fillColor: const Color(0xfff5faf8),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 14,
+                vertical: 14,
+              ),
+              border: border,
+              enabledBorder: border.copyWith(
+                borderSide: const BorderSide(color: Color(0xffa7bdb5)),
+              ),
+              focusedBorder: border.copyWith(
+                borderSide: const BorderSide(color: _green, width: 2),
+              ),
+              helperText: helperText,
+              suffixText: suffixText,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
 class _ProfileSection extends StatelessWidget {
   final String? title;
   final IconData? icon;
   final Widget? child;
+  final Widget? headerAction;
   final List<Widget> children;
 
   const _ProfileSection({
     this.title,
     this.icon,
     this.child,
+    this.headerAction,
     this.children = const [],
   });
 
@@ -2708,13 +2925,16 @@ class _ProfileSection extends StatelessWidget {
               children: [
                 Icon(icon, color: _green, size: 20),
                 const SizedBox(width: 9),
-                Text(
-                  title!,
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: _ink,
-                    fontWeight: FontWeight.w700,
+                Expanded(
+                  child: Text(
+                    title!,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      color: _ink,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ),
+                ?headerAction,
               ],
             ),
             if (child != null || children.isNotEmpty)
@@ -3015,16 +3235,23 @@ class SectionHeading extends StatelessWidget {
 class DonationSummaryCard extends StatelessWidget {
   final Map<String, dynamic> donation;
   final VoidCallback onTap;
+  final Widget? reconciliation;
   const DonationSummaryCard({
     super.key,
     required this.donation,
     required this.onTap,
+    this.reconciliation,
   });
+
+  static const _chevron = Align(
+    alignment: Alignment.centerRight,
+    child: Icon(Icons.chevron_right, size: 20),
+  );
+
   @override
-  Widget build(BuildContext context) => Card(
-    margin: const EdgeInsets.only(bottom: 10),
-    clipBehavior: Clip.antiAlias,
-    child: InkWell(
+  Widget build(BuildContext context) {
+    final notice = reconciliation;
+    Widget details({Widget? footer}) => InkWell(
       onTap: onTap,
       child: Padding(
         padding: const EdgeInsets.all(12),
@@ -3047,18 +3274,127 @@ class DonationSummaryCard extends StatelessWidget {
           ),
           facts: {
             'Weight': '${donation['total_weight_kg'] ?? '—'} kg',
-            'Collection method':
-                collectionPathLabel(donation['collection_path']?.toString()),
+            'Collection method': collectionPathLabel(
+              donation['collection_path']?.toString(),
+            ),
             if (donation['item_count'] case final Object count)
               'Item entries': '$count',
+            if (donation['total_item_quantity'] case final int quantity)
+              'Total quantity': '$quantity',
             'Created': donationCardDate(donation['created_at']),
           },
-          footer: const Text(
-            'View details →',
-            style: TextStyle(color: _green, fontWeight: FontWeight.w700),
+          footer: footer,
+        ),
+      ),
+    );
+    return Card(
+      margin: const EdgeInsets.only(bottom: 10),
+      clipBehavior: Clip.antiAlias,
+      child: notice == null
+          ? details(footer: _chevron)
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                details(),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  child: notice,
+                ),
+                InkWell(
+                  onTap: onTap,
+                  child: const Padding(
+                    padding: EdgeInsets.fromLTRB(12, 8, 12, 12),
+                    child: _chevron,
+                  ),
+                ),
+              ],
+            ),
+    );
+  }
+}
+
+class _DonorHandoverNotice extends StatelessWidget {
+  const _DonorHandoverNotice({
+    super.key,
+    required this.donationId,
+    required this.fallbackStatus,
+    required this.claims,
+    required this.onDetails,
+    required this.onReconciliation,
+  });
+
+  final String donationId;
+  final String fallbackStatus;
+  final Map<String, String> claims;
+  final VoidCallback onDetails;
+  final ValueChanged<String> onReconciliation;
+
+  Widget _caseRow(
+    BuildContext context,
+    String status, {
+    String? claim,
+    int? caseNumber,
+  }) => Row(
+    children: [
+      Expanded(
+        child: InkWell(
+          onTap: onDetails,
+          child: Padding(
+            padding: const EdgeInsets.all(10),
+            child: Row(
+              children: [
+                const Icon(
+                  Icons.warning_amber_rounded,
+                  size: 17,
+                  color: GeoTone.warning,
+                ),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: Text(
+                    caseNumber == null
+                        ? 'Handover · $status'
+                        : 'Handover $caseNumber · $status',
+                    style: Theme.of(context).textTheme.labelMedium,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
+      if (claim != null)
+        Flexible(
+          child: TextButton(
+            key: ValueKey(
+              'donation-view-reconciliation-$donationId${caseNumber == null ? '' : '-$claim'}',
+            ),
+            onPressed: () => onReconciliation(claim),
+            child: const Text(
+              'View reconciliation',
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ),
+    ],
+  );
+
+  @override
+  Widget build(BuildContext context) => Material(
+    color: GeoTone.warning.withValues(alpha: .10),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+    clipBehavior: Clip.antiAlias,
+    child: Column(
+      children: [
+        if (claims.isEmpty) _caseRow(context, fallbackStatus),
+        for (final (index, entry) in claims.entries.indexed)
+          _caseRow(
+            context,
+            entry.value,
+            claim: entry.key,
+            caseNumber: claims.length > 1 ? index + 1 : null,
+          ),
+      ],
     ),
   );
 }

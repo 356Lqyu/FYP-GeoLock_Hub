@@ -13,6 +13,11 @@ import 'package:flutter/material.dart';
 import '../hub_admin/hub_widgets.dart' show HubColors;
 import '../routing/reconciliation_status.dart';
 
+// The Material 3 ChoiceChip shape used by the Hub Listings filters.
+const geoFilterChipShape = RoundedRectangleBorder(
+  borderRadius: BorderRadius.all(Radius.circular(8)),
+);
+
 /// Semantic tones taken from Hub Admin's [HubColors].
 class GeoTone {
   GeoTone._();

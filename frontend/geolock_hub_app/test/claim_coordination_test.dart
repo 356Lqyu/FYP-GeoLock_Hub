@@ -27,6 +27,334 @@ Map<String, dynamic> contextRow() => {
 
 void main() {
   setUp(() => SharedPreferences.setMockInitialValues({}));
+  testWidgets('NGO reconciliation separates the round and refreshes at 320 px', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(320, 790);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    var reads = 0;
+    final repo = ClaimCoordinationRepository(
+      identity: () => 'ngo',
+      rpc: (name, args) async {
+        expect(name, 'get_my_claim_coordination');
+        expect(args, {'p_claim': 'claim'});
+        final first = reads++ == 0;
+        return {
+          ...contextRow(),
+          'case_status': 'OPEN',
+          'evidence_round': first ? 1 : 2,
+          'can_submit': !first,
+          'can_resolve': false,
+          'can_request_review': false,
+          'blocker': 'AWAITING_COUNTERPART',
+          'statements': [
+            {'round': 1, 'participant': 'NGO', 'handover_confirmed': false},
+          ],
+        };
+      },
+    );
+    await tester.pumpWidget(
+      MaterialApp(
+        builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(
+            context,
+          ).copyWith(textScaler: TextScaler.linear(1.2)),
+          child: child!,
+        ),
+        home: ClaimReconciliationPage(
+          claimId: 'claim',
+          viewerRole: 'NGO',
+          sourceType: 'DIRECT_DONATION',
+          repository: repo,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Awaiting counterpart'), findsOneWidget);
+    expect(
+      find.text('Waiting for the donor to submit their statement.'),
+      findsOneWidget,
+    );
+    expect(find.text('Current round'), findsOneWidget);
+    expect(find.text('Your statement'), findsOneWidget);
+    expect(find.text('Donor statement'), findsOneWidget);
+    expect(find.text('Your latest submission'), findsOneWidget);
+    expect(find.text('No handover'), findsOneWidget);
+    expect(find.text('Round 1 · NGO: No handover'), findsNothing);
+    final refresh = find.widgetWithText(
+      OutlinedButton,
+      'Refresh reconciliation',
+    );
+    await tester.drag(find.byType(ListView), const Offset(0, -440));
+    await tester.pumpAndSettle();
+    expect(refresh.hitTestable(), findsOneWidget);
+    await tester.tap(refresh);
+    await tester.pumpAndSettle();
+    expect(reads, 2);
+    expect(find.text('Submit your handover statement.'), findsOneWidget);
+    expect(find.text('Not submitted'), findsNWidgets(2));
+    expect(find.widgetWithText(FilledButton, 'Handover'), findsOneWidget);
+    expect(find.text('No handover'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  for (final (handover, fails) in [
+    (true, false),
+    (false, false),
+    (false, true),
+  ]) {
+    testWidgets(
+      'Donor reconciliation at 320 px submits handover=$handover, fails=$fails',
+      (tester) async {
+        tester.view.physicalSize = const Size(320, 820);
+        tester.view.devicePixelRatio = 1;
+        addTearDown(tester.view.resetPhysicalSize);
+        addTearDown(tester.view.resetDevicePixelRatio);
+        final firstRead = Completer<void>();
+        final submission = Completer<void>();
+        final writes = <Map<String, dynamic>>[];
+        var readCount = 0;
+        var round = 2;
+        var submitted = false;
+        final repo = ClaimCoordinationRepository(
+          identity: () => 'donor',
+          rpc: (name, params) async {
+            switch (name) {
+              case 'get_my_claim_coordination':
+                expect(params, {'p_claim': 'claim'});
+                if (readCount++ == 0) await firstRead.future;
+                return {
+                  ...contextRow(),
+                  'case_status': 'OPEN',
+                  'evidence_round': round,
+                  'evidence_version': 3,
+                  'can_submit': !submitted || round == 3,
+                  'can_resolve': submitted && round == 2,
+                  'can_request_review': false,
+                  'blocker': 'AWAITING_COUNTERPART',
+                  'statements': [
+                    {
+                      'round': 1,
+                      'participant': 'Source',
+                      'handover_confirmed': false,
+                    },
+                    {
+                      'round': 2,
+                      'participant': 'NGO',
+                      'handover_confirmed': handover,
+                      'submitted_at': '2026-11-23T00:00:00Z',
+                    },
+                    if (submitted)
+                      {
+                        'round': 2,
+                        'participant': 'Source',
+                        'handover_confirmed': handover,
+                      },
+                  ],
+                };
+              case 'get_my_coordination_receipt':
+                return {'request_id': params['p_request'], 'found': false};
+              case 'submit_claim_reconciliation_v2':
+                writes.add(params);
+                await submission.future;
+                if (fails) throw TimeoutException('Fixture response lost');
+                submitted = true;
+                return {'outcome': 'SUCCESS', 'claim_id': 'claim'};
+              default:
+                throw StateError('Unexpected request $name');
+            }
+          },
+        );
+        await tester.pumpWidget(
+          MaterialApp(
+            builder: (context, child) => MediaQuery(
+              data: MediaQuery.of(
+                context,
+              ).copyWith(textScaler: TextScaler.linear(1.2)),
+              child: child!,
+            ),
+            home: ClaimReconciliationPage(
+              claimId: 'claim',
+              viewerRole: 'DONOR',
+              sourceType: 'DIRECT_DONATION',
+              repository: repo,
+            ),
+          ),
+        );
+        expect(find.byType(LinearProgressIndicator), findsOneWidget);
+        expect(find.text('Handover'), findsNothing);
+        firstRead.complete();
+        await tester.pumpAndSettle();
+        final current = find.ancestor(
+          of: find.text('Current round'),
+          matching: find.byType(Card),
+        );
+        final latest = find.ancestor(
+          of: find.text('Latest submission'),
+          matching: find.byType(Card),
+        );
+        final previous = find.ancestor(
+          of: find.text('Previous submissions'),
+          matching: find.byType(Card),
+        );
+        expect(find.text('Action required'), findsOneWidget);
+        expect(
+          find.text(
+            'The NGO has submitted a statement. Please submit yours to continue.',
+          ),
+          findsOneWidget,
+        );
+        for (final label in [
+          'Evidence round',
+          '2',
+          'Your statement',
+          'NGO statement',
+          'Submitted',
+          'Not submitted',
+          'Next step',
+        ]) {
+          expect(
+            find.descendant(of: current, matching: find.text(label)),
+            findsOneWidget,
+          );
+        }
+        expect(
+          find.descendant(of: latest, matching: find.text('NGO')),
+          findsOneWidget,
+        );
+        expect(
+          find.descendant(of: latest, matching: find.text('Submitted at')),
+          findsOneWidget,
+        );
+        expect(
+          find.descendant(of: previous, matching: find.text('You')),
+          findsOneWidget,
+        );
+        expect(
+          find.descendant(of: previous, matching: find.text('Submitted at')),
+          findsNothing,
+        );
+        expect(find.text('Round 2 · NGO: No handover'), findsNothing);
+
+        final yes = find.widgetWithText(OutlinedButton, 'Handover');
+        final no = find.widgetWithText(OutlinedButton, 'No Handover');
+        final response = find.ancestor(
+          of: find.text('Your response'),
+          matching: find.byType(Card),
+        );
+        expect(find.descendant(of: response, matching: yes), findsOneWidget);
+        expect(find.descendant(of: response, matching: no), findsOneWidget);
+        Future<void> scrollToActions() async {
+          final scroll = tester.state<ScrollableState>(
+            find.byType(Scrollable).first,
+          );
+          scroll.position.jumpTo(scroll.position.maxScrollExtent);
+          await tester.pump();
+        }
+
+        await scrollToActions();
+        final button = handover ? yes : no;
+        expect(button.hitTestable(), findsOneWidget);
+        await tester.tap(button);
+        await tester.pumpAndSettle();
+        expect(find.text('Confirm your handover statement'), findsOneWidget);
+        expect(writes, isEmpty);
+        await tester.tap(find.text('Confirm'));
+        await tester.pump(const Duration(milliseconds: 300));
+        expect(
+          find.bySemanticsLabel('Updating reconciliation'),
+          findsOneWidget,
+        );
+        expect(tester.widget<OutlinedButton>(yes).onPressed, isNull);
+        expect(tester.widget<OutlinedButton>(no).onPressed, isNull);
+        expect(writes, hasLength(1));
+        expect(writes.single, {
+          'p_claim': 'claim',
+          'p_handover_confirmed': handover,
+          'p_expected_round': 2,
+          'p_expected_version': 3,
+          'p_request': isA<String>(),
+        });
+        submission.complete();
+        await tester.pumpAndSettle();
+        expect(find.text('Your response'), findsNothing);
+        expect(find.bySemanticsLabel('Updating reconciliation'), findsNothing);
+        if (fails) {
+          expect(find.textContaining('Fixture response lost'), findsOneWidget);
+          expect(find.text('Recover saved request'), findsOneWidget);
+          expect(find.text('Discard uncommitted request'), findsOneWidget);
+        } else {
+          expect(
+            find.descendant(of: latest, matching: find.text('You')),
+            findsOneWidget,
+          );
+          expect(
+            find.widgetWithText(FilledButton, 'Resolve Matching Statements'),
+            findsOneWidget,
+          );
+          round = 3;
+          await scrollToActions();
+          final refresh = find.widgetWithText(
+            OutlinedButton,
+            'Refresh reconciliation',
+          );
+          expect(refresh.hitTestable(), findsOneWidget);
+          await tester.tap(refresh);
+          await tester.pumpAndSettle();
+          expect(
+            find.descendant(of: current, matching: find.text('3')),
+            findsOneWidget,
+          );
+          expect(
+            find.descendant(of: current, matching: find.text('Not submitted')),
+            findsNWidgets(2),
+          );
+          expect(find.text('Your response'), findsOneWidget);
+        }
+        expect(writes, hasLength(1));
+        expect(tester.takeException(), isNull);
+        await tester.pumpWidget(const SizedBox());
+      },
+    );
+  }
+
+  testWidgets('Donor details retain a custody warning when a response is allowed', (
+    tester,
+  ) async {
+    final repo = ClaimCoordinationRepository(
+      identity: () => 'donor',
+      rpc: (name, params) async {
+        expect(name, 'get_my_claim_coordination');
+        return {
+          ...contextRow(),
+          'blocker': 'UNRESOLVED_CUSTODY_OR_INCIDENT',
+          'can_submit': true,
+          'can_resolve': false,
+          'can_request_review': false,
+          'statements': <Map<String, dynamic>>[],
+        };
+      },
+    );
+    await tester.pumpWidget(
+      MaterialApp(
+        home: ClaimReconciliationPage(
+          claimId: 'claim',
+          viewerRole: 'DONOR',
+          repository: repo,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(
+      find.text('A custody incident remains unresolved. No release or collection can be confirmed.'),
+      findsOneWidget,
+    );
+    expect(find.widgetWithText(OutlinedButton, 'Handover'), findsOneWidget);
+    expect(find.widgetWithText(FilledButton, 'Resolve Matching Statements'), findsNothing);
+  });
+
   test(
     'disagreement, awaiting counterpart and terminal messages are distinct',
     () {

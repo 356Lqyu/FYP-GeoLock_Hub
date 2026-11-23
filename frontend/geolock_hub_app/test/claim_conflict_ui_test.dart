@@ -26,6 +26,7 @@ class Harness {
   Future<Object?> Function()? send;
   final refresh = Completer<Object?>();
   bool holdRefresh = false;
+  List<Map<String, dynamic>> constituents = const [];
   int successes = 0;
 
   Widget page({String actor = 'ngo-a', String? savedRequestId}) =>
@@ -41,7 +42,7 @@ class Harness {
         },
         detailsLoader: () async => {
           'images': <Map<String, dynamic>>[],
-          'constituents': <Map<String, dynamic>>[],
+          'constituents': constituents,
           'listing_discovered_available': true,
           'progress_status': 'AVAILABLE',
         },
@@ -165,20 +166,95 @@ void main() {
   testWidgets(
     'definite rejection disables stale page while refresh is pending',
     (t) async {
-      final h = Harness()..holdRefresh = true;
+      t.view.physicalSize = const Size(1000, 1800);
+      t.view.devicePixelRatio = 1;
+      addTearDown(t.view.resetPhysicalSize);
+      addTearDown(t.view.resetDevicePixelRatio);
+      final h = Harness()
+        ..holdRefresh = true
+        ..constituents = [
+          {
+            'donation_id': 'donation-a',
+            'title': 'Food donation',
+            'donation_description': 'Saved eligible description',
+          },
+        ];
       await mount(t, h);
+      expect(find.text('Saved eligible description'), findsOneWidget);
       await t.tap(claim);
       await t.pump();
       await t.pump(const Duration(milliseconds: 100));
       expect(enabled(t), isFalse);
       expect(find.textContaining('Eligible in the latest'), findsNothing);
       expect(find.text('Current status · Available'), findsNothing);
+      expect(find.text('Saved eligible description'), findsNothing);
       h.refresh.complete([]);
       await t.pumpAndSettle();
       expect(find.textContaining('Unavailable to claim'), findsOneWidget);
+      expect(find.text('Description'), findsNothing);
       expect(h.requests.length, 1);
     },
   );
+
+  testWidgets('eligible batch descriptions belong to their donation at 320 px', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(320, 1600);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final batch = {...listing, 'source_type': 'HUB_BATCH', 'title': 'Batch'};
+    await tester.pumpWidget(
+      MaterialApp(
+        builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(1.2)),
+          child: child!,
+        ),
+        home: NgoListingDetailsPage(
+          listing: batch,
+          identity: () => 'ngo-a',
+          routingLoader: () async => true,
+          listingsLoader: () async => [batch],
+          detailsLoader: () async => {
+            'images': <Map<String, dynamic>>[],
+            'listing_discovered_available': true,
+            'progress_status': 'PUBLISHED',
+            'constituents': <Map<String, dynamic>>[
+              for (final (title, description) in [
+                ('Rice', 'Four unopened bags of rice.'),
+                ('Beans', 'Three unopened bags of beans.'),
+                ('Other', ' \t'),
+              ])
+                {
+                  'donation_id': title,
+                  'title': title,
+                  'donation_description': description,
+                  'total_weight_kg': 5,
+                },
+            ],
+          },
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    for (final (title, description) in [
+      ('Rice', 'Four unopened bags of rice.'),
+      ('Beans', 'Three unopened bags of beans.'),
+      ('Other', null),
+    ]) {
+      final titleFinder = find.text(title);
+      await tester.scrollUntilVisible(titleFinder, 200);
+      final tile = find.ancestor(of: titleFinder, matching: find.byType(ListTile));
+      expect(
+        find.descendant(
+          of: tile,
+          matching: find.text(description ?? 'Description'),
+        ),
+        description == null ? findsNothing : findsOneWidget,
+      );
+    }
+    expect(tester.takeException(), isNull);
+  });
 
   testWidgets('trusted refresh confirms unavailable and clears terminal UUID', (
     t,

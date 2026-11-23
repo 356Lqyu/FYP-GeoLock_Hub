@@ -396,11 +396,10 @@ void main() {
         expect(find.text('Stop 2 reconciliation'), findsOneWidget);
         expect(find.byKey(const Key('reconciliation-route-notice')), findsOneWidget);
         expect(find.text(GeoLockStatusText.awaitingCounterpart), findsOneWidget);
-        expect(find.text('Your statement (this round): Submitted'), findsOneWidget);
-        expect(
-          find.text('Statement from the donor (this round): Not yet submitted'),
-          findsOneWidget,
-        );
+        expect(find.text('Your statement'), findsOneWidget);
+        expect(find.text('Submitted'), findsOneWidget);
+        expect(find.text('Donor statement'), findsOneWidget);
+        expect(find.text('Not submitted'), findsOneWidget);
         expect(coordinationCalls, ['get_my_claim_coordination']);
         await tester.pageBack();
         await tester.pumpAndSettle();
@@ -590,7 +589,7 @@ void main() {
       await tester.tap(find.byKey(const ValueKey('claims-tab-reconciliation')));
       await tester.pumpAndSettle();
       expect(find.text('Reconciling donation'), findsOneWidget);
-      expect(find.textContaining('next pickup on its route stays blocked'), findsOneWidget);
+      expect(find.text('Next pickup blocked'), findsOneWidget);
       final open = find.byKey(const ValueKey('claim-reconciliation-claim-r'));
       await tester.ensureVisible(open);
       await tester.pump();
@@ -746,7 +745,7 @@ void main() {
         await tester.tap(open);
         await tester.pumpAndSettle();
         // The donor answers here, in the existing v2 panel.
-        expect(find.widgetWithText(FilledButton, 'Handover'), findsOneWidget);
+        expect(find.widgetWithText(OutlinedButton, 'Handover'), findsOneWidget);
         expect(find.widgetWithText(OutlinedButton, 'No Handover'), findsOneWidget);
         expect(reads, everyElement('get_my_donation_coordination'));
         await tester.pumpWidget(const SizedBox());
@@ -833,6 +832,11 @@ void main() {
         final view = find.byKey(
           const ValueKey('donation-view-reconciliation-donation-a'),
         );
+        final donationCard = find.byType(DonationSummaryCard);
+        expect(
+          find.descendant(of: donationCard, matching: view),
+          findsOneWidget,
+        );
         await tester.ensureVisible(view);
         await tester.pump();
         await tester.tap(view);
@@ -840,15 +844,106 @@ void main() {
         expect(reads, [
           {'p_claim': 'claim-a'},
         ]);
-        expect(find.text('Your statement (this round): Not yet submitted'), findsOneWidget);
-        expect(
-          find.text('Statement from the NGO (this round): Submitted'),
-          findsOneWidget,
-        );
-        expect(find.widgetWithText(FilledButton, 'Handover'), findsOneWidget);
+        expect(find.byType(DonationDetailPage), findsNothing);
+        expect(find.text('Your statement'), findsOneWidget);
+        expect(find.text('Not submitted'), findsOneWidget);
+        expect(find.text('NGO statement'), findsOneWidget);
+        expect(find.text('Submitted'), findsOneWidget);
+        expect(find.widgetWithText(OutlinedButton, 'Handover'), findsOneWidget);
         await tester.pumpWidget(const SizedBox());
       },
     );
+
+    testWidgets('donor card shows both authorized cases at 320 px', (
+      tester,
+    ) async {
+      await tester.binding.setSurfaceSize(const Size(320, 900));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      final reads = <String>[];
+      final repo = ClaimCoordinationRepository(
+        identity: () => 'donor',
+        rpc: (name, params) async {
+          expect(name, 'get_my_claim_coordination');
+          final claim = params['p_claim'] as String;
+          reads.add(claim);
+          return caseRow(claim: claim);
+        },
+      );
+      const title = 'Pantry supplies for community food deliveries';
+      await tester.pumpWidget(
+        MaterialApp(
+          builder: (context, child) => MediaQuery(
+            data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(1.2)),
+            child: child!,
+          ),
+          home: Scaffold(
+            body: DonorMyDonationsPage(
+              donationsLoader: () async => [
+                {
+                  'donation_id': 'donation-a',
+                  'title': title,
+                  'donation_status': 'PICKUP_IN_PROGRESS',
+                  'collection_path': 'DIRECT_PICKUP',
+                  'total_weight_kg': 80,
+                  'item_count': 9,
+                  'total_item_quantity': 1234567,
+                  'created_at': '2026-11-23T00:00:00Z',
+                },
+              ],
+              reconciliationCasesLoader: () async => [
+                for (final (claim, status) in [
+                  ('claim-a', 'OPEN'),
+                  ('claim-b', 'MANUAL_REVIEW'),
+                ])
+                  {
+                    'claim_id': claim,
+                    'donation_id': 'donation-a',
+                    'source_type': 'DIRECT_DONATION',
+                    'case_status': status,
+                  },
+              ],
+              coordinationRepository: repo,
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      final chip = find.widgetWithText(ChoiceChip, 'Reconciliation (1)');
+      await tester.ensureVisible(chip);
+      await tester.pumpAndSettle();
+      await tester.tap(chip);
+      await tester.pumpAndSettle();
+      expect(tester.widget<ChoiceChip>(chip).selected, isTrue);
+      final card = find.byType(DonationSummaryCard);
+      final status = find.widgetWithText(StatusBadge, 'Pickup in Progress');
+      expect(tester.getCenter(status).dx, greaterThan(tester.getCenter(card).dx));
+      expect(tester.getTopRight(card).dx - tester.getTopRight(status).dx, closeTo(12, 1));
+      expect(tester.getTopLeft(status).dy, closeTo(tester.getTopLeft(find.text(title)).dy, 5));
+      expect(find.text('1234567'), findsOneWidget);
+      expect(find.text('Handover 1 · Reconciliation required'), findsOneWidget);
+      expect(find.text('Handover 2 · Under review'), findsOneWidget);
+      final chevron = find.descendant(of: card, matching: find.byIcon(Icons.chevron_right));
+      expect(tester.getCenter(chevron).dx, greaterThan(tester.getCenter(card).dx));
+      expect(
+        tester.getTopLeft(chevron).dy,
+        greaterThan(tester.getBottomLeft(find.text('Handover 2 · Under review')).dy),
+      );
+      for (final claim in ['claim-a', 'claim-b']) {
+        final action = find.byKey(ValueKey('donation-view-reconciliation-donation-a-$claim'));
+        expect(find.descendant(of: card, matching: action), findsOneWidget);
+        await tester.ensureVisible(action);
+        await tester.pumpAndSettle();
+        await tester.tap(action);
+        await tester.pumpAndSettle();
+        expect(find.byType(DonationDetailPage), findsNothing);
+        expect(find.byType(ClaimReconciliationPage), findsOneWidget);
+        await tester.pageBack();
+        await tester.pumpAndSettle();
+        expect(find.widgetWithText(ChoiceChip, 'Reconciliation (1)'), findsOneWidget);
+      }
+      expect(reads, ['claim-a', 'claim-b']);
+      expect(tester.takeException(), isNull);
+    });
 
     testWidgets('NGO My Claims View reconciliation opens the existing v2 panel', (
       tester,
@@ -890,10 +985,8 @@ void main() {
       expect(find.byType(ClaimCoordinationPanel), findsOneWidget);
       expect(find.widgetWithText(FilledButton, 'Handover'), findsOneWidget);
       // HUB_BATCH: the counterpart stays the hub administrator.
-      expect(
-        find.text('Statement from the hub administrator (this round): Not yet submitted'),
-        findsOneWidget,
-      );
+      expect(find.text('Hub administrator statement'), findsOneWidget);
+      expect(find.text('Donor statement'), findsNothing);
       expect(find.byKey(const Key('reconciliation-route-notice')), findsOneWidget);
       await tester.pumpWidget(const SizedBox());
     });

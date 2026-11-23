@@ -90,7 +90,7 @@ class _FakeClaimDetailReader implements ClaimPickupDetailReader {
               'claim_created_at': '2026-11-02T16:44:00Z',
               'constituents': constituents,
             };
-      case 'get_claimed_listing_constituents':
+      case 'get_claimed_listing_constituents_v2':
         return constituents;
       case 'get_donation_images':
         return const [];
@@ -446,7 +446,7 @@ void main() {
     expect(find.text('Pickup task'), findsOneWidget);
     expect(find.text('Claim'), findsNothing);
     expect(find.text('Lease'), findsNothing);
-    expect(reader.calls, contains('get_claimed_listing_constituents'));
+    expect(reader.calls, contains('get_claimed_listing_constituents_v2'));
     expect(find.text('Test address'), findsOneWidget);
     expect(find.text('3.1, 101.6'), findsOneWidget);
     await tester.scrollUntilVisible(find.text('Claim and Pickup History'), 180);
@@ -619,6 +619,12 @@ void main() {
       final reader = _FakeClaimDetailReader(
         detail: detail,
         cardFields: {'task_status': 'DISPATCHED'},
+        constituents: [
+          {
+            'donation_id': 'donation-a',
+            'donation_description': 'Description must remain hidden in reconciliation.',
+          },
+        ],
       );
       final coordinationReads = <String>[];
       final coordination = ClaimCoordinationRepository(
@@ -675,6 +681,7 @@ void main() {
       // The link opens the existing v2 panel, which owns the statements.
       tester.view.physicalSize = const Size(1000, 2200);
       await tester.pumpAndSettle();
+      expect(find.text('Description must remain hidden in reconciliation.'), findsNothing);
       final link = find.byKey(const Key('claim-detail-view-reconciliation'));
       await tester.ensureVisible(link);
       await tester.pumpAndSettle();
@@ -686,6 +693,58 @@ void main() {
       await tester.pumpWidget(const SizedBox());
     },
   );
+
+  testWidgets('claim refresh hides the old description at 320 px', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(320, 1600);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final detail = {
+      ...releasedDetail(),
+      'claim_status': 'ACTIVE',
+      'listing_status': 'CLAIMED',
+      'lease_status': 'ACTIVE',
+      'lease_expires_at': DateTime.now()
+          .toUtc()
+          .add(const Duration(hours: 1))
+          .toIso8601String(),
+    };
+    final reader = _FakeClaimDetailReader(
+      detail: detail,
+      constituents: [
+        {
+          'donation_id': 'donation-a',
+          'donation_description': 'Four unopened bags, ready for pickup.',
+        },
+      ],
+    );
+    await tester.pumpWidget(
+      MaterialApp(
+        builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(1.2)),
+          child: child!,
+        ),
+        home: ClaimPickupDetailPage(claimId: 'claim-released', reader: reader),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Four unopened bags, ready for pickup.'), findsOneWidget);
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
+    detail['claim_status'] = 'COMPLETED';
+    detail['lease_status'] = 'COMPLETED';
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+    await tester.pumpAndSettle();
+    expect(find.text('Description'), findsNothing);
+    expect(find.text('Four unopened bags, ready for pickup.'), findsNothing);
+    expect(find.text('Test address'), findsNothing);
+    expect(
+      reader.calls.where((name) => name == 'get_claimed_listing_constituents_v2'),
+      hasLength(1),
+    );
+    expect(tester.takeException(), isNull);
+  });
 
   testWidgets(
     'claim detail retry refresh uses a synchronous setState callback',

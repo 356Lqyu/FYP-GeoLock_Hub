@@ -164,10 +164,10 @@ void main() {
     await tester.tap(reconciliationFilter);
     await tester.pumpAndSettle();
     expect(
-      find.widgetWithText(Chip, 'Handover · ${GeoLockStatusText.underReview}'),
+      find.text('Handover · ${GeoLockStatusText.underReview}'),
       findsOneWidget,
     );
-    expect(find.text('View Reconciliation'), findsOneWidget);
+    expect(find.text('View reconciliation'), findsOneWidget);
     expect(tester.takeException(), isNull);
     await tester.pumpWidget(const SizedBox());
   });

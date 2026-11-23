@@ -5,6 +5,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uuid/uuid.dart';
 import 'ngo_routing_repository.dart' show RpcCall, routingObject, routingRows;
 import 'reconciliation_status.dart';
+import '../status_timeline.dart' show statusTimestampText;
 import '../ui/geolock_role_style.dart';
 
 /// Durable actor-scoped requests. Reads never retry a mutation automatically.
@@ -212,6 +213,7 @@ class ClaimCoordinationPanel extends StatefulWidget {
     this.onChanged,
     this.viewerRole,
     this.sourceType,
+    this.structuredDetails = false,
   });
   final String? claimId, donationId;
 
@@ -222,6 +224,7 @@ class ClaimCoordinationPanel extends StatefulWidget {
   /// 'DIRECT_DONATION' or 'HUB_BATCH' when known, so an NGO sees the donor or
   /// the hub administrator as its counterpart.
   final String? sourceType;
+  final bool structuredDetails;
   final ClaimCoordinationRepository? repository;
   final Future<void> Function()? onChanged;
   @override
@@ -377,6 +380,101 @@ class _ClaimCoordinationPanelState extends State<ClaimCoordinationPanel> {
     }
   }
 
+  bool get _donorDetails =>
+      widget.structuredDetails && widget.viewerRole == 'DONOR';
+
+  bool _hasPendingRequest(Map<String, dynamic> row) =>
+      _pending[row['claim_id']] == true;
+
+  bool _hasResolutionActions(Map<String, dynamic> row) =>
+      _hasPendingRequest(row) ||
+      row['can_resolve'] == true ||
+      row['can_request_review'] == true ||
+      row['can_accept_review'] == true;
+
+  List<Widget> _statementActions(Map<String, dynamic> row) => [
+    if (_donorDetails)
+      OutlinedButton(
+        onPressed: _busy ? null : () => _act(row, 'SUBMIT', true),
+        child: const Text('Handover'),
+      )
+    else
+      FilledButton(
+        onPressed: _busy ? null : () => _act(row, 'SUBMIT', true),
+        child: const Text('Handover'),
+      ),
+    OutlinedButton(
+      onPressed: _busy ? null : () => _act(row, 'SUBMIT', false),
+      child: const Text('No Handover'),
+    ),
+  ];
+
+  List<Widget> _caseActions(Map<String, dynamic> row) => [
+    if (_hasPendingRequest(row))
+      Wrap(
+        children: [
+          TextButton(
+            onPressed: _busy ? null : () => _act(row, 'RECOVER'),
+            child: const Text('Recover saved request'),
+          ),
+          TextButton(
+            onPressed: _busy ? null : () => _act(row, 'DISCARD'),
+            child: const Text('Discard uncommitted request'),
+          ),
+        ],
+      )
+    else
+      Wrap(
+        spacing: 8,
+        children: [
+          if (!_donorDetails && row['can_submit'] == true)
+            ..._statementActions(row),
+          if (row['can_resolve'] == true)
+            FilledButton(
+              onPressed: _busy ? null : () => _act(row, 'RESOLVE'),
+              child: const Text('Resolve Matching Statements'),
+            ),
+          if (row['can_request_review'] == true)
+            TextButton(
+              onPressed: _busy ? null : () => _act(row, 'REQUEST'),
+              child: const Text('Request joint review'),
+            ),
+          if (row['can_accept_review'] == true) ...[
+            TextButton(
+              onPressed: _busy ? null : () => _act(row, 'ACCEPT'),
+              child: const Text('Accept joint review'),
+            ),
+            TextButton(
+              onPressed: _busy ? null : () => _act(row, 'DECLINE'),
+              child: const Text('Decline joint review'),
+            ),
+          ],
+        ],
+      ),
+  ];
+
+  void _refresh() {
+    final rows = _load();
+    setState(() {
+      _rows = rows;
+    });
+  }
+
+  Widget _refreshButton({bool afterError = false}) {
+    final onPressed = _busy && !afterError ? null : _refresh;
+    if (widget.structuredDetails) {
+      return OutlinedButton.icon(
+        onPressed: onPressed,
+        icon: const Icon(Icons.refresh),
+        label: const Text('Refresh reconciliation'),
+      );
+    }
+    return TextButton(
+      onPressed: onPressed,
+      child: const Text('Refresh reconciliation'),
+    );
+  }
+
   @override
   Widget build(
     BuildContext context,
@@ -384,97 +482,294 @@ class _ClaimCoordinationPanelState extends State<ClaimCoordinationPanel> {
     future: _rows,
     builder: (context, snap) {
       if (snap.hasError) {
-        return Column(
-          children: [
-            const Text(
-              'Reconciliation backend unavailable. Custody remains protected.',
-            ),
-            TextButton(
-              onPressed: () => setState(() => _rows = _load()),
-              child: const Text('Refresh reconciliation'),
-            ),
-          ],
-        );
+        final children = [
+          const Text(
+            'Reconciliation backend unavailable. Custody remains protected.',
+          ),
+          _refreshButton(afterError: true),
+        ];
+        return _donorDetails
+            ? _ReconciliationDetailsSection(
+                title: 'Actions',
+                children: children,
+              )
+            : Column(children: children);
       }
-      if (!snap.hasData) return const LinearProgressIndicator();
+      if (!snap.hasData ||
+          (_donorDetails && snap.connectionState != ConnectionState.done)) {
+        return const LinearProgressIndicator();
+      }
       return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: widget.structuredDetails
+            ? CrossAxisAlignment.stretch
+            : CrossAxisAlignment.start,
         children: [
           if (_error != null) Text(_error!),
-          for (final row in snap.data!) ...[
-            ReconciliationSummaryView(
-              summary: reconciliationSummary(
-                row,
-                viewerRole: widget.viewerRole,
-                sourceType: widget.sourceType,
-              ),
+          if (_donorDetails && _busy)
+            const LinearProgressIndicator(
+              semanticsLabel: 'Updating reconciliation',
             ),
-            Text(claimCoordinationMessage(row)),
-            Text('Evidence round ${row['evidence_round']}'),
-            for (final s in routingRows(row['statements']))
-              Text(
-                'Round ${s['round']} · ${s['participant']}: ${s['handover_confirmed'] == true ? 'Handover' : 'No handover'}',
+          if (widget.structuredDetails)
+            for (final (index, row) in snap.data!.indexed) ...[
+              _ReconciliationDetailsOverview(
+                row: row,
+                donorView: _donorDetails,
+                summary: reconciliationSummary(
+                  row,
+                  viewerRole: widget.viewerRole,
+                  sourceType: widget.sourceType,
+                ),
               ),
-            if (_pending[row['claim_id']] == true)
-              Wrap(
-                children: [
-                  TextButton(
-                    onPressed: _busy ? null : () => _act(row, 'RECOVER'),
-                    child: const Text('Recover saved request'),
-                  ),
-                  TextButton(
-                    onPressed: _busy ? null : () => _act(row, 'DISCARD'),
-                    child: const Text('Discard uncommitted request'),
-                  ),
-                ],
-              )
-            else
-              Wrap(
-                spacing: 8,
-                children: [
-                  if (row['can_submit'] == true) ...[
-                    FilledButton(
-                      onPressed: _busy ? null : () => _act(row, 'SUBMIT', true),
-                      child: const Text('Handover'),
+              if (_donorDetails &&
+                  !_hasPendingRequest(row) &&
+                  row['can_submit'] == true)
+                _ReconciliationDetailsSection(
+                  title: 'Your response',
+                  children: [
+                    const Text(
+                      'Select the statement that accurately describes the handover.',
                     ),
-                    OutlinedButton(
-                      onPressed: _busy
-                          ? null
-                          : () => _act(row, 'SUBMIT', false),
-                      child: const Text('No Handover'),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 4,
+                      children: _statementActions(row),
                     ),
                   ],
-                  if (row['can_resolve'] == true)
-                    FilledButton(
-                      onPressed: _busy ? null : () => _act(row, 'RESOLVE'),
-                      child: const Text('Resolve Matching Statements'),
-                    ),
-                  if (row['can_request_review'] == true)
-                    TextButton(
-                      onPressed: _busy ? null : () => _act(row, 'REQUEST'),
-                      child: const Text('Request joint review'),
-                    ),
-                  if (row['can_accept_review'] == true) ...[
-                    TextButton(
-                      onPressed: _busy ? null : () => _act(row, 'ACCEPT'),
-                      child: const Text('Accept joint review'),
-                    ),
-                    TextButton(
-                      onPressed: _busy ? null : () => _act(row, 'DECLINE'),
-                      child: const Text('Decline joint review'),
-                    ),
+                ),
+              if (!_donorDetails ||
+                  index == snap.data!.length - 1 ||
+                  _hasResolutionActions(row))
+                _ReconciliationDetailsSection(
+                  title: 'Actions',
+                  children: [
+                    ..._caseActions(row),
+                    if (!_donorDetails || index == snap.data!.length - 1)
+                      _refreshButton(),
                   ],
-                ],
+                ),
+            ]
+          else ...[
+            for (final row in snap.data!) ...[
+              ReconciliationSummaryView(
+                summary: reconciliationSummary(
+                  row,
+                  viewerRole: widget.viewerRole,
+                  sourceType: widget.sourceType,
+                ),
               ),
+              Text(claimCoordinationMessage(row)),
+              Text('Evidence round ${row['evidence_round']}'),
+              for (final s in routingRows(row['statements']))
+                Text(
+                  'Round ${s['round']} · ${s['participant']}: ${s['handover_confirmed'] == true ? 'Handover' : 'No handover'}',
+                ),
+              ..._caseActions(row),
+            ],
+            if (snap.data!.isNotEmpty) _refreshButton(),
           ],
-          if (snap.data!.isNotEmpty)
-            TextButton(
-              onPressed: _busy ? null : () => setState(() => _rows = _load()),
-              child: const Text('Refresh reconciliation'),
-            ),
         ],
       );
     },
+  );
+}
+
+class _ReconciliationDetailsOverview extends StatelessWidget {
+  const _ReconciliationDetailsOverview({
+    required this.row,
+    required this.summary,
+    required this.donorView,
+  });
+
+  final Map<String, dynamic> row;
+  final ReconciliationSummary summary;
+  final bool donorView;
+
+  String _statementStatus(bool? submitted) => switch (submitted) {
+    true => 'Submitted',
+    false => 'Not submitted',
+    null => 'Unavailable',
+  };
+
+  String get _summaryText {
+    if (summary.resolved ||
+        summary.status == GeoLockStatusText.awaitingCounterpart) {
+      return summary.nextAction;
+    }
+    if (donorView &&
+        const {
+          'PARTY_EVIDENCE_CONFLICT',
+          'REVIEW_CONTEXT_CHANGED',
+          'RECORDED_COLLECTION_OR_SOURCE_CONFLICT',
+          'HANDOVER_SOURCE_STATE_CONFLICT',
+          'BATCH_CUSTODY_CONFLICT',
+          'UNRESOLVED_CUSTODY_OR_INCIDENT',
+          'LEASE_NOT_EXPIRED',
+          'AUTHORITATIVE_ASSOCIATION_MISSING',
+          'SOURCE_SET_MISSING',
+          'ROUTE_BINDING_DRIFT',
+          'MANAGED_DISPATCH_EVIDENCE_REQUIRED',
+        }.contains(row['blocker'])) {
+      return claimCoordinationMessage(row);
+    }
+    if (row['can_accept_review'] == true) return 'Joint review was requested.';
+    if (row['can_submit'] == true) {
+      return donorView && summary.counterpartResponded == true
+          ? 'The NGO has submitted a statement. Please submit yours to continue.'
+          : 'Your handover statement is needed.';
+    }
+    if (row['can_resolve'] == true) return 'Both statements agree.';
+    if (row['can_request_review'] == true) return 'The statements disagree.';
+    if (row['review_waiting'] == true) return 'Joint review was requested.';
+    return claimCoordinationMessage(row);
+  }
+
+  Map<String, String> _statementFacts(
+    BuildContext context,
+    Map<String, dynamic> statement,
+  ) => {
+    'Evidence round': '${statement['round'] ?? 'Unavailable'}',
+    'Statement': switch (statement['handover_confirmed']) {
+      true => 'Handover',
+      false => 'No handover',
+      _ => 'Unavailable',
+    },
+    'Submitted at': ?statusTimestampText(context, statement['submitted_at']),
+  };
+
+  String? _submitter(Map<String, dynamic> statement, String counterpart) =>
+      switch (statement['participant']) {
+        'NGO' => donorView ? 'NGO' : 'Your NGO',
+        'Source' => donorView ? 'You' : counterpart,
+        _ => null,
+      };
+
+  @override
+  Widget build(BuildContext context) {
+    final statements = routingRows(row['statements']);
+    // The reader returns testimony ordered by evidence round and submission.
+    final latest = donorView
+        ? statements.lastOrNull
+        : statements.where((s) => s['participant'] == 'NGO').lastOrNull;
+    final otherStatements = statements
+        .where((s) => !identical(s, latest))
+        .toList();
+    final counterpart = summary.counterpart;
+    final counterpartLabel =
+        '${counterpart[0].toUpperCase()}${counterpart.substring(1)}';
+    final next = summary.status == GeoLockStatusText.awaitingCounterpart
+        ? 'Wait for the $counterpart to respond.'
+        : summary.resolved
+        ? 'No further action'
+        : summary.nextAction;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _ReconciliationDetailsSection(
+          key: const Key('reconciliation-summary'),
+          title: 'Reconciliation status',
+          children: [
+            GeoStatusChip(
+              summary.status,
+              key: const Key('reconciliation-status'),
+            ),
+            Text(_summaryText),
+          ],
+        ),
+        _ReconciliationDetailsSection(
+          title: 'Current round',
+          children: [
+            _reconciliationDetailsFacts(context, {
+              'Evidence round': '${row['evidence_round'] ?? 'Unavailable'}',
+              if (!summary.resolved) ...{
+                'Your statement': _statementStatus(summary.viewerResponded),
+                '$counterpartLabel statement': _statementStatus(
+                  summary.counterpartResponded,
+                ),
+              },
+              'Next step': next,
+            }),
+          ],
+        ),
+        if (latest != null)
+          _ReconciliationDetailsSection(
+            title: donorView ? 'Latest submission' : 'Your latest submission',
+            children: [
+              _reconciliationDetailsFacts(context, {
+                if (donorView)
+                  'Submitted by': ?_submitter(latest, counterpartLabel),
+                ..._statementFacts(context, latest),
+              }),
+            ],
+          ),
+        if (otherStatements.isNotEmpty)
+          _ReconciliationDetailsSection(
+            title: donorView ? 'Previous submissions' : 'Other submissions',
+            children: [
+              for (final (index, statement) in otherStatements.indexed) ...[
+                if (index > 0) const Divider(height: 12),
+                _reconciliationDetailsFacts(context, {
+                  'Submitted by':
+                      _submitter(statement, counterpartLabel) ?? 'Unavailable',
+                  ..._statementFacts(context, statement),
+                }),
+              ],
+            ],
+          ),
+      ],
+    );
+  }
+}
+
+Widget _reconciliationDetailsFacts(
+  BuildContext context,
+  Map<String, String> facts,
+) => Column(
+  children: [
+    for (final fact in facts.entries)
+      Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              flex: 4,
+              child: Text(
+                fact.key,
+                style: Theme.of(context).textTheme.labelMedium,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(flex: 6, child: Text(fact.value)),
+          ],
+        ),
+      ),
+  ],
+);
+
+class _ReconciliationDetailsSection extends StatelessWidget {
+  const _ReconciliationDetailsSection({
+    super.key,
+    required this.title,
+    required this.children,
+  });
+
+  final String title;
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) => Card(
+    margin: const EdgeInsets.only(bottom: 10),
+    child: Padding(
+      padding: const EdgeInsets.all(14),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: 8,
+        children: [
+          Text(title, style: geoTitleStyle(context)),
+          ...children,
+        ],
+      ),
+    ),
   );
 }
 
@@ -561,6 +856,7 @@ class ClaimReconciliationPage extends StatelessWidget {
           donationId: donationId,
           viewerRole: viewerRole,
           sourceType: sourceType,
+          structuredDetails: viewerRole == 'NGO' || viewerRole == 'DONOR',
           repository: repository,
         ),
       ],

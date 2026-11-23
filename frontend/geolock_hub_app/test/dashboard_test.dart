@@ -372,6 +372,7 @@ void main() {
       ..._testListing('Rice bags'),
       'collection_path': 'DIRECT_HOUSEHOLD',
       'distance_m': 5200,
+      'listing_total_item_quantity': 8,
       'listing_created_at': '2026-10-17T09:00:00Z',
       'created_at': '2026-09-01T09:00:00Z',
     };
@@ -380,6 +381,7 @@ void main() {
       'source_type': 'HUB_BATCH',
       'collection_path': 'COMMUNITY_HUB',
       'listing_weight_kg': 9.75,
+      'listing_total_item_quantity': 17,
       'routing_status': 'NOT_ROUTABLE',
       'listing_created_at': '2026-10-18T09:00:00Z',
     };
@@ -424,6 +426,10 @@ void main() {
       expect(find.text('9.75 kg'), findsOneWidget);
       expect(find.text('Weight'), findsNWidgets(2));
       expect(find.text('Road distance'), findsOneWidget);
+      expect(find.text('Total quantity'), findsOneWidget);
+      expect(find.text('Batch total quantity'), findsOneWidget);
+      expect(find.text('8'), findsOneWidget);
+      expect(find.text('17'), findsOneWidget);
       expect(find.text('Listing created'), findsNWidgets(2));
       expect(find.text('17/10/2026'), findsOneWidget);
       expect(find.text('18/10/2026'), findsOneWidget);
@@ -843,6 +849,7 @@ void main() {
       expect(find.text('4.5 kg'), findsOneWidget);
       expect(find.text('Item entries'), findsOneWidget);
       expect(find.text('2'), findsOneWidget);
+      expect(find.text('Total quantity'), findsNothing);
       expect(find.byIcon(Icons.volunteer_activism_outlined), findsOneWidget);
     },
   );
