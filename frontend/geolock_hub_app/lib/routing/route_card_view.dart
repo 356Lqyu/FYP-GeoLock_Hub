@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import '../ui/geolock_role_style.dart';
 import 'ngo_routing_repository.dart';
+import 'reconciliation_status.dart';
 import 'route_display_formatters.dart';
 import 'routing_page_support.dart' show routeNumber;
 
@@ -112,32 +114,139 @@ class PickupRouteCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final row = detail ?? overview;
+    final status = row['route_status'];
+    final statusLabel = switch (status) {
+      'DRAFT' => 'Draft',
+      'VALIDATED' => 'Validated',
+      'STALE' => 'Stale',
+      _ => routeStatusLabel(status),
+    };
+    final needsClosure =
+        fresh &&
+        detail?['authorization_confirmed'] == true &&
+        detail?['can_close'] == true &&
+        const {'AUTHORISED', 'IN_PROGRESS'}.contains(status);
+    final badge = reconciliationRequired
+        ? GeoLockStatusText.reconciliationRequired
+        : needsClosure
+        ? GeoLockStatusText.actionRequired
+        : statusLabel;
+    final tone = reconciliationRequired || needsClosure
+        ? GeoTone.warning
+        : switch (status) {
+            'IN_PROGRESS' || 'AUTHORISED' => GeoTone.info,
+            'COMPLETED' => GeoTone.success,
+            _ => GeoTone.neutral,
+          };
+    final actualStart = detail?['actual_started_at'];
+    final facts = {
+      'Pickups': '${detail?['pickup_count'] ?? '—'}',
+      'Total weight': '${routeLoadText(detail?['total_load_kg'])} kg',
+      'Distance': '${routeNumber(row['total_distance_km'])} km',
+      'Estimated duration': '${routeNumber(row['total_duration_min'])} min',
+    };
+    Widget fact(String title, String value) => Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(title, style: Theme.of(context).textTheme.labelSmall),
+        Text(value),
+      ],
+    );
     return Card(
-      child: Column(
-        children: [
-          ListTile(
-            title: Text(
-              '${detail?['vehicle_label'] ?? 'Assigned vehicle'} · ${row['route_status'] ?? 'Status unavailable'}',
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: LayoutBuilder(
+            builder: (context, constraints) => Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '${detail?['vehicle_label'] ?? 'Assigned vehicle'}',
+                            style: geoTitleStyle(context),
+                          ),
+                          if (reconciliationRequired || needsClosure)
+                            Text(
+                              statusLabel,
+                              style: Theme.of(context).textTheme.labelSmall,
+                            ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    ConstrainedBox(
+                      constraints: BoxConstraints(
+                        maxWidth: constraints.maxWidth * .58,
+                      ),
+                      child: GeoStatusChip(badge, tone: tone),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Wrap(
+                  spacing: 12,
+                  runSpacing: 8,
+                  children: [
+                    for (final entry in facts.entries)
+                      SizedBox(
+                        width: (constraints.maxWidth - 12) / 2,
+                        child: fact(entry.key, entry.value),
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                fact(
+                  'Actual pickup start',
+                  detail?.containsKey('actual_started_at') != true
+                      ? 'Unavailable'
+                      : routeMytTime(
+                          actualStart,
+                          missing: actualStart == null
+                              ? 'Not started'
+                              : 'Time unavailable',
+                        ),
+                ),
+                const Divider(height: 20),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (detail == null)
+                            const Text(
+                              'Route details unavailable; refresh to verify pickup start.',
+                            ),
+                          if (reconciliationRequired)
+                            const Text(
+                              'Open route details to review the affected pickup.',
+                            )
+                          else
+                            Text(routeCardReadiness(detail, fresh: fresh)),
+                          if (!reconciliationVerified)
+                            const Text(
+                              'Reconciliation status unavailable; refresh to verify.',
+                            ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    const Icon(Icons.chevron_right, color: GeoTone.neutral),
+                  ],
+                ),
+              ],
             ),
-            subtitle: Text(
-              [
-                '${detail?['pickup_count'] ?? '—'} pickups · ${routeLoadText(detail?['total_load_kg'])} kg · ${routeNumber(row['total_distance_km'])} km · ${routeNumber(row['total_duration_min'])} min',
-                detail == null
-                    ? 'Route details unavailable; refresh to verify pickup start.'
-                    : !detail!.containsKey('actual_started_at')
-                    ? 'Actual pickup start: unavailable'
-                    : 'Actual pickup start: ${routeMytTime(detail!['actual_started_at'], missing: detail!['actual_started_at'] == null ? 'Not started' : 'Time unavailable')}',
-                reconciliationRequired
-                    ? 'Action required · Reconciliation required'
-                    : routeCardReadiness(detail, fresh: fresh),
-                if (!reconciliationVerified)
-                  'Reconciliation status unavailable; refresh to verify.',
-              ].join('\n'),
-            ),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: onTap,
           ),
-        ],
+        ),
       ),
     );
   }

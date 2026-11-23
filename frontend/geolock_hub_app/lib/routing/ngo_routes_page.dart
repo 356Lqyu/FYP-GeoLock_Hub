@@ -44,6 +44,7 @@ class _NgoRoutesPageState extends NgoSessionPage<NgoRoutesPage> {
   bool _plannerConnectionFailed = false;
   bool _checkingPlanner = false;
   bool _generating = false;
+  final _planningFeedbackKey = GlobalKey();
   bool _initialHealthChecked = false;
   // Option C: generated (advisory, attested) route held until Start Route.
   Map<String, dynamic>? _generated;
@@ -68,6 +69,7 @@ class _NgoRoutesPageState extends NgoSessionPage<NgoRoutesPage> {
           operation: _routeOperation,
           planning: _pendingPlanning,
           initialHealth: _plannerConnection,
+          initialHealthFailed: _plannerConnectionFailed,
         ),
       ),
     );
@@ -134,7 +136,7 @@ class _NgoRoutesPageState extends NgoSessionPage<NgoRoutesPage> {
         setState(() {
           _plannerConnectionFailed = false;
           _plannerConnection =
-              'Planner ACTIVE for DEV. Read-only check; no snapshot or route created.';
+              'Planner connection confirmed. No snapshot or route was created.';
         });
       }
     } catch (e) {
@@ -422,6 +424,16 @@ class _NgoRoutesPageState extends NgoSessionPage<NgoRoutesPage> {
           _generating = false;
           _planRequest = const Uuid().v4();
         });
+        if (error != null) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            final feedback = _planningFeedbackKey.currentContext;
+            if (mounted &&
+                feedback != null &&
+                ModalRoute.of(context)?.isCurrent == true) {
+              unawaited(Scrollable.ensureVisible(feedback, alignment: 0.5));
+            }
+          });
+        }
       }
     }
   }
@@ -621,6 +633,138 @@ class _NgoRoutesPageState extends NgoSessionPage<NgoRoutesPage> {
   Widget build(BuildContext context) =>
       GeoRoleTheme(child: _buildRolePage(context));
 
+  Widget _planningNotices() {
+    final saved = _routeOperation.isNotEmpty;
+    final pending = _pendingPlanning['status'] == 'pending';
+    final blocker = _generationBlocker;
+    final sharesPlannerError =
+        _plannerConnectionFailed &&
+        error != null &&
+        error == _plannerConnection;
+    final canOpenSupport = !busy && !_generating && !_starting;
+    return Column(
+      key: _planningFeedbackKey,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (error != null && !sharesPlannerError)
+          GeoNoticeCard(
+            tone: GeoTone.warning,
+            child: Text(error!, key: const Key('routing-error')),
+          ),
+        if (_backendError != null && _backendError != error)
+          GeoNoticeCard(tone: GeoTone.warning, child: Text(_backendError!)),
+        if (_plannerConnectionFailed)
+          GeoNoticeCard(
+            key: const Key('planner-connection-warning'),
+            tone: GeoTone.warning,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Icon(Icons.cloud_off_outlined, color: GeoTone.warning),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Planner connection check failed',
+                        style: TextStyle(fontWeight: FontWeight.w700),
+                      ),
+                      if (_plannerConnection != null)
+                        Text(
+                          _plannerConnection!,
+                          key: sharesPlannerError
+                              ? const Key('routing-error')
+                              : null,
+                        ),
+                      TextButton.icon(
+                        key: const Key('planning-route-support'),
+                        onPressed: canOpenSupport ? _showSupport : null,
+                        icon: const Icon(Icons.help_outline),
+                        label: const Text('Open Route Support'),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        if ((!fresh || _backendError != null) && !loading)
+          GeoNoticeCard(
+            key: const Key('routes-refresh-notice'),
+            tone: GeoTone.info,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Icon(Icons.info_outline, color: GeoTone.info),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Refresh required',
+                        style: TextStyle(fontWeight: FontWeight.w700),
+                      ),
+                      const Text(
+                        'Check the latest route status before taking action.',
+                      ),
+                      TextButton.icon(
+                        onPressed: busy ? null : reload,
+                        icon: const Icon(Icons.refresh),
+                        label: const Text('Refresh routes'),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        if (loading || (busy && !_generating && !_starting))
+          const GeoNoticeCard(
+            key: Key('route-setup-loading'),
+            tone: GeoTone.info,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Checking route setup…'),
+                SizedBox(height: 6),
+                LinearProgressIndicator(),
+              ],
+            ),
+          ),
+        if (!saved && pending && !_generating && error == null)
+          const GeoNoticeCard(
+            key: Key('routing-generation-blocker'),
+            tone: GeoTone.warning,
+            child: Text(
+              'A previous planning request is pending. Open Route Support to review it.',
+            ),
+          ),
+        if (!_generating &&
+            !saved &&
+            !pending &&
+            actionsEnabled &&
+            blocker != null &&
+            repository.planningConfigured &&
+            _overview?['policy_id'] != null)
+          Text(blocker, key: const Key('routing-generation-blocker')),
+        if (!saved &&
+            !_plannerConnectionFailed &&
+            (error != null || pending || !repository.planningConfigured))
+          Align(
+            alignment: Alignment.centerLeft,
+            child: TextButton.icon(
+              key: const Key('planning-route-support'),
+              onPressed: canOpenSupport ? _showSupport : null,
+              icon: const Icon(Icons.help_outline),
+              label: const Text('Route Support'),
+            ),
+          ),
+      ],
+    );
+  }
+
   Widget _buildRolePage(BuildContext context) => Scaffold(
     appBar: AppBar(
       title: const Text('Pickup routes'),
@@ -655,24 +799,7 @@ class _NgoRoutesPageState extends NgoSessionPage<NgoRoutesPage> {
       child: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          if ((loading || busy) && !_generating && !_starting)
-            const LinearProgressIndicator(),
-          if (error != null) Text(error!, key: const Key('routing-error')),
-          if (_plannerConnectionFailed)
-            Text(
-              'Planner connection check failed. ${_plannerConnection ?? ''}',
-            ),
-          if (!fresh && !loading)
-            const Text('Refresh before performing an action.'),
-          if (_backendError != null)
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(12),
-                child: Text(_backendError!),
-              ),
-            ),
-          const SizedBox(height: 12),
-          Text('Vehicles', style: Theme.of(context).textTheme.titleLarge),
+          const GeoSectionTitle('Vehicles'),
           if (_fleet?['fleet_outcome'] == 'NO_FEASIBLE_PLAN')
             Text(
               routingRows(_fleet?['vehicles'] ?? []).isEmpty
@@ -703,11 +830,10 @@ class _NgoRoutesPageState extends NgoSessionPage<NgoRoutesPage> {
                     })
                   : null,
             ),
-          Text(
+          GeoSectionTitle(
             _overview == null
                 ? 'Routing eligibility could not be confirmed'
                 : 'Eligible claimed pickup tasks',
-            style: Theme.of(context).textTheme.titleLarge,
           ),
           if (_displayClaims.isEmpty)
             ListTile(
@@ -725,7 +851,7 @@ class _NgoRoutesPageState extends NgoSessionPage<NgoRoutesPage> {
               title: Text('${t['title'] ?? 'Claimed pickup'}'),
               subtitle: Text(
                 '${t['load_kg'] ?? t['listing_weight_kg'] ?? '—'} kg · ${t['task_status'] ?? '—'}\n'
-                '${claimLeaseMessage(t, eligible: _eligibleClaimIds.contains(t['claim_id']))}',
+                '${claimLeaseMessage(t, eligible: _eligibleClaimIds.contains(t['claim_id']), showEligibility: false)}',
               ),
             ),
           if (!repository.planningConfigured)
@@ -739,41 +865,43 @@ class _NgoRoutesPageState extends NgoSessionPage<NgoRoutesPage> {
               key: Key('routing-policy-unavailable'),
             ),
           if (_routeOperation.isNotEmpty)
-            Card(
-              child: ListTile(
-                title: Text('Saved routing request'),
-                subtitle: Text(savedRoutingOperationMessage(_routeOperation)),
-                trailing: _routeOperation['status'] == 'authorized'
-                    ? TextButton(
-                        key: const Key('archive-authorization'),
-                        onPressed: actionsEnabled
-                            ? _archiveAuthorization
-                            : null,
-                        child: const Text('Keep history / allow new planning'),
-                      )
-                    : TextButton(
-                        onPressed:
-                            actionsEnabled &&
-                                NgoRoutingRepository.isFinishedPreflight(
-                                  _routeOperation,
-                                )
-                            ? _dismissFinishedSetup
-                            : _showSupport,
-                        child: Text(
-                          NgoRoutingRepository.isFinishedPreflight(
+            GeoNoticeCard(
+              tone: GeoTone.info,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Saved routing request',
+                    style: TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  Text(savedRoutingOperationMessage(_routeOperation)),
+                  if (_routeOperation['status'] == 'authorized')
+                    TextButton(
+                      key: const Key('archive-authorization'),
+                      onPressed: actionsEnabled ? _archiveAuthorization : null,
+                      child: const Text('Keep history / allow new planning'),
+                    )
+                  else
+                    TextButton(
+                      onPressed:
+                          actionsEnabled &&
+                              NgoRoutingRepository.isFinishedPreflight(
                                 _routeOperation,
                               )
-                              ? 'Dismiss interrupted setup'
-                              : 'Get help',
-                        ),
+                          ? _dismissFinishedSetup
+                          : _showSupport,
+                      child: Text(
+                        NgoRoutingRepository.isFinishedPreflight(
+                              _routeOperation,
+                            )
+                            ? 'Dismiss interrupted setup'
+                            : 'Get help',
                       ),
+                    ),
+                ],
               ),
             ),
-          if (!_generating && _generationBlocker != null)
-            Text(
-              _generationBlocker!,
-              key: const Key('routing-generation-blocker'),
-            ),
+          _planningNotices(),
           for (final guidance in _capacityGuidance) Text(guidance),
           FilledButton.icon(
             key: const Key('generate-route'),
@@ -829,7 +957,7 @@ class _NgoRoutesPageState extends NgoSessionPage<NgoRoutesPage> {
     );
     if (vehicle['active_flag'] == false) return 'Inactive vehicle';
     if (bound) {
-      return 'Reserved for an existing route; unavailable for new planning. Other eligibility checks still apply.';
+      return 'Reserved';
     }
     if (vehicle['available_for_planning'] == false) {
       return 'Not available for new planning. Review vehicle availability and depot verification.';

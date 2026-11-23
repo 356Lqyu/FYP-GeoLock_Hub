@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:geolock_hub_app/dashboard_pages.dart';
 import 'package:geolock_hub_app/donation_pages.dart';
@@ -76,6 +77,168 @@ class _DonorTabHarnessState extends State<_DonorTabHarness> {
 void main() {
   setUp(() => SharedPreferences.setMockInitialValues({}));
 
+  testWidgets('donation filters count all loaded rows at 320 px', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(320, 800));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    const statuses = [
+      'AVAILABLE',
+      'AT_HUB',
+      'CLAIMED',
+      'PICKUP_IN_PROGRESS',
+      'COLLECTED',
+      'CANCELLED',
+    ];
+    await tester.pumpWidget(
+      MaterialApp(
+        builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(
+            context,
+          ).copyWith(textScaler: TextScaler.linear(1.2)),
+          child: child!,
+        ),
+        home: Scaffold(
+          body: DonorMyDonationsPage(
+            donationsLoader: () async => [
+              for (final status in statuses)
+                {
+                  'donation_id': status,
+                  'title': 'Donation $status',
+                  'donation_status': status,
+                  'collection_path': 'DIRECT_PICKUP',
+                },
+            ],
+            reconciliationCasesLoader: () async => [
+              {
+                'donation_id': 'PICKUP_IN_PROGRESS',
+                'source_type': 'DIRECT_DONATION',
+                'case_status': 'OPEN',
+              },
+            ],
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    const filters = {
+      'All': statuses,
+      'Active': ['AVAILABLE', 'AT_HUB', 'CLAIMED', 'PICKUP_IN_PROGRESS'],
+      'Reconciliation': ['PICKUP_IN_PROGRESS'],
+      'At Hub': ['AT_HUB'],
+      'Claimed': ['CLAIMED'],
+      'Picked Up': ['PICKUP_IN_PROGRESS', 'COLLECTED'],
+      'Completed': ['COLLECTED'],
+      'Cancelled': ['CANCELLED'],
+    };
+    for (final entry in filters.entries) {
+      final chip = find.widgetWithText(
+        ChoiceChip,
+        '${entry.key} (${entry.value.length})',
+      );
+      await tester.ensureVisible(chip);
+      await tester.pumpAndSettle();
+      await tester.tap(chip);
+      await tester.pumpAndSettle();
+      expect(tester.widget<ChoiceChip>(chip).selected, isTrue);
+      final list = find.byType(ListView);
+      expect(
+        tester.widget<ListView>(list).childrenDelegate.estimatedChildCount,
+        entry.value.length,
+      );
+      final scrollable = find.descendant(
+        of: list,
+        matching: find.byType(Scrollable),
+      );
+      tester.state<ScrollableState>(scrollable).position.jumpTo(0);
+      await tester.pumpAndSettle();
+      for (final status in entry.value) {
+        final donation = find.text('Donation $status');
+        await tester.scrollUntilVisible(donation, 150, scrollable: scrollable);
+        expect(donation, findsOneWidget);
+      }
+    }
+    await tester.enterText(find.byType(TextField), 'missing donation');
+    await tester.pumpAndSettle();
+    expect(find.text('No matching donations'), findsOneWidget);
+    for (final entry in filters.entries) {
+      final chip = find.widgetWithText(
+        ChoiceChip,
+        '${entry.key} (${entry.value.length})',
+      );
+      final label = find.descendant(of: chip, matching: find.byType(Text));
+      await Scrollable.ensureVisible(tester.element(label), alignment: 0.5);
+      await tester.pumpAndSettle();
+      expect(tester.renderObject<RenderParagraph>(label).didExceedMaxLines, isFalse);
+      expect(chip.hitTestable(), findsOneWidget);
+      await tester.tap(chip);
+      await tester.pumpAndSettle();
+      expect(tester.widget<ChoiceChip>(chip).selected, isTrue);
+    }
+    expect(tester.takeException(), isNull);
+  });
+
+  for (final width in [320.0, 480.0]) {
+    testWidgets('donation cards keep long statuses readable at $width px', (
+      tester,
+    ) async {
+      await tester.binding.setSurfaceSize(Size(width, 800));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      const title = 'Fresh vegetables for local families';
+      const status = 'Hub Assignment Needs Review';
+      await tester.pumpWidget(
+        MaterialApp(
+          builder: (context, child) => MediaQuery(
+            data: MediaQuery.of(context).copyWith(
+              textScaler: TextScaler.linear(1.2),
+            ),
+            child: child!,
+          ),
+          home: Scaffold(
+            body: DonorMyDonationsPage(
+              donationsLoader: () async => [
+                {
+                  'donation_id': 'hub-donation',
+                  'title': title,
+                  'donation_status': 'HUB_ASSIGNED',
+                  'collection_path': 'COMMUNITY_HUB',
+                  'total_weight_kg': 8.5,
+                  'item_count': 2,
+                  'created_at': '2026-10-22T01:00:00Z',
+                },
+              ],
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final titleText = find.text(title);
+      final badgeText = find.text(status);
+      expect(
+        tester.renderObject<RenderParagraph>(titleText).didExceedMaxLines,
+        isFalse,
+      );
+      expect(
+        tester.renderObject<RenderParagraph>(badgeText).didExceedMaxLines,
+        isFalse,
+      );
+      if (width == 320) {
+        expect(
+          tester.getTopLeft(badgeText).dy,
+          greaterThan(tester.getBottomLeft(titleText).dy),
+        );
+      }
+      expect(find.text('Hub Collection'), findsOneWidget);
+      expect(find.text('2 items · 8.5 kg'), findsOneWidget);
+      expect(find.text('22/10/2026'), findsOneWidget);
+      expect(find.text('View details →'), findsOneWidget);
+      expect(find.widgetWithText(ChoiceChip, 'All (1)'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+  }
+
   testWidgets('donor tabs reload authoritative status when revisited', (
     tester,
   ) async {
@@ -106,11 +269,17 @@ void main() {
     );
     expect(cardAvailable, findsOneWidget);
     expect(cardClaimed, findsNothing);
-      await tester.tap(find.text('Claimed'));
-      await tester.pumpAndSettle();
-      expect(find.text('No matching donations'), findsOneWidget);
-      await tester.tap(find.text('All'));
-      await tester.pumpAndSettle();
+    final claimed = find.text('Claimed (0)');
+    await tester.ensureVisible(claimed);
+    await tester.pumpAndSettle();
+    await tester.tap(claimed);
+    await tester.pumpAndSettle();
+    expect(find.text('No matching donations'), findsOneWidget);
+    final all = find.text('All (1)');
+    await tester.ensureVisible(all);
+    await tester.pumpAndSettle();
+    await tester.tap(all);
+    await tester.pumpAndSettle();
 
     await tester.tap(find.byIcon(Icons.home));
     await tester.pumpAndSettle();

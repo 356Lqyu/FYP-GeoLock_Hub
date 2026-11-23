@@ -61,6 +61,97 @@ Map<String, dynamic> fields() => {
 void main() {
   setUp(() => SharedPreferences.setMockInitialValues({}));
 
+  testWidgets('planning progress and uncertain result stay by Generate Route', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(320, 720));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final loadingFleet = Completer<Object?>();
+    final pending = Completer<Object?>();
+    final writes = <Map<String, dynamic>>[];
+    final plans = <Map<String, dynamic>>[];
+    final repo = NgoRoutingRepository(
+      identity: () => 'synthetic-ngo',
+      rpc: (name, params) async => switch (name) {
+        'list_my_vehicles' => loadingFleet.future,
+        'get_my_claim_cards_v2' => [],
+        'get_my_routing_overview' => {
+          'ngo_id': 'synthetic-ngo',
+          'contract': 'geolock.ngo-routing.v1',
+          'authorization_enforced': true,
+          'policy_id': 'policy',
+          'routes': [],
+          'eligible_tasks': [
+            for (var i = 0; i < 12; i++)
+              {
+                'claim_id': 'claim-$i',
+                'title': 'Pickup $i',
+                'task_status': 'CONFIRMED',
+                'load_kg': 10,
+                'server_now': '2026-10-22T01:00:00Z',
+                'lease_expires_at': '2026-10-22T01:30:00Z',
+              },
+          ],
+        },
+        'begin_my_routing_snapshot' => () {
+          writes.add(params);
+          return {'ngo_id': 'synthetic-ngo', 'snapshot_id': 'snapshot'};
+        }(),
+        _ => throw StateError('Unexpected RPC: $name'),
+      },
+      planner: (body) {
+        plans.add(body);
+        return pending.future;
+      },
+    );
+    await tester.pumpWidget(
+      MaterialApp(
+        builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(
+            context,
+          ).copyWith(textScaler: TextScaler.linear(1.2)),
+          child: child!,
+        ),
+        home: NgoRoutesPage(repository: repo),
+      ),
+    );
+    await tester.pump();
+    final generate = find.byKey(const Key('generate-route'));
+    expect(find.byKey(const Key('route-setup-loading')), findsOneWidget);
+    expect(tester.widget<FilledButton>(generate).onPressed, isNull);
+    loadingFleet.complete(fleet());
+    await tester.pumpAndSettle();
+    expect(
+      find.textContaining('Lease remaining at last refresh: 30 min'),
+      findsWidgets,
+    );
+    expect(find.textContaining('Eligible for routing'), findsNothing);
+    await tester.tap(find.byType(CheckboxListTile));
+    await tester.pumpAndSettle();
+    final scrollable = find.byType(Scrollable).first;
+    await tester.scrollUntilVisible(generate, 280, scrollable: scrollable);
+    await tester.tap(generate);
+    await tester.pump();
+    expect(find.text('Generating route…'), findsOneWidget);
+    expect(tester.widget<FilledButton>(generate).onPressed, isNull);
+    await tester.pump();
+    expect(plans, hasLength(1));
+    pending.completeError(TimeoutException('synthetic timeout'));
+    await tester.pumpAndSettle();
+
+    final feedback = find.byKey(const Key('routing-error'));
+    expect(feedback.hitTestable(), findsOneWidget);
+    expect(find.textContaining('outcome is not confirmed'), findsOneWidget);
+    expect(find.byKey(const Key('planning-route-support')), findsOneWidget);
+    expect(writes.single['p_vehicle_ids'], ['synthetic-v']);
+    expect(plans.single, {
+      'request_id': writes.single['p_request'],
+      'snapshot_id': 'snapshot',
+    });
+    expect(tester.takeException(), isNull);
+    await tester.pumpWidget(const SizedBox());
+  });
+
   test(
     'completion rechecks authority and sends the exact handover contract',
     () async {
@@ -506,6 +597,175 @@ void main() {
   });
 
   testWidgets(
+    'narrow fleet cards allow edits and both toggle directions without deactivation',
+    (tester) async {
+      await tester.binding.setSurfaceSize(const Size(320, 840));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      var available = true;
+      var labelText = 'Synthetic van';
+      final availabilityChanges = <bool>[];
+      final repo = NgoRoutingRepository(
+        identity: () => 'synthetic-ngo',
+        rpc: (name, params) async {
+          switch (name) {
+            case 'list_my_vehicles':
+              return {
+                'vehicles': [
+                  {
+                    ...vehicle(),
+                    'vehicle_label': labelText,
+                    'vehicle_type': 'VAN',
+                    'available_for_planning': available,
+                    'eligible_for_planning': available,
+                    'fixed_cost_rm': 15,
+                    'distance_cost_rm_per_km': 2.5,
+                    'max_route_duration_min': 180,
+                  },
+                  {
+                    ...vehicle(),
+                    'vehicle_id': 'retired-v',
+                    'vehicle_label': 'Retired van',
+                    'active_flag': false,
+                    'available_for_planning': false,
+                    'eligible_for_planning': false,
+                  },
+                ],
+              };
+            case 'set_my_vehicle_availability':
+              final requested = !available;
+              expect(params, {
+                'p_vehicle_id': 'synthetic-v',
+                'p_expected_version': 4,
+                'p_available': requested,
+              });
+              availabilityChanges.add(requested);
+              available = requested;
+              return {};
+            case 'update_my_vehicle':
+              expect(params['p_vehicle_id'], 'synthetic-v');
+              expect(params['p_expected_version'], 4);
+              labelText = params['p_label'] as String;
+              return {...vehicle(), 'vehicle_label': labelText};
+            default:
+              fail('Unexpected RPC: $name');
+          }
+        },
+      );
+      await tester.pumpWidget(
+        MaterialApp(
+          builder: (context, child) => MediaQuery(
+            data: MediaQuery.of(
+              context,
+            ).copyWith(textScaler: TextScaler.linear(1.2)),
+            child: child!,
+          ),
+          home: NgoFleetPage(repository: repo),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('Available'), findsOneWidget);
+      expect(find.text('180 min'), findsOneWidget);
+      expect(find.text('RM 2.5/km'), findsOneWidget);
+      expect(find.text('Register vehicle'), findsOneWidget);
+      expect(find.text('Deactivate'), findsNothing);
+      final semantics = tester.ensureSemantics();
+      try {
+        await tester.pump();
+        expect(find.bySemanticsLabel('Deactivate'), findsNothing);
+      } finally {
+        semantics.dispose();
+      }
+      expect(find.text('Reactivate'), findsNothing);
+      await tester.scrollUntilVisible(find.text('Retired van'), 200);
+      expect(find.text('Deactivated'), findsOneWidget);
+      expect(find.byType(SwitchListTile), findsOneWidget);
+      expect(find.text('Edit'), findsOneWidget);
+      await tester.pump(const Duration(seconds: 31));
+      expect(
+        tester.widget<SwitchListTile>(find.byType(SwitchListTile)).onChanged,
+        isNull,
+      );
+      await tester.scrollUntilVisible(find.text('Refresh fleet'), -200);
+      await tester.tap(find.text('Refresh fleet'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Edit'));
+      await tester.pumpAndSettle();
+      final label = tester.widget<TextFormField>(
+        find.widgetWithText(TextFormField, 'Vehicle label'),
+      );
+      expect(label.controller!.text, 'Synthetic van');
+      await tester.enterText(
+        find.widgetWithText(TextFormField, 'Vehicle label'),
+        'Updated van',
+      );
+      await tester.scrollUntilVisible(
+        find.text('Save'),
+        160,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.tap(find.text('Save'));
+      await tester.pumpAndSettle();
+      expect(find.text('Updated van'), findsOneWidget);
+      await tester.tap(find.text('Available for planning'));
+      await tester.pumpAndSettle();
+      expect(find.text('Unavailable'), findsOneWidget);
+      await tester.tap(find.text('Available for planning'));
+      await tester.pumpAndSettle();
+      expect(find.text('Available'), findsOneWidget);
+      expect(availabilityChanges, [false, true]);
+      expect(find.text('Deactivate'), findsNothing);
+      expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox());
+    },
+  );
+
+  testWidgets('planning excludes vehicles with their availability toggle off', (
+    tester,
+  ) async {
+    final repo = NgoRoutingRepository(
+      identity: () => 'synthetic-ngo',
+      rpc: (name, _) async => switch (name) {
+        'list_my_vehicles' => {
+          'vehicles': [
+            {
+              ...vehicle(),
+              'available_for_planning': false,
+              'eligible_for_planning': false,
+            },
+          ],
+        },
+        'get_my_claim_cards_v2' => [],
+        'get_my_routing_overview' => {
+          'contract': 'geolock.ngo-routing.v1',
+          'ngo_id': 'synthetic-ngo',
+          'policy_id': 'policy',
+          'authorization_enforced': true,
+          'eligible_tasks': [
+            {'claim_id': 'claim-1', 'title': 'Pickup', 'load_kg': 10},
+          ],
+          'routes': [],
+        },
+        _ => fail('Unexpected RPC: $name'),
+      },
+      planner: (_) async => fail('No planning expected'),
+    );
+    await tester.pumpWidget(MaterialApp(home: NgoRoutesPage(repository: repo)));
+    await tester.pumpAndSettle();
+    final selection = tester.widget<CheckboxListTile>(
+      find.byType(CheckboxListTile),
+    );
+    expect(selection.value, isFalse);
+    expect(selection.onChanged, isNull);
+    expect(
+      tester
+          .widget<FilledButton>(find.byKey(const Key('generate-route')))
+          .onPressed,
+      isNull,
+    );
+    await tester.pumpWidget(const SizedBox());
+  });
+
+  testWidgets(
     'account switch clears the previous NGO fleet even if refresh fails',
     (tester) async {
       String? owner = 'synthetic-ngo';
@@ -544,16 +804,40 @@ void main() {
         'fleet_outcome': 'NO_FEASIBLE_PLAN',
       },
     );
-    await tester.pumpWidget(MaterialApp(home: NgoFleetPage(repository: repo)));
+    await tester.binding.setSurfaceSize(const Size(320, 760));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      MaterialApp(
+        builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(
+            context,
+          ).copyWith(textScaler: TextScaler.linear(1.2)),
+          child: child!,
+        ),
+        home: NgoFleetPage(repository: repo),
+      ),
+    );
     await tester.pumpAndSettle();
     await tester.tap(find.text('Register vehicle'));
     await tester.pumpAndSettle();
     final capacity = find.widgetWithText(TextFormField, 'Capacity (kg)');
     expect(tester.widget<TextFormField>(capacity).controller!.text, isEmpty);
     await tester.enterText(capacity, '-1');
+    final formScroll = find.byType(Scrollable).first;
+    await tester.scrollUntilVisible(
+      find.text('Save'),
+      160,
+      scrollable: formScroll,
+    );
     await tester.tap(find.text('Save'));
     await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(
+      find.text('Enter a positive number.').first,
+      -160,
+      scrollable: formScroll,
+    );
     expect(find.text('Enter a positive number.'), findsWidgets);
+    expect(tester.takeException(), isNull);
     await tester.pumpWidget(const SizedBox());
   });
 
@@ -587,6 +871,10 @@ void main() {
       expect(
         find.text('Routing eligibility could not be confirmed'),
         findsOneWidget,
+      );
+      await tester.scrollUntilVisible(
+        find.byKey(const Key('generate-route')),
+        160,
       );
       expect(
         tester

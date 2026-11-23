@@ -9,6 +9,7 @@ import 'claim_cards_controller.dart';
 import 'auth/auth_navigation.dart';
 import 'auth/auth_controller.dart';
 import 'donation_pages.dart';
+import 'donation_collection_path.dart';
 import 'donation_status.dart';
 import 'location/road_routing.dart';
 import 'location/location_picker_page.dart';
@@ -627,13 +628,17 @@ class _DonorMyDonationsPageState extends State<DonorMyDonationsPage> {
   }
 
   bool _matches(Map<String, dynamic> d) {
-    final status = d['donation_status']?.toString();
     final query = _search.text.trim().toLowerCase();
     if (query.isNotEmpty &&
         !d['title'].toString().toLowerCase().contains(query)) {
       return false;
     }
-    return switch (_filter) {
+    return _matchesStatus(d, _filter);
+  }
+
+  bool _matchesStatus(Map<String, dynamic> d, String filter) {
+    final status = d['donation_status']?.toString();
+    return switch (filter) {
       'Active' => _active(status),
       _reconciliationFilter =>
         _caseStatus?.containsKey(d['donation_id']?.toString()) == true,
@@ -681,22 +686,40 @@ class _DonorMyDonationsPageState extends State<DonorMyDonationsPage> {
               ),
             ),
             const SizedBox(height: 10),
-            SizedBox(
-              height: 40,
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                children: [
-                  for (final filter in _filters)
-                    Padding(
-                      padding: const EdgeInsets.only(right: 8),
-                      child: ChoiceChip(
-                        label: Text(filter),
-                        selected: filter == _filter,
-                        onSelected: (_) => setState(() => _filter = filter),
-                      ),
-                    ),
-                ],
-              ),
+            FutureBuilder<List<Map<String, dynamic>>>(
+              future: _data,
+              builder: (context, snapshot) {
+                final rows = snapshot.data;
+                final counts = {
+                  if (rows != null)
+                    for (final filter in _filters)
+                      filter: filter == _reconciliationFilter &&
+                              (_caseStatus == null || _casesUnavailable)
+                          ? '—'
+                          : '${rows.where((row) => _matchesStatus(row, filter)).length}',
+                };
+                return SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      for (final filter in _filters)
+                        Padding(
+                          padding: const EdgeInsets.only(right: 8),
+                          child: ChoiceChip(
+                            key: ValueKey('donations-filter-$filter'),
+                            label: Text(
+                              rows == null
+                                  ? filter
+                                  : '$filter (${counts[filter]})',
+                            ),
+                            selected: filter == _filter,
+                            onSelected: (_) => setState(() => _filter = filter),
+                          ),
+                        ),
+                    ],
+                  ),
+                );
+              },
             ),
           ],
         ),
@@ -1021,30 +1044,37 @@ class _NgoHomePageState extends State<NgoHomePage> with WidgetsBindingObserver {
                   ? _claimReader.cards.where((c) => c.isValidActive).length
                   : 0;
               final pickups = active;
-              return Row(
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Expanded(
-                    child: DashboardStatCard(
-                      label: 'Discovery results',
-                      value: '${l.data!.length}',
-                      icon: Icons.search,
-                    ),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: DashboardStatCard(
+                          label: 'Discovery results',
+                          value: '${l.data!.length}',
+                          icon: Icons.search,
+                          wrapLabel: true,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: DashboardStatCard(
+                          label: 'Active claims',
+                          value: '$active',
+                          icon: Icons.assignment_outlined,
+                          wrapLabel: true,
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: DashboardStatCard(
-                      label: 'Active claims',
-                      value: '$active',
-                      icon: Icons.assignment_outlined,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: DashboardStatCard(
-                      label: 'Pickups to action',
-                      value: '$pickups',
-                      icon: Icons.local_shipping_outlined,
-                    ),
+                  const SizedBox(height: 8),
+                  DashboardStatCard(
+                    label: 'Pickups to action',
+                    value: '$pickups',
+                    icon: Icons.local_shipping_outlined,
+                    wrapLabel: true,
                   ),
                 ],
               );
@@ -2881,6 +2911,7 @@ class DashboardStatCard extends StatelessWidget {
   final IconData icon;
   final Color? tint;
   final bool wide;
+  final bool wrapLabel;
   const DashboardStatCard({
     super.key,
     required this.label,
@@ -2888,6 +2919,7 @@ class DashboardStatCard extends StatelessWidget {
     required this.icon,
     this.tint,
     this.wide = false,
+    this.wrapLabel = false,
   });
   @override
   Widget build(BuildContext context) => Card(
@@ -2922,8 +2954,8 @@ class DashboardStatCard extends StatelessWidget {
                 Text(
                   label,
                   style: Theme.of(context).textTheme.labelSmall,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
+                  maxLines: wrapLabel ? null : 2,
+                  overflow: wrapLabel ? null : TextOverflow.ellipsis,
                 ),
               ],
             ),
@@ -2992,15 +3024,15 @@ class DonationSummaryCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
+                  OverflowBar(
+                    alignment: MainAxisAlignment.spaceBetween,
+                    overflowAlignment: OverflowBarAlignment.start,
+                    spacing: 8,
+                    overflowSpacing: 4,
                     children: [
-                      Expanded(
-                        child: Text(
-                          '${donation['title'] ?? 'Donation'}',
-                          style: const TextStyle(fontWeight: FontWeight.w700),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
+                      Text(
+                        '${donation['title'] ?? 'Donation'}',
+                        style: const TextStyle(fontWeight: FontWeight.w700),
                       ),
                       StatusBadge(
                         status: donationStatusLabel(
@@ -3023,9 +3055,7 @@ class DonationSummaryCard extends StatelessWidget {
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
                   Text(
-                    donation['collection_path'] == 'HUB_COLLECTION'
-                        ? 'Community Hub Collection'
-                        : 'Direct Pickup',
+                    collectionPathLabel(donation['collection_path']?.toString()),
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
                   Text(
@@ -3074,7 +3104,6 @@ class StatusBadge extends StatelessWidget {
         fontSize: 10,
         fontWeight: FontWeight.w700,
       ),
-      maxLines: 1,
     ),
   );
 }
@@ -3143,50 +3172,36 @@ class ListingPreviewCard extends StatelessWidget {
   final VoidCallback? onTap;
   const ListingPreviewCard({super.key, required this.row, this.onTap});
   @override
-  Widget build(BuildContext context) => Card(
-    margin: const EdgeInsets.only(bottom: 10),
-    child: InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Row(
-          children: [
-            DonationImage(
+  Widget build(BuildContext context) {
+    final routingStatus = row['routing_status'];
+    return Card(
+      margin: const EdgeInsets.only(bottom: 10),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: NgoListingCardContent(
+            listing: row,
+            title:
+                '${row['title'] ?? (row['source_type'] == 'HUB_BATCH' ? 'Community hub batch' : 'Donation')}',
+            titleStyle: const TextStyle(fontWeight: FontWeight.w700),
+            thumbnail: DonationImage(
               path: row['primary_image_path']?.toString(),
               size: 58,
             ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '${row['title'] ?? (row['source_type'] == 'HUB_BATCH' ? 'Community hub batch' : 'Donation')} · ${row['listing_weight_kg']} kg',
-                    style: const TextStyle(fontWeight: FontWeight.w700),
-                  ),
-                  Text(
-                    row['collection_path'] == 'HUB_COLLECTION'
-                        ? 'Community Hub Collection'
-                        : 'Direct Pickup',
-                  ),
-                  if (row['distance_m'] != null)
-                    Text(
-                      '${(_number(row['distance_m']) / 1000).toStringAsFixed(1)} km by road',
-                    ),
-                  Text(
-                    'Routing: ${roadStatusLine(row['routing_status'])}',
+            showChevron: onTap != null,
+            warning: routingStatus == 'READY'
+                ? null
+                : Text(
+                    'Routing: ${roadStatusLine(routingStatus)}',
                     style: Theme.of(context).textTheme.labelSmall,
                   ),
-                ],
-              ),
-            ),
-            if (onTap != null) const Icon(Icons.chevron_right),
-          ],
+          ),
         ),
       ),
-    ),
-  );
+    );
+  }
 }
 
 class EmptyStateCard extends StatelessWidget {

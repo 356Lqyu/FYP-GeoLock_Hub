@@ -5,6 +5,7 @@ import 'package:geolock_hub_app/claim_card.dart';
 import 'package:geolock_hub_app/claim_cards_controller.dart';
 import 'package:geolock_hub_app/donation_pages.dart';
 import 'package:geolock_hub_app/dashboard_pages.dart';
+import 'package:geolock_hub_app/ui/geolock_role_style.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Map<String, dynamic> cardJson([Map<String, dynamic> overrides = const {}]) => {
@@ -194,8 +195,16 @@ void main() {
   testWidgets('every tab uses badges and expired actions are disabled', (
     tester,
   ) async {
+    await tester.binding.setSurfaceSize(const Size(320, 800));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
     await tester.pumpWidget(
       MaterialApp(
+        builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(
+            context,
+          ).copyWith(textScaler: TextScaler.linear(1.2)),
+          child: child!,
+        ),
         home: MyClaimsPage(
           claimsLoader: () async => [
             cardJson(),
@@ -210,16 +219,56 @@ void main() {
               'claim_id': 'released',
               'title': 'Released claim',
               'claim_status': 'RELEASED',
+              'source_type': 'HUB_BATCH',
+            }),
+            cardJson({
+              'claim_id': 'reconciliation',
+              'title': 'Handover review',
+              'claim_status': 'RECONCILIATION_REQUIRED',
+              'task_status': 'DISPATCHED',
             }),
           ],
         ),
       ),
     );
     await tester.pumpAndSettle();
+    for (final label in [
+      'Active (1)',
+      'Reconciliation (1)',
+      'Expired (1)',
+      'History (1)',
+      'All (4)',
+    ]) {
+      expect(find.widgetWithText(ChoiceChip, label), findsOneWidget);
+    }
     expect(find.text('Owned claim'), findsOneWidget);
-    await tester.tap(find.byKey(const ValueKey('claims-tab-expired')));
-    await tester.pumpAndSettle();
+    final activeBadge = find.widgetWithText(GeoStatusChip, 'Active');
+    final activeCard = find.byKey(const ValueKey('claim-claim-1'));
+    expect(
+      tester.getCenter(activeBadge).dx,
+      greaterThan(tester.getCenter(activeCard).dx),
+    );
+    expect(
+      tester.getTopLeft(activeBadge).dy,
+      lessThan(tester.getTopLeft(find.text('Owned claim')).dy),
+    );
+    expect(find.widgetWithText(GeoStatusChip, 'Direct Pickup'), findsOneWidget);
+    expect(find.textContaining('Lease expiry (database)'), findsOneWidget);
+    expect(find.textContaining('Claim ID:'), findsNothing);
+    expect(find.textContaining('Pickup task ·'), findsNothing);
+
+    Future<void> selectTab(String name) async {
+      final chip = find.byKey(ValueKey('claims-tab-$name'));
+      await tester.ensureVisible(chip);
+      await tester.pumpAndSettle();
+      await tester.tap(chip);
+      await tester.pumpAndSettle();
+      expect(tester.widget<ChoiceChip>(chip).selected, isTrue);
+    }
+
+    await selectTab('expired');
     expect(find.text('Expired, awaiting recovery'), findsOneWidget);
+    expect(find.textContaining('database controls recovery'), findsOneWidget);
     expect(find.text('Start Pickup'), findsNothing);
     expect(find.byKey(const ValueKey('claim-routes-expired')), findsNothing);
     expect(
@@ -228,12 +277,30 @@ void main() {
           .onPressed,
       isNull,
     );
-    await tester.tap(find.byKey(const ValueKey('claims-tab-history')));
-    await tester.pumpAndSettle();
+    await selectTab('history');
     expect(find.text('Released claim'), findsOneWidget);
-    await tester.tap(find.byKey(const ValueKey('claims-tab-all')));
-    await tester.pumpAndSettle();
+    final releasedBadge = find.widgetWithText(GeoStatusChip, 'Released');
+    expect(tester.widget<GeoStatusChip>(releasedBadge).tone, GeoTone.neutral);
+    expect(find.widgetWithText(GeoStatusChip, 'Hub Collection'), findsOneWidget);
+    await selectTab('reconciliation');
+    final reconciliationBadge = find.widgetWithText(
+      GeoStatusChip,
+      'Reconciliation required',
+    );
+    expect(
+      tester.widget<GeoStatusChip>(reconciliationBadge).tone,
+      GeoTone.warning,
+    );
+    expect(
+      find.textContaining('next pickup on its route stays blocked'),
+      findsOneWidget,
+    );
+    expect(find.text('View reconciliation'), findsOneWidget);
+    await selectTab('all');
     expect(find.text('Owned claim'), findsOneWidget);
+    await selectTab('active');
+    expect(find.text('Released claim'), findsNothing);
+    expect(tester.takeException(), isNull);
     await tester.pumpWidget(const SizedBox());
   });
 

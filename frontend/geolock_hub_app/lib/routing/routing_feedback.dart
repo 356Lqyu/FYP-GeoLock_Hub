@@ -1,5 +1,12 @@
 /// Presentation only. Protected RPC flags remain the source of action authority.
 String? routingFailureMessage(String? code) => switch (code) {
+  'PLANNER_HEALTH_REJECTED' =>
+    'The planner did not confirm it is active for this project.',
+  'PLANNER_HEALTH_TIMEOUT' => 'The planner connection check timed out.',
+  'PLANNER_HEALTH_CONNECTION_FAILED' =>
+    'This device could not connect to the planner.',
+  'PLANNER_HEALTH_INVALID' =>
+    'The planner returned an invalid health response.',
   'DATABASE_REJECTED_REQUEST' || 'UPSTREAM_REJECTED_REQUEST' =>
     'The protected routing request was rejected. Preserve it and review its outcome before trying again.',
   'VALIDATOR_REJECTED_CANDIDATE' =>
@@ -71,7 +78,11 @@ String? routingFailureMessage(String? code) => switch (code) {
   _ => null,
 };
 
-String claimLeaseMessage(Map<String, dynamic> claim, {required bool eligible}) {
+String claimLeaseMessage(
+  Map<String, dynamic> claim, {
+  required bool eligible,
+  bool showEligibility = true,
+}) {
   if (claim['claim_status'] == 'COMPLETED' ||
       claim['lease_status'] == 'COMPLETED') {
     return 'Claim completed. Collected goods are not available for a new pickup.';
@@ -98,9 +109,9 @@ String claimLeaseMessage(Map<String, dynamic> claim, {required bool eligible}) {
       claim['task_status'] == 'DISPATCHED' || claim['task_status'] == 'PLANNED'
       ? 'Already assigned to a route.'
       : eligible
-      ? 'Eligible for routing.'
+      ? (showEligibility ? 'Eligible for routing.' : '')
       : 'Not eligible for a new route under current backend checks.';
-  return '$status $time';
+  return status.isEmpty ? time : '$status $time';
 }
 
 String routeOperationMessage(Map<String, dynamic> operation) {

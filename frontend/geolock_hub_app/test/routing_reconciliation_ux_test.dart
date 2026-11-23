@@ -640,7 +640,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.textContaining('Rice donation'), findsWidgets);
       expect(find.textContaining('Oil donation'), findsWidgets);
-      await tester.tap(find.widgetWithText(ChoiceChip, 'Reconciliation'));
+      await tester.tap(find.widgetWithText(ChoiceChip, 'Reconciliation (1)'));
       await tester.pumpAndSettle();
       expect(find.textContaining('Rice donation'), findsWidgets);
       expect(find.textContaining('Oil donation'), findsNothing);
@@ -659,7 +659,7 @@ void main() {
       );
       await tester.pumpAndSettle();
       expect(find.textContaining('Rice donation'), findsWidgets);
-      await tester.tap(find.widgetWithText(ChoiceChip, 'Reconciliation'));
+      await tester.tap(find.widgetWithText(ChoiceChip, 'Reconciliation (—)'));
       await tester.pumpAndSettle();
       expect(find.text('Reconciliation status unavailable'), findsOneWidget);
       await tester.pumpWidget(const SizedBox());
@@ -821,7 +821,7 @@ void main() {
           ),
         );
         await tester.pumpAndSettle();
-        await tester.tap(find.widgetWithText(ChoiceChip, 'Reconciliation'));
+        await tester.tap(find.widgetWithText(ChoiceChip, 'Reconciliation (1)'));
         await tester.pumpAndSettle();
         final view = find.byKey(
           const ValueKey('donation-view-reconciliation-donation-a'),

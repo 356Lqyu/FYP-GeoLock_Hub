@@ -164,6 +164,15 @@ void main() {
     ) async {
       final reader = PhotoReader(batch: batch);
       await openPhotos(t, reader);
+      expect(
+        find.text(batch ? 'Hub Collection' : 'Direct Pickup'),
+        findsOneWidget,
+      );
+      expect(find.text(batch ? 'HUB_BATCH' : 'DIRECT_DONATION'), findsNothing);
+      expect(
+        find.text('Whole donations in this batch'),
+        batch ? findsOneWidget : findsNothing,
+      );
       final carousel = t.widget<DonationPhotoCarousel>(
         find.byType(DonationPhotoCarousel),
       );

@@ -197,72 +197,85 @@ class _EligibleListingsPageState extends State<EligibleListingsPage> {
         ),
       ],
     ),
-    body: FutureBuilder<List<Map<String, dynamic>>>(
-      future: _listings,
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          return Center(
-            child: Text('Listing discovery unavailable: ${snapshot.error}'),
-          );
-        }
-        if (snapshot.connectionState != ConnectionState.done ||
-            !snapshot.hasData) {
-          return const Center(child: CircularProgressIndicator());
-        }
-        final rows = snapshot.data!;
-        if (rows.isEmpty) {
-          return const Center(
-            child: Text(
-              'No eligible listings with a validated road node are available.',
+    body: Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+          child: Text(
+            "Listings are based on your NGO's verified location and road-distance eligibility. Eligibility is checked again when you claim.",
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+        ),
+        Expanded(child: _buildListings()),
+      ],
+    ),
+  );
+
+  Widget _buildListings() => FutureBuilder<List<Map<String, dynamic>>>(
+    future: _listings,
+    builder: (context, snapshot) {
+      if (snapshot.hasError) {
+        return Center(
+          child: Text('Listing discovery unavailable: ${snapshot.error}'),
+        );
+      }
+      if (snapshot.connectionState != ConnectionState.done ||
+          !snapshot.hasData) {
+        return const Center(child: CircularProgressIndicator());
+      }
+      final rows = snapshot.data!;
+      if (rows.isEmpty) {
+        return const Center(
+          child: Text(
+            'No eligible listings with a validated road node are available.',
+          ),
+        );
+      }
+      return FutureBuilder<bool>(
+        future: _trustedRouting,
+        builder: (context, routeSnapshot) {
+          final bool? capabilityReady =
+              routeSnapshot.connectionState == ConnectionState.done
+              ? routeSnapshot.data == true
+              : null;
+          return RefreshIndicator(
+            onRefresh: _refreshAndWait,
+            child: ListView.builder(
+              padding: const EdgeInsets.only(bottom: 24),
+              itemCount: rows.length,
+              itemBuilder: (context, index) {
+                final listing = rows[index];
+                return EligibleListingCard(
+                  listing: listing,
+                  capabilityReady: capabilityReady,
+                  onOpen: () async {
+                    if (_detailOpen) return;
+                    _detailOpen = true;
+                    await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) =>
+                            widget.detailsBuilder?.call(listing) ??
+                            NgoListingDetailsPage(
+                              listing: listing,
+                              onClaimConfirmed: () {
+                                if (mounted) _refresh();
+                              },
+                            ),
+                      ),
+                    );
+                    if (mounted) {
+                      _refresh();
+                      _detailOpen = false;
+                    }
+                  },
+                );
+              },
             ),
           );
-        }
-        return FutureBuilder<bool>(
-          future: _trustedRouting,
-          builder: (context, routeSnapshot) {
-            final bool? capabilityReady =
-                routeSnapshot.connectionState == ConnectionState.done
-                ? routeSnapshot.data == true
-                : null;
-            return RefreshIndicator(
-              onRefresh: _refreshAndWait,
-              child: ListView.builder(
-                padding: const EdgeInsets.only(bottom: 24),
-                itemCount: rows.length,
-                itemBuilder: (context, index) {
-                  final listing = rows[index];
-                  return EligibleListingCard(
-                    listing: listing,
-                    capabilityReady: capabilityReady,
-                    onOpen: () async {
-                      if (_detailOpen) return;
-                      _detailOpen = true;
-                      await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) =>
-                              widget.detailsBuilder?.call(listing) ??
-                              NgoListingDetailsPage(
-                                listing: listing,
-                                onClaimConfirmed: () {
-                                  if (mounted) _refresh();
-                                },
-                              ),
-                        ),
-                      );
-                      if (mounted) {
-                        _refresh();
-                        _detailOpen = false;
-                      }
-                    },
-                  );
-                },
-              ),
-            );
-          },
-        );
-      },
-    ),
+        },
+      );
+    },
   );
 }
 
@@ -276,6 +289,127 @@ String? listingClaimBlockReason({
   if (!capabilityReady) return 'Road network is not active on the server';
   if (routingStatus != 'READY') return roadStatusLine(routingStatus);
   return null;
+}
+
+String? _ngoListingRoadDistance(Object? distanceMeters) {
+  if (distanceMeters == null) return null;
+  final meters = double.tryParse('$distanceMeters') ?? 0;
+  return '${(meters / 1000).toStringAsFixed(1)} km by road';
+}
+
+class NgoCollectionPathBadge extends StatelessWidget {
+  final Map<String, dynamic> listing;
+  const NgoCollectionPathBadge({super.key, required this.listing});
+
+  @override
+  Widget build(BuildContext context) {
+    final label = collectionPathBadgeLabel(
+      listing['collection_path'],
+      listingSourceType: listing['source_type'],
+    );
+    if (label == null) return const SizedBox.shrink();
+    final isHub = label == 'Hub Collection';
+
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: isHub ? const Color(0xfffff5df) : const Color(0xffe4f2ed),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+        child: Text(
+          label,
+          style: Theme.of(context).textTheme.labelSmall?.copyWith(
+            color: isHub ? const Color(0xff795000) : const Color(0xff215b47),
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class NgoListingCardContent extends StatelessWidget {
+  final Map<String, dynamic> listing;
+  final String title;
+  final TextStyle? titleStyle;
+  final Widget thumbnail;
+  final bool showChevron;
+  final Widget? warning;
+
+  const NgoListingCardContent({
+    super.key,
+    required this.listing,
+    required this.title,
+    this.titleStyle,
+    required this.thumbnail,
+    this.showChevron = true,
+    this.warning,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final distance = _ngoListingRoadDistance(listing['distance_m']);
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(child: Text(title, style: titleStyle)),
+            const SizedBox(width: 8),
+            NgoCollectionPathBadge(listing: listing),
+          ],
+        ),
+        const SizedBox(height: 6),
+        Row(
+          children: [
+            thumbnail,
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Wrap(
+                    spacing: 6,
+                    runSpacing: 4,
+                    children: [
+                      _NgoListingMetric('${listing['listing_weight_kg']} kg'),
+                      if (distance != null) _NgoListingMetric(distance),
+                    ],
+                  ),
+                  if (warning != null) ...[const SizedBox(height: 4), warning!],
+                ],
+              ),
+            ),
+            if (showChevron) const Icon(Icons.chevron_right),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class _NgoListingMetric extends StatelessWidget {
+  final String label;
+  const _NgoListingMetric(this.label);
+
+  @override
+  Widget build(BuildContext context) => DecoratedBox(
+    decoration: BoxDecoration(
+      color: const Color(0xfff1f3f2),
+      borderRadius: BorderRadius.circular(12),
+    ),
+    child: Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      child: Text(
+        label,
+        style: Theme.of(
+          context,
+        ).textTheme.labelSmall?.copyWith(color: const Color(0xff36423d)),
+      ),
+    ),
+  );
 }
 
 class EligibleListingCard extends StatelessWidget {
@@ -297,19 +431,26 @@ class EligibleListingCard extends StatelessWidget {
     );
     return Card(
       margin: const EdgeInsets.all(10),
-      child: ListTile(
-        leading: _StoredImageThumbnail(
-          path: listing['primary_image_path']?.toString(),
-        ),
-        title: Text(
-          '${listing['title'] ?? listing['source_type']} · ${listing['listing_weight_kg']} kg',
-        ),
-        subtitle: Text(
-          '${friendlyWorkflowStatus(listing['collection_path'] ?? listing['source_type'])}\n${blockReason == null ? 'The database rechecks eligibility when you claim.' : 'Details may be viewed; claiming unavailable: $blockReason'}',
-        ),
-        isThreeLine: true,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
         onTap: onOpen,
-        trailing: const Icon(Icons.chevron_right),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          child: NgoListingCardContent(
+            listing: listing,
+            title: '${listing['title'] ?? listing['source_type']}',
+            titleStyle: Theme.of(context).textTheme.bodyLarge,
+            thumbnail: _StoredImageThumbnail(
+              path: listing['primary_image_path']?.toString(),
+            ),
+            warning: blockReason == null
+                ? null
+                : Text(
+                    'Details may be viewed; claiming unavailable: $blockReason',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+          ),
+        ),
       ),
     );
   }
@@ -1461,9 +1602,20 @@ class _MyClaimsPageState extends State<MyClaimsPage>
       GeoRoleTheme(child: _buildRolePage(context));
 
   Widget _buildRolePage(BuildContext context) {
-    final rows = _reader.cards
-        .where((c) => _selectedTab == ClaimTab.all || c.tab == _selectedTab)
-        .toList();
+    const labels = {
+      ClaimTab.active: 'Active',
+      ClaimTab.reconciliation: 'Reconciliation',
+      ClaimTab.expired: 'Expired',
+      ClaimTab.history: 'History',
+      ClaimTab.all: 'All',
+    };
+    final byTab = {
+      for (final tab in ClaimTab.values)
+        tab: _reader.cards
+            .where((card) => tab == ClaimTab.all || card.tab == tab)
+            .toList(),
+    };
+    final rows = byTab[_selectedTab]!;
     return Scaffold(
       appBar: AppBar(title: const Text('My Claims')),
       body: Column(
@@ -1474,16 +1626,14 @@ class _MyClaimsPageState extends State<MyClaimsPage>
               children: [
                 for (final tab in ClaimTab.values)
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                    padding: const EdgeInsets.only(right: 8),
                     child: ChoiceChip(
                       key: ValueKey('claims-tab-${tab.name}'),
-                      label: Text(switch (tab) {
-                        ClaimTab.active => 'Active',
-                        ClaimTab.reconciliation => 'Reconciliation',
-                        ClaimTab.expired => 'Expired',
-                        ClaimTab.history => 'History',
-                        ClaimTab.all => 'All',
-                      }),
+                      label: Text(
+                        _reader.loading || _reader.error != null
+                            ? labels[tab]!
+                            : '${labels[tab]} (${byTab[tab]!.length})',
+                      ),
                       selected: tab == _selectedTab,
                       onSelected: (_) => setState(() => _selectedTab = tab),
                     ),
@@ -1533,132 +1683,161 @@ class _MyClaimsPageState extends State<MyClaimsPage>
     );
   }
 
-  Widget _card(ClaimCard card) => Card(
-    key: ValueKey('claim-${card.claimId}'),
-    margin: const EdgeInsets.all(10),
-    child: Padding(
-      padding: const EdgeInsets.all(12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              _StoredImageThumbnail(path: card.primaryImagePath),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      card.title ?? card.sourceType ?? 'Claim',
-                      style: geoTitleStyle(context),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    Text('${card.sourceType} · ${card.listingWeightKg} kg'),
-                  ],
+  Widget _card(ClaimCard card) {
+    final collectionPath = collectionPathBadgeLabel(
+      card.raw['collection_path'],
+      listingSourceType: card.sourceType,
+    );
+    final expiry = statusTimestampText(context, card.raw['lease_expires_at']);
+    final progress = switch (card.displayStatus) {
+      ClaimDisplayStatus.active => switch (card.taskStatus) {
+        'CONFIRMED' => 'Awaiting route planning.',
+        'PLANNED' => 'Pickup route planned.',
+        'DISPATCHED' => 'Pickup in progress.',
+        _ => null,
+      },
+      ClaimDisplayStatus.needsReview =>
+        'Refresh to verify this claim before attempting pickup.',
+      _ => null,
+    };
+    return Card(
+      key: ValueKey('claim-${card.claimId}'),
+      margin: const EdgeInsets.all(10),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Align(
+              alignment: Alignment.centerRight,
+              child: GeoStatusChip(
+                card.badge,
+                tone: switch (card.tab) {
+                  ClaimTab.reconciliation => GeoTone.warning,
+                  ClaimTab.history => GeoTone.neutral,
+                  _ => null,
+                },
+              ),
+            ),
+            Row(
+              children: [
+                _StoredImageThumbnail(path: card.primaryImagePath),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        card.title ?? card.sourceType ?? 'Claim',
+                        style: geoTitleStyle(context),
+                      ),
+                      Wrap(
+                        spacing: 8,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        children: [
+                          if (collectionPath != null)
+                            GeoStatusChip(
+                              collectionPath,
+                              tone: GeoTone.neutral,
+                            ),
+                          if (card.listingWeightKg != null)
+                            Text('${card.listingWeightKg} kg'),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            if (progress != null)
+              Text(
+                widget.actionRunner == null &&
+                        (card.canStart || card.canComplete)
+                    ? '$progress Open Pickup routes. A claim alone does not authorize pickup.'
+                    : progress,
+              ),
+            if (!_reader.fresh)
+              const Text('Refresh required before claim actions.'),
+            if (expiry != null &&
+                (card.claimStatus == 'ACTIVE' || card.tab == ClaimTab.expired))
+              Text('Lease expiry (database): $expiry'),
+            if (card.displayStatus == ClaimDisplayStatus.reconciliation) ...[
+              const Text(
+                'The listing is not available while handover remains unresolved.',
+              ),
+              if (card.taskStatus == 'DISPATCHED')
+                const Text(
+                  'Pickup was dispatched. The next pickup on its route stays blocked until this is resolved.',
+                ),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: FilledButton.tonalIcon(
+                  key: ValueKey('claim-reconciliation-${card.claimId}'),
+                  onPressed: () => _openReconciliation(card),
+                  icon: const Icon(Icons.fact_check_outlined),
+                  label: const Text('View reconciliation'),
                 ),
               ),
             ],
-          ),
-          GeoStatusChip(card.badge),
-          if (widget.actionRunner == null &&
-              (card.canStart || card.canComplete))
-            const Text(
-              'Open Pickup routes to plan or access an assigned route. A claim alone does not authorize pickup.',
-            ),
-          if (!_reader.fresh)
-            const Text('Refresh required before claim actions.'),
-          Text('Claim · ${friendlyWorkflowStatus(card.claimStatus)}'),
-          Text('Lease · ${friendlyWorkflowStatus(card.leaseStatus)}'),
-          Text(
-            'Lease expiry (database): ${statusTimestampText(context, card.raw['lease_expires_at']) ?? '—'}',
-          ),
-          Text(
-            'Pickup task · ${card.isValidActive && card.taskStatus == 'CONFIRMED' ? 'Awaiting route planning' : friendlyWorkflowStatus(card.taskStatus)}',
-          ),
-          if (card.releaseReason != null)
-            Text('Release reason: ${card.releaseReason}'),
-          if (card.displayStatus == ClaimDisplayStatus.reconciliation) ...[
-            const Text(
-              'The listing is not available while handover remains unresolved.',
-            ),
-            if (card.taskStatus == 'DISPATCHED')
+            if (card.tab == ClaimTab.expired)
               const Text(
-                'Pickup was dispatched. The next pickup on its route stays blocked until this is resolved.',
+                'Expiry does not release this claim or reopen its listing. The database controls recovery.',
               ),
-            Align(
-              alignment: Alignment.centerLeft,
-              child: FilledButton.tonalIcon(
-                key: ValueKey('claim-reconciliation-${card.claimId}'),
-                onPressed: () => _openReconciliation(card),
-                icon: const Icon(Icons.fact_check_outlined),
-                label: const Text('View reconciliation'),
-              ),
+            if (card.tab == ClaimTab.expired && card.taskStatus == 'DISPATCHED')
+              const Text('Pickup started — custody requires review.'),
+            Wrap(
+              spacing: 8,
+              children: [
+                if (widget.actionRunner == null && card.isValidActive)
+                  FilledButton.icon(
+                    key: ValueKey('claim-routes-${card.claimId}'),
+                    onPressed: _reader.fresh && !_busy ? _openRoutes : null,
+                    icon: const Icon(Icons.route),
+                    label: const Text('Pickup routes'),
+                  ),
+                if (card.claimStatus == 'ACTIVE' &&
+                    widget.actionRunner != null &&
+                    const {'CONFIRMED', 'PLANNED'}.contains(card.taskStatus))
+                  OutlinedButton(
+                    onPressed: _allowed(card, 'START_PICKUP')
+                        ? () => _run(card, 'START_PICKUP')
+                        : null,
+                    child: const Text('Start Pickup'),
+                  ),
+                OutlinedButton.icon(
+                  onPressed: () => _openDetails(card),
+                  icon: const Icon(Icons.location_on_outlined),
+                  label: const Text('Claim details'),
+                ),
+                if (card.claimStatus == 'ACTIVE' &&
+                    widget.actionRunner != null &&
+                    card.taskStatus == 'DISPATCHED')
+                  FilledButton(
+                    onPressed: _allowed(card, 'COMPLETE_PICKUP')
+                        ? () => _run(card, 'COMPLETE_PICKUP')
+                        : null,
+                    child: const Text('Confirm Handover'),
+                  ),
+                if (card.claimStatus == 'ACTIVE' &&
+                    card.taskStatus == 'CONFIRMED')
+                  TextButton(
+                    onPressed: _allowed(card, 'CANCEL_CLAIM')
+                        ? () => _cancelClaim(card)
+                        : null,
+                    child: const Text('Cancel Claim'),
+                  ),
+                TextButton.icon(
+                  onPressed: () => _audit(card.claimId),
+                  icon: const Icon(Icons.history),
+                  label: const Text('Audit'),
+                ),
+              ],
             ),
           ],
-          if (card.tab == ClaimTab.expired)
-            const Text(
-              'Expiry does not release this claim or reopen its listing. The database controls recovery.',
-            ),
-          if (card.tab == ClaimTab.expired && card.taskStatus == 'DISPATCHED')
-            const Text('Pickup started — custody requires review.'),
-          Wrap(
-            spacing: 8,
-            children: [
-              if (widget.actionRunner == null && card.isValidActive)
-                FilledButton.icon(
-                  key: ValueKey('claim-routes-${card.claimId}'),
-                  onPressed: _reader.fresh && !_busy ? _openRoutes : null,
-                  icon: const Icon(Icons.route),
-                  label: const Text('Pickup routes'),
-                ),
-              if (card.claimStatus == 'ACTIVE' &&
-                  widget.actionRunner != null &&
-                  const {'CONFIRMED', 'PLANNED'}.contains(card.taskStatus))
-                OutlinedButton(
-                  onPressed: _allowed(card, 'START_PICKUP')
-                      ? () => _run(card, 'START_PICKUP')
-                      : null,
-                  child: const Text('Start Pickup'),
-                ),
-              OutlinedButton.icon(
-                onPressed: () => _openDetails(card),
-                icon: const Icon(Icons.location_on_outlined),
-                label: const Text('Claim details'),
-              ),
-              if (card.claimStatus == 'ACTIVE' &&
-                  widget.actionRunner != null &&
-                  card.taskStatus == 'DISPATCHED')
-                FilledButton(
-                  onPressed: _allowed(card, 'COMPLETE_PICKUP')
-                      ? () => _run(card, 'COMPLETE_PICKUP')
-                      : null,
-                  child: const Text('Confirm Handover'),
-                ),
-              if (card.claimStatus == 'ACTIVE' &&
-                  card.taskStatus == 'CONFIRMED')
-                TextButton(
-                  onPressed: _allowed(card, 'CANCEL_CLAIM')
-                      ? () => _cancelClaim(card)
-                      : null,
-                  child: const Text('Cancel Claim'),
-                ),
-              TextButton.icon(
-                onPressed: () => _audit(card.claimId),
-                icon: const Icon(Icons.history),
-                label: const Text('Audit'),
-              ),
-            ],
-          ),
-          Text(
-            'Claim ID: ${card.claimId}',
-            style: Theme.of(context).textTheme.bodySmall,
-          ),
-        ],
+        ),
       ),
-    ),
-  );
+    );
+  }
 }
 
 class _SavedClaimAttemptsPage extends StatefulWidget {
@@ -2232,14 +2411,14 @@ class _NgoListingDetailsPageState extends State<NgoListingDetailsPage> {
               widget.listing['title']?.toString() ?? 'Community Hub Batch',
               style: Theme.of(context).textTheme.headlineSmall,
             ),
-            Text(
-              '${widget.listing['listing_weight_kg']} kg · ${widget.listing['collection_path'] ?? widget.listing['source_type']}',
-            ),
+            Text('${widget.listing['listing_weight_kg']} kg'),
             const SizedBox(height: 4),
             Text(
-              widget.listing['source_type'] == 'HUB_BATCH'
-                  ? 'Community hub collection'
-                  : 'Direct pickup',
+              collectionPathBadgeLabel(
+                    _currentListing['collection_path'],
+                    listingSourceType: _currentListing['source_type'],
+                  ) ??
+                  'Collection path unavailable',
             ),
             const SizedBox(height: 8),
             Card(
@@ -2558,51 +2737,20 @@ class _ClaimPickupDetailPageState extends State<ClaimPickupDetailPage>
     if (mounted) _refreshDetail();
   }
 
-  Widget _buildClaimHistory(
-    ClaimCard card,
-    List<StatusTimelineEvent> events,
-    String? auditError,
-  ) {
-    final collected =
-        card.displayStatus == ClaimDisplayStatus.collected ||
-        card.displayStatus == ClaimDisplayStatus.completed;
-    final status = collected ? 'Collected' : card.badge;
-    final cover = card.primaryImagePath;
-    return ListView(
-      padding: const EdgeInsets.all(16),
-      children: [
-        Text(
-          card.title ?? card.sourceType ?? 'Claimed pickup',
-          style: Theme.of(context).textTheme.titleLarge,
-        ),
-        Align(
-          alignment: Alignment.centerLeft,
-          child: Chip(label: Text(status)),
-        ),
-        if (collected && card.listingWeightKg != null)
-          _claimDetailRow('Weight', '${card.listingWeightKg} kg'),
-        if (card.displayStatus == ClaimDisplayStatus.expiredPending)
-          const Text(
-            'The lease elapsed. The database still controls recovery.',
+  Widget _section(BuildContext context, String title, List<Widget> children) =>
+      Card(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(title, style: Theme.of(context).textTheme.titleMedium),
+              const SizedBox(height: 8),
+              ...children,
+            ],
           ),
-        if (card.displayStatus == ClaimDisplayStatus.needsReview)
-          const Text('Refresh to verify this claim before attempting pickup.'),
-        if (collected && cover != null && cover.isNotEmpty)
-          _CollectedClaimCover(
-            key: ValueKey((_generation, cover)),
-            path: cover,
-            resolver: widget.photoUrlResolver,
-          ),
-        GeoStatusTimeline(
-          title: 'Claim and Pickup History',
-          currentStatus: status,
-          events: events,
-          errorMessage: auditError,
-          emptyMessage: 'No recorded claim or pickup events are available.',
         ),
-      ],
-    );
-  }
+      );
 
   @override
   Widget build(BuildContext context) =>
@@ -2639,7 +2787,8 @@ class _ClaimPickupDetailPageState extends State<ClaimPickupDetailPage>
         final data = snapshot.data!;
         final constituents = (data['constituents'] as List? ?? const [])
             .cast<Map<String, dynamic>>();
-        final card = data['claim_card'] as Map<String, dynamic>?;
+        final presentation = data['presentation'] as ClaimCard;
+        final card = data['claim_card'] as Map<String, dynamic>;
         final auditRows = (data['audit_events'] as List? ?? const [])
             .cast<Map<String, dynamic>>();
         final claimEvents = recordedAuditEvents(
@@ -2652,7 +2801,7 @@ class _ClaimPickupDetailPageState extends State<ClaimPickupDetailPage>
             'CLAIM_RECONCILIATION_EVIDENCE',
           },
         );
-        final claimedAt = card?['claimed_at']?.toString();
+        final claimedAt = card['claimed_at']?.toString();
         if (claimedAt != null && DateTime.tryParse(claimedAt) != null) {
           claimEvents.insert(
             0,
@@ -2662,66 +2811,84 @@ class _ClaimPickupDetailPageState extends State<ClaimPickupDetailPage>
             ),
           );
         }
-        if (data['card_only'] == true) {
-          return _buildClaimHistory(
-            data['presentation'] as ClaimCard,
-            claimEvents,
-            data['audit_error']?.toString(),
-          );
-        }
+        final cardOnly = data['card_only'] == true;
         final claimStatus = data['claim_status']?.toString();
-        final leaseStatus = data['lease_status']?.toString();
-        final taskStatus = card?['task_status']?.toString();
-        final presentation = data['presentation'] as ClaimCard?;
+        final taskStatus = presentation.taskStatus;
+        final title =
+            presentation.title ?? data['title']?.toString() ?? 'Claimed pickup';
+        final collectionMethod = collectionPathBadgeLabel(
+          data['collection_path'] ?? card['collection_path'],
+          listingSourceType: data['source_type'] ?? presentation.sourceType,
+        );
+        final weight =
+            data['listing_weight_kg'] ?? presentation.listingWeightKg;
+        final cover = presentation.primaryImagePath;
+        final showHistoricalCover =
+            cardOnly &&
+            cover != null &&
+            cover.isNotEmpty &&
+            (presentation.displayStatus == ClaimDisplayStatus.collected ||
+                presentation.displayStatus == ClaimDisplayStatus.completed);
         final isReconciliationRequired =
-            claimStatus == 'RECONCILIATION_REQUIRED' &&
-            presentation?.displayStatus == ClaimDisplayStatus.reconciliation;
+            !cardOnly && claimStatus == 'RECONCILIATION_REQUIRED';
         final privateDonorLocationAllowed =
-            claimStatus == 'ACTIVE' && presentation?.isValidActive == true;
+            claimStatus == 'ACTIVE' && presentation.isValidActive;
         return ListView(
           padding: const EdgeInsets.all(16),
           children: [
-            Text(
-              data['source_type'].toString(),
-              style: Theme.of(context).textTheme.titleLarge,
+            LayoutBuilder(
+              builder: (context, constraints) => Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(child: Text(title, style: geoTitleStyle(context))),
+                  const SizedBox(width: 8),
+                  ConstrainedBox(
+                    constraints: BoxConstraints(
+                      maxWidth: constraints.maxWidth * .58,
+                    ),
+                    child: GeoStatusChip(
+                      presentation.badge,
+                      tone: switch (presentation.tab) {
+                        ClaimTab.reconciliation => GeoTone.warning,
+                        ClaimTab.history => GeoTone.neutral,
+                        _ => null,
+                      },
+                    ),
+                  ),
+                ],
+              ),
             ),
+            if (collectionMethod != null || weight != null) ...[
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 8,
+                runSpacing: 6,
+                children: [
+                  if (collectionMethod != null)
+                    _NgoListingMetric(collectionMethod),
+                  if (weight != null) _NgoListingMetric('$weight kg'),
+                ],
+              ),
+            ],
             const SizedBox(height: 12),
-            Text(
-              'My Claim Status',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            GeoStatusChip(presentation?.badge ?? 'Status Needs Review'),
-            _claimDetailRow('Claim', friendlyWorkflowStatus(claimStatus)),
-            _claimDetailRow(
-              'Listing availability',
-              friendlyWorkflowStatus(data['listing_status']),
-            ),
-            _claimDetailRow(
-              'Claim created',
-              statusTimestampText(context, card?['claimed_at']) ?? '—',
-            ),
-            Text(
-              'Claim Lease Status',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            _claimDetailRow('Lease', friendlyWorkflowStatus(leaseStatus)),
-            _claimDetailRow(
-              'Lease expiration (database)',
-              statusTimestampText(context, data['lease_expires_at']) ?? '—',
-            ),
-            const Text(
-              'The database decides whether a lease is active. Elapsed time alone does not reopen a listing.',
-            ),
-            Text(
-              'Pickup Task Status',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            _claimDetailRow('Pickup task', friendlyWorkflowStatus(taskStatus)),
-            if (isReconciliationRequired ||
-                claimStatus == 'RECONCILIATION_REQUIRED')
+            if (presentation.displayStatus == ClaimDisplayStatus.expiredPending)
+              const GeoNoticeCard(
+                tone: GeoTone.warning,
+                child: Text(
+                  'The lease elapsed. The database still controls recovery.',
+                ),
+              ),
+            if (presentation.displayStatus == ClaimDisplayStatus.needsReview)
+              const GeoNoticeCard(
+                tone: GeoTone.warning,
+                child: Text(
+                  'Refresh to verify this claim before attempting pickup.',
+                ),
+              ),
+            if (isReconciliationRequired)
               GeoNoticeCard(
                 key: const Key('claim-reconciliation-notice'),
-                tone: GeoTone.danger,
+                tone: GeoTone.warning,
                 padding: EdgeInsets.zero,
                 child: Padding(
                   padding: const EdgeInsets.all(14),
@@ -2733,8 +2900,7 @@ class _ClaimPickupDetailPageState extends State<ClaimPickupDetailPage>
                         leading: Icon(Icons.warning_amber_rounded),
                         title: Text('Handover requires reconciliation'),
                         subtitle: Text(
-                          'This claim is unresolved. Do not treat the listing as available. '
-                          'Review the case and submit your handover statement in View Reconciliation.',
+                          'The listing stays unavailable while handover is unresolved. Review the case and submit your statement.',
                         ),
                       ),
                       if (taskStatus == 'DISPATCHED')
@@ -2745,7 +2911,7 @@ class _ClaimPickupDetailPageState extends State<ClaimPickupDetailPage>
                       FilledButton.tonalIcon(
                         key: const Key('claim-detail-view-reconciliation'),
                         onPressed: () => _openReconciliation(
-                          title: card?['title']?.toString(),
+                          title: presentation.title,
                           sourceType: data['source_type']?.toString(),
                           taskStatus: taskStatus,
                         ),
@@ -2756,96 +2922,110 @@ class _ClaimPickupDetailPageState extends State<ClaimPickupDetailPage>
                   ),
                 ),
               ),
+            _section(context, 'Claim summary', [
+              _claimDetailRow('Claim ID', widget.claimId),
+              _claimDetailRow(
+                'Created',
+                statusTimestampText(context, claimedAt),
+              ),
+              _claimDetailRow(
+                'Lease expiry',
+                statusTimestampText(
+                  context,
+                  data['lease_expires_at'] ?? card['lease_expires_at'],
+                ),
+              ),
+              _claimDetailRow(
+                'Pickup task',
+                friendlyWorkflowStatus(taskStatus),
+              ),
+              if (presentation.releaseReason != null)
+                _claimDetailRow('Release reason', presentation.releaseReason),
+            ]),
+            if (showHistoricalCover)
+              _section(context, 'Donation photo', [
+                _CollectedClaimCover(
+                  key: ValueKey((_generation, cover)),
+                  path: cover,
+                  resolver: widget.photoUrlResolver,
+                ),
+              ]),
+            if (!cardOnly) ...[
+              _section(context, 'Pickup location', [
+                if (data['source_type'] == 'DIRECT_DONATION' &&
+                    !privateDonorLocationAllowed)
+                  const ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: Icon(Icons.location_off_outlined),
+                    title: Text('Private donor pickup location hidden'),
+                    subtitle: Text(
+                      'A valid active claim lease is required to view the donor address, coordinates, or navigation.',
+                    ),
+                  )
+                else ...[
+                  _claimDetailRow('Pickup address', data['pickup_address']),
+                  if (data['latitude'] != null && data['longitude'] != null)
+                    _claimDetailRow(
+                      'Validated pickup coordinate',
+                      '${data['latitude']}, ${data['longitude']}',
+                    ),
+                ],
+              ]),
+              _section(context, 'Donation photos and summary', [
+                if (data['photo_error'] != null)
+                  Text(data['photo_error'].toString()),
+                DonationPhotoCarousel(
+                  paths: {
+                    for (final donation in constituents) ...[
+                      if (donation['batch_cover_path'] is String)
+                        donation['batch_cover_path'] as String,
+                      if (donation['primary_image_path'] is String)
+                        donation['primary_image_path'] as String,
+                    ],
+                    for (final image
+                        in (data['donation_images'] as List? ?? const []))
+                      if (image['storage_path'] is String)
+                        image['storage_path'] as String,
+                  }.where((path) => path.isNotEmpty).toList(),
+                  urlResolver: widget.photoUrlResolver,
+                  showLoadErrors: true,
+                  emptyMessage: data['photo_error'] == null
+                      ? 'No donation photos available to your account'
+                      : 'Donation photos could not be loaded',
+                ),
+                if (data['source_type'] == 'HUB_BATCH') ...[
+                  const Divider(),
+                  const Text('Whole donations in this batch'),
+                  for (final donation in constituents)
+                    ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      leading: _StoredImageThumbnail(
+                        path: donation['primary_image_path']?.toString(),
+                        urlResolver: widget.photoUrlResolver,
+                      ),
+                      title: Text(donation['title'].toString()),
+                      subtitle: Text(
+                        '${donation['total_weight_kg'] ?? donation['weight_kg'] ?? '—'} kg · ${friendlyWorkflowStatus(donation['donation_status'])}',
+                      ),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => DonationPhotosPage(
+                            donationId: donation['donation_id'].toString(),
+                            title: donation['title'].toString(),
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ]),
+            ],
             GeoStatusTimeline(
               title: 'Claim and Pickup History',
-              currentStatus: presentation?.badge ?? 'Status Needs Review',
               events: claimEvents,
               errorMessage: data['audit_error']?.toString(),
               emptyMessage: 'No recorded claim or pickup events are available.',
-            ),
-            if (data['source_type'] == 'DIRECT_DONATION' &&
-                !privateDonorLocationAllowed)
-              const ListTile(
-                leading: Icon(Icons.location_off_outlined),
-                title: Text('Private donor pickup location hidden'),
-                subtitle: Text(
-                  'A valid active claim lease is required to view the donor address, coordinates, or navigation.',
-                ),
-              )
-            else ...[
-              _claimDetailRow('Pickup address', data['pickup_address']),
-              if (data['latitude'] != null && data['longitude'] != null)
-                _claimDetailRow(
-                  'Validated pickup coordinate',
-                  '${data['latitude']}, ${data['longitude']}',
-                ),
-            ],
-            _claimDetailRow('Weight', '${data['listing_weight_kg']} kg'),
-            if (data['photo_error'] != null)
-              Text(data['photo_error'].toString()),
-            DonationPhotoCarousel(
-              paths: {
-                for (final donation in constituents) ...[
-                  if (donation['batch_cover_path'] is String)
-                    donation['batch_cover_path'] as String,
-                  if (donation['primary_image_path'] is String)
-                    donation['primary_image_path'] as String,
-                ],
-                for (final image
-                    in (data['donation_images'] as List? ?? const []))
-                  if (image['storage_path'] is String)
-                    image['storage_path'] as String,
-              }.where((path) => path.isNotEmpty).toList(),
-              urlResolver: widget.photoUrlResolver,
-              showLoadErrors: true,
-              emptyMessage: data['photo_error'] == null
-                  ? 'No donation photos available to your account'
-                  : 'Donation photos could not be loaded',
-            ),
-            if (data['source_type'] == 'HUB_BATCH') ...[
-              const Divider(),
-              const Text('Whole donations in this batch'),
-              ...constituents.map(
-                (donation) => ListTile(
-                  leading: _StoredImageThumbnail(
-                    path: donation['primary_image_path']?.toString(),
-                    urlResolver: widget.photoUrlResolver,
-                  ),
-                  title: Text(donation['title'].toString()),
-                  subtitle: Text(
-                    '${donation['total_weight_kg'] ?? donation['weight_kg'] ?? '—'} kg · ${friendlyWorkflowStatus(donation['donation_status'])}',
-                  ),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => DonationPhotosPage(
-                        donationId: donation['donation_id'].toString(),
-                        title: donation['title'].toString(),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-            for (final donation in constituents) ...[
-              GeoStatusTimeline(
-                title: 'Donation Progress · ${donation['title'] ?? 'Donation'}',
-                currentStatus: friendlyWorkflowStatus(
-                  donation['donation_status'],
-                ),
-                pendingMilestones: pendingDonationMilestones(
-                  collectionPath: data['source_type'] == 'HUB_BATCH'
-                      ? 'HUB_COLLECTION'
-                      : 'DIRECT_PICKUP',
-                  currentStatus: donation['donation_status']?.toString(),
-                ),
-                emptyMessage:
-                    'No earlier donation events are available in this claim read.',
-              ),
-            ],
-            const Text(
-              'Exact pickup details are shown only after this NGO has a claim for the listing.',
             ),
           ],
         );
@@ -2897,11 +3077,12 @@ Widget _claimDetailRow(String label, Object? value) => Padding(
   child: Row(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      SizedBox(
-        width: 175,
+      Expanded(
+        flex: 2,
         child: Text(label, style: const TextStyle(fontWeight: FontWeight.w600)),
       ),
-      Expanded(child: Text(value?.toString() ?? '—')),
+      const SizedBox(width: 12),
+      Expanded(flex: 3, child: Text(value?.toString() ?? '—')),
     ],
   ),
 );
@@ -3764,7 +3945,7 @@ class _MyDonationsPageState extends State<MyDonationsPage> {
                 ),
                 title: Text('${d['title']}'),
                 subtitle: Text(
-                  '${d['collection_path']} • ${donationStatusLabel(status: d['donation_status']?.toString(), collectionPath: d['collection_path']?.toString())} • ${d['total_weight_kg'] ?? '—'} kg${d['listing_routing_status'] == null ? '' : ' • route node ${d['listing_routing_status']}'}',
+                  '${collectionPathLabel(d['collection_path']?.toString())} • ${donationStatusLabel(status: d['donation_status']?.toString(), collectionPath: d['collection_path']?.toString())} • ${d['total_weight_kg'] ?? '—'} kg${d['listing_routing_status'] == null ? '' : ' • route node ${d['listing_routing_status']}'}',
                 ),
                 trailing: const Icon(Icons.chevron_right),
                 onTap: () => Navigator.push(
@@ -4199,6 +4380,7 @@ class _DonationDetailPageState extends State<DonationDetailPage> {
         final isHubCollection = shouldShowHubReservationSection(
           d['collection_path']?.toString(),
         );
+        final pathLabel = collectionPathBadgeLabel(d['collection_path']);
         final auditEvents = (d['audit_events'] as List? ?? const [])
             .cast<Map<String, dynamic>>();
         final donationEvents = recordedAuditEvents(
@@ -4308,14 +4490,13 @@ class _DonationDetailPageState extends State<DonationDetailPage> {
                             icon: Icons.scale_outlined,
                             label: '${d['total_weight_kg'] ?? '—'} kg',
                           ),
-                          _DonorInfoChip(
-                            icon: isHubCollection
-                                ? Icons.storefront_outlined
-                                : Icons.local_shipping_outlined,
-                            label: isHubCollection
-                                ? 'Community Hub collection'
-                                : 'Direct pickup',
-                          ),
+                          if (pathLabel != null)
+                            _DonorInfoChip(
+                              icon: pathLabel == 'Hub Collection'
+                                  ? Icons.storefront_outlined
+                                  : Icons.local_shipping_outlined,
+                              label: pathLabel,
+                            ),
                         ],
                       ),
                       if (d['collection_path'] == 'DIRECT_PICKUP')
