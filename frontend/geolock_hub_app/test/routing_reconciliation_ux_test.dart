@@ -321,7 +321,10 @@ void main() {
       await pumpDetail(tester, b);
       expect(find.text(GeoLockStatusText.expiredAwaitingRecovery), findsOneWidget);
       expect(find.text(GeoLockStatusText.expiredReleased), findsOneWidget);
-      expect(find.textContaining('no action is needed'), findsOneWidget);
+      expect(
+        find.text('This pickup was finalized by the backend. No action is needed.'),
+        findsOneWidget,
+      );
       // The released stop stays visible but has no pickup actions.
       expect(find.text('3. Test 42'), findsOneWidget);
       expect(find.widgetWithText(FilledButton, 'Complete pickup'), findsNWidgets(2));
@@ -368,7 +371,11 @@ void main() {
           },
         );
         await pumpDetail(tester, b, coordination: coordination);
-        expect(find.text('Stop 2 — Reconciliation required'), findsOneWidget);
+        expect(
+          find.widgetWithText(Chip, 'Reconciliation required'),
+          findsOneWidget,
+        );
+        expect(find.text('Stop 2 — Reconciliation required'), findsNothing);
         expect(
           find.textContaining("lease expired after dispatch"),
           findsOneWidget,

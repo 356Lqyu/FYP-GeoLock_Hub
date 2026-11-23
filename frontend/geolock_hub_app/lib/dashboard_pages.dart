@@ -26,6 +26,7 @@ import 'hub_admin/hub_notification_page.dart';
 import 'hub_admin/hub_service.dart';
 import 'hub_admin/hub_service_rules_page.dart';
 import 'hub_admin/hub_widgets.dart';
+import 'ui/donation_card_content.dart';
 import 'ui/geolock_role_style.dart';
 
 const _mint = Color(0xffedfbf7);
@@ -578,7 +579,10 @@ class _DonorMyDonationsPageState extends State<DonorMyDonationsPage> {
                     .map((row) => Map<String, dynamic>.from(row as Map))
                     .toList();
               });
-    if (loader == null) return;
+    if (loader == null) {
+      _casesUnavailable = true;
+      return;
+    }
     try {
       final rows = await loader();
       if (!mounted || generation != _casesGeneration) return;
@@ -586,7 +590,8 @@ class _DonorMyDonationsPageState extends State<DonorMyDonationsPage> {
         final direct = [
           for (final row in rows)
             if (row['donation_id'] != null &&
-                row['source_type'] == 'DIRECT_DONATION')
+                row['source_type'] == 'DIRECT_DONATION' &&
+                const {'OPEN', 'MANUAL_REVIEW'}.contains(row['case_status']))
               row,
         ];
         _caseStatus = {
@@ -614,6 +619,9 @@ class _DonorMyDonationsPageState extends State<DonorMyDonationsPage> {
       };
 
   Future<List<Map<String, dynamic>>> _load() async {
+    _caseStatus = null;
+    _caseClaim = const {};
+    _casesUnavailable = false;
     unawaited(_refreshCases());
     if (widget.donationsLoader != null) return widget.donationsLoader!();
     final response = await _dashboardDb.rpc('get_my_donation_dashboard_v2');
@@ -640,8 +648,7 @@ class _DonorMyDonationsPageState extends State<DonorMyDonationsPage> {
     final status = d['donation_status']?.toString();
     return switch (filter) {
       'Active' => _active(status),
-      _reconciliationFilter =>
-        _caseStatus?.containsKey(d['donation_id']?.toString()) == true,
+      _reconciliationFilter => _caseLabel(d) != null,
       'At Hub' => status == 'AT_HUB' || status == 'BATCHED',
       'Claimed' => status == 'CLAIMED',
       'Picked Up' => status == 'PICKUP_IN_PROGRESS' || status == 'COLLECTED',
@@ -690,14 +697,18 @@ class _DonorMyDonationsPageState extends State<DonorMyDonationsPage> {
               future: _data,
               builder: (context, snapshot) {
                 final rows = snapshot.data;
-                final counts = {
-                  if (rows != null)
-                    for (final filter in _filters)
-                      filter: filter == _reconciliationFilter &&
-                              (_caseStatus == null || _casesUnavailable)
-                          ? '—'
-                          : '${rows.where((row) => _matchesStatus(row, filter)).length}',
-                };
+                String chipLabel(String filter) {
+                  if (rows == null) return filter;
+                  if (filter == _reconciliationFilter &&
+                      (_caseStatus == null ||
+                          snapshot.connectionState != ConnectionState.done)) {
+                    return '$filter (—)';
+                  }
+                  final count = rows
+                      .where((row) => _matchesStatus(row, filter))
+                      .length;
+                  return '$filter ($count)';
+                }
                 return SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: Row(
@@ -707,11 +718,7 @@ class _DonorMyDonationsPageState extends State<DonorMyDonationsPage> {
                           padding: const EdgeInsets.only(right: 8),
                           child: ChoiceChip(
                             key: ValueKey('donations-filter-$filter'),
-                            label: Text(
-                              rows == null
-                                  ? filter
-                                  : '$filter (${counts[filter]})',
-                            ),
+                            label: Text(chipLabel(filter)),
                             selected: filter == _filter,
                             onSelected: (_) => setState(() => _filter = filter),
                           ),
@@ -738,22 +745,31 @@ class _DonorMyDonationsPageState extends State<DonorMyDonationsPage> {
             if (!snapshot.hasData) {
               return const Center(child: CircularProgressIndicator());
             }
-            final rows = snapshot.data!.where(_matches).toList();
-            if (_filter == _reconciliationFilter &&
-                (_casesUnavailable || rows.isEmpty)) {
-              return EmptyStateCard(
-                icon: Icons.fact_check_outlined,
-                title: _casesUnavailable
-                    ? 'Reconciliation status unavailable'
-                    : 'No handover reconciliation needed',
-                message: _casesUnavailable
-                    ? 'Pull to refresh or try again later. Your donations are unchanged.'
-                    : 'Donations whose pickup handover needs your statement appear here.',
-                actionLabel: _casesUnavailable ? 'Retry' : null,
-                onAction: _casesUnavailable
-                    ? () => setState(() => _data = _load())
-                    : null,
-              );
+            final donations = snapshot.data!;
+            final rows = donations.where(_matches).toList();
+            if (_filter == _reconciliationFilter) {
+              if (_casesUnavailable) {
+                return EmptyStateCard(
+                  icon: Icons.fact_check_outlined,
+                  title: 'Reconciliation status unavailable',
+                  message:
+                      'Pull to refresh or try again later. Your donations are unchanged.',
+                  actionLabel: 'Retry',
+                  onAction: () => setState(() => _data = _load()),
+                );
+              }
+              if (_caseStatus == null ||
+                  snapshot.connectionState != ConnectionState.done) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              if (!donations.any((row) => _matchesStatus(row, _filter))) {
+                return const EmptyStateCard(
+                  icon: Icons.fact_check_outlined,
+                  title: 'No handover reconciliation needed',
+                  message:
+                      'Donations whose pickup handover needs your statement appear here.',
+                );
+              }
             }
             if (rows.isEmpty) {
               final noDonations = snapshot.data!.isEmpty;
@@ -3012,79 +3028,39 @@ class DonationSummaryCard extends StatelessWidget {
       onTap: onTap,
       child: Padding(
         padding: const EdgeInsets.all(12),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            DonationImage(
-              path: donation['primary_image_path']?.toString(),
-              size: 66,
+        child: DonationCardContent(
+          title: '${donation['title'] ?? 'Donation'}',
+          titleStyle: const TextStyle(fontWeight: FontWeight.w700),
+          badge: StatusBadge(
+            status: donationStatusLabel(
+              status: donation['donation_status']?.toString(),
+              collectionPath: donation['collection_path']?.toString(),
+              reservationStatus: donation['reservation_effective_status']
+                  ?.toString(),
+              inventoryStatus: donation['inventory_status']?.toString(),
+              listingStatus: donation['listing_status']?.toString(),
             ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  OverflowBar(
-                    alignment: MainAxisAlignment.spaceBetween,
-                    overflowAlignment: OverflowBarAlignment.start,
-                    spacing: 8,
-                    overflowSpacing: 4,
-                    children: [
-                      Text(
-                        '${donation['title'] ?? 'Donation'}',
-                        style: const TextStyle(fontWeight: FontWeight.w700),
-                      ),
-                      StatusBadge(
-                        status: donationStatusLabel(
-                          status: donation['donation_status']?.toString(),
-                          collectionPath: donation['collection_path']
-                              ?.toString(),
-                          reservationStatus:
-                              donation['reservation_effective_status']
-                                  ?.toString(),
-                          inventoryStatus: donation['inventory_status']
-                              ?.toString(),
-                          listingStatus: donation['listing_status']?.toString(),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    '${donation['item_count'] ?? '—'} items · ${donation['total_weight_kg'] ?? '—'} kg',
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-                  Text(
-                    collectionPathLabel(donation['collection_path']?.toString()),
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-                  Text(
-                    _date(donation['created_at']),
-                    style: Theme.of(context).textTheme.labelSmall,
-                  ),
-                  const SizedBox(height: 5),
-                  const Text(
-                    'View details →',
-                    style: TextStyle(
-                      color: _green,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
+          ),
+          thumbnail: DonationImage(
+            path: donation['primary_image_path']?.toString(),
+            size: 66,
+          ),
+          facts: {
+            'Weight': '${donation['total_weight_kg'] ?? '—'} kg',
+            'Collection method':
+                collectionPathLabel(donation['collection_path']?.toString()),
+            if (donation['item_count'] case final Object count)
+              'Item entries': '$count',
+            'Created': donationCardDate(donation['created_at']),
+          },
+          footer: const Text(
+            'View details →',
+            style: TextStyle(color: _green, fontWeight: FontWeight.w700),
+          ),
         ),
       ),
     ),
   );
-}
-
-String _date(Object? date) {
-  final parsed = DateTime.tryParse('$date');
-  return parsed == null
-      ? 'Date unavailable'
-      : '${parsed.day}/${parsed.month}/${parsed.year}';
 }
 
 class StatusBadge extends StatelessWidget {

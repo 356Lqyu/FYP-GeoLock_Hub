@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -28,6 +30,7 @@ class _DonorTabHarnessState extends State<_DonorTabHarness> {
       'collection_path': 'DIRECT_PICKUP',
       'total_weight_kg': 20,
       'item_count': 1,
+      'created_at': '2026-10-22T01:00:00Z',
     },
   ];
 
@@ -224,19 +227,145 @@ void main() {
         tester.renderObject<RenderParagraph>(badgeText).didExceedMaxLines,
         isFalse,
       );
-      if (width == 320) {
-        expect(
-          tester.getTopLeft(badgeText).dy,
-          greaterThan(tester.getBottomLeft(titleText).dy),
-        );
-      }
+      expect(
+        tester.getTopLeft(badgeText).dx,
+        greaterThanOrEqualTo(tester.getTopRight(titleText).dx),
+      );
+      expect(
+        tester.getTopLeft(badgeText).dy,
+        closeTo(tester.getTopLeft(titleText).dy, 6),
+      );
       expect(find.text('Hub Collection'), findsOneWidget);
-      expect(find.text('2 items · 8.5 kg'), findsOneWidget);
+      expect(find.text('Collection method'), findsOneWidget);
+      expect(find.text('Weight'), findsOneWidget);
+      expect(find.text('8.5 kg'), findsOneWidget);
+      expect(find.text('Item entries'), findsOneWidget);
+      expect(find.text('2'), findsOneWidget);
+      expect(find.text('Total item quantity'), findsNothing);
+      expect(find.text('Road distance'), findsNothing);
+      expect(find.text('Created'), findsOneWidget);
       expect(find.text('22/10/2026'), findsOneWidget);
       expect(find.text('View details →'), findsOneWidget);
       expect(find.widgetWithText(ChoiceChip, 'All (1)'), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
+  }
+
+  testWidgets('reconciliation count waits for cases and ignores search', (
+    tester,
+  ) async {
+    final cases = Completer<List<Map<String, dynamic>>>();
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: DonorMyDonationsPage(
+            donationsLoader: () async => [
+              for (final title in ['Rice', 'Oil', 'Blankets', 'Vegetables'])
+                {'donation_id': title, 'title': title},
+            ],
+            reconciliationCasesLoader: () => cases.future,
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    final chip = find.byKey(const ValueKey('donations-filter-Reconciliation'));
+    expect(find.text('Reconciliation (—)'), findsOneWidget);
+    await tester.ensureVisible(chip);
+    await tester.tap(chip);
+    await tester.pump();
+    expect(find.text('No handover reconciliation needed'), findsNothing);
+    cases.complete([
+      for (final (id, source, status) in [
+        ('Rice', 'DIRECT_DONATION', 'OPEN'),
+        ('Rice', 'DIRECT_DONATION', 'MANUAL_REVIEW'),
+        ('Oil', 'DIRECT_DONATION', 'OPEN'),
+        ('Blankets', 'HUB_BATCH', 'OPEN'),
+        ('Vegetables', 'DIRECT_DONATION', 'RESOLVED'),
+        ('Missing donation', 'DIRECT_DONATION', 'OPEN'),
+      ])
+        {'donation_id': id, 'source_type': source, 'case_status': status},
+    ]);
+    await tester.pumpAndSettle();
+    expect(find.text('Reconciliation (2)'), findsOneWidget);
+    expect(find.text('Rice'), findsOneWidget);
+    expect(find.text('Oil'), findsOneWidget);
+    expect(find.text('Blankets'), findsNothing);
+    expect(find.text('Vegetables'), findsNothing);
+    await tester.enterText(find.byType(TextField), 'Rice');
+    await tester.pumpAndSettle();
+    expect(
+      find.descendant(
+        of: find.byType(DonationSummaryCard),
+        matching: find.text('Rice'),
+      ),
+      findsOneWidget,
+    );
+    expect(find.text('Oil'), findsNothing);
+    expect(find.text('Reconciliation (2)'), findsOneWidget);
+    await tester.enterText(find.byType(TextField), 'Blankets');
+    await tester.pumpAndSettle();
+    expect(find.text('No matching donations'), findsOneWidget);
+    expect(find.text('Reconciliation (2)'), findsOneWidget);
+  });
+
+  testWidgets('a successful empty case read shows reconciliation zero', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: DonorMyDonationsPage(
+            donationsLoader: () async => [
+              {'donation_id': 'case-free', 'title': 'Rice'},
+            ],
+            reconciliationCasesLoader: () async => [],
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    final chip = find.widgetWithText(ChoiceChip, 'Reconciliation (0)');
+    await tester.ensureVisible(chip);
+    await tester.tap(chip);
+    await tester.pumpAndSettle();
+    expect(find.text('No handover reconciliation needed'), findsOneWidget);
+  });
+
+  for (final description in [null, '', '  ', 'Four sealed bags.']) {
+    testWidgets(
+      'donor detail shows only a nonblank donation description ($description)',
+      (tester) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            home: DonationDetailPage(
+              donationId: 'donation-a',
+              detailLoader: () async => {
+                'title': 'Rice donation',
+                'description': description,
+                'status': 'AVAILABLE',
+                'collection_path': 'DIRECT_HOUSEHOLD',
+                'items': [
+                  {
+                    'item_name': 'Rice bag',
+                    'description': 'Item-specific notes',
+                  },
+                ],
+                'images': [],
+              },
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+        final visible = description?.trim().isNotEmpty ?? false;
+        expect(
+          find.text('Donation description'),
+          visible ? findsOneWidget : findsNothing,
+        );
+        if (visible) expect(find.text(description!), findsOneWidget);
+        expect(find.byType(DonationPhotoCarousel), findsOneWidget);
+      },
+    );
   }
 
   testWidgets('donor tabs reload authoritative status when revisited', (
@@ -293,11 +422,25 @@ void main() {
       );
     await tester.ensureVisible(find.text('Rice donation'));
     await tester.pumpAndSettle();
-    final homeAvailable = find.descendant(
+    final homeCard = find.descendant(
       of: find.byType(DonorHomePage),
-      matching: find.text('Available'),
+      matching: find.byType(DonationSummaryCard),
     );
-    expect(homeAvailable, findsOneWidget);
+    for (final label in [
+      'Available',
+      'Weight',
+      '20 kg',
+      'Collection method',
+      'Direct Pickup',
+      'Item entries',
+      'Created',
+      '22/10/2026',
+    ]) {
+      expect(
+        find.descendant(of: homeCard, matching: find.text(label)),
+        findsOneWidget,
+      );
+    }
   });
 
   testWidgets(

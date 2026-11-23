@@ -176,16 +176,32 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      expect(find.text('Authorised · V2'), findsOneWidget);
+      final summary = find.byKey(const Key('route-summary'));
+      final vehicle = find.descendant(of: summary, matching: find.text('V2'));
+      final badge = find.widgetWithText(Chip, 'Authorised');
       expect(
-        find.text('8.11 km · 44.41 min · 77 kg · 3 pickups'),
-        findsOneWidget,
+        tester.getTopLeft(badge).dx,
+        greaterThan(tester.getTopLeft(vehicle).dx),
       );
-      expect(
-        find.text('Planned departure: 29 Oct 2026, 00:51 MYT'),
-        findsOneWidget,
-      );
-      expect(find.text('Actual pickup start: Not started'), findsOneWidget);
+      for (final text in [
+        'Pickups',
+        '3',
+        'Total weight',
+        '77 kg',
+        'Distance',
+        '8.11 km',
+        'Estimated duration',
+        '44.41 min',
+        'Planned departure',
+        '29 Oct 2026, 00:51 MYT',
+        'Actual pickup start',
+        'Not started',
+      ]) {
+        expect(
+          find.descendant(of: summary, matching: find.text(text)),
+          findsOneWidget,
+        );
+      }
       expect(find.textContaining('29 Oct 2026, 01:02 MYT'), findsOneWidget);
       expect(
         find.text('Road geometry unavailable - markers only.'),
@@ -214,7 +230,7 @@ void main() {
         isNotNull,
       );
       expect(find.text('Start pickup'), findsNothing);
-      expect(find.textContaining('Planned arrival:'), findsNWidgets(3));
+      expect(find.text('Planned arrival'), findsNWidgets(3));
       expect(
         tester
             .widget<FilledButton>(
@@ -265,10 +281,7 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      expect(
-        find.text('Actual pickup start: 29 Oct 2026, 01:00 MYT'),
-        findsOneWidget,
-      );
+      expect(find.text('29 Oct 2026, 01:00 MYT'), findsOneWidget);
       final button = tester.widget<FilledButton>(
         find.widgetWithText(FilledButton, 'Complete pickup').first,
       );
@@ -288,6 +301,97 @@ void main() {
       await tester.pumpWidget(const SizedBox());
     });
   }
+
+  testWidgets('route and stop details fit at 320 px with 120% text', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(320, 740);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final data = fixture(complete: true)
+      ..['route_status'] = 'IN_PROGRESS'
+      ..['vehicle_label'] = 'Community pickup vehicle'
+      ..['actual_started_at'] = '2026-10-28T16:51:13Z'
+      ..['dispatch_block_reason'] = 'PREVIOUS_PICKUP_UNRESOLVED'
+      ..['next_executable_task_id'] = 'task-1';
+    final stops = data['stops'] as List<Map<String, dynamic>>;
+    stops.first
+      ..['title'] = 'Donated supplies for the community centre'
+      ..['source_type'] = 'HUB_BATCH'
+      ..['needs_reconciliation'] = true
+      ..['projected_completion'] = '2026-10-28T17:10:00Z'
+      ..['lease_deadline'] = '2026-10-28T17:30:00Z'
+      ..['projected_feasible'] = false
+      ..['projection_reason'] = 'SOURCE_STALE';
+    stops[1]['task_status'] = 'PLANNED';
+    final repo = NgoRoutingRepository(
+      identity: () => 'synthetic-ngo',
+      rpc: (name, _) async {
+        if (name == 'get_my_claim_cards_v2') return activeClaimCards(data);
+        expect(name, 'get_my_authorized_route');
+        return data;
+      },
+    );
+    await tester.pumpWidget(
+      MaterialApp(
+        builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(
+            context,
+          ).copyWith(textScaler: TextScaler.linear(1.2)),
+          child: child!,
+        ),
+        home: NgoRouteDetailPage(
+          routeId: 'synthetic-route',
+          repository: repo,
+          mapBuilder: (_) => const SizedBox(height: 40),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.widgetWithText(Chip, 'In progress'), findsOneWidget);
+    await tester.scrollUntilVisible(find.text('Reconciliation needed'), 180);
+    await tester.scrollUntilVisible(
+      find.byKey(const Key('dispatch-block-reason')),
+      180,
+    );
+    final action = find.byKey(const Key('view-reconciliation-task-0'));
+    await tester.scrollUntilVisible(action, 240);
+    await tester.pumpAndSettle();
+    final badge = find.widgetWithText(Chip, 'Reconciliation required');
+    final title = find.text('1. Donated supplies for the community centre');
+    expect(
+      tester.getTopLeft(badge).dx,
+      greaterThan(tester.getTopLeft(title).dx),
+    );
+    expect(find.text('Projected finish'), findsOneWidget);
+    expect(find.text('Claim deadline'), findsOneWidget);
+    expect(find.text('Hub Collection'), findsOneWidget);
+    final notice = find.byKey(const Key('stop-reconciliation-task-0'));
+    expect(notice, findsOneWidget);
+    expect(
+      find.descendant(
+        of: notice,
+        matching: find.textContaining('changed after planning'),
+      ),
+      findsOneWidget,
+    );
+    expect(find.text('Stop 1 — Reconciliation required'), findsNothing);
+    expect(tester.widget<OutlinedButton>(action).onPressed, isNotNull);
+    final close = find.widgetWithText(
+      FilledButton,
+      'Confirm depot return and close route',
+    );
+    await tester.scrollUntilVisible(close, 240);
+    await tester.pumpAndSettle();
+    expect(tester.widget<FilledButton>(close).onPressed, isNull);
+    expect(
+      find.text('Complete or resolve all pickups before closing this route.'),
+      findsOneWidget,
+    );
+    expect(tester.takeException(), isNull);
+    await tester.pumpWidget(const SizedBox());
+  });
 
   testWidgets('direct route stop location is hidden at lease expiry', (
     tester,

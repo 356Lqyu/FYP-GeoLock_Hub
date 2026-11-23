@@ -372,6 +372,8 @@ void main() {
       ..._testListing('Rice bags'),
       'collection_path': 'DIRECT_HOUSEHOLD',
       'distance_m': 5200,
+      'listing_created_at': '2026-10-17T09:00:00Z',
+      'created_at': '2026-09-01T09:00:00Z',
     };
     final hub = {
       ..._testListing('Vegetable boxes'),
@@ -379,6 +381,7 @@ void main() {
       'collection_path': 'COMMUNITY_HUB',
       'listing_weight_kg': 9.75,
       'routing_status': 'NOT_ROUTABLE',
+      'listing_created_at': '2026-10-18T09:00:00Z',
     };
 
     Future<void> pumpNarrow(WidgetTester tester, Widget page) async {
@@ -419,6 +422,14 @@ void main() {
       expect(weight, findsOneWidget);
       expect(distance, findsOneWidget);
       expect(find.text('9.75 kg'), findsOneWidget);
+      expect(find.text('Weight'), findsNWidgets(2));
+      expect(find.text('Road distance'), findsOneWidget);
+      expect(find.text('Listing created'), findsNWidgets(2));
+      expect(find.text('17/10/2026'), findsOneWidget);
+      expect(find.text('18/10/2026'), findsOneWidget);
+      expect(find.text('1/9/2026'), findsNothing);
+      expect(find.text('Published'), findsNothing);
+      expect(find.text('Item quantity'), findsNothing);
       final titleBottom = tester.getBottomLeft(find.text('Rice bags')).dy;
       expect(tester.getTopLeft(weight).dy, greaterThan(titleBottom));
       expect(tester.getTopLeft(distance).dy, greaterThan(titleBottom));
@@ -501,7 +512,7 @@ void main() {
       },
     );
 
-    testWidgets('ready eligible card wraps metrics and hides routine notices', (
+    testWidgets('ready eligible card separates metrics and hides routine notices', (
       tester,
     ) async {
       await pumpNarrow(
@@ -528,9 +539,10 @@ void main() {
       expect(weight, findsOneWidget);
       expect(distance, findsOneWidget);
       expect(
-        tester.getTopLeft(distance).dy,
-        greaterThan(tester.getBottomLeft(weight).dy),
+        tester.getTopLeft(distance).dx,
+        greaterThan(tester.getTopLeft(weight).dx),
       );
+      expect(find.text('17/10/2026'), findsOneWidget);
       expect(find.textContaining('Road route ready'), findsNothing);
       expect(
         find.textContaining('The database rechecks eligibility'),
@@ -827,7 +839,10 @@ void main() {
       );
       expect(find.text('Books'), findsOneWidget);
       expect(find.text('Collected'), findsOneWidget);
-      expect(find.text('2 items · 4.5 kg'), findsOneWidget);
+      expect(find.text('Weight'), findsOneWidget);
+      expect(find.text('4.5 kg'), findsOneWidget);
+      expect(find.text('Item entries'), findsOneWidget);
+      expect(find.text('2'), findsOneWidget);
       expect(find.byIcon(Icons.volunteer_activism_outlined), findsOneWidget);
     },
   );

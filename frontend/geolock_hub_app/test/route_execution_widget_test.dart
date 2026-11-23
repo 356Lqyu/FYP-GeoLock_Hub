@@ -138,7 +138,7 @@ void main() {
     expect(find.text('Expired, awaiting recovery'), findsOneWidget);
     expect(
       find.textContaining(
-        'protected backend recovery process has not opened reconciliation yet',
+        'The backend has yet to open reconciliation.',
       ),
       findsOneWidget,
     );
@@ -374,7 +374,7 @@ void main() {
     await open(tester, l);
     expect(find.text('Start Route'), findsOneWidget);
     expect(find.text('Start pickup'), findsNothing);
-    expect(find.textContaining('Planned arrival:'), findsNWidgets(3));
+    expect(find.text('Planned arrival'), findsNWidgets(3));
     await tester.tap(find.text('Start Route'));
     await tester.pumpAndSettle();
     expect(l.writes, ['start:0']);
@@ -397,6 +397,10 @@ void main() {
     ]);
     final close = find.text('Confirm depot return and close route');
     await tester.ensureVisible(close);
+    expect(
+      find.text('Complete or resolve all pickups before closing this route.'),
+      findsNothing,
+    );
     await tester.tap(close);
     await tester.pumpAndSettle();
     expect(l.closed, false);

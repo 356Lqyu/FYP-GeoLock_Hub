@@ -21,6 +21,7 @@ import 'location/location_picker_page.dart';
 import 'location/location_result.dart';
 import 'location/road_routing.dart';
 import 'donation_collection_path.dart';
+import 'ui/donation_card_content.dart';
 import 'donation_photo_rules.dart';
 import 'donation_photo_errors.dart';
 import 'donation_status.dart';
@@ -350,42 +351,18 @@ class NgoListingCardContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final distance = _ngoListingRoadDistance(listing['distance_m']);
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(child: Text(title, style: titleStyle)),
-            const SizedBox(width: 8),
-            NgoCollectionPathBadge(listing: listing),
-          ],
-        ),
-        const SizedBox(height: 6),
-        Row(
-          children: [
-            thumbnail,
-            const SizedBox(width: 10),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Wrap(
-                    spacing: 6,
-                    runSpacing: 4,
-                    children: [
-                      _NgoListingMetric('${listing['listing_weight_kg']} kg'),
-                      if (distance != null) _NgoListingMetric(distance),
-                    ],
-                  ),
-                  if (warning != null) ...[const SizedBox(height: 4), warning!],
-                ],
-              ),
-            ),
-            if (showChevron) const Icon(Icons.chevron_right),
-          ],
-        ),
-      ],
+    return DonationCardContent(
+      title: title,
+      titleStyle: titleStyle,
+      badge: NgoCollectionPathBadge(listing: listing),
+      thumbnail: thumbnail,
+      facts: {
+        'Weight': '${listing['listing_weight_kg'] ?? '—'} kg',
+        'Road distance': ?distance,
+        'Listing created': donationCardDate(listing['listing_created_at']),
+      },
+      trailing: showChevron ? const Icon(Icons.chevron_right) : null,
+      footer: warning,
     );
   }
 }
@@ -4361,6 +4338,7 @@ class _DonationDetailPageState extends State<DonationDetailPage> {
         }
 
         final d = snapshot.data!;
+        final description = d['description'];
         final reservations = (d['hub_reservations'] as List? ?? const [])
             .cast<Map>();
         final items = (d['items'] as List? ?? const []).cast<Map>();
@@ -4464,11 +4442,16 @@ class _DonationDetailPageState extends State<DonationDetailPage> {
                         style: Theme.of(context).textTheme.headlineSmall
                             ?.copyWith(fontWeight: FontWeight.w700),
                       ),
-                      if ((d['description']?.toString().trim().isNotEmpty ??
-                          false)) ...[
-                        const SizedBox(height: 6),
+                      if (description is String &&
+                          description.trim().isNotEmpty) ...[
+                        const SizedBox(height: 10),
                         Text(
-                          d['description'].toString(),
+                          'Donation description',
+                          style: Theme.of(context).textTheme.titleSmall,
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          description,
                           style: Theme.of(context).textTheme.bodyLarge
                               ?.copyWith(
                                 color: const Color(0xff52645d),

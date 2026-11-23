@@ -89,7 +89,7 @@ void main() {
           expect(find.text('Completed pickup'), findsOneWidget);
           expect(find.text('Not collected — resolved'), findsNWidgets(2));
         } else if (status == 'CANCELLED') {
-          expect(find.text('Not started'), findsNWidgets(3));
+          expect(find.widgetWithText(Chip, 'Not started'), findsNWidgets(3));
         }
         expect(find.byKey(const Key('route-diagnostics')), findsNothing);
         for (final internal in [
@@ -102,10 +102,13 @@ void main() {
         ]) {
           expect(find.textContaining(internal), findsNothing);
         }
-        expect(
-          find.text('8.11 km · 44.41 min · 77 kg · 3 pickups'),
-          findsOneWidget,
-        );
+        final summary = find.byKey(const Key('route-summary'));
+        for (final value in ['8.11 km', '44.41 min', '77 kg', '3']) {
+          expect(
+            find.descendant(of: summary, matching: find.text(value)),
+            findsOneWidget,
+          );
+        }
         expect(calls, ['get_my_authorized_route', 'get_my_claim_cards_v2']);
         expect(
           jsonEncode(data),
