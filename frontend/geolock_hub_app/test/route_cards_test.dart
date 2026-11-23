@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:geolock_hub_app/routing/route_card_view.dart';
 import 'package:geolock_hub_app/routing/ngo_routes_page.dart';
 import 'package:geolock_hub_app/routing/ngo_routing_repository.dart';
+import 'package:geolock_hub_app/ui/geolock_role_style.dart';
 import 'route_details_presentation_test.dart' as sample;
 
 void main() {
@@ -138,7 +139,8 @@ void main() {
       await tester.pageBack();
       await tester.pumpAndSettle();
       expect(overviewReads, 2);
-      expect(find.text('V2 · COMPLETED'), findsOneWidget);
+      expect(find.text('V2'), findsOneWidget);
+      expect(find.widgetWithText(GeoStatusChip, 'Completed'), findsOneWidget);
       expect(find.textContaining('Route completed'), findsOneWidget);
       expect(writes.length, 3); // Returning to the list performs reads only.
       await tester.pumpWidget(const SizedBox());
@@ -201,9 +203,17 @@ void main() {
     testWidgets('route card display with detail available=$available', (
       tester,
     ) async {
+      await tester.binding.setSurfaceSize(const Size(320, 740));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
       final row = sample.fixture();
       await tester.pumpWidget(
         MaterialApp(
+          builder: (context, child) => MediaQuery(
+            data: MediaQuery.of(
+              context,
+            ).copyWith(textScaler: TextScaler.linear(1.2)),
+            child: child!,
+          ),
           home: Scaffold(
             body: PickupRouteCard(
               overview: row,
@@ -214,28 +224,21 @@ void main() {
           ),
         ),
       );
-      expect(
-        find.text(
-          available ? 'V2 · AUTHORISED' : 'Assigned vehicle · AUTHORISED',
-        ),
-        findsOneWidget,
-      );
-      expect(
-        find.textContaining(
-          available
-              ? '3 pickups · 77 kg · 8.11 km · 44.41 min'
-              : '— pickups · — kg',
-        ),
-        findsOneWidget,
-      );
+      expect(find.text(available ? 'V2' : 'Assigned vehicle'), findsOneWidget);
+      expect(find.widgetWithText(GeoStatusChip, 'Authorised'), findsOneWidget);
+      expect(find.text('Pickups'), findsOneWidget);
+      expect(find.text(available ? '3' : '—'), findsOneWidget);
+      expect(find.text(available ? '77 kg' : '— kg'), findsOneWidget);
+      expect(find.text('8.11 km'), findsOneWidget);
+      expect(find.text('44.41 min'), findsOneWidget);
+      expect(find.text('Actual pickup start'), findsOneWidget);
       expect(
         find.textContaining(
-          available
-              ? 'Actual pickup start: Not started'
-              : 'Route details unavailable',
+          available ? 'Not started' : 'Route details unavailable',
         ),
         findsOneWidget,
       );
+      expect(tester.takeException(), isNull);
       expect(
         find.textContaining('Ready to start pickup'),
         available ? findsOneWidget : findsNothing,
@@ -257,6 +260,62 @@ void main() {
       }
     });
   }
+
+  testWidgets('route badges distinguish progress, closure and reconciliation', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(320, 740));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    var opens = 0;
+    final row = {
+      ...sample.fixture(start: false),
+      'route_status': 'IN_PROGRESS',
+    };
+    for (final scenario in [
+      (badge: 'In progress', tone: GeoTone.info, close: false, hold: false),
+      (
+        badge: 'Action required',
+        tone: GeoTone.warning,
+        close: true,
+        hold: false,
+      ),
+      (
+        badge: 'Reconciliation required',
+        tone: GeoTone.warning,
+        close: false,
+        hold: true,
+      ),
+    ]) {
+      await tester.pumpWidget(
+        MaterialApp(
+          builder: (context, child) => MediaQuery(
+            data: MediaQuery.of(
+              context,
+            ).copyWith(textScaler: TextScaler.linear(1.2)),
+            child: child!,
+          ),
+          home: Scaffold(
+            body: PickupRouteCard(
+              overview: row,
+              detail: {...row, 'can_close': scenario.close},
+              fresh: true,
+              reconciliationRequired: scenario.hold,
+              onTap: () => opens++,
+            ),
+          ),
+        ),
+      );
+      final badge = find.widgetWithText(GeoStatusChip, scenario.badge);
+      expect(tester.widget<GeoStatusChip>(badge).tone, scenario.tone);
+      expect(
+        tester.getTopLeft(badge).dx,
+        greaterThan(tester.getTopLeft(find.text('V2')).dx),
+      );
+      expect(tester.takeException(), isNull);
+      await tester.tap(find.text('V2'));
+    }
+    expect(opens, 3);
+  });
 
   for (final mode in ['assigned', 'empty', 'failed-read']) {
     final existing = mode != 'empty';
@@ -330,8 +389,14 @@ void main() {
         existing && !failed ? findsOneWidget : findsNothing,
       );
       expect(
-        find.textContaining('Reserved for an existing route'),
+        find.text('Reserved'),
         existing && !failed ? findsOneWidget : findsNothing,
+      );
+      expect(
+        tester
+            .widget<CheckboxListTile>(find.byType(CheckboxListTile))
+            .onChanged,
+        isNull,
       );
       expect(
         find.textContaining('register an available vehicle'),

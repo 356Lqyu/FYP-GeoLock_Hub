@@ -90,12 +90,14 @@ class PhotoReader implements ClaimPickupDetailReader {
           'lease_expires_at': expiry,
           'listing_weight_kg': 10,
         };
-      case 'get_claimed_listing_constituents':
+      case 'get_claimed_listing_constituents_v2':
+        expect(params, {'p_claim': 'claim'});
         return [
           for (final id in ['donation-a', if (batch) 'donation-b'])
             {
               'donation_id': id,
               'title': id,
+              'donation_description': 'Saved description for $id',
               'donation_status': 'CLAIMED',
               'total_weight_kg': 5,
               'primary_image_path': paths ? '$id/cover.jpg' : null,
@@ -164,6 +166,15 @@ void main() {
     ) async {
       final reader = PhotoReader(batch: batch);
       await openPhotos(t, reader);
+      expect(
+        find.text(batch ? 'Hub Collection' : 'Direct Pickup'),
+        findsOneWidget,
+      );
+      expect(find.text(batch ? 'HUB_BATCH' : 'DIRECT_DONATION'), findsNothing);
+      expect(
+        find.text('Whole donations in this batch'),
+        batch ? findsOneWidget : findsNothing,
+      );
       final carousel = t.widget<DonationPhotoCarousel>(
         find.byType(DonationPhotoCarousel),
       );
@@ -172,6 +183,17 @@ void main() {
         containsAll(['donation-a/cover.jpg', 'donation-a/second.jpg']),
       );
       expect(carousel.paths.toSet().length, carousel.paths.length);
+      expect(find.text('Description'), findsNWidgets(batch ? 2 : 1));
+      expect(find.text('Saved description for donation-a'), findsOneWidget);
+      if (batch) {
+        for (final id in ['donation-a', 'donation-b']) {
+          final tile = find.ancestor(of: find.text(id), matching: find.byType(ListTile));
+          expect(
+            find.descendant(of: tile, matching: find.text('Saved description for $id')),
+            findsOneWidget,
+          );
+        }
+      }
       expect(
         reader.photoIds,
         batch ? ['donation-a', 'donation-b'] : ['donation-a'],

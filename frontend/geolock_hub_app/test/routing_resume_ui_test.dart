@@ -329,12 +329,13 @@ void main() {
             find.textContaining(
               'No feasible route was found for your previous selection',
             ),
-            findsOneWidget,
+            findsNothing,
           );
           expect(
             find.text('No feasible route was found. No route was authorized.'),
             findsOneWidget,
           );
+          expect(find.text('Get help'), findsOneWidget);
         }
       },
     );
@@ -599,7 +600,7 @@ void main() {
           MaterialApp(home: NgoRoutesPage(repository: make())),
         );
         await tester.pumpAndSettle();
-        expect(find.textContaining('AUTHORISED'), findsOneWidget);
+        expect(find.widgetWithText(Chip, 'Authorised'), findsOneWidget);
         await tester.pumpWidget(const SizedBox());
         await tester.pumpAndSettle();
       }

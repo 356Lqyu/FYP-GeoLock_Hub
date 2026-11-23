@@ -357,7 +357,7 @@ void main() {
       ),
     );
     expect(
-      find.textContaining('Action required · Reconciliation required'),
+      find.widgetWithText(Chip, 'Reconciliation required'),
       findsOneWidget,
     );
     expect(find.text('Review Reconciliation'), findsNothing);

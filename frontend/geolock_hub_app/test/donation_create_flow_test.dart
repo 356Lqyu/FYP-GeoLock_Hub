@@ -20,6 +20,39 @@ double _total(int quantity, double unitWeightKg) => donationTotalWeightKg([
 ])!;
 
 void main() {
+  test('collection labels distinguish donation paths from listing sources', () {
+    expect(collectionPathBadgeLabel('DIRECT_HOUSEHOLD'), 'Direct Pickup');
+    expect(collectionPathBadgeLabel('COMMUNITY_HUB'), 'Hub Collection');
+    expect(collectionPathBadgeLabel('DIRECT_PICKUP'), 'Direct Pickup');
+    expect(collectionPathBadgeLabel('HUB_COLLECTION'), 'Hub Collection');
+    expect(
+      collectionPathBadgeLabel(null, listingSourceType: 'DIRECT_DONATION'),
+      'Direct Pickup',
+    );
+    expect(
+      collectionPathBadgeLabel(null, listingSourceType: 'HUB_BATCH'),
+      'Hub Collection',
+    );
+    expect(
+      collectionPathBadgeLabel('COMMUNITY_HUB', listingSourceType: 'DIRECT_DONATION'),
+      'Hub Collection',
+    );
+    expect(
+      collectionPathBadgeLabel('UNKNOWN_PATH', listingSourceType: 'DIRECT_DONATION'),
+      isNull,
+    );
+    expect(collectionPathBadgeLabel('HUB_BATCH'), isNull);
+    expect(collectionPathBadgeLabel('DIRECT_DONATION'), isNull);
+    expect(
+      collectionPathBadgeLabel(null, listingSourceType: 'DIRECT_PICKUP'),
+      isNull,
+    );
+    expect(
+      collectionPathBadgeLabel(null, listingSourceType: 'UNKNOWN_SOURCE'),
+      isNull,
+    );
+  });
+
   group('weight → collection path preview', () {
     test('9.9 kg previews community hub', () {
       final total = _total(99, 0.1);
@@ -572,7 +605,7 @@ void main() {
         'total_weight_kg': 12,
       }, (value) => result = value);
       expect(find.textContaining('Available'), findsOneWidget);
-      expect(find.textContaining('Direct pickup'), findsOneWidget);
+      expect(find.textContaining('Direct Pickup'), findsOneWidget);
       expect(
         find.textContaining(
           'Road route ready: verified NGOs within 20 km by road can claim it',
@@ -596,7 +629,7 @@ void main() {
         'total_weight_kg': 5,
       }, (value) => result = value);
       expect(find.textContaining('Awaiting Hub Selection'), findsOneWidget);
-      expect(find.textContaining('Community hub'), findsOneWidget);
+      expect(find.textContaining('Hub Collection'), findsOneWidget);
       await tester.tap(find.text('Choose a community hub'));
       await tester.pumpAndSettle();
       expect(result, isTrue);

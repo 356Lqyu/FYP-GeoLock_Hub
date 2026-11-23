@@ -1,8 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:geolock_hub_app/dashboard_pages.dart';
 import 'package:geolock_hub_app/donation_pages.dart';
 import 'package:geolock_hub_app/routing/route_resolution_repository.dart';
+import 'package:geolock_hub_app/ui/geolock_role_style.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class _DonorTabHarness extends StatefulWidget {
@@ -10,6 +14,17 @@ class _DonorTabHarness extends StatefulWidget {
 
   @override
   State<_DonorTabHarness> createState() => _DonorTabHarnessState();
+}
+
+class _DonationNavigationObserver extends NavigatorObserver {
+  MaterialPageRoute<dynamic>? detailsRoute;
+
+  @override
+  void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    if (previousRoute != null && route is MaterialPageRoute<dynamic>) {
+      detailsRoute = route;
+    }
+  }
 }
 
 class _DonorTabHarnessState extends State<_DonorTabHarness> {
@@ -27,6 +42,8 @@ class _DonorTabHarnessState extends State<_DonorTabHarness> {
       'collection_path': 'DIRECT_PICKUP',
       'total_weight_kg': 20,
       'item_count': 1,
+      'total_item_quantity': 6,
+      'created_at': '2026-10-22T01:00:00Z',
     },
   ];
 
@@ -76,6 +93,498 @@ class _DonorTabHarnessState extends State<_DonorTabHarness> {
 void main() {
   setUp(() => SharedPreferences.setMockInitialValues({}));
 
+  testWidgets('donation filters count all loaded rows at 320 px', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(320, 800));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    const statuses = [
+      'AVAILABLE',
+      'AT_HUB',
+      'CLAIMED',
+      'PICKUP_IN_PROGRESS',
+      'COLLECTED',
+      'CANCELLED',
+    ];
+    await tester.pumpWidget(
+      MaterialApp(
+        builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(
+            context,
+          ).copyWith(textScaler: TextScaler.linear(1.2)),
+          child: child!,
+        ),
+        home: Scaffold(
+          body: DonorMyDonationsPage(
+            donationsLoader: () async => [
+              for (final status in statuses)
+                {
+                  'donation_id': status,
+                  'title': 'Donation $status',
+                  'donation_status': status,
+                  'collection_path': 'DIRECT_PICKUP',
+                },
+            ],
+            reconciliationCasesLoader: () async => [
+              {
+                'donation_id': 'PICKUP_IN_PROGRESS',
+                'source_type': 'DIRECT_DONATION',
+                'case_status': 'OPEN',
+              },
+            ],
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    const filters = {
+      'All': statuses,
+      'Active': ['AVAILABLE', 'AT_HUB', 'CLAIMED', 'PICKUP_IN_PROGRESS'],
+      'Reconciliation': ['PICKUP_IN_PROGRESS'],
+      'At Hub': ['AT_HUB'],
+      'Claimed': ['CLAIMED'],
+      'Picked Up': ['PICKUP_IN_PROGRESS', 'COLLECTED'],
+      'Completed': ['COLLECTED'],
+      'Cancelled': ['CANCELLED'],
+    };
+    final chips = tester.widgetList<ChoiceChip>(find.byType(ChoiceChip));
+    expect(chips.map((chip) => (chip.label as Text).data), [
+      for (final entry in filters.entries) '${entry.key} (${entry.value.length})',
+    ]);
+    expect(chips.map((chip) => chip.shape), everyElement(geoFilterChipShape));
+    expect(
+      chips.where((chip) => chip.selected).map((chip) => (chip.label as Text).data),
+      ['All (6)'],
+    );
+    for (final entry in filters.entries) {
+      final chip = find.widgetWithText(
+        ChoiceChip,
+        '${entry.key} (${entry.value.length})',
+      );
+      await tester.ensureVisible(chip);
+      await tester.pumpAndSettle();
+      await tester.tap(chip);
+      await tester.pumpAndSettle();
+      expect(tester.widget<ChoiceChip>(chip).selected, isTrue);
+      final list = find.byType(ListView);
+      expect(
+        tester.widget<ListView>(list).childrenDelegate.estimatedChildCount,
+        entry.value.length,
+      );
+      final scrollable = find.descendant(
+        of: list,
+        matching: find.byType(Scrollable),
+      );
+      tester.state<ScrollableState>(scrollable).position.jumpTo(0);
+      await tester.pumpAndSettle();
+      for (final status in entry.value) {
+        final donation = find.text('Donation $status');
+        await tester.scrollUntilVisible(donation, 150, scrollable: scrollable);
+        expect(donation, findsOneWidget);
+      }
+    }
+    await tester.enterText(find.byType(TextField), 'missing donation');
+    await tester.pumpAndSettle();
+    expect(find.text('No matching donations'), findsOneWidget);
+    for (final entry in filters.entries) {
+      final chip = find.widgetWithText(
+        ChoiceChip,
+        '${entry.key} (${entry.value.length})',
+      );
+      final label = find.descendant(of: chip, matching: find.byType(Text));
+      await Scrollable.ensureVisible(tester.element(label), alignment: 0.5);
+      await tester.pumpAndSettle();
+      expect(tester.renderObject<RenderParagraph>(label).didExceedMaxLines, isFalse);
+      expect(chip.hitTestable(), findsOneWidget);
+      await tester.tap(chip);
+      await tester.pumpAndSettle();
+      expect(tester.widget<ChoiceChip>(chip).selected, isTrue);
+    }
+    expect(tester.takeException(), isNull);
+  });
+
+  for (final width in [320.0, 480.0]) {
+    testWidgets('donation cards keep long statuses readable at $width px', (
+      tester,
+    ) async {
+      await tester.binding.setSurfaceSize(Size(width, 800));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      const title = 'Fresh vegetables for local families';
+      const status = 'Hub Assignment Needs Review';
+      await tester.pumpWidget(
+        MaterialApp(
+          builder: (context, child) => MediaQuery(
+            data: MediaQuery.of(context).copyWith(
+              textScaler: TextScaler.linear(1.2),
+            ),
+            child: child!,
+          ),
+          home: Scaffold(
+            body: DonorMyDonationsPage(
+              donationsLoader: () async => [
+                {
+                  'donation_id': 'hub-donation',
+                  'title': title,
+                  'donation_status': 'HUB_ASSIGNED',
+                  'collection_path': 'COMMUNITY_HUB',
+                  'total_weight_kg': 8.5,
+                  'item_count': 2,
+                  'total_item_quantity': 7,
+                  'created_at': '2026-10-22T01:00:00Z',
+                },
+              ],
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final titleText = find.text(title);
+      final badgeText = find.text(status);
+      expect(
+        tester.renderObject<RenderParagraph>(titleText).didExceedMaxLines,
+        isFalse,
+      );
+      expect(
+        tester.renderObject<RenderParagraph>(badgeText).didExceedMaxLines,
+        isFalse,
+      );
+      expect(
+        tester.getTopLeft(badgeText).dx,
+        greaterThanOrEqualTo(tester.getTopRight(titleText).dx),
+      );
+      expect(
+        tester.getTopLeft(badgeText).dy,
+        closeTo(tester.getTopLeft(titleText).dy, 6),
+      );
+      expect(find.text('Hub Collection'), findsOneWidget);
+      expect(find.text('Collection method'), findsOneWidget);
+      expect(find.text('Weight'), findsOneWidget);
+      expect(find.text('8.5 kg'), findsOneWidget);
+      expect(find.text('Item entries'), findsOneWidget);
+      expect(find.text('2'), findsOneWidget);
+      expect(find.text('Total quantity'), findsOneWidget);
+      expect(find.text('7'), findsOneWidget);
+      expect(find.text('Road distance'), findsNothing);
+      expect(find.text('Created'), findsOneWidget);
+      expect(find.text('22/10/2026'), findsOneWidget);
+      expect(find.text('View details →'), findsNothing);
+      expect(find.widgetWithText(ChoiceChip, 'All (1)'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+  }
+
+  testWidgets('reconciliation count waits for cases and ignores search', (
+    tester,
+  ) async {
+    final cases = Completer<List<Map<String, dynamic>>>();
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: DonorMyDonationsPage(
+            donationsLoader: () async => [
+              for (final title in ['Rice', 'Oil', 'Blankets', 'Vegetables'])
+                {'donation_id': title, 'title': title},
+            ],
+            reconciliationCasesLoader: () => cases.future,
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    final chip = find.byKey(const ValueKey('donations-filter-Reconciliation'));
+    expect(find.text('Reconciliation (…)'), findsOneWidget);
+    expect(find.text('Reconciliation (—)'), findsNothing);
+    await tester.ensureVisible(chip);
+    await tester.tap(chip);
+    await tester.pump();
+    expect(find.text('No handover reconciliation needed'), findsNothing);
+    cases.complete([
+      for (final (id, source, status) in [
+        ('Rice', 'DIRECT_DONATION', 'OPEN'),
+        ('Rice', 'DIRECT_DONATION', 'MANUAL_REVIEW'),
+        ('Oil', 'DIRECT_DONATION', 'OPEN'),
+        ('Blankets', 'HUB_BATCH', 'OPEN'),
+        ('Vegetables', 'DIRECT_DONATION', 'RESOLVED'),
+        ('Missing donation', 'DIRECT_DONATION', 'OPEN'),
+      ])
+        {'donation_id': id, 'source_type': source, 'case_status': status},
+    ]);
+    await tester.pumpAndSettle();
+    expect(find.text('Reconciliation (2)'), findsOneWidget);
+    expect(find.text('Rice'), findsOneWidget);
+    expect(find.text('Oil'), findsOneWidget);
+    expect(find.text('Blankets'), findsNothing);
+    expect(find.text('Vegetables'), findsNothing);
+    await tester.enterText(find.byType(TextField), 'Rice');
+    await tester.pumpAndSettle();
+    expect(
+      find.descendant(
+        of: find.byType(DonationSummaryCard),
+        matching: find.text('Rice'),
+      ),
+      findsOneWidget,
+    );
+    expect(find.text('Oil'), findsNothing);
+    expect(find.text('Reconciliation (2)'), findsOneWidget);
+    await tester.enterText(find.byType(TextField), 'Blankets');
+    await tester.pumpAndSettle();
+    expect(find.text('No matching donations'), findsOneWidget);
+    expect(find.text('Reconciliation (2)'), findsOneWidget);
+  });
+
+  testWidgets('an inbox timeout can retry without reloading donations', (
+    tester,
+  ) async {
+    final slowRead = Completer<List<Map<String, dynamic>>>();
+    var donationReads = 0;
+    var caseReads = 0;
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: DonorMyDonationsPage(
+            donationsLoader: () async {
+              donationReads++;
+              return [
+                {'donation_id': 'rice', 'title': 'Rice'},
+              ];
+            },
+            reconciliationCasesLoader: () {
+              caseReads++;
+              return caseReads == 1 ? slowRead.future : Future.value([]);
+            },
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    final chip = find.byKey(const ValueKey('donations-filter-Reconciliation'));
+    await tester.ensureVisible(chip);
+    await tester.tap(chip);
+    await tester.pump();
+    expect(find.text('Reconciliation (…)'), findsOneWidget);
+    await tester.pump(const Duration(seconds: 16));
+    await tester.pumpAndSettle();
+    expect(find.text('Reconciliation (—)'), findsOneWidget);
+    expect(find.text('Reconciliation status unavailable'), findsOneWidget);
+    await tester.tap(find.text('Retry'));
+    await tester.pumpAndSettle();
+    expect(find.text('Reconciliation (0)'), findsOneWidget);
+    expect(find.text('No handover reconciliation needed'), findsOneWidget);
+    expect(donationReads, 1);
+    expect(caseReads, 2);
+    slowRead.complete([
+      {
+        'donation_id': 'rice',
+        'source_type': 'DIRECT_DONATION',
+        'case_status': 'OPEN',
+      },
+    ]);
+    await tester.pumpAndSettle();
+    expect(find.text('Reconciliation (0)'), findsOneWidget);
+  });
+
+  testWidgets('an open direct case without a donation ID cannot count as zero', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: DonorMyDonationsPage(
+            donationsLoader: () async => [
+              {'donation_id': 'rice', 'title': 'Rice'},
+            ],
+            reconciliationCasesLoader: () async => [
+              {'source_type': 'DIRECT_DONATION', 'case_status': 'OPEN'},
+            ],
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Reconciliation (—)'), findsOneWidget);
+    expect(find.text('Reconciliation (0)'), findsNothing);
+    expect(find.text('Rice'), findsOneWidget);
+  });
+
+  for (final myDonations in [false, true]) {
+    testWidgets('donor card chevron opens the same donation, list=$myDonations', (
+      tester,
+    ) async {
+      await tester.binding.setSurfaceSize(const Size(800, 1200));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      final observer = _DonationNavigationObserver();
+      await tester.pumpWidget(
+        MaterialApp(
+          navigatorObservers: [observer],
+          home: const _DonorTabHarness(),
+        ),
+      );
+      await tester.pumpAndSettle();
+      if (myDonations) {
+        await tester.tap(find.text('My Donations'));
+        await tester.pumpAndSettle();
+      }
+      final title = find.text('Rice donation');
+      await tester.ensureVisible(title);
+      await tester.pumpAndSettle();
+      final card = find.ancestor(
+        of: title,
+        matching: find.byType(DonationSummaryCard),
+      );
+      final chevron = find.descendant(
+        of: card,
+        matching: find.byIcon(Icons.chevron_right),
+      );
+      await tester.ensureVisible(chevron);
+      await tester.pumpAndSettle();
+      final bounds = tester.getRect(
+        find.descendant(of: card, matching: find.byType(InkWell)),
+      );
+      final icon = tester.getRect(chevron);
+      expect(bounds.right - icon.right, closeTo(12, 1));
+      expect(bounds.bottom - icon.bottom, closeTo(12, 1));
+      expect(find.text('View details →'), findsNothing);
+      await tester.tap(chevron);
+      expect(observer.detailsRoute, isNotNull);
+      final page = observer.detailsRoute!.builder(tester.element(card));
+      expect(page, isA<DonationDetailPage>());
+      expect((page as DonationDetailPage).donationId, 'donation-a');
+      await tester.pumpWidget(const SizedBox());
+    });
+  }
+
+  testWidgets('a successful empty case read shows reconciliation zero', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: DonorMyDonationsPage(
+            donationsLoader: () async => [
+              {'donation_id': 'case-free', 'title': 'Rice'},
+            ],
+            reconciliationCasesLoader: () async => [],
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    final chip = find.widgetWithText(ChoiceChip, 'Reconciliation (0)');
+    await tester.ensureVisible(chip);
+    await tester.tap(chip);
+    await tester.pumpAndSettle();
+    expect(find.text('No handover reconciliation needed'), findsOneWidget);
+  });
+
+  for (final tapChevron in [false, true]) {
+    testWidgets(
+      'reconciliation card opens donation details, chevron=$tapChevron',
+      (tester) async {
+        tester.view.physicalSize = const Size(320, 900);
+        tester.view.devicePixelRatio = 1;
+        addTearDown(tester.view.resetPhysicalSize);
+        addTearDown(tester.view.resetDevicePixelRatio);
+        final observer = _DonationNavigationObserver();
+        await tester.pumpWidget(
+          MaterialApp(
+            navigatorObservers: [observer],
+            builder: (context, child) => MediaQuery(
+              data: MediaQuery.of(
+                context,
+              ).copyWith(textScaler: TextScaler.linear(1.2)),
+              child: child!,
+            ),
+            home: Scaffold(
+              body: DonorMyDonationsPage(
+                donationsLoader: () async => [
+                  {'donation_id': 'donation-a', 'title': 'Rice donation'},
+                  {'donation_id': 'donation-b', 'title': 'Ordinary donation'},
+                ],
+                reconciliationCasesLoader: () async => [
+                  {
+                    'donation_id': 'donation-a',
+                    'claim_id': 'claim-a',
+                    'source_type': 'DIRECT_DONATION',
+                    'case_status': 'OPEN',
+                  },
+                ],
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+        final card = find.ancestor(
+          of: find.text('Rice donation'),
+          matching: find.byType(DonationSummaryCard),
+        );
+        final ordinary = find.ancestor(
+          of: find.text('Ordinary donation'),
+          matching: find.byType(DonationSummaryCard),
+        );
+        expect(
+          find.descendant(
+            of: ordinary,
+            matching: find.text('View reconciliation'),
+          ),
+          findsNothing,
+        );
+        final target = tapChevron
+            ? find.descendant(
+                of: card,
+                matching: find.byIcon(Icons.chevron_right),
+              )
+            : find.text('Rice donation');
+        await tester.ensureVisible(target);
+        await tester.pumpAndSettle();
+        await tester.tap(target);
+        expect(observer.detailsRoute, isNotNull);
+        final details = observer.detailsRoute!.builder(tester.element(card));
+        expect(details, isA<DonationDetailPage>());
+        expect((details as DonationDetailPage).donationId, 'donation-a');
+        expect(tester.takeException(), isNull);
+        await tester.pumpWidget(const SizedBox());
+      },
+    );
+  }
+
+  for (final description in [null, '', '  ', 'Four sealed bags.']) {
+    testWidgets(
+      'donor detail shows only a nonblank donation description ($description)',
+      (tester) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            home: DonationDetailPage(
+              donationId: 'donation-a',
+              detailLoader: () async => {
+                'title': 'Rice donation',
+                'description': description,
+                'status': 'AVAILABLE',
+                'collection_path': 'DIRECT_HOUSEHOLD',
+                'items': [
+                  {
+                    'item_name': 'Rice bag',
+                    'description': 'Item-specific notes',
+                  },
+                ],
+                'images': [],
+              },
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+        final visible = description?.trim().isNotEmpty ?? false;
+        expect(
+          find.text('Donation description'),
+          visible ? findsOneWidget : findsNothing,
+        );
+        if (visible) expect(find.text(description!), findsOneWidget);
+        expect(find.byType(DonationPhotoCarousel), findsOneWidget);
+      },
+    );
+  }
+
   testWidgets('donor tabs reload authoritative status when revisited', (
     tester,
   ) async {
@@ -106,11 +615,17 @@ void main() {
     );
     expect(cardAvailable, findsOneWidget);
     expect(cardClaimed, findsNothing);
-      await tester.tap(find.text('Claimed'));
-      await tester.pumpAndSettle();
-      expect(find.text('No matching donations'), findsOneWidget);
-      await tester.tap(find.text('All'));
-      await tester.pumpAndSettle();
+    final claimed = find.text('Claimed (0)');
+    await tester.ensureVisible(claimed);
+    await tester.pumpAndSettle();
+    await tester.tap(claimed);
+    await tester.pumpAndSettle();
+    expect(find.text('No matching donations'), findsOneWidget);
+    final all = find.text('All (1)');
+    await tester.ensureVisible(all);
+    await tester.pumpAndSettle();
+    await tester.tap(all);
+    await tester.pumpAndSettle();
 
     await tester.tap(find.byIcon(Icons.home));
     await tester.pumpAndSettle();
@@ -124,11 +639,27 @@ void main() {
       );
     await tester.ensureVisible(find.text('Rice donation'));
     await tester.pumpAndSettle();
-    final homeAvailable = find.descendant(
+    final homeCard = find.descendant(
       of: find.byType(DonorHomePage),
-      matching: find.text('Available'),
+      matching: find.byType(DonationSummaryCard),
     );
-    expect(homeAvailable, findsOneWidget);
+    for (final label in [
+      'Available',
+      'Weight',
+      '20 kg',
+      'Collection method',
+      'Direct Pickup',
+      'Item entries',
+      'Total quantity',
+      '6',
+      'Created',
+      '22/10/2026',
+    ]) {
+      expect(
+        find.descendant(of: homeCard, matching: find.text(label)),
+        findsOneWidget,
+      );
+    }
   });
 
   testWidgets(

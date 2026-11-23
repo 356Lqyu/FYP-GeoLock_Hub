@@ -1,10 +1,12 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:geolock_hub_app/claim_card.dart';
 import 'package:geolock_hub_app/claim_cards_controller.dart';
 import 'package:geolock_hub_app/donation_pages.dart';
 import 'package:geolock_hub_app/dashboard_pages.dart';
+import 'package:geolock_hub_app/ui/geolock_role_style.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Map<String, dynamic> cardJson([Map<String, dynamic> overrides = const {}]) => {
@@ -194,8 +196,16 @@ void main() {
   testWidgets('every tab uses badges and expired actions are disabled', (
     tester,
   ) async {
+    await tester.binding.setSurfaceSize(const Size(320, 800));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
     await tester.pumpWidget(
       MaterialApp(
+        builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(
+            context,
+          ).copyWith(textScaler: TextScaler.linear(1.2)),
+          child: child!,
+        ),
         home: MyClaimsPage(
           claimsLoader: () async => [
             cardJson(),
@@ -210,30 +220,108 @@ void main() {
               'claim_id': 'released',
               'title': 'Released claim',
               'claim_status': 'RELEASED',
+              'source_type': 'HUB_BATCH',
+            }),
+            cardJson({
+              'claim_id': 'reconciliation',
+              'title': 'Handover review',
+              'claim_status': 'RECONCILIATION_REQUIRED',
+              'task_status': 'DISPATCHED',
             }),
           ],
         ),
       ),
     );
     await tester.pumpAndSettle();
+    final filters = tester.widgetList<ChoiceChip>(find.byType(ChoiceChip));
+    expect(filters.map((chip) => (chip.label as Text).data), [
+      'Active (1)',
+      'Reconciliation (1)',
+      'Expired (1)',
+      'History (1)',
+      'All (4)',
+    ]);
+    expect(filters.map((chip) => chip.shape), everyElement(geoFilterChipShape));
+    expect(filters.map((chip) => chip.selected), [
+      true,
+      false,
+      false,
+      false,
+      false,
+    ]);
     expect(find.text('Owned claim'), findsOneWidget);
-    await tester.tap(find.byKey(const ValueKey('claims-tab-expired')));
-    await tester.pumpAndSettle();
+    final activeBadge = find.widgetWithText(GeoStatusChip, 'Active');
+    final activeCard = find.byKey(const ValueKey('claim-claim-1'));
+    expect(
+      tester.getCenter(activeBadge).dx,
+      greaterThan(tester.getCenter(activeCard).dx),
+    );
+    expect(
+      tester.getTopLeft(activeBadge).dy,
+      closeTo(tester.getTopLeft(find.text('Owned claim')).dy, 5),
+    );
+    expect(find.widgetWithText(GeoStatusChip, 'Direct Pickup'), findsOneWidget);
+    expect(find.text('Claim created'), findsOneWidget);
+    expect(find.text('Lease expires'), findsOneWidget);
+    expect(find.text('Pickup status'), findsOneWidget);
+    expect(find.text('12 kg'), findsOneWidget);
+    expect(find.widgetWithText(FilledButton, 'Pickup routes'), findsOneWidget);
+    expect(find.widgetWithText(OutlinedButton, 'Claim details'), findsOneWidget);
+    expect(
+      tester.getTopLeft(find.text('Audit')).dy,
+      greaterThan(tester.getTopLeft(find.text('Pickup routes')).dy),
+    );
+    expect(find.textContaining('Claim ID:'), findsNothing);
+    expect(find.textContaining('Pickup task ·'), findsNothing);
+
+    Future<void> selectTab(String name) async {
+      final chip = find.byKey(ValueKey('claims-tab-$name'));
+      final label = find.descendant(of: chip, matching: find.byType(Text));
+      await Scrollable.ensureVisible(tester.element(chip), alignment: 0.5);
+      await tester.pumpAndSettle();
+      expect(chip.hitTestable(), findsOneWidget);
+      expect(
+        tester.renderObject<RenderParagraph>(label).didExceedMaxLines,
+        isFalse,
+      );
+      await tester.tap(chip);
+      await tester.pumpAndSettle();
+      expect(tester.widget<ChoiceChip>(chip).selected, isTrue);
+    }
+
+    await selectTab('expired');
     expect(find.text('Expired, awaiting recovery'), findsOneWidget);
+    expect(find.textContaining('database controls recovery'), findsOneWidget);
     expect(find.text('Start Pickup'), findsNothing);
     expect(find.byKey(const ValueKey('claim-routes-expired')), findsNothing);
-    expect(
-      tester
-          .widget<TextButton>(find.widgetWithText(TextButton, 'Cancel Claim'))
-          .onPressed,
-      isNull,
-    );
-    await tester.tap(find.byKey(const ValueKey('claims-tab-history')));
-    await tester.pumpAndSettle();
+    expect(find.text('Cancel Claim'), findsNothing);
+    await selectTab('history');
     expect(find.text('Released claim'), findsOneWidget);
-    await tester.tap(find.byKey(const ValueKey('claims-tab-all')));
-    await tester.pumpAndSettle();
+    final releasedBadge = find.widgetWithText(GeoStatusChip, 'Released');
+    expect(tester.widget<GeoStatusChip>(releasedBadge).tone, GeoTone.neutral);
+    expect(find.widgetWithText(GeoStatusChip, 'Hub Collection'), findsOneWidget);
+    await selectTab('reconciliation');
+    final reconciliationBadge = find.widgetWithText(
+      GeoStatusChip,
+      'Reconciliation required',
+    );
+    expect(
+      tester.widget<GeoStatusChip>(reconciliationBadge).tone,
+      GeoTone.warning,
+    );
+    expect(
+      find.text('Next pickup blocked'),
+      findsOneWidget,
+    );
+    expect(
+      find.widgetWithText(FilledButton, 'View reconciliation'),
+      findsOneWidget,
+    );
+    await selectTab('all');
     expect(find.text('Owned claim'), findsOneWidget);
+    await selectTab('active');
+    expect(find.text('Released claim'), findsNothing);
+    expect(tester.takeException(), isNull);
     await tester.pumpWidget(const SizedBox());
   });
 
@@ -256,7 +344,11 @@ void main() {
       );
       await tester.pumpAndSettle();
       expect(find.text('Start Pickup'), findsNothing);
-      expect(find.textContaining('Awaiting route planning'), findsOneWidget);
+      expect(find.text('Waiting for route setup'), findsOneWidget);
+      expect(
+        find.textContaining('A claim alone does not authorize pickup'),
+        findsNothing,
+      );
       await tester.tap(find.byKey(const ValueKey('claim-routes-claim-1')));
       await tester.pumpAndSettle();
       expect(find.text('Managed route destination'), findsOneWidget);

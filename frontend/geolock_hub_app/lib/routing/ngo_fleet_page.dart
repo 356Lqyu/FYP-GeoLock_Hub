@@ -39,6 +39,34 @@ class _NgoFleetPageState extends NgoSessionPage<NgoFleetPage> {
     if (mounted && error == null) await reload();
   }
 
+  Widget _vehicleFacts(Map<String, dynamic> vehicle) {
+    final facts = {
+      'Capacity': '${vehicle['payload_capacity_kg']} kg',
+      'Maximum duration': '${vehicle['max_route_duration_min'] ?? '—'} min',
+      'Fixed cost': 'RM ${vehicle['fixed_cost_rm'] ?? '—'}',
+      'Distance cost': 'RM ${vehicle['distance_cost_rm_per_km'] ?? '—'}/km',
+    };
+    return LayoutBuilder(
+      builder: (context, constraints) => Wrap(
+        spacing: 12,
+        runSpacing: 8,
+        children: [
+          for (final fact in facts.entries)
+            SizedBox(
+              width: (constraints.maxWidth - 12) / 2,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(fact.key, style: Theme.of(context).textTheme.labelSmall),
+                  Text(fact.value),
+                ],
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) =>
       GeoRoleTheme(child: _buildRolePage(context));
@@ -63,7 +91,29 @@ class _NgoFleetPageState extends NgoSessionPage<NgoFleetPage> {
       child: ListView(
         padding: const EdgeInsets.fromLTRB(12, 12, 12, 96),
         children: [
-          ...notices,
+          if (loading || busy) const LinearProgressIndicator(),
+          if (error != null)
+            GeoNoticeCard(
+              tone: GeoTone.warning,
+              child: Text(error!, key: const Key('routing-error')),
+            ),
+          if (!fresh && !loading)
+            GeoNoticeCard(
+              tone: GeoTone.info,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Refresh the fleet to verify availability before making changes.',
+                  ),
+                  TextButton.icon(
+                    onPressed: busy ? null : reload,
+                    icon: const Icon(Icons.refresh),
+                    label: const Text('Refresh fleet'),
+                  ),
+                ],
+              ),
+            ),
           if (_fleet?['fleet_outcome'] == 'NO_FEASIBLE_PLAN')
             const Card(
               child: Padding(
@@ -80,26 +130,54 @@ class _NgoFleetPageState extends NgoSessionPage<NgoFleetPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      '${v['vehicle_label']}',
-                      style: Theme.of(context).textTheme.titleMedium,
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '${v['vehicle_label']}',
+                                style: geoTitleStyle(context),
+                              ),
+                              Text(
+                                '${v['vehicle_type'] ?? 'Incomplete vehicle'}',
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        if (v['active_flag'] != true)
+                          const GeoStatusChip(
+                            'Deactivated',
+                            tone: GeoTone.neutral,
+                          )
+                        else if (v['eligible_for_planning'] == true)
+                          const GeoStatusChip(
+                            'Available',
+                            tone: GeoTone.success,
+                          )
+                        else if (v['available_for_planning'] == false)
+                          const GeoStatusChip(
+                            'Unavailable',
+                            tone: GeoTone.neutral,
+                          )
+                        else
+                          const GeoStatusChip(
+                            'Planning blocked',
+                            tone: GeoTone.warning,
+                          ),
+                      ],
                     ),
-                    Text(
-                      '${v['vehicle_type'] ?? 'Incomplete vehicle'} · ${v['payload_capacity_kg']} kg',
-                    ),
-                    Text(
-                      'Fixed RM ${v['fixed_cost_rm'] ?? '—'} · RM ${v['distance_cost_rm_per_km'] ?? '—'}/km',
-                    ),
-                    Text(
-                      'Maximum ${v['max_route_duration_min'] ?? '—'} min · depot ${v['depot_road_node_id'] ?? 'unverified'}',
-                    ),
-                    Text(
-                      v['active_flag'] != true
-                          ? 'Deactivated'
-                          : v['eligible_for_planning'] == true
-                          ? 'Eligible for planning'
-                          : 'Unavailable, reserved or depot verification required',
-                    ),
+                    const SizedBox(height: 10),
+                    _vehicleFacts(v),
+                    const SizedBox(height: 8),
+                    Text('Depot: ${v['depot_road_node_id'] ?? 'unverified'}'),
+                    if (v['active_flag'] == true &&
+                        v['available_for_planning'] != false &&
+                        v['eligible_for_planning'] != true)
+                      const Text('Check reservations and depot verification.'),
                     if (v['active_flag'] == true) ...[
                       SwitchListTile(
                         contentPadding: EdgeInsets.zero,
@@ -111,32 +189,9 @@ class _NgoFleetPageState extends NgoSessionPage<NgoFleetPage> {
                               )
                             : null,
                       ),
-                      Wrap(
-                        spacing: 8,
-                        children: [
-                          OutlinedButton(
-                            onPressed: actionsEnabled ? () => _edit(v) : null,
-                            child: const Text('Edit'),
-                          ),
-                          TextButton(
-                            onPressed: actionsEnabled
-                                ? () async {
-                                    if (await routingConfirm(
-                                      context,
-                                      'Deactivate vehicle?',
-                                      'This preserves its history. Reserved vehicles cannot be deactivated.',
-                                    )) {
-                                      if (mounted) {
-                                        await _change(
-                                          () => repository.deactivate(v),
-                                        );
-                                      }
-                                    }
-                                  }
-                                : null,
-                            child: const Text('Deactivate'),
-                          ),
-                        ],
+                      OutlinedButton(
+                        onPressed: actionsEnabled ? () => _edit(v) : null,
+                        child: const Text('Edit'),
                       ),
                     ],
                   ],
@@ -171,6 +226,12 @@ class _VehicleFormState extends State<_VehicleForm> {
     'p_fixed_cost_rm': 'Fixed cost (RM)',
     'p_distance_cost_rm_per_km': 'Distance cost (RM/km)',
     'p_max_route_duration_min': 'Maximum route duration (minutes)',
+  };
+  static const _hints = {
+    'p_fixed_cost_rm': 'Fixed amount per vehicle used in reported cost.',
+    'p_distance_cost_rm_per_km': 'Rate per road kilometre for reported cost.',
+    'p_max_route_duration_min':
+        'Maximum time for driving, pickup service and return to the depot.',
   };
   @override
   void initState() {
@@ -302,7 +363,9 @@ class _VehicleFormState extends State<_VehicleForm> {
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
+  Widget build(BuildContext context) => GeoRoleTheme(child: _buildForm());
+
+  Widget _buildForm() => Scaffold(
     appBar: AppBar(
       title: Text(widget.vehicle == null ? 'Register vehicle' : 'Edit vehicle'),
     ),
@@ -313,10 +376,14 @@ class _VehicleFormState extends State<_VehicleForm> {
             child: ListView(
               padding: const EdgeInsets.all(16),
               children: [
-                if (_error != null) Text(_error!),
+                if (_error != null)
+                  GeoNoticeCard(tone: GeoTone.warning, child: Text(_error!)),
                 if (_pending)
-                  const Text(
-                    'Saved registration awaiting confirmation. Retry uses the same request and vehicle details.',
+                  const GeoNoticeCard(
+                    tone: GeoTone.info,
+                    child: Text(
+                      'Saved registration awaiting confirmation. Retry uses the same request and vehicle details.',
+                    ),
                   ),
                 for (final key in _fields.keys)
                   Padding(
@@ -327,7 +394,11 @@ class _VehicleFormState extends State<_VehicleForm> {
                           !_busy &&
                           !_pending &&
                           _owner == widget.repository.identity,
-                      decoration: InputDecoration(labelText: _labels[key]),
+                      decoration: InputDecoration(
+                        labelText: _labels[key],
+                        helperText: _hints[key],
+                        helperMaxLines: 3,
+                      ),
                       keyboardType: key == 'p_label' || key == 'p_vehicle_type'
                           ? TextInputType.text
                           : const TextInputType.numberWithOptions(

@@ -1,10 +1,17 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:geolock_hub_app/claim_request.dart';
 import 'package:geolock_hub_app/dashboard_pages.dart';
 import 'package:geolock_hub_app/donation_pages.dart';
 import 'package:geolock_hub_app/donation_status.dart';
+import 'package:http/http.dart' as http;
+import 'package:http/testing.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class _MyClaimsNavigationHarness extends StatefulWidget {
   final Future<Object?> Function() claimsLoader;
@@ -352,12 +359,280 @@ void main() {
       ),
     );
 
-    expect(find.text('Study Desk · 18 kg'), findsOneWidget);
+    expect(find.text('Study Desk'), findsOneWidget);
+    expect(find.text('18 kg'), findsOneWidget);
     expect(find.byIcon(Icons.volunteer_activism_outlined), findsOneWidget);
-    await tester.tap(find.text('Study Desk · 18 kg'));
+    await tester.tap(find.text('Study Desk'));
     await tester.pumpAndSettle();
     expect(find.text('Listing detail destination'), findsOneWidget);
   });
+
+  group('NGO listings at 320 px with 120% text scaling', () {
+    final direct = {
+      ..._testListing('Rice bags'),
+      'collection_path': 'DIRECT_HOUSEHOLD',
+      'distance_m': 5200,
+      'listing_total_item_quantity': 8,
+      'listing_created_at': '2026-10-17T09:00:00Z',
+      'created_at': '2026-09-01T09:00:00Z',
+    };
+    final hub = {
+      ..._testListing('Vegetable boxes'),
+      'source_type': 'HUB_BATCH',
+      'collection_path': 'COMMUNITY_HUB',
+      'listing_weight_kg': 9.75,
+      'listing_total_item_quantity': 17,
+      'routing_status': 'NOT_ROUTABLE',
+      'listing_created_at': '2026-10-18T09:00:00Z',
+    };
+
+    Future<void> pumpNarrow(WidgetTester tester, Widget page) async {
+      await tester.binding.setSurfaceSize(const Size(320, 1100));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      await tester.pumpWidget(
+        MaterialApp(
+          builder: (context, child) => MediaQuery(
+            data: MediaQuery.of(
+              context,
+            ).copyWith(textScaler: TextScaler.linear(1.2)),
+            child: child!,
+          ),
+          home: page,
+        ),
+      );
+      await tester.pumpAndSettle();
+    }
+
+    void expectBadgeAtTopRight(
+      WidgetTester tester,
+      String label,
+      String title,
+    ) {
+      final badge = find.text(label);
+      expect(badge, findsOneWidget);
+      final card = find.ancestor(of: badge, matching: find.byType(Card));
+      final badgeRect = tester.getRect(badge);
+      expect(badgeRect.center.dx, greaterThan(tester.getCenter(card).dx));
+      final titleRect = tester.getRect(find.text(title));
+      expect(badgeRect.top, closeTo(titleRect.top, 6));
+      expect(badgeRect.left, greaterThanOrEqualTo(titleRect.right));
+    }
+
+    void expectMetrics(WidgetTester tester) {
+      final weight = find.text('12 kg');
+      final distance = find.text('5.2 km by road');
+      expect(weight, findsOneWidget);
+      expect(distance, findsOneWidget);
+      expect(find.text('9.75 kg'), findsOneWidget);
+      expect(find.text('Weight'), findsNWidgets(2));
+      expect(find.text('Road distance'), findsOneWidget);
+      expect(find.text('Total quantity'), findsOneWidget);
+      expect(find.text('Batch total quantity'), findsOneWidget);
+      expect(find.text('8'), findsOneWidget);
+      expect(find.text('17'), findsOneWidget);
+      expect(find.text('Listing created'), findsNWidgets(2));
+      expect(find.text('17/10/2026'), findsOneWidget);
+      expect(find.text('18/10/2026'), findsOneWidget);
+      expect(find.text('1/9/2026'), findsNothing);
+      expect(find.text('Published'), findsNothing);
+      expect(find.text('Item quantity'), findsNothing);
+      final titleBottom = tester.getBottomLeft(find.text('Rice bags')).dy;
+      expect(tester.getTopLeft(weight).dy, greaterThan(titleBottom));
+      expect(tester.getTopLeft(distance).dy, greaterThan(titleBottom));
+    }
+
+    testWidgets(
+      'dashboard shows both badges, distance, and a routing warning',
+      (tester) async {
+        await pumpNarrow(
+          tester,
+          Scaffold(
+            body: NgoHomePage(
+              listingsLoader: () async => [direct, hub],
+              claimsLoader: () async => [],
+              routingLoader: () async => true,
+              ngoNameLoader: () async => 'Test NGO',
+            ),
+          ),
+        );
+
+        expectBadgeAtTopRight(tester, 'Direct Pickup', 'Rice bags');
+        expectBadgeAtTopRight(tester, 'Hub Collection', 'Vegetable boxes');
+        expectMetrics(tester);
+        expect(find.textContaining('Road route ready'), findsNothing);
+        expect(
+          find.textContaining('No drivable road was found'),
+          findsOneWidget,
+        );
+        Rect statCard(String label) {
+          final text = find.text(label);
+          expect(
+            tester.renderObject<RenderParagraph>(text).didExceedMaxLines,
+            isFalse,
+          );
+          return tester.getRect(
+            find.ancestor(of: text, matching: find.byType(Card)),
+          );
+        }
+
+        final discovery = statCard('Discovery results');
+        final active = statCard('Active claims');
+        final pickups = statCard('Pickups to action');
+        expect(discovery.top, active.top);
+        expect(discovery.width, active.width);
+        expect(pickups.top, greaterThan(discovery.bottom));
+        expect(pickups.top, greaterThan(active.bottom));
+        expect(pickups.left, discovery.left);
+        expect(pickups.right, active.right);
+        expect(tester.takeException(), isNull);
+      },
+    );
+
+    testWidgets(
+      'eligible page shows one explanation and retains claim warnings',
+      (tester) async {
+        await pumpNarrow(
+          tester,
+          EligibleListingsPage(
+            listingsLoader: () async => [direct, hub],
+            routingLoader: () async => false,
+          ),
+        );
+
+        expectBadgeAtTopRight(tester, 'Direct Pickup', 'Rice bags');
+        expectBadgeAtTopRight(tester, 'Hub Collection', 'Vegetable boxes');
+        expect(
+          find.text(
+            "Listings are based on your NGO's verified location and road-distance eligibility. Eligibility is checked again when you claim.",
+          ),
+          findsOneWidget,
+        );
+        expectMetrics(tester);
+        expect(find.textContaining('claiming unavailable'), findsNWidgets(2));
+        expect(find.textContaining('Road route ready'), findsNothing);
+        expect(
+          find.textContaining('The database rechecks eligibility'),
+          findsNothing,
+        );
+        expect(tester.takeException(), isNull);
+      },
+    );
+
+    testWidgets('ready eligible card separates metrics and hides routine notices', (
+      tester,
+    ) async {
+      await pumpNarrow(
+        tester,
+        Scaffold(
+          body: ListView(
+            children: [
+              EligibleListingCard(
+                listing: {
+                  ...direct,
+                  'listing_weight_kg': 12345.67,
+                  'distance_m': 123456789,
+                },
+                capabilityReady: true,
+                onOpen: () {},
+              ),
+            ],
+          ),
+        ),
+      );
+
+      final weight = find.text('12345.67 kg');
+      final distance = find.text('123456.8 km by road');
+      expect(weight, findsOneWidget);
+      expect(distance, findsOneWidget);
+      expect(
+        tester.getTopLeft(distance).dx,
+        greaterThan(tester.getTopLeft(weight).dx),
+      );
+      expect(find.text('17/10/2026'), findsOneWidget);
+      expect(find.textContaining('Road route ready'), findsNothing);
+      expect(
+        find.textContaining('The database rechecks eligibility'),
+        findsNothing,
+      );
+      expect(find.textContaining('claiming unavailable'), findsNothing);
+      expect(tester.takeException(), isNull);
+    });
+  });
+
+  testWidgets(
+    'eligible listings history opens the signed-in NGO saved attempts',
+    (tester) async {
+      const actor = '11111111-1111-4111-8111-111111111111';
+      SharedPreferences.setMockInitialValues({
+        '${claimRequestPrefix(actor)}test-listing': 'test-request',
+        '${claimRequestPrefix('another-ngo')}other-listing': 'other-request',
+      });
+      await tester.runAsync(() async {
+        final supabase = await Supabase.initialize(
+          url: 'http://localhost:54321',
+          publishableKey: 'offline-test-key',
+          authOptions: const FlutterAuthClientOptions(
+            autoRefreshToken: false,
+            detectSessionInUri: false,
+          ),
+          httpClient: MockClient((request) async {
+            expect(request.url.path, '/auth/v1/token');
+            final payload = base64Url
+                .encode(
+                  utf8.encode(
+                    jsonEncode({
+                      'sub': actor,
+                      'exp':
+                          DateTime.now().millisecondsSinceEpoch ~/ 1000 + 3600,
+                    }),
+                  ),
+                )
+                .replaceAll('=', '');
+            return http.Response(
+              jsonEncode({
+                'access_token': 'eyJhbGciOiJub25lIn0.$payload.signature',
+                'token_type': 'bearer',
+                'expires_in': 3600,
+                'refresh_token': 'offline-test-refresh',
+                'user': {'id': actor, 'app_metadata': {}, 'user_metadata': {}},
+              }),
+              200,
+              headers: {'content-type': 'application/json'},
+            );
+          }),
+        );
+        addTearDown(supabase.dispose);
+        await supabase.client.auth.signInWithPassword(
+          email: 'ngo@example.invalid',
+          password: 'offline-test',
+        );
+      });
+
+      var listingReads = 0;
+      await tester.pumpWidget(
+        MaterialApp(
+          home: EligibleListingsPage(
+            listingsLoader: () async {
+              listingReads++;
+              return [];
+            },
+            routingLoader: () async => false,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.byTooltip('Saved claim attempts'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Saved claim attempts'), findsOneWidget);
+      expect(find.text('Listing test-listing'), findsOneWidget);
+      expect(find.text('Listing other-listing'), findsNothing);
+      await tester.tap(find.byType(BackButton));
+      await tester.pumpAndSettle();
+      expect(find.text('Eligible Listings'), findsOneWidget);
+      expect(listingReads, 2);
+    },
+  );
 
   testWidgets(
     'Claim → My Claims → Dashboard → My Claims reloads backend data',
@@ -440,7 +715,11 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      expect(find.text('Household Essentials · 12 kg'), findsOneWidget);
+      final recommendation = find.descendant(
+        of: find.byType(ListingPreviewCard),
+        matching: find.text('Household Essentials'),
+      );
+      expect(recommendation, findsOneWidget);
 
       committed = true; // The backend has confirmed the claim.
       await tester.tap(find.text('My Claims'));
@@ -450,7 +729,7 @@ void main() {
 
       await tester.tap(find.text('Home'));
       await tester.pumpAndSettle();
-      expect(find.text('Household Essentials · 12 kg'), findsNothing);
+      expect(recommendation, findsNothing);
       expect(find.text('No eligible listings returned'), findsOneWidget);
       expect(listingReads, 2);
     },
@@ -566,7 +845,11 @@ void main() {
       );
       expect(find.text('Books'), findsOneWidget);
       expect(find.text('Collected'), findsOneWidget);
-      expect(find.text('2 items · 4.5 kg'), findsOneWidget);
+      expect(find.text('Weight'), findsOneWidget);
+      expect(find.text('4.5 kg'), findsOneWidget);
+      expect(find.text('Item entries'), findsOneWidget);
+      expect(find.text('2'), findsOneWidget);
+      expect(find.text('Total quantity'), findsNothing);
       expect(find.byIcon(Icons.volunteer_activism_outlined), findsOneWidget);
     },
   );

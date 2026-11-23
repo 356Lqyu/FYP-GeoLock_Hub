@@ -98,11 +98,26 @@ double? donationTotalWeightKg(
 String previewCollectionPath(double totalKg) =>
     totalKg >= donationDirectMinKgPreview ? 'DIRECT_PICKUP' : 'HUB_COLLECTION';
 
-String collectionPathLabel(String? path) => switch (path) {
-  'DIRECT_PICKUP' => 'Direct pickup',
-  'HUB_COLLECTION' => 'Community hub',
-  _ => path ?? 'Not decided',
-};
+/// Prefer the donation path. A listing source is only a fallback for readers
+/// that omit the path, such as get_my_claim_cards_v2.
+String? collectionPathBadgeLabel(Object? path, {Object? listingSourceType}) {
+  if (path != null) {
+    return switch (path) {
+      'DIRECT_HOUSEHOLD' || 'DIRECT_PICKUP' => 'Direct Pickup',
+      'COMMUNITY_HUB' || 'HUB_COLLECTION' => 'Hub Collection',
+      _ => null,
+    };
+  }
+  return switch (listingSourceType) {
+    'DIRECT_DONATION' => 'Direct Pickup',
+    'HUB_BATCH' => 'Hub Collection',
+    _ => null,
+  };
+}
+
+String collectionPathLabel(String? path) =>
+    collectionPathBadgeLabel(path) ??
+    (path == null ? 'Not decided' : 'Collection path unavailable');
 
 String collectionPathPreviewText(double totalKg) {
   final decimal = totalKg.toStringAsFixed(3);

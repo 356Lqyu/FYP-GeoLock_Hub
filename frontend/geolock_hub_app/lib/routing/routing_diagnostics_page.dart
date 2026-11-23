@@ -1,8 +1,11 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import '../hub_admin/hub_widgets.dart' show HubColors;
+import '../ui/geolock_role_style.dart';
 import 'ngo_routing_repository.dart';
 import 'proposed_route_view.dart';
 import 'routing_feedback.dart';
+import 'routing_worker_client.dart' show RoutingRequestFailure;
 
 String routingOperationMessage(Map<String, dynamic> operation) {
   if (operation['kind'] == 'DATABASE_AUTHORIZATION_RECEIPT' ||
@@ -52,17 +55,23 @@ class RoutingDiagnosticsPage extends StatefulWidget {
     required this.operation,
     required this.planning,
     this.initialHealth,
+    this.initialHealthFailed = false,
   });
   final NgoRoutingRepository repository;
   final Map<String, dynamic> operation, planning;
   final String? initialHealth;
+  final bool initialHealthFailed;
   @override
   State<RoutingDiagnosticsPage> createState() => _RoutingDiagnosticsPageState();
 }
 
 class _RoutingDiagnosticsPageState extends State<RoutingDiagnosticsPage> {
   late final String? _owner = widget.repository.identity;
-  late String? _message = widget.initialHealth;
+  String? _message;
+  bool _messageFailed = false;
+  late String? _connectionResult = widget.initialHealth;
+  late bool _connectionFailed = widget.initialHealthFailed;
+  String? _connectionDetails;
   Map<String, dynamic>? _saved;
   String? _outcomeMessage;
   Map<String, dynamic>? _terminalOutcome;
@@ -76,6 +85,8 @@ class _RoutingDiagnosticsPageState extends State<RoutingDiagnosticsPage> {
         setState(() {
           _saved = null;
           _message = null;
+          _connectionResult = null;
+          _connectionDetails = null;
           _outcomeMessage = null;
           _terminalOutcome = null;
         });
@@ -95,12 +106,19 @@ class _RoutingDiagnosticsPageState extends State<RoutingDiagnosticsPage> {
         'Read-only check failed. Existing request retained.',
   }) async {
     if (_busy || widget.repository.identity != _owner) return;
-    setState(() => _busy = true);
+    setState(() {
+      _busy = true;
+      _message = null;
+      _messageFailed = false;
+    });
     try {
       await action();
     } catch (_) {
       if (mounted) {
-        setState(() => _message = failureMessage);
+        setState(() {
+          _message = failureMessage;
+          _messageFailed = true;
+        });
       }
     } finally {
       if (mounted) setState(() => _busy = false);
@@ -108,55 +126,156 @@ class _RoutingDiagnosticsPageState extends State<RoutingDiagnosticsPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) => GeoRoleTheme(child: _buildPage());
+
+  Future<void> _checkConnection() => _read(() async {
+    setState(() {
+      _connectionResult = null;
+      _connectionDetails = null;
+    });
+    String result;
+    String? details;
+    var failed = false;
+    try {
+      await widget.repository.checkPlannerConnection();
+      result =
+          'Planner connection confirmed. No snapshot or route was created.';
+    } catch (error) {
+      failed = true;
+      result = routingError(error);
+      if (error is RoutingRequestFailure) {
+        details = [
+          'Code: ${error.code}',
+          if (error.httpStatus != null) 'HTTP: ${error.httpStatus}',
+          if (error.transportReason != null)
+            'Transport: ${error.transportReason}',
+        ].join('\n');
+      }
+    }
+    if (mounted && widget.repository.identity == _owner) {
+      setState(() {
+        _connectionResult = result;
+        _connectionFailed = failed;
+        _connectionDetails = details;
+      });
+    }
+  });
+
+  Widget _buildPage() {
     final sameOwner = widget.repository.identity == _owner;
+    final hasSavedRequests =
+        widget.operation.isNotEmpty || widget.planning.isNotEmpty;
     return Scaffold(
-      appBar: AppBar(title: const Text('Route support')),
+      backgroundColor: HubColors.mint,
+      appBar: AppBar(
+        title: const Text('Route support'),
+        backgroundColor: HubColors.mint,
+      ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          const Text(
-            'Technical diagnostics. These actions never generate, authorize or resume a route. Local archival preserves history.',
+          const GeoNoticeCard(
+            tone: GeoTone.success,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(Icons.help_outline, color: GeoTone.success),
+                SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    'Check the planner connection or review a saved routing request.',
+                  ),
+                ),
+              ],
+            ),
           ),
           if (!sameOwner) const Text('Account changed. Close this screen.'),
           if (_busy) const LinearProgressIndicator(),
           if (sameOwner) ...[
-            if (!widget.repository.canCheckPlanner)
-              Text(widget.repository.plannerConfigurationMessage),
-            if (widget.operation.isNotEmpty)
-              Text(
-                _outcomeMessage ??
-                    savedRoutingOperationMessage(widget.operation),
+            const GeoSectionTitle('Planner connection'),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (widget.repository.canCheckPlanner) ...[
+                      const Text(
+                        'Read-only check. It does not generate, start or resume a route.',
+                      ),
+                      const SizedBox(height: 8),
+                      FilledButton.tonalIcon(
+                        onPressed: _busy ? null : _checkConnection,
+                        icon: const Icon(Icons.network_check),
+                        label: const Text('Check connection'),
+                      ),
+                    ] else
+                      Text(widget.repository.plannerConfigurationMessage),
+                  ],
+                ),
               ),
-            if (widget.operation.isNotEmpty)
-              ExpansionTile(
-                title: const Text('Technical details'),
-                children: [
-                  SelectableText(
-                    'Request: ${widget.operation['request_id']}\nSnapshot: ${widget.operation['snapshot_id'] ?? 'not confirmed'}\nPhase: ${widget.operation['phase']}\nFailure: ${widget.operation['failure_code'] ?? 'not recorded'}\nHTTP: ${widget.operation['failure_http_status'] ?? 'not recorded'}',
+            ),
+            if (_connectionResult != null)
+              GeoNoticeCard(
+                key: const Key('planner-connection-result'),
+                tone: _connectionFailed ? GeoTone.warning : GeoTone.success,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (_connectionFailed)
+                      Text(
+                        widget.operation.isNotEmpty ||
+                                widget.planning.isNotEmpty
+                            ? 'Connection check failed. Your saved request is retained.'
+                            : 'Connection check failed.',
+                      ),
+                    Text(_connectionResult!),
+                    if (_connectionDetails != null)
+                      ExpansionTile(
+                        tilePadding: EdgeInsets.zero,
+                        title: const Text('Connection diagnostics'),
+                        children: [SelectableText(_connectionDetails!)],
+                      ),
+                  ],
+                ),
+              ),
+            if (hasSavedRequests) ...[
+              const GeoSectionTitle('Saved requests'),
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (widget.operation.isNotEmpty) ...[
+                        Text(
+                          _outcomeMessage ??
+                              savedRoutingOperationMessage(widget.operation),
+                        ),
+                        ExpansionTile(
+                          tilePadding: EdgeInsets.zero,
+                          title: const Text('Technical details'),
+                          children: [
+                            SelectableText(
+                              'Request: ${widget.operation['request_id']}\nSnapshot: ${widget.operation['snapshot_id'] ?? 'not confirmed'}\nPhase: ${widget.operation['phase']}\nFailure: ${widget.operation['failure_code'] ?? 'not recorded'}\nHTTP: ${widget.operation['failure_http_status'] ?? 'not recorded'}',
+                            ),
+                          ],
+                        ),
+                      ],
+                      if (widget.planning.isNotEmpty)
+                        SelectableText(
+                          'Historical planning request: ${widget.planning['request_id']}\nSnapshot: ${widget.planning['snapshot_id']}',
+                        ),
+                    ],
                   ),
-                ],
+                ),
               ),
-            if (widget.planning.isNotEmpty)
-              SelectableText(
-                'Historical planning request: ${widget.planning['request_id']}\nSnapshot: ${widget.planning['snapshot_id']}',
+            ],
+            if (_message != null)
+              GeoNoticeCard(
+                tone: _messageFailed ? GeoTone.warning : GeoTone.info,
+                child: Text(_message!),
               ),
-            if (widget.repository.canCheckPlanner)
-              OutlinedButton(
-                onPressed: _busy
-                    ? null
-                    : () => _read(() async {
-                        await widget.repository.checkPlannerConnection();
-                        if (mounted && widget.repository.identity == _owner) {
-                          setState(
-                            () => _message =
-                                'Planner ACTIVE for DEV. Read-only check; no snapshot or route created.',
-                          );
-                        }
-                      }),
-                child: const Text('Check planner connection (read only)'),
-              ),
-            if (_message != null) Text(_message!),
             if (widget.operation['status'] == 'authorized')
               OutlinedButton(
                 onPressed: _busy
@@ -221,7 +340,7 @@ class _RoutingDiagnosticsPageState extends State<RoutingDiagnosticsPage> {
                             terminal: outcome['operation_terminal'] as String,
                           );
                           if (mounted && widget.repository.identity == _owner) {
-                            Navigator.of(this.context).pop();
+                            Navigator.of(context).pop();
                           }
                         },
                         failureMessage:

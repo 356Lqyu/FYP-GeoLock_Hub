@@ -44,6 +44,7 @@ class _NgoRoutesPageState extends NgoSessionPage<NgoRoutesPage> {
   bool _plannerConnectionFailed = false;
   bool _checkingPlanner = false;
   bool _generating = false;
+  final _planningFeedbackKey = GlobalKey();
   bool _initialHealthChecked = false;
   // Option C: generated (advisory, attested) route held until Start Route.
   Map<String, dynamic>? _generated;
@@ -68,6 +69,7 @@ class _NgoRoutesPageState extends NgoSessionPage<NgoRoutesPage> {
           operation: _routeOperation,
           planning: _pendingPlanning,
           initialHealth: _plannerConnection,
+          initialHealthFailed: _plannerConnectionFailed,
         ),
       ),
     );
@@ -134,7 +136,7 @@ class _NgoRoutesPageState extends NgoSessionPage<NgoRoutesPage> {
         setState(() {
           _plannerConnectionFailed = false;
           _plannerConnection =
-              'Planner ACTIVE for DEV. Read-only check; no snapshot or route created.';
+              'Planner connection confirmed. No snapshot or route was created.';
         });
       }
     } catch (e) {
@@ -422,6 +424,16 @@ class _NgoRoutesPageState extends NgoSessionPage<NgoRoutesPage> {
           _generating = false;
           _planRequest = const Uuid().v4();
         });
+        if (error != null) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            final feedback = _planningFeedbackKey.currentContext;
+            if (mounted &&
+                feedback != null &&
+                ModalRoute.of(context)?.isCurrent == true) {
+              unawaited(Scrollable.ensureVisible(feedback, alignment: 0.5));
+            }
+          });
+        }
       }
     }
   }
@@ -621,6 +633,138 @@ class _NgoRoutesPageState extends NgoSessionPage<NgoRoutesPage> {
   Widget build(BuildContext context) =>
       GeoRoleTheme(child: _buildRolePage(context));
 
+  Widget _planningNotices() {
+    final saved = _routeOperation.isNotEmpty;
+    final pending = _pendingPlanning['status'] == 'pending';
+    final blocker = _generationBlocker;
+    final sharesPlannerError =
+        _plannerConnectionFailed &&
+        error != null &&
+        error == _plannerConnection;
+    final canOpenSupport = !busy && !_generating && !_starting;
+    return Column(
+      key: _planningFeedbackKey,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (error != null && !sharesPlannerError)
+          GeoNoticeCard(
+            tone: GeoTone.warning,
+            child: Text(error!, key: const Key('routing-error')),
+          ),
+        if (_backendError != null && _backendError != error)
+          GeoNoticeCard(tone: GeoTone.warning, child: Text(_backendError!)),
+        if (_plannerConnectionFailed)
+          GeoNoticeCard(
+            key: const Key('planner-connection-warning'),
+            tone: GeoTone.warning,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Icon(Icons.cloud_off_outlined, color: GeoTone.warning),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Planner connection check failed',
+                        style: TextStyle(fontWeight: FontWeight.w700),
+                      ),
+                      if (_plannerConnection != null)
+                        Text(
+                          _plannerConnection!,
+                          key: sharesPlannerError
+                              ? const Key('routing-error')
+                              : null,
+                        ),
+                      TextButton.icon(
+                        key: const Key('planning-route-support'),
+                        onPressed: canOpenSupport ? _showSupport : null,
+                        icon: const Icon(Icons.help_outline),
+                        label: const Text('Open Route Support'),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        if ((!fresh || _backendError != null) && !loading)
+          GeoNoticeCard(
+            key: const Key('routes-refresh-notice'),
+            tone: GeoTone.info,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Icon(Icons.info_outline, color: GeoTone.info),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Refresh required',
+                        style: TextStyle(fontWeight: FontWeight.w700),
+                      ),
+                      const Text(
+                        'Check the latest route status before taking action.',
+                      ),
+                      TextButton.icon(
+                        onPressed: busy ? null : reload,
+                        icon: const Icon(Icons.refresh),
+                        label: const Text('Refresh routes'),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        if (loading || (busy && !_generating && !_starting))
+          const GeoNoticeCard(
+            key: Key('route-setup-loading'),
+            tone: GeoTone.info,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Checking route setup…'),
+                SizedBox(height: 6),
+                LinearProgressIndicator(),
+              ],
+            ),
+          ),
+        if (!saved && pending && !_generating && error == null)
+          const GeoNoticeCard(
+            key: Key('routing-generation-blocker'),
+            tone: GeoTone.warning,
+            child: Text(
+              'A previous planning request is pending. Open Route Support to review it.',
+            ),
+          ),
+        if (!_generating &&
+            !saved &&
+            !pending &&
+            actionsEnabled &&
+            blocker != null &&
+            repository.planningConfigured &&
+            _overview?['policy_id'] != null)
+          Text(blocker, key: const Key('routing-generation-blocker')),
+        if (!saved &&
+            !_plannerConnectionFailed &&
+            (error != null || pending || !repository.planningConfigured))
+          Align(
+            alignment: Alignment.centerLeft,
+            child: TextButton.icon(
+              key: const Key('planning-route-support'),
+              onPressed: canOpenSupport ? _showSupport : null,
+              icon: const Icon(Icons.help_outline),
+              label: const Text('Route Support'),
+            ),
+          ),
+      ],
+    );
+  }
+
   Widget _buildRolePage(BuildContext context) => Scaffold(
     appBar: AppBar(
       title: const Text('Pickup routes'),
@@ -655,24 +799,7 @@ class _NgoRoutesPageState extends NgoSessionPage<NgoRoutesPage> {
       child: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          if ((loading || busy) && !_generating && !_starting)
-            const LinearProgressIndicator(),
-          if (error != null) Text(error!, key: const Key('routing-error')),
-          if (_plannerConnectionFailed)
-            Text(
-              'Planner connection check failed. ${_plannerConnection ?? ''}',
-            ),
-          if (!fresh && !loading)
-            const Text('Refresh before performing an action.'),
-          if (_backendError != null)
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(12),
-                child: Text(_backendError!),
-              ),
-            ),
-          const SizedBox(height: 12),
-          Text('Vehicles', style: Theme.of(context).textTheme.titleLarge),
+          const GeoSectionTitle('Vehicles'),
           if (_fleet?['fleet_outcome'] == 'NO_FEASIBLE_PLAN')
             Text(
               routingRows(_fleet?['vehicles'] ?? []).isEmpty
@@ -703,11 +830,10 @@ class _NgoRoutesPageState extends NgoSessionPage<NgoRoutesPage> {
                     })
                   : null,
             ),
-          Text(
+          GeoSectionTitle(
             _overview == null
                 ? 'Routing eligibility could not be confirmed'
                 : 'Eligible claimed pickup tasks',
-            style: Theme.of(context).textTheme.titleLarge,
           ),
           if (_displayClaims.isEmpty)
             ListTile(
@@ -725,7 +851,7 @@ class _NgoRoutesPageState extends NgoSessionPage<NgoRoutesPage> {
               title: Text('${t['title'] ?? 'Claimed pickup'}'),
               subtitle: Text(
                 '${t['load_kg'] ?? t['listing_weight_kg'] ?? '—'} kg · ${t['task_status'] ?? '—'}\n'
-                '${claimLeaseMessage(t, eligible: _eligibleClaimIds.contains(t['claim_id']))}',
+                '${claimLeaseMessage(t, eligible: _eligibleClaimIds.contains(t['claim_id']), showEligibility: false)}',
               ),
             ),
           if (!repository.planningConfigured)
@@ -739,41 +865,43 @@ class _NgoRoutesPageState extends NgoSessionPage<NgoRoutesPage> {
               key: Key('routing-policy-unavailable'),
             ),
           if (_routeOperation.isNotEmpty)
-            Card(
-              child: ListTile(
-                title: Text('Saved routing request'),
-                subtitle: Text(savedRoutingOperationMessage(_routeOperation)),
-                trailing: _routeOperation['status'] == 'authorized'
-                    ? TextButton(
-                        key: const Key('archive-authorization'),
-                        onPressed: actionsEnabled
-                            ? _archiveAuthorization
-                            : null,
-                        child: const Text('Keep history / allow new planning'),
-                      )
-                    : TextButton(
-                        onPressed:
-                            actionsEnabled &&
-                                NgoRoutingRepository.isFinishedPreflight(
-                                  _routeOperation,
-                                )
-                            ? _dismissFinishedSetup
-                            : _showSupport,
-                        child: Text(
-                          NgoRoutingRepository.isFinishedPreflight(
+            GeoNoticeCard(
+              tone: GeoTone.info,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Saved routing request',
+                    style: TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  Text(savedRoutingOperationMessage(_routeOperation)),
+                  if (_routeOperation['status'] == 'authorized')
+                    TextButton(
+                      key: const Key('archive-authorization'),
+                      onPressed: actionsEnabled ? _archiveAuthorization : null,
+                      child: const Text('Keep history / allow new planning'),
+                    )
+                  else
+                    TextButton(
+                      onPressed:
+                          actionsEnabled &&
+                              NgoRoutingRepository.isFinishedPreflight(
                                 _routeOperation,
                               )
-                              ? 'Dismiss interrupted setup'
-                              : 'Get help',
-                        ),
+                          ? _dismissFinishedSetup
+                          : _showSupport,
+                      child: Text(
+                        NgoRoutingRepository.isFinishedPreflight(
+                              _routeOperation,
+                            )
+                            ? 'Dismiss interrupted setup'
+                            : 'Get help',
                       ),
+                    ),
+                ],
               ),
             ),
-          if (!_generating && _generationBlocker != null)
-            Text(
-              _generationBlocker!,
-              key: const Key('routing-generation-blocker'),
-            ),
+          _planningNotices(),
           for (final guidance in _capacityGuidance) Text(guidance),
           FilledButton.icon(
             key: const Key('generate-route'),
@@ -829,7 +957,7 @@ class _NgoRoutesPageState extends NgoSessionPage<NgoRoutesPage> {
     );
     if (vehicle['active_flag'] == false) return 'Inactive vehicle';
     if (bound) {
-      return 'Reserved for an existing route; unavailable for new planning. Other eligibility checks still apply.';
+      return 'Reserved';
     }
     if (vehicle['available_for_planning'] == false) {
       return 'Not available for new planning. Review vehicle availability and depot verification.';
@@ -1148,63 +1276,50 @@ class _NgoRouteDetailPageState extends NgoSessionPage<NgoRouteDetailPage> {
   }
 
   /// In-card notice for a stop whose backend state needs attention, or null.
-  Widget? _stopNotice(BuildContext context, Map<String, dynamic> s) {
-    final blockedNext = _blockedNextTaskId;
-    if (stopHasOpenReconciliation(s)) {
+  Widget? _stopNotice(
+    Map<String, dynamic> stop, {
+    required bool hasReconciliation,
+    required Widget? feasibilityWarning,
+  }) {
+    if (hasReconciliation) {
       return GeoNoticeCard(
-            key: Key('stop-reconciliation-${s['task_id']}'),
-            tone: GeoTone.danger,
-            padding: EdgeInsets.zero,
-            child: Padding(
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Stop ${s['stop_order']} — ${GeoLockStatusText.reconciliationRequired}',
-                    style: geoTitleStyle(context),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(stopReconciliationMessage(s)),
-                  if (s['task_status'] == 'DISPATCHED' && blockedNext != null)
-                    const Text(
-                      'The next pickup is blocked until this pickup is resolved.',
-                      key: Key('stop-reconciliation-blocks-next'),
-                    ),
-                  if (s['can_defer'] == true)
-                    const Text(
-                      'You may skip it for now below; it stays assigned until reconciliation finishes.',
-                    ),
-                  const SizedBox(height: 8),
-                  OutlinedButton.icon(
-                    key: Key('view-reconciliation-${s['task_id']}'),
-                    onPressed: s['claim_id'] is String && !busy
-                        ? () => _openStopReconciliation(s)
-                        : null,
-                    icon: const Icon(Icons.fact_check_outlined),
-                    label: const Text('View Reconciliation'),
-                  ),
-                ],
-              ),
+        key: Key('stop-reconciliation-${stop['task_id']}'),
+        tone: GeoTone.warning,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (stop['task_status'] == 'DISPATCHED' &&
+                _blockedNextTaskId != null)
+              const Text(
+                'The lease expired after dispatch. The next stop stays blocked until this pickup is resolved.',
+                key: Key('stop-reconciliation-blocks-next'),
+              )
+            else
+              Text(stopReconciliationMessage(stop)),
+            if (stop['can_defer'] == true)
+              const Text('If you skip this pickup, it stays assigned to you.'),
+            ?feasibilityWarning,
+            const SizedBox(height: 8),
+            OutlinedButton.icon(
+              key: Key('view-reconciliation-${stop['task_id']}'),
+              onPressed: stop['claim_id'] is String && !busy
+                  ? () => _openStopReconciliation(stop)
+                  : null,
+              icon: const Icon(Icons.fact_check_outlined),
+              label: const Text('View Reconciliation'),
             ),
-          );
+          ],
+        ),
+      );
     }
-    if (s['lease_expired_pending_recovery'] == true &&
-        s['task_status'] == 'DISPATCHED') {
+    if (stop['lease_expired_pending_recovery'] == true) {
       return GeoNoticeCard(
-            key: Key('stop-expiry-pending-${s['task_id']}'),
-            tone: GeoTone.warning,
-            padding: EdgeInsets.zero,
-            child: ListTile(
-              leading: const Icon(Icons.hourglass_top),
-              title: Text(
-                'Stop ${s['stop_order']} — ${GeoLockStatusText.expiredAwaitingRecovery}',
-              ),
-              subtitle: const Text(
-                "This pickup's lease expired after dispatch. The backend has not opened reconciliation yet; refresh shortly.",
-              ),
-            ),
-          );
+        key: Key('stop-expiry-pending-${stop['task_id']}'),
+        tone: GeoTone.warning,
+        child: const Text(
+          'The lease expired. The backend has yet to open reconciliation. Refresh to check when skipping is available.',
+        ),
+      );
     }
     return null;
   }
@@ -1236,6 +1351,148 @@ class _NgoRouteDetailPageState extends NgoSessionPage<NgoRouteDetailPage> {
   Widget build(BuildContext context) =>
       GeoRoleTheme(child: _buildRolePage(context));
 
+  Widget _routeSummary(BuildContext context) {
+    final route = _route;
+    final status = route?['route_status'];
+    return Card(
+      key: const Key('route-summary'),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _RouteDetailHeading(
+              title: '${route?['vehicle_label'] ?? 'Assigned vehicle'}',
+              status: routeStatusLabel(status),
+              tone: switch (status) {
+                'AUTHORISED' || 'IN_PROGRESS' => GeoTone.info,
+                'COMPLETED' => GeoTone.success,
+                _ => GeoTone.neutral,
+              },
+            ),
+            const SizedBox(height: 12),
+            _RouteDetailFacts({
+              'Pickups': '${route?['pickup_count'] ?? '—'}',
+              'Total weight': '${routeLoadText(route?['total_load_kg'])} kg',
+              'Distance': '${routeNumber(route?['total_distance_km'])} km',
+              'Estimated duration':
+                  '${routeNumber(route?['total_duration_min'])} min',
+              'Planned departure': routeMytTime(route?['departure_at']),
+              'Actual pickup start': routeMytTime(
+                route?['actual_started_at'],
+                missing: route == null ? 'Unavailable' : 'Not started',
+              ),
+            }),
+            const SizedBox(height: 8),
+            Text(
+              'Estimated duration includes service, waiting and return to depot.',
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+            if (_isTerminal || route?['authorization_confirmed'] != true) ...[
+              const Divider(height: 20),
+              Text(switch (status) {
+                'COMPLETED' => 'Route completed. No further pickup actions.',
+                'CANCELLED' => 'Route cancelled. No further pickup actions.',
+                'ABANDONED' =>
+                  'Route closed. Review the individual pickup outcomes below.',
+                _ => 'No current database authorization — actions disabled',
+              }, key: const Key('route-authority')),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _dispatchNotice(Object reason) {
+    final previousPickup = reason == 'PREVIOUS_PICKUP_UNRESOLVED';
+    return GeoNoticeCard(
+      key: const Key('dispatch-block-reason'),
+      tone: previousPickup ? GeoTone.info : GeoTone.warning,
+      child: Text(
+        previousPickup
+            ? 'Finish the current pickup before going to the next stop. If it needs reconciliation, the next stop stays blocked until it is resolved.'
+            : routingDispatchMessage(reason),
+      ),
+    );
+  }
+
+  Widget _stopDetails(Map<String, dynamic> stop) {
+    final claim = _claimCardsById[stop['claim_id']];
+    final released = stop['deferred_status'] == 'RESOLVED_UNCOLLECTED';
+    final hasReconciliation = stopHasOpenReconciliation(stop);
+    final feasibilityWarning = !released && stop['projected_feasible'] == false
+        ? Text(
+            stopInfeasibleMessage(stop['projection_reason']),
+            key: Key('stop-infeasible-${stop['task_id']}'),
+          )
+        : null;
+    final showProjection =
+        !released &&
+        stop['detached'] != true &&
+        stop['projected_completion'] != null &&
+        stop['task_status'] != 'COLLECTED';
+    final status = routeStopLabel(
+      stop,
+      routeStatus: _route?['route_status'] as String?,
+      currentTaskId: _currentStop?['task_id'] as String?,
+      claimStatus: claim?.claimStatus,
+      leaseIsExpired: claim?.leaseIsExpired,
+      blockedNextTaskId: _blockedNextTaskId,
+    );
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _RouteDetailHeading(
+          title: '${stop['stop_order']}. ${stop['title'] ?? 'Pickup'}',
+          status: status,
+          tone: status == GeoLockStatusText.reconciliationRequired
+              ? GeoTone.warning
+              : null,
+        ),
+        const SizedBox(height: 12),
+        _RouteDetailFacts(
+          {
+            'Pickup type': switch (stop['source_type']) {
+              'DIRECT_DONATION' => 'Direct Pickup',
+              'HUB_BATCH' => 'Hub Collection',
+              _ => 'Unavailable',
+            },
+            'Weight': '${routeLoadText(stop['load_kg'])} kg',
+            'Planned arrival': routeMytTime(stop['planned_arrival']),
+            if (showProjection)
+              'Projected finish': routeMytTime(stop['projected_completion']),
+            if (showProjection)
+              'Claim deadline': routeMytTime(stop['lease_deadline']),
+          },
+          key: showProjection
+              ? Key('stop-projection-${stop['task_id']}')
+              : null,
+        ),
+        if (stop['pickup_address'] != null) ...[
+          const SizedBox(height: 8),
+          Text(routeDisplayAddress(stop['pickup_address'])),
+        ],
+        const SizedBox(height: 8),
+        ?_stopNotice(
+          stop,
+          hasReconciliation: hasReconciliation,
+          feasibilityWarning: feasibilityWarning,
+        ),
+        if (stop['detached'] == true)
+          const Text(
+            'This pickup was removed from the route. Its claim is still active and can be planned again.',
+          ),
+        if (!hasReconciliation && feasibilityWarning != null)
+          GeoNoticeCard(tone: GeoTone.warning, child: feasibilityWarning),
+        if (released)
+          const Text(
+            'This pickup was finalized by the backend. No action is needed.',
+          ),
+      ],
+    );
+  }
+
   Widget _buildRolePage(BuildContext context) => Scaffold(
     appBar: AppBar(
       title: const Text('Route details'),
@@ -1254,51 +1511,27 @@ class _NgoRouteDetailPageState extends NgoSessionPage<NgoRouteDetailPage> {
           ...notices,
           if (!_resolutionClaimsVerified && !loading)
             const Text('Reconciliation status unavailable; refresh to verify.'),
-          if (routeNeedsReconciliation(_route, _resolutionClaims))
-            const Text(
-              'A pickup needs individual claim reconciliation. Open the affected claim from Claims; unrelated route stops remain subject to their own backend safety checks.',
-            ),
-          Card(
-            key: const Key('route-summary'),
-            child: Padding(
-              padding: const EdgeInsets.all(16),
+          _routeSummary(context),
+          if (routeNeedsReconciliation(_route, _resolutionClaims) ||
+              routingRows(
+                _route?['stops'] ?? [],
+              ).any(stopHasOpenReconciliation))
+            GeoNoticeCard(
+              tone: GeoTone.warning,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  Text('Reconciliation needed', style: geoTitleStyle(context)),
+                  const SizedBox(height: 4),
                   Text(
-                    '${routeStatusLabel(_route?['route_status'])} · ${_route?['vehicle_label'] ?? 'Assigned vehicle'}',
-                    style: geoTitleStyle(context),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    '${routeNumber(_route?['total_distance_km'])} km · ${routeNumber(_route?['total_duration_min'])} min · ${routeLoadText(_route?['total_load_kg'])} kg · ${_route?['pickup_count'] ?? '—'} pickups',
-                  ),
-                  const Text(
-                    'Estimated duration includes service, waiting and return to depot.',
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Planned departure: ${routeMytTime(_route?['departure_at'])}',
-                  ),
-                  Text(
-                    'Actual pickup start: ${routeMytTime(_route?['actual_started_at'], missing: 'Not started')}',
-                  ),
-                  Text(
-                    _route?['route_status'] == 'COMPLETED'
-                        ? 'Route completed. No further pickup actions.'
-                        : _route?['route_status'] == 'CANCELLED'
-                        ? 'Route cancelled. No further pickup actions.'
-                        : _route?['route_status'] == 'ABANDONED'
-                        ? 'Route closed. Review the individual pickup outcomes below.'
-                        : _route?['authorization_confirmed'] == true
-                        ? 'Database authorization confirmed'
-                        : 'No current database authorization — actions disabled',
-                    key: const Key('route-authority'),
+                    _route?['dispatch_block_reason'] ==
+                            'PREVIOUS_PICKUP_UNRESOLVED'
+                        ? 'Resolve the current pickup before continuing to the next stop.'
+                        : 'A pickup on this route needs to be resolved. Review the affected stop or open its claim from Claims.',
                   ),
                 ],
               ),
             ),
-          ),
           if (_execution['message'] is String)
             ListTile(
               key: const Key('route-execution-message'),
@@ -1357,11 +1590,8 @@ class _NgoRouteDetailPageState extends NgoSessionPage<NgoRouteDetailPage> {
               },
             ),
           ],
-          if (_route?['dispatch_block_reason'] != null)
-            Text(
-              routingDispatchMessage(_route!['dispatch_block_reason']),
-              key: const Key('dispatch-block-reason'),
-            ),
+          if (_route?['dispatch_block_reason'] case final Object reason)
+            _dispatchNotice(reason),
           if (_route?['awaiting_individual_reconciliation'] == true)
             const ListTile(
               key: Key('awaiting-individual-reconciliation'),
@@ -1422,53 +1652,7 @@ class _NgoRouteDetailPageState extends NgoSessionPage<NgoRouteDetailPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    GeoStatusChip(
-                      routeStopLabel(
-                        s,
-                        routeStatus: _route?['route_status'] as String?,
-                        currentTaskId: _currentStop?['task_id'] as String?,
-                        claimStatus:
-                            _claimCardsById[s['claim_id']]?.claimStatus,
-                        leaseIsExpired:
-                            _claimCardsById[s['claim_id']]?.leaseIsExpired,
-                        blockedNextTaskId: _blockedNextTaskId,
-                      ),
-                    ),
-                    Text('${s['stop_order']}. ${s['title'] ?? 'Pickup'}'),
-                    ?_stopNotice(context, s),
-                    Text(
-                      '${s['source_type'] == 'HUB_BATCH' ? 'Community hub pickup' : 'Pickup'} · ${routeLoadText(s['load_kg'])} kg',
-                    ),
-                    if (s['pickup_address'] != null)
-                      Text(routeDisplayAddress(s['pickup_address'])),
-                    Text(
-                      'Planned arrival: ${routeMytTime(s['planned_arrival'])}',
-                    ),
-                    if (s['detached'] == true)
-                      const Text(
-                        'This pickup was removed from the route. Its claim is still active and can be planned again.',
-                      ),
-                    if (s['detached'] != true &&
-                        s['projected_completion'] != null &&
-                        s['task_status'] != 'COLLECTED')
-                      Text(
-                        'Projected finish: ${routeMytTime(s['projected_completion'])} · '
-                        'claim deadline: ${routeMytTime(s['lease_deadline'])}',
-                        key: Key('stop-projection-${s['task_id']}'),
-                      ),
-                    if (s['projected_feasible'] == false)
-                      Text(
-                        stopInfeasibleMessage(s['projection_reason']),
-                        key: Key('stop-infeasible-${s['task_id']}'),
-                      ),
-                    if (s['lease_expired_pending_recovery'] == true)
-                      const Text(
-                        'The lease has expired, but the protected backend recovery process has not opened reconciliation yet. Refresh later; skip remains unavailable until the backend authorizes deferral.',
-                      ),
-                    if (s['deferred_status'] == 'RESOLVED_UNCOLLECTED')
-                      const Text(
-                        'Not collected. The backend has finalized this pickup; no action is needed.',
-                      ),
+                    _stopDetails(s),
                     if (!_isTerminal &&
                         s['detached'] != true &&
                         s['deferred_status'] != 'RESOLVED_UNCOLLECTED')
@@ -1575,9 +1759,14 @@ class _NgoRouteDetailPageState extends NgoSessionPage<NgoRouteDetailPage> {
           if (routeNoCollectionSummary(_route) != null)
             Text(routeNoCollectionSummary(_route)!),
           if (!_isTerminal && routeNoCollectionSummary(_route) == null) ...[
-            const Text(
-              'The vehicle remains reserved until every pickup is resolved and return to the NGO depot is confirmed.',
-            ),
+            if (_route?['can_close'] == false &&
+                _route?['vehicle_checkpoint_required'] != true)
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 8),
+                child: Text(
+                  'Complete or resolve all pickups before closing this route.',
+                ),
+              ),
             FilledButton(
               onPressed: authorized && _route?['can_close'] == true
                   ? () async {
@@ -1635,6 +1824,60 @@ class _NgoRouteDetailPageState extends NgoSessionPage<NgoRouteDetailPage> {
             ),
         ],
       ),
+    ),
+  );
+}
+
+class _RouteDetailHeading extends StatelessWidget {
+  const _RouteDetailHeading({
+    required this.title,
+    required this.status,
+    this.tone,
+  });
+
+  final String title;
+  final String status;
+  final Color? tone;
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, constraints) => Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(child: Text(title, style: geoTitleStyle(context))),
+        const SizedBox(width: 8),
+        ConstrainedBox(
+          constraints: BoxConstraints(maxWidth: constraints.maxWidth * .58),
+          child: GeoStatusChip(status, tone: tone),
+        ),
+      ],
+    ),
+  );
+}
+
+class _RouteDetailFacts extends StatelessWidget {
+  const _RouteDetailFacts(this.facts, {super.key});
+
+  final Map<String, String> facts;
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, constraints) => Wrap(
+      spacing: 12,
+      runSpacing: 8,
+      children: [
+        for (final fact in facts.entries)
+          SizedBox(
+            width: (constraints.maxWidth - 12) / 2,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(fact.key, style: Theme.of(context).textTheme.labelSmall),
+                Text(fact.value),
+              ],
+            ),
+          ),
+      ],
     ),
   );
 }
