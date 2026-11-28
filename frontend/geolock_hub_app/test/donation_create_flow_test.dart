@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:geolock_hub_app/donation_collection_path.dart';
 import 'package:geolock_hub_app/donation_pages.dart';
 import 'package:geolock_hub_app/donation_photo_errors.dart';
+import 'package:geolock_hub_app/donation_photo_rules.dart';
 import 'package:geolock_hub_app/location/location_picker_page.dart';
 import 'package:geolock_hub_app/location/location_result.dart';
 import 'package:geolock_hub_app/location/road_routing.dart';
@@ -34,11 +35,17 @@ void main() {
       'Hub Collection',
     );
     expect(
-      collectionPathBadgeLabel('COMMUNITY_HUB', listingSourceType: 'DIRECT_DONATION'),
+      collectionPathBadgeLabel(
+        'COMMUNITY_HUB',
+        listingSourceType: 'DIRECT_DONATION',
+      ),
       'Hub Collection',
     );
     expect(
-      collectionPathBadgeLabel('UNKNOWN_PATH', listingSourceType: 'DIRECT_DONATION'),
+      collectionPathBadgeLabel(
+        'UNKNOWN_PATH',
+        listingSourceType: 'DIRECT_DONATION',
+      ),
       isNull,
     );
     expect(collectionPathBadgeLabel('HUB_BATCH'), isNull);
@@ -193,63 +200,46 @@ void main() {
     addTearDown(tester.view.resetDevicePixelRatio);
     addTearDown(tester.view.resetPhysicalSize);
 
-    SharedPreferences.setMockInitialValues({});
-    await tester.runAsync(() async {
-      final supabase = await Supabase.initialize(
-        url: 'http://localhost:54321',
-        publishableKey: 'offline-test-key',
-        authOptions: const FlutterAuthClientOptions(
-          autoRefreshToken: false,
-          detectSessionInUri: false,
-        ),
-        httpClient: MockClient((request) async {
-          final path = request.url.path;
-          if (path.endsWith('/token')) {
-            final payload = base64Url
-                .encode(
-                  utf8.encode(
-                    jsonEncode({
-                      'sub': actor,
-                      'exp':
-                          DateTime.now().millisecondsSinceEpoch ~/ 1000 + 3600,
-                    }),
-                  ),
-                )
-                .replaceAll('=', '');
-            return jsonResponse({
-              'access_token': 'eyJhbGciOiJub25lIn0.$payload.signature',
-              'token_type': 'bearer',
-              'expires_in': 3600,
-              'refresh_token': 'offline-test-refresh',
-              'user': {'id': actor, 'app_metadata': {}, 'user_metadata': {}},
-            });
-          }
-          if (path.endsWith('/get_active_donation_categories')) {
-            return jsonResponse([
-              {'category_id': categoryId, 'category_name': 'Clothing'},
-            ], request: request);
-          }
-          if (path.contains('/object/list/')) {
-            storageCalls++;
-            return storageList.future;
-          }
-          if (path.endsWith('/create_donation_with_images')) {
-            submissions.add(jsonDecode(request.body) as Map<String, dynamic>);
-            return jsonResponse(
-              {'message': 'INVALID_DONATION_ITEM'},
-              status: 400,
-              request: request,
-            );
-          }
-          throw StateError('Unexpected mock request: $path');
-        }),
-      );
-      addTearDown(supabase.dispose);
-      await supabase.client.auth.signInWithPassword(
-        email: 'donor@example.invalid',
-        password: 'offline-test',
-      );
-    });
+    await _initOfflineSupabase(tester, (request) async {
+      final path = request.url.path;
+      if (path.endsWith('/token')) {
+        final payload = base64Url
+            .encode(
+              utf8.encode(
+                jsonEncode({
+                  'sub': actor,
+                  'exp': DateTime.now().millisecondsSinceEpoch ~/ 1000 + 3600,
+                }),
+              ),
+            )
+            .replaceAll('=', '');
+        return jsonResponse({
+          'access_token': 'eyJhbGciOiJub25lIn0.$payload.signature',
+          'token_type': 'bearer',
+          'expires_in': 3600,
+          'refresh_token': 'offline-test-refresh',
+          'user': {'id': actor, 'app_metadata': {}, 'user_metadata': {}},
+        });
+      }
+      if (path.endsWith('/get_active_donation_categories')) {
+        return jsonResponse([
+          {'category_id': categoryId, 'category_name': 'Clothing'},
+        ], request: request);
+      }
+      if (path.contains('/object/list/')) {
+        storageCalls++;
+        return storageList.future;
+      }
+      if (path.endsWith('/create_donation_with_item_photos')) {
+        submissions.add(jsonDecode(request.body) as Map<String, dynamic>);
+        return jsonResponse(
+          {'message': 'INVALID_DONATION_ITEM'},
+          status: 400,
+          request: request,
+        );
+      }
+      throw StateError('Unexpected mock request: $path');
+    }, signIn: true);
     await tester.pumpWidget(const MaterialApp(home: CreateDonationPage()));
     final page = find.byType(CreateDonationPage);
     final dynamic state = tester.state(page);
@@ -277,11 +267,9 @@ void main() {
     await edit('Item name', 'Shirts');
 
     // Provide the outputs of the device photo picker and confirmed map picker.
-    state.photos.add(
-      DonationPhotoSelection(
-        id: photoId,
-        file: XFile('web/icons/Icon-192.png'),
-      ),
+    state.items.single.photo = DonationPhotoSelection(
+      id: photoId,
+      file: XFile('web/icons/Icon-192.png'),
     );
     state.pickupLocation = const LocationResult(
       address: 'Test pickup',
@@ -366,17 +354,46 @@ void main() {
     }
     await tester.pumpAndSettle();
     expect(submissions, hasLength(1));
+    final sent = submissions.single;
+    final sentItem = (sent['p_items'] as List).single as Map;
+    expect(sentItem['unit_weight_kg'], 5.05);
+    expect(sentItem['item_position'], 1);
+    expect(sent, isNot(contains('p_images')));
+    final sentPhoto = sentItem['photo'] as Map;
     expect(
-      (submissions.single['p_items'] as List).single['unit_weight_kg'],
-      5.05,
+      sentPhoto['storage_path'],
+      '$actor/pending/${sent['p_request']}/$photoId.png',
     );
+    expect(sentPhoto['content_type'], 'image/png');
+    expect(sentPhoto['size_bytes'], isA<int>());
     expect(submitButton().onPressed, isNotNull);
+
+    // A retry of the same form reuses the request ID (idempotent on the server).
+    submitButton().onPressed!();
+    for (var attempt = 0; submissions.length < 2 && attempt < 30; attempt++) {
+      await tester.pump();
+      await tester.runAsync(() async {
+        await Future<void>.delayed(const Duration(milliseconds: 10));
+      });
+    }
+    await tester.pumpAndSettle();
+    expect(submissions, hasLength(2));
+    expect(submissions[1]['p_request'], sent['p_request']);
+    expect(submissions[1]['p_items'], sent['p_items']);
+
+    // Removing the only item photo blocks submission and starts a new request.
+    final requestBefore = state.createRequestId as String;
+    await tester.tap(find.byTooltip('Remove item photo'));
+    await tester.pump();
+    expect(state.items.single.photo, isNull);
+    expect(state.createRequestId, isNot(requestBefore));
+    expect(find.text('At least one item photo is required.'), findsOneWidget);
+    expect(submitButton().onPressed, isNull);
     await tester.pumpWidget(const SizedBox.shrink());
   });
 
-  testWidgets('Donate Again waits for photos and fresh location confirmation', (
-    tester,
-  ) async {
+  testWidgets('Donate Again copies each item photo to its item and waits for '
+      'fresh location confirmation', (tester) async {
     const activeCategory = 'ea085f22-e2d4-4fa0-93db-e516b12b8c28';
     final copy = Completer<List<DonationPhotoSelection>>();
     final copiedPaths = <String>[];
@@ -384,31 +401,19 @@ void main() {
     tester.view.physicalSize = const Size(900, 2000);
     addTearDown(tester.view.resetDevicePixelRatio);
     addTearDown(tester.view.resetPhysicalSize);
-    SharedPreferences.setMockInitialValues({});
-    await tester.runAsync(() async {
-      final supabase = await Supabase.initialize(
-        url: 'http://localhost:54321',
-        publishableKey: 'offline-test-key',
-        authOptions: const FlutterAuthClientOptions(
-          autoRefreshToken: false,
-          detectSessionInUri: false,
-        ),
-        httpClient: MockClient((request) async {
-          final path = request.url.path;
-          if (path.endsWith('/get_active_donation_categories')) {
-            return http.Response(
-              jsonEncode([
-                {'category_id': activeCategory, 'category_name': 'Clothing'},
-              ]),
-              200,
-              headers: {'content-type': 'application/json'},
-              request: request,
-            );
-          }
-          throw StateError('Unexpected mock request: $path');
-        }),
-      );
-      addTearDown(supabase.dispose);
+    await _initOfflineSupabase(tester, (request) async {
+      final path = request.url.path;
+      if (path.endsWith('/get_active_donation_categories')) {
+        return http.Response(
+          jsonEncode([
+            {'category_id': activeCategory, 'category_name': 'Clothing'},
+          ]),
+          200,
+          headers: {'content-type': 'application/json'},
+          request: request,
+        );
+      }
+      throw StateError('Unexpected mock request: $path');
     });
     await tester.pumpWidget(
       MaterialApp(
@@ -429,10 +434,11 @@ void main() {
                 'quantity': 2,
                 'unit_weight_kg': 5,
                 'category_id': 'inactive-category',
+                'photo_path': 'donor/old-item-photo.png',
               },
             ],
             'images': [
-              {'storage_path': 'donor/old-photo.png'},
+              {'storage_path': 'donor/old-item-photo.png'},
             ],
           },
         ),
@@ -445,7 +451,8 @@ void main() {
       );
     });
     await tester.pumpAndSettle();
-    expect(copiedPaths, ['donor/old-photo.png']);
+    expect(copiedPaths, ['donor/old-item-photo.png']);
+    expect(find.textContaining('Copying item photos'), findsOneWidget);
     expect(state.title.text, 'Packed clothes');
     expect(state.items.single.name.text, 'Shirts');
     expect(state.items.single.category, isNull);
@@ -462,12 +469,8 @@ void main() {
     expect(find.text(collectionPathPreviewText(10)), findsOneWidget);
 
     final priorLocation = state.pickupLocation as LocationResult;
-    final photos = state.photos as List<DonationPhotoSelection>;
-    final manualPhoto = DonationPhotoSelection(
-      id: 'manual-photo',
-      file: XFile('web/icons/Icon-192.png'),
-    );
-    photos.add(manualPhoto);
+    // While the item photo is still copying, nothing can be submitted and the
+    // item's photo button stays disabled.
     state.pickupLocation = const LocationResult(
       address: 'Confirmed pickup',
       latitude: 3.1,
@@ -481,7 +484,7 @@ void main() {
     );
     await tester.pump();
     expect(submitButton().onPressed, isNull);
-    photos.remove(manualPhoto);
+    expect(_photoButton(tester, 'Add item photo').onPressed, isNull);
     state.pickupLocation = priorLocation;
 
     final copiedPhoto = DonationPhotoSelection(
@@ -490,7 +493,8 @@ void main() {
     );
     copy.complete([copiedPhoto]);
     await tester.pumpAndSettle();
-    expect(photos, [copiedPhoto]);
+    expect(state.items.single.photo, copiedPhoto);
+    expect(find.text('Item photo'), findsOneWidget);
     expect(submitButton().onPressed, isNull);
 
     state.pickupLocation = const LocationResult(
@@ -507,6 +511,261 @@ void main() {
     await tester.pumpAndSettle();
     expect(submitButton().onPressed, isNotNull);
     await tester.pumpWidget(const SizedBox.shrink());
+  });
+
+  testWidgets('Donate Again from a legacy donation copies items only', (
+    tester,
+  ) async {
+    const category = 'ea085f22-e2d4-4fa0-93db-e516b12b8c28';
+    final copiedPaths = <String>[];
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(900, 2000);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+    await _initOfflineSupabase(tester, (request) async {
+      if (request.url.path.endsWith('/get_active_donation_categories')) {
+        return _json([
+          {'category_id': category, 'category_name': 'Clothing'},
+        ], request: request);
+      }
+      throw StateError('Unexpected mock request: ${request.url.path}');
+    });
+    await tester.pumpWidget(
+      MaterialApp(
+        home: CreateDonationPage(
+          photoCopier: (paths) async {
+            copiedPaths.addAll(paths);
+            return const [];
+          },
+          copyFrom: const {
+            'title': 'Old clothes',
+            'description': 'Clean',
+            'latitude': 3.1,
+            'longitude': 101.6,
+            'pickup_address': 'Prior pickup',
+            // A donation made before item photos: its photos belong to no item.
+            'items': [
+              {
+                'item_id': 'legacy-item',
+                'item_name': 'Shirts',
+                'quantity': 2,
+                'unit_weight_kg': 5,
+                'category_id': category,
+                'item_position': null,
+                'photo_image_id': null,
+                'photo_path': null,
+              },
+            ],
+            'images': [
+              {'storage_path': 'donor/legacy-donation-photo.png'},
+            ],
+          },
+        ),
+      ),
+    );
+    final dynamic state = tester.state(find.byType(CreateDonationPage));
+    await tester.runAsync(() async {
+      await (state.categories as Future<List<DonationCategory>>).timeout(
+        const Duration(seconds: 5),
+      );
+    });
+    await tester.pumpAndSettle();
+    expect(copiedPaths, isEmpty);
+    expect(state.copyingPhotos, isFalse);
+    expect(state.items.single.name.text, 'Shirts');
+    expect(state.items.single.photo, isNull);
+    expect(find.textContaining('Its photos are not copied'), findsOneWidget);
+    expect(find.text('At least one item photo is required.'), findsOneWidget);
+    expect(_photoButton(tester, 'Add item photo').onPressed, isNotNull);
+
+    FilledButton submitButton() => tester.widget<FilledButton>(
+      find.widgetWithText(FilledButton, 'Submit Donation'),
+    );
+    state.pickupLocation = const LocationResult(
+      address: 'Confirmed pickup',
+      latitude: 3.1,
+      longitude: 101.6,
+      method: LocationSelectionMethod.mapPin,
+      roadAccess: RoadAccessResult(routable: true),
+    );
+    await tester.enterText(
+      find.widgetWithText(TextField, 'Donation title'),
+      'Old clothes again',
+    );
+    await tester.pump();
+    expect(submitButton().onPressed, isNull);
+    state.items.single.photo = DonationPhotoSelection(
+      id: 'new-item-photo',
+      file: XFile('web/icons/Icon-192.png'),
+    );
+    await tester.enterText(
+      find.widgetWithText(TextField, 'Donation title'),
+      'Old clothes, new photo',
+    );
+    await tester.pump();
+    expect(submitButton().onPressed, isNotNull);
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+
+  testWidgets('item photos keep their item order through edits and submit', (
+    tester,
+  ) async {
+    const category = 'ea085f22-e2d4-4fa0-93db-e516b12b8c28';
+    const actor = '353ddd38-30e5-44b5-a5b1-044f7bda725e';
+    const notebookPhoto = '0f8fad5b-d9cb-469f-a165-70867728950e';
+    const clothesPhoto = '7c9e6679-7425-40de-944b-e07fc1f90ae7';
+    final submissions = <Map<String, dynamic>>[];
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(900, 3200);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+    await _initOfflineSupabase(tester, (request) async {
+      final path = request.url.path;
+      if (path.endsWith('/token')) return _token(actor, request);
+      if (path.endsWith('/get_active_donation_categories')) {
+        return _json([
+          {'category_id': category, 'category_name': 'Clothing'},
+        ], request: request);
+      }
+      if (path.contains('/object/list/')) {
+        // Both photos are already staged, as on a retry.
+        return _json([
+          {'name': '$notebookPhoto.png', 'id': notebookPhoto},
+          {'name': '$clothesPhoto.png', 'id': clothesPhoto},
+        ], request: request);
+      }
+      if (path.endsWith('/create_donation_with_item_photos')) {
+        submissions.add(jsonDecode(request.body) as Map<String, dynamic>);
+        return _json(
+          {'message': 'STAGED_ITEM_PHOTO_MISSING_OR_MISMATCHED_2'},
+          status: 400,
+          request: request,
+        );
+      }
+      throw StateError('Unexpected mock request: $path');
+    }, signIn: true);
+    await tester.pumpWidget(const MaterialApp(home: CreateDonationPage()));
+    final dynamic state = tester.state(find.byType(CreateDonationPage));
+    await tester.runAsync(() async {
+      await (state.categories as Future<List<DonationCategory>>).timeout(
+        const Duration(seconds: 5),
+      );
+    });
+    await tester.pumpAndSettle();
+    FilledButton submitButton() =>
+        tester.widget<FilledButton>(find.byType(FilledButton));
+
+    await tester.enterText(
+      find.widgetWithText(TextField, 'Donation title'),
+      'School and pantry',
+    );
+    await tester.enterText(
+      find.widgetWithText(TextField, 'Description'),
+      'Packed',
+    );
+    for (var added = 0; added < 2; added++) {
+      await tester.tap(find.text('Add another item'));
+      await tester.pump();
+    }
+    expect(state.items, hasLength(3));
+    expect(find.text('Add item photo'), findsNWidgets(3));
+    final names = ['Rice', 'Notebooks', 'Clothes'];
+    for (var i = 0; i < 3; i++) {
+      state.items[i].name.text = names[i];
+      state.items[i].category = category;
+    }
+    state.pickupLocation = const LocationResult(
+      address: 'Test pickup',
+      latitude: 3.1,
+      longitude: 101.6,
+      method: LocationSelectionMethod.mapPin,
+      roadAccess: RoadAccessResult(routable: true),
+    );
+    await tester.enterText(
+      find.widgetWithText(TextField, 'Donation title'),
+      'School and pantry items',
+    );
+    await tester.pump();
+    // Every item is complete, but no item has a photo yet.
+    expect(submitButton().onPressed, isNull);
+
+    // Item 1 (Rice) has no photo; items 2 and 3 do.
+    state.items[1].photo = DonationPhotoSelection(
+      id: notebookPhoto,
+      file: XFile('web/icons/Icon-192.png'),
+    );
+    state.items[2].photo = DonationPhotoSelection(
+      id: clothesPhoto,
+      file: XFile('web/icons/Icon-512.png'),
+    );
+    await tester.enterText(
+      find.widgetWithText(TextField, 'Description'),
+      'Packed and labelled',
+    );
+    await tester.pump();
+    expect(find.text('Add item photo'), findsOneWidget);
+    expect(find.text('Item photo'), findsNWidgets(2));
+    expect(submitButton().onPressed, isNotNull);
+
+    Future<void> submitAndWait(int expected) async {
+      submitButton().onPressed!();
+      for (var i = 0; submissions.length < expected && i < 30; i++) {
+        await tester.pump();
+        await tester.runAsync(() async {
+          await Future<void>.delayed(const Duration(milliseconds: 10));
+        });
+      }
+      await tester.pumpAndSettle();
+      expect(submissions, hasLength(expected));
+    }
+
+    await submitAndWait(1);
+    final first = submissions.single;
+    final items = (first['p_items'] as List).cast<Map>();
+    expect([for (final item in items) item['item_position']], [1, 2, 3]);
+    expect([for (final item in items) item['item_name']], names);
+    expect(items[0], isNot(contains('photo')));
+    expect(
+      items[1]['photo']['storage_path'],
+      '$actor/pending/${first['p_request']}/$notebookPhoto.png',
+    );
+    expect(
+      items[2]['photo']['storage_path'],
+      '$actor/pending/${first['p_request']}/$clothesPhoto.png',
+    );
+    // The server error names the item by its position.
+    expect(find.textContaining('photo for item 2'), findsOneWidget);
+    expect(
+      find.textContaining('STAGED_ITEM_PHOTO_MISSING_OR_MISMATCHED_2'),
+      findsOneWidget,
+    );
+
+    // Removing item 1 renumbers the rest; the photos stay with their items.
+    await tester.tap(find.byIcon(Icons.delete_outline).first);
+    await tester.pump();
+    expect(state.items, hasLength(2));
+    await submitAndWait(2);
+    final second = submissions[1];
+    final renumbered = (second['p_items'] as List).cast<Map>();
+    expect(second['p_request'], isNot(first['p_request']));
+    expect([for (final item in renumbered) item['item_position']], [1, 2]);
+    expect(
+      [for (final item in renumbered) item['item_name']],
+      ['Notebooks', 'Clothes'],
+    );
+    expect(
+      renumbered[0]['photo']['storage_path'],
+      endsWith('/$notebookPhoto.png'),
+    );
+    expect(
+      renumbered[1]['photo']['storage_path'],
+      endsWith('/$clothesPhoto.png'),
+    );
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+
+  test('the form keeps the 30-item maximum', () {
+    expect(DonationItemPhotoRules.maxItems, 30);
   });
 
   group('location picker road access', () {
@@ -667,8 +926,119 @@ void main() {
       expect(text, contains('INVALID_DONATION_IMAGE_2'));
     });
 
+    test('item-photo errors name the item position', () {
+      final invalid = message('INVALID_ITEM_PHOTO_2');
+      expect(invalid, contains('photo for item 2'));
+      expect(invalid, contains('JPG, PNG or WebP'));
+      expect(invalid, contains('INVALID_ITEM_PHOTO_2'));
+      expect(
+        message('STAGED_ITEM_PHOTO_MISSING_OR_MISMATCHED_3'),
+        allOf(contains('item 3'), contains('Tap Submit')),
+      );
+      expect(message('ITEM_PHOTO_ALREADY_ATTACHED_1'), contains('item 1'));
+      expect(message('DUPLICATE_ITEM_PHOTO_2'), contains('item 2'));
+    });
+
+    test('item-photo rule errors are readable', () {
+      expect(
+        message('AT_LEAST_ONE_ITEM_PHOTO_REQUIRED'),
+        contains('at least one item'),
+      );
+      expect(message('ONE_TO_THIRTY_ITEMS_REQUIRED'), contains('1 and 30'));
+      expect(message('ONE_PHOTO_PER_ITEM'), contains('only one photo'));
+      expect(message('INVALID_ITEM_POSITIONS'), contains('Tap Submit again'));
+    });
+
     test('unknown codes fall back and still show the code', () {
       expect(message('SOMETHING_NEW_FAILED'), contains('SOMETHING_NEW_FAILED'));
     });
   });
 }
+
+http.Response _json(Object value, {int status = 200, http.Request? request}) =>
+    http.Response(
+      jsonEncode(value),
+      status,
+      headers: {'content-type': 'application/json'},
+      request: request,
+    );
+
+http.Response _token(String actor, http.Request request) {
+  final payload = base64Url
+      .encode(
+        utf8.encode(
+          jsonEncode({
+            'sub': actor,
+            'exp': DateTime.now().millisecondsSinceEpoch ~/ 1000 + 3600,
+          }),
+        ),
+      )
+      .replaceAll('=', '');
+  return _json({
+    'access_token': 'eyJhbGciOiJub25lIn0.$payload.signature',
+    'token_type': 'bearer',
+    'expires_in': 3600,
+    'refresh_token': 'offline-test-refresh',
+    'user': {'id': actor, 'app_metadata': {}, 'user_metadata': {}},
+  }, request: request);
+}
+
+/// The mock HTTP handler of the widget test that is running now.
+Future<http.Response> Function(http.Request request)? _offlineHandler;
+
+/// Routes this widget test's Supabase traffic to [handler].
+///
+/// The app keeps its client in a top-level `final _db = Supabase.instance.client`
+/// (lib/donation_pages.dart), which Dart initializes once, on first use. A
+/// second `Supabase.initialize` in the same test file would therefore never
+/// reach the page: it would keep using the first test's client and mock. So
+/// this file creates one offline client, on first use, and each test installs
+/// its own handler for that client.
+Future<void> _initOfflineSupabase(
+  WidgetTester tester,
+  Future<http.Response> Function(http.Request request) handler, {
+  bool signIn = false,
+}) async {
+  _offlineHandler = handler;
+  addTearDown(() => _offlineHandler = null);
+  await tester.runAsync(() async {
+    if (!_offlineSupabaseReady) {
+      SharedPreferences.setMockInitialValues({});
+      await Supabase.initialize(
+        url: 'http://localhost:54321',
+        publishableKey: 'offline-test-key',
+        authOptions: const FlutterAuthClientOptions(
+          autoRefreshToken: false,
+          detectSessionInUri: false,
+        ),
+        httpClient: MockClient((request) {
+          final current = _offlineHandler;
+          if (current == null) {
+            throw StateError('No mock handler for ${request.url.path}');
+          }
+          return current(request);
+        }),
+      );
+      _offlineSupabaseReady = true;
+    }
+    if (signIn) {
+      await Supabase.instance.client.auth.signInWithPassword(
+        email: 'donor@example.invalid',
+        password: 'offline-test',
+      );
+    }
+  });
+}
+
+bool _offlineSupabaseReady = false;
+
+/// The enabled state of an item photo button, found by its label.
+ButtonStyleButton _photoButton(WidgetTester tester, String label) =>
+    tester.widget<ButtonStyleButton>(
+      find.ancestor(
+        of: find.text(label),
+        matching: find.byWidgetPredicate(
+          (widget) => widget is ButtonStyleButton,
+        ),
+      ),
+    );
