@@ -31,7 +31,7 @@ String? donationServerErrorCode(PostgrestException error) =>
     RegExp(r'\b[A-Z][A-Z0-9]*(?:_[A-Z0-9]+)+\b').firstMatch(error.message)?[0];
 
 // Some codes carry a photo or item position suffix (INVALID_DONATION_IMAGE_2,
-// INVALID_ITEM_PHOTO_2).
+// INVALID_ITEM_PHOTO_2, ITEM_PHOTO_REQUIRED_2).
 String _baseCode(String code) => code.replaceFirst(RegExp(r'_\d+$'), '');
 
 String? _donationServerMessage(String code) {
@@ -60,6 +60,7 @@ const _itemPhotoErrors = <String, String>{
   'STAGED_ITEM_PHOTO_MISSING_OR_MISMATCHED':
       'The photo for {item} was not found on the server. Tap Submit to '
       'upload it again.',
+  'ITEM_PHOTO_REQUIRED': 'Every item needs a photo. Add a photo to {item}.',
 };
 
 const _donationServerErrors = <String, String>{
@@ -72,7 +73,8 @@ const _donationServerErrors = <String, String>{
   'INVALID_TOTAL_WEIGHT': 'The total weight must be greater than 0 kg.',
   'ONE_TO_THREE_PHOTOS_REQUIRED': 'Add between 1 and 3 donation photos.',
   'ONE_TO_THIRTY_ITEMS_REQUIRED': 'Add between 1 and 30 items.',
-  'AT_LEAST_ONE_ITEM_PHOTO_REQUIRED': 'Add a photo to at least one item.',
+  'AT_LEAST_ONE_ITEM_PHOTO_REQUIRED':
+      'Every item needs a photo. Add a photo to each item.',
   'ONE_PHOTO_PER_ITEM': 'Each item can have only one photo.',
   'INVALID_ITEM_POSITIONS':
       'The item order could not be saved. Tap Submit again.',

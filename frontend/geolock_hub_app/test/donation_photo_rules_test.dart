@@ -18,29 +18,56 @@ void main() {
   });
 
   group('DonationItemPhotoRules', () {
-    test('photos are optional per item but at least one item needs one', () {
+    test('every item needs exactly one photo', () {
       expect(DonationItemPhotoRules.validItemPhotos([]), isFalse);
-      expect(DonationItemPhotoRules.validItemPhotos([false]), isFalse);
-      expect(DonationItemPhotoRules.validItemPhotos([false, false]), isFalse);
+      // One item with one photo / without a photo.
       expect(DonationItemPhotoRules.validItemPhotos([true]), isTrue);
-      expect(DonationItemPhotoRules.validItemPhotos([false, true]), isTrue);
-    });
-
-    test('a donation keeps the 30-item maximum', () {
-      expect(DonationItemPhotoRules.maxItems, 30);
+      expect(DonationItemPhotoRules.validItemPhotos([false]), isFalse);
+      // Three items with three photos / with only two photos.
+      expect(
+        DonationItemPhotoRules.validItemPhotos([true, true, true]),
+        isTrue,
+      );
+      expect(
+        DonationItemPhotoRules.validItemPhotos([true, false, true]),
+        isFalse,
+      );
+      // Revised from the earlier rule, which accepted these.
+      expect(DonationItemPhotoRules.validItemPhotos([false, true]), isFalse);
       expect(
         DonationItemPhotoRules.validItemPhotos([
           true,
           ...List.filled(29, false),
         ]),
+        isFalse,
+      );
+    });
+
+    test('a donation keeps the 30-item maximum', () {
+      expect(DonationItemPhotoRules.maxItems, 30);
+      expect(
+        DonationItemPhotoRules.validItemPhotos(List.filled(30, true)),
         isTrue,
       );
       expect(
-        DonationItemPhotoRules.validItemPhotos([
-          true,
-          ...List.filled(30, false),
-        ]),
+        DonationItemPhotoRules.validItemPhotos(List.filled(31, true)),
         isFalse,
+      );
+    });
+
+    test('names the items that still need a photo', () {
+      expect(
+        DonationItemPhotoRules.missingPhotoItems([true, false, true, false]),
+        [2, 4],
+      );
+      expect(DonationItemPhotoRules.missingPhotoMessage([true, true]), isNull);
+      expect(
+        DonationItemPhotoRules.missingPhotoMessage([true, false]),
+        'Add a photo to item 2.',
+      );
+      expect(
+        DonationItemPhotoRules.missingPhotoMessage([false, true, false, false]),
+        'Add a photo to items 1, 3 and 4.',
       );
     });
 

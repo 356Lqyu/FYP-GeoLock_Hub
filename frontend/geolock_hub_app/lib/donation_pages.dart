@@ -3257,7 +3257,7 @@ class DonationItemInput {
   String? category;
   String condition = 'GOOD';
 
-  /// The item's own photo (optional). At least one item needs one.
+  /// The item's own photo. Every item needs exactly one before submitting.
   DonationPhotoSelection? photo;
 
   String? nameError(String value) =>
@@ -3287,29 +3287,47 @@ class DonationPhotoSelection {
   const DonationPhotoSelection({required this.id, required this.file});
 }
 
-/// The optional photo of one item in the Create Donation form.
+/// The required photo of one item in the Create Donation form.
 class _ItemPhotoField extends StatelessWidget {
   final DonationPhotoSelection? photo;
   final bool enabled;
   final VoidCallback onPick;
   final VoidCallback onRemove;
+
+  /// Show that this item still needs a photo (not while photos are copying).
+  final bool showMissing;
   const _ItemPhotoField({
     required this.photo,
     required this.enabled,
     required this.onPick,
     required this.onRemove,
+    required this.showMissing,
   });
+
+  static const missingText = 'Photo required';
 
   @override
   Widget build(BuildContext context) {
     final selected = photo;
     if (selected == null) {
+      final error = Theme.of(context).colorScheme.error;
       return Align(
         alignment: Alignment.centerLeft,
-        child: OutlinedButton.icon(
-          onPressed: enabled ? onPick : null,
-          icon: const Icon(Icons.add_photo_alternate_outlined),
-          label: const Text('Add item photo'),
+        child: Wrap(
+          crossAxisAlignment: WrapCrossAlignment.center,
+          spacing: 12,
+          children: [
+            OutlinedButton.icon(
+              onPressed: enabled ? onPick : null,
+              icon: const Icon(Icons.add_photo_alternate_outlined),
+              label: const Text('Add item photo'),
+            ),
+            if (showMissing)
+              Text(
+                missingText,
+                style: TextStyle(color: error, fontWeight: FontWeight.w600),
+              ),
+          ],
         ),
       );
     }
@@ -3533,9 +3551,10 @@ class _CreateDonationPageState extends State<CreateDonationPage> {
   void _onInputChanged(String _) => setState(_resetCreateRequest);
 
   /// Uploads each item's photo to this request's private pending folder and
-  /// returns its photo metadata, one entry per item in form order (null for
-  /// an item without a photo). A retry with the same request ID skips photos
-  /// that are already uploaded.
+  /// returns its photo metadata, one entry per item in form order. Submit is
+  /// enabled only when every item has a photo, and the database refuses a
+  /// missing one with `ITEM_PHOTO_REQUIRED_<item>`. A retry with the same
+  /// request ID skips photos that are already uploaded.
   Future<List<Map<String, dynamic>?>> _uploadItemPhotos() async {
     final userId = _db.auth.currentUser?.id;
     if (userId == null) {
@@ -3628,6 +3647,10 @@ class _CreateDonationPageState extends State<CreateDonationPage> {
     );
   }
 
+  List<bool> get _itemHasPhoto => [
+    for (final item in items) item.photo != null,
+  ];
+
   bool _canSubmit(double? itemTotal) {
     final location = pickupLocation;
     return !busy &&
@@ -3635,9 +3658,7 @@ class _CreateDonationPageState extends State<CreateDonationPage> {
         itemTotal != null &&
         DonationPhotoRules.titleError(title.text) == null &&
         DonationPhotoRules.descriptionError(description.text) == null &&
-        DonationItemPhotoRules.validItemPhotos([
-          for (final item in items) item.photo != null,
-        ]) &&
+        DonationItemPhotoRules.validItemPhotos(_itemHasPhoto) &&
         location != null &&
         location.address.trim().isNotEmpty &&
         location.roadAccess?.routable == true;
@@ -3822,6 +3843,10 @@ class _CreateDonationPageState extends State<CreateDonationPage> {
         final total = _validatedItemTotal(choices);
         final directPickupPreview =
             total != null && previewCollectionPath(total) == 'DIRECT_PICKUP';
+        // Which items still need a photo; hidden while Donate Again copies photos.
+        final missingPhotos = copyingPhotos
+            ? null
+            : DonationItemPhotoRules.missingPhotoMessage(_itemHasPhoto);
         return Form(
           child: ListView(
             padding: const EdgeInsets.all(16),
@@ -3836,7 +3861,7 @@ class _CreateDonationPageState extends State<CreateDonationPage> {
                           ? 'Copied from your cancelled donation. Copying item photos…'
                           : earlierPhotosNotCopied
                           ? 'Copied from your cancelled donation. Its photos are not '
-                                'copied: add a photo to at least one item. Confirm the '
+                                'copied: add a photo to every item. Confirm the '
                                 'pickup location again, check the items, then submit. '
                                 'This creates a new donation; you choose a hub and day '
                                 'after it is saved.'
@@ -3903,15 +3928,19 @@ class _CreateDonationPageState extends State<CreateDonationPage> {
               const Divider(),
               Text('Items', style: Theme.of(context).textTheme.titleSmall),
               Text(
-                'Each item can have one photo. Add a photo to at least one '
-                'item; the first photographed item is the donation cover. '
-                'Photos are resized before upload.',
+                'Every item needs exactly one photo. The first item\'s photo '
+                'is the donation cover. Photos are resized before upload.',
                 style: Theme.of(context).textTheme.bodySmall,
               ),
-              if (!copyingPhotos && !items.any((item) => item.photo != null))
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 8),
-                  child: Text('At least one item photo is required.'),
+              if (missingPhotos != null)
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: Text(
+                    missingPhotos,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.error,
+                    ),
+                  ),
                 ),
               ...items.asMap().entries.map((entry) {
                 final i = entry.key;
@@ -4022,6 +4051,7 @@ class _CreateDonationPageState extends State<CreateDonationPage> {
                         const SizedBox(height: 8),
                         _ItemPhotoField(
                           photo: item.photo,
+                          showMissing: !copyingPhotos,
                           enabled: !busy && !copyingPhotos,
                           onPick: () => _pickItemPhoto(item),
                           onRemove: () => _removeItemPhoto(item),

@@ -332,8 +332,12 @@ void main() {
     await tester.tap(find.text('Add another item'));
     await tester.pump();
     expect(submitButton().onPressed, isNull);
+    // The new item is marked as needing a photo; item 1 already has one.
+    expect(find.text('Add a photo to item 2.'), findsOneWidget);
+    expect(find.text('Photo required'), findsOneWidget);
     await tester.tap(find.byIcon(Icons.delete_outline).last);
     await tester.pump();
+    expect(find.text('Photo required'), findsNothing);
     final submit = submitButton().onPressed!;
     submit();
     submit();
@@ -381,14 +385,25 @@ void main() {
     expect(submissions[1]['p_request'], sent['p_request']);
     expect(submissions[1]['p_items'], sent['p_items']);
 
-    // Removing the only item photo blocks submission and starts a new request.
+    // Removing the item's photo blocks submission and starts a new request.
     final requestBefore = state.createRequestId as String;
     await tester.tap(find.byTooltip('Remove item photo'));
     await tester.pump();
     expect(state.items.single.photo, isNull);
     expect(state.createRequestId, isNot(requestBefore));
-    expect(find.text('At least one item photo is required.'), findsOneWidget);
+    expect(find.text('Add a photo to item 1.'), findsOneWidget);
+    expect(find.text('Photo required'), findsOneWidget);
     expect(submitButton().onPressed, isNull);
+
+    // Choosing a replacement photo enables Submit again (all other fields valid).
+    state.items.single.photo = DonationPhotoSelection(
+      id: '2f1b7a52-35a3-4a43-8d0c-2a0f2a7f6c11',
+      file: XFile('web/icons/Icon-512.png'),
+    );
+    await edit('Description', 'Clean and packed, new photo');
+    expect(find.text('Photo required'), findsNothing);
+    expect(find.text('Add a photo to item 1.'), findsNothing);
+    expect(submitButton().onPressed, isNotNull);
     await tester.pumpWidget(const SizedBox.shrink());
   });
 
@@ -575,7 +590,9 @@ void main() {
     expect(state.items.single.name.text, 'Shirts');
     expect(state.items.single.photo, isNull);
     expect(find.textContaining('Its photos are not copied'), findsOneWidget);
-    expect(find.text('At least one item photo is required.'), findsOneWidget);
+    expect(find.textContaining('add a photo to every item'), findsOneWidget);
+    expect(find.text('Add a photo to item 1.'), findsOneWidget);
+    expect(find.text('Photo required'), findsOneWidget);
     expect(_photoButton(tester, 'Add item photo').onPressed, isNotNull);
 
     FilledButton submitButton() => tester.widget<FilledButton>(
@@ -607,11 +624,118 @@ void main() {
     await tester.pumpWidget(const SizedBox.shrink());
   });
 
+  testWidgets('Donate Again asks for a replacement when an item photo cannot '
+      'be copied', (tester) async {
+    const category = 'ea085f22-e2d4-4fa0-93db-e516b12b8c28';
+    final copiedPaths = <String>[];
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(900, 2600);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+    await _initOfflineSupabase(tester, (request) async {
+      if (request.url.path.endsWith('/get_active_donation_categories')) {
+        return _json([
+          {'category_id': category, 'category_name': 'Clothing'},
+        ], request: request);
+      }
+      throw StateError('Unexpected mock request: ${request.url.path}');
+    });
+    final copiedShirt = DonationPhotoSelection(
+      id: 'copied-shirt',
+      file: XFile('web/icons/Icon-192.png'),
+    );
+    await tester.pumpWidget(
+      MaterialApp(
+        home: CreateDonationPage(
+          // The shirt photo copies; the trousers photo can no longer be read.
+          photoCopier: (paths) async {
+            copiedPaths.addAll(paths);
+            return paths.single.endsWith('shirt.png') ? [copiedShirt] : [];
+          },
+          copyFrom: const {
+            'title': 'Clothes',
+            'description': 'Clean',
+            'latitude': 3.1,
+            'longitude': 101.6,
+            'pickup_address': 'Prior pickup',
+            'items': [
+              {
+                'item_name': 'Shirts',
+                'quantity': 2,
+                'unit_weight_kg': 1,
+                'category_id': category,
+                'item_position': 1,
+                'photo_path': 'donor/item-shirt.png',
+              },
+              {
+                'item_name': 'Trousers',
+                'quantity': 1,
+                'unit_weight_kg': 1,
+                'category_id': category,
+                'item_position': 2,
+                'photo_path': 'donor/item-trousers.png',
+              },
+            ],
+          },
+        ),
+      ),
+    );
+    final dynamic state = tester.state(find.byType(CreateDonationPage));
+    await tester.runAsync(() async {
+      await (state.categories as Future<List<DonationCategory>>).timeout(
+        const Duration(seconds: 5),
+      );
+    });
+    await tester.pumpAndSettle();
+    expect(copiedPaths, ['donor/item-shirt.png', 'donor/item-trousers.png']);
+    expect(state.copyingPhotos, isFalse);
+    // Each copied photo stays with its own item; the failed one is missing.
+    expect(state.items[0].photo, copiedShirt);
+    expect(state.items[1].photo, isNull);
+    expect(
+      find.textContaining('1 item photo could not be copied'),
+      findsOneWidget,
+    );
+    expect(find.text('Add a photo to item 2.'), findsOneWidget);
+    expect(find.text('Photo required'), findsOneWidget);
+
+    FilledButton submitButton() => tester.widget<FilledButton>(
+      find.widgetWithText(FilledButton, 'Submit Donation'),
+    );
+    state.pickupLocation = const LocationResult(
+      address: 'Confirmed pickup',
+      latitude: 3.1,
+      longitude: 101.6,
+      method: LocationSelectionMethod.mapPin,
+      roadAccess: RoadAccessResult(routable: true),
+    );
+    await tester.enterText(
+      find.widgetWithText(TextField, 'Donation title'),
+      'Clothes again',
+    );
+    await tester.pump();
+    expect(submitButton().onPressed, isNull);
+
+    state.items[1].photo = DonationPhotoSelection(
+      id: 'replacement-trousers',
+      file: XFile('web/icons/Icon-512.png'),
+    );
+    await tester.enterText(
+      find.widgetWithText(TextField, 'Donation title'),
+      'Clothes again, replacement photo',
+    );
+    await tester.pump();
+    expect(find.text('Photo required'), findsNothing);
+    expect(submitButton().onPressed, isNotNull);
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+
   testWidgets('item photos keep their item order through edits and submit', (
     tester,
   ) async {
     const category = 'ea085f22-e2d4-4fa0-93db-e516b12b8c28';
     const actor = '353ddd38-30e5-44b5-a5b1-044f7bda725e';
+    const ricePhoto = '5d0f6c1e-8b51-4a6c-9f53-1c2e3d4f5a6b';
     const notebookPhoto = '0f8fad5b-d9cb-469f-a165-70867728950e';
     const clothesPhoto = '7c9e6679-7425-40de-944b-e07fc1f90ae7';
     final submissions = <Map<String, dynamic>>[];
@@ -628,8 +752,9 @@ void main() {
         ], request: request);
       }
       if (path.contains('/object/list/')) {
-        // Both photos are already staged, as on a retry.
+        // All photos are already staged, as on a retry.
         return _json([
+          {'name': '$ricePhoto.png', 'id': ricePhoto},
           {'name': '$notebookPhoto.png', 'id': notebookPhoto},
           {'name': '$clothesPhoto.png', 'id': clothesPhoto},
         ], request: request);
@@ -689,7 +814,10 @@ void main() {
     // Every item is complete, but no item has a photo yet.
     expect(submitButton().onPressed, isNull);
 
-    // Item 1 (Rice) has no photo; items 2 and 3 do.
+    expect(find.text('Add a photo to items 1, 2 and 3.'), findsOneWidget);
+    expect(find.text('Photo required'), findsNWidgets(3));
+
+    // Items 2 and 3 get photos; item 1 (Rice) still has none, so Submit stays off.
     state.items[1].photo = DonationPhotoSelection(
       id: notebookPhoto,
       file: XFile('web/icons/Icon-192.png'),
@@ -705,6 +833,23 @@ void main() {
     await tester.pump();
     expect(find.text('Add item photo'), findsOneWidget);
     expect(find.text('Item photo'), findsNWidgets(2));
+    expect(find.text('Add a photo to item 1.'), findsOneWidget);
+    expect(find.text('Photo required'), findsOneWidget);
+    expect(submitButton().onPressed, isNull);
+
+    // With a photo on every item, Submit is enabled.
+    state.items[0].photo = DonationPhotoSelection(
+      id: ricePhoto,
+      file: XFile('web/icons/Icon-maskable-192.png'),
+    );
+    await tester.enterText(
+      find.widgetWithText(TextField, 'Description'),
+      'Packed, labelled and photographed',
+    );
+    await tester.pump();
+    expect(find.text('Add item photo'), findsNothing);
+    expect(find.text('Item photo'), findsNWidgets(3));
+    expect(find.text('Photo required'), findsNothing);
     expect(submitButton().onPressed, isNotNull);
 
     Future<void> submitAndWait(int expected) async {
@@ -724,7 +869,10 @@ void main() {
     final items = (first['p_items'] as List).cast<Map>();
     expect([for (final item in items) item['item_position']], [1, 2, 3]);
     expect([for (final item in items) item['item_name']], names);
-    expect(items[0], isNot(contains('photo')));
+    expect(
+      items[0]['photo']['storage_path'],
+      '$actor/pending/${first['p_request']}/$ricePhoto.png',
+    );
     expect(
       items[1]['photo']['storage_path'],
       '$actor/pending/${first['p_request']}/$notebookPhoto.png',
@@ -740,13 +888,18 @@ void main() {
       findsOneWidget,
     );
 
-    // Removing item 1 renumbers the rest; the photos stay with their items.
+    // Removing item 1 renumbers the rest; the photos stay with their items
+    // and the removed item's photo is no longer sent.
     await tester.tap(find.byIcon(Icons.delete_outline).first);
     await tester.pump();
     expect(state.items, hasLength(2));
+    expect(find.text('Photo required'), findsNothing);
     await submitAndWait(2);
     final second = submissions[1];
     final renumbered = (second['p_items'] as List).cast<Map>();
+    expect([
+      for (final item in renumbered) item['photo']['storage_path'],
+    ], everyElement(isNot(endsWith('/$ricePhoto.png'))));
     expect(second['p_request'], isNot(first['p_request']));
     expect([for (final item in renumbered) item['item_position']], [1, 2]);
     expect(
@@ -942,7 +1095,14 @@ void main() {
     test('item-photo rule errors are readable', () {
       expect(
         message('AT_LEAST_ONE_ITEM_PHOTO_REQUIRED'),
-        contains('at least one item'),
+        contains('Every item needs a photo'),
+      );
+      expect(
+        message('ITEM_PHOTO_REQUIRED_3'),
+        allOf(
+          contains('Add a photo to item 3'),
+          contains('ITEM_PHOTO_REQUIRED_3'),
+        ),
       );
       expect(message('ONE_TO_THIRTY_ITEMS_REQUIRED'), contains('1 and 30'));
       expect(message('ONE_PHOTO_PER_ITEM'), contains('only one photo'));

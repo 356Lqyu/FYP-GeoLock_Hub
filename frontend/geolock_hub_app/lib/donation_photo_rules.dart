@@ -15,9 +15,9 @@ class DonationPhotoRules {
   }
 }
 
-/// Item-level donation photos: each item has at most one optional photo, and
-/// at least one item of a donation must have a photo. The database enforces
-/// the same rules in `create_donation_with_item_photos`.
+/// Item-level donation photos: a donation has 1 to 30 items and every item
+/// has exactly one photo. The database enforces the same rule in
+/// `create_donation_with_item_photos` (`ITEM_PHOTO_REQUIRED_<item>`).
 class DonationItemPhotoRules {
   static const int maxItems = 30;
 
@@ -25,11 +25,27 @@ class DonationItemPhotoRules {
   static bool validItemPhotos(List<bool> itemHasPhoto) =>
       itemHasPhoto.isNotEmpty &&
       itemHasPhoto.length <= maxItems &&
-      itemHasPhoto.any((hasPhoto) => hasPhoto);
+      itemHasPhoto.every((hasPhoto) => hasPhoto);
+
+  /// Item numbers (1-based, form order) that still need a photo.
+  static List<int> missingPhotoItems(List<bool> itemHasPhoto) => [
+    for (var index = 0; index < itemHasPhoto.length; index++)
+      if (!itemHasPhoto[index]) index + 1,
+  ];
+
+  /// "Add a photo to item 2." or "Add a photo to items 1, 3 and 4.", or null
+  /// when every item has a photo.
+  static String? missingPhotoMessage(List<bool> itemHasPhoto) {
+    final missing = missingPhotoItems(itemHasPhoto);
+    if (missing.isEmpty) return null;
+    if (missing.length == 1) return 'Add a photo to item ${missing.single}.';
+    final head = missing.sublist(0, missing.length - 1).join(', ');
+    return 'Add a photo to items $head and ${missing.last}.';
+  }
 
   /// Parameters for `create_donation_with_item_photos`. Each item gets an
-  /// explicit `item_position` (1..n) from its place in [items]; an item's
-  /// optional `photo` map is passed through unchanged.
+  /// explicit `item_position` (1..n) from its place in [items]; each item's
+  /// `photo` map is passed through unchanged.
   static Map<String, dynamic> createRpcPayload({
     required String requestId,
     required String title,

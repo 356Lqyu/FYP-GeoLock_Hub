@@ -1,4 +1,7 @@
 -- LOCAL TEST HARNESS ONLY. Runs AFTER 10_fixtures_before_migration.sql and the migration.
+-- Tests the 20261126120000 rule (0-1 photo per item, at least one per donation). Its B3, B5 and
+-- B30b cases are revised for 20261128120000 in ../every_item_photo/25_tests_every_item_photo.sql,
+-- where the same shapes must now be rejected (E-R6..E-R8).
 -- Each DO block is its own committed transaction, so the deferred commit-time triggers
 -- (minimum photo, donation lifecycle) fire exactly as they do for a real RPC call.
 SET client_min_messages = warning;
