@@ -88,8 +88,9 @@ DateTime hubToday() {
 }
 
 /// The days a donor can choose: today and the next 6 days.
-List<DateTime> hubDropOffDays() =>
-    [for (var i = 0; i < 7; i++) hubToday().add(Duration(days: i))];
+List<DateTime> hubDropOffDays() => [
+  for (var i = 0; i < 7; i++) hubToday().add(Duration(days: i)),
+];
 
 /// Weekday key of a date, e.g. "mon".
 String hubDayKey(DateTime day) => hubWeekdays[day.weekday - 1];
@@ -101,14 +102,19 @@ String hubIsoDate(DateTime day) =>
 /// A date from the database ("2026-11-04"), or null.
 DateTime? hubParseDay(Object? value) {
   final parsed = DateTime.tryParse('${value ?? ''}');
-  return parsed == null ? null : DateTime.utc(parsed.year, parsed.month, parsed.day);
+  return parsed == null
+      ? null
+      : DateTime.utc(parsed.year, parsed.month, parsed.day);
 }
 
 /// The drop-off day of a booking: the day of its closing time (a midnight close counts
 /// for the day before).
 DateTime? hubDropOffDayOf(DateTime? expiresAt) {
   if (expiresAt == null) return null;
-  final myt = expiresAt.toUtc().add(const Duration(hours: 8)).subtract(const Duration(seconds: 1));
+  final myt = expiresAt
+      .toUtc()
+      .add(const Duration(hours: 8))
+      .subtract(const Duration(seconds: 1));
   return DateTime.utc(myt.year, myt.month, myt.day);
 }
 
@@ -124,7 +130,18 @@ String hubCloseLabel(DateTime? time) {
 
 const _shortDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 const _shortMonths = [
-  'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
 ];
 
 /// "Wed 4 Nov".
@@ -234,7 +251,10 @@ class HubOperatingHours {
   String? lastCloseOn(DateTime day) {
     final slots = days[hubDayKey(day)] ?? const <HubTimeSlot>[];
     if (slots.isEmpty) return null;
-    return (slots.toList()..sort((a, b) => a.closeMinute.compareTo(b.closeMinute))).last.close;
+    return (slots.toList()
+          ..sort((a, b) => a.closeMinute.compareTo(b.closeMinute)))
+        .last
+        .close;
   }
 
   /// Whether the hub is open right now (Malaysia time). Display only.
@@ -340,7 +360,8 @@ class HubFacilities {
   HubFacilities.fromJson(Object? value)
     : foodSafeStorage = value is Map && value['has_food_safe_storage'] == true,
       fragileShelving = value is Map && value['has_fragile_shelving'] == true,
-      lockableStoreroom = value is Map && value['has_lockable_storeroom'] == true,
+      lockableStoreroom =
+          value is Map && value['has_lockable_storeroom'] == true,
       vehicleAccess = value is Map && value['has_vehicle_access'] == true;
 
   bool has(String need) => switch (need) {
@@ -774,8 +795,11 @@ class HubPassReservation {
   DateTime? get cancelClosesAt {
     final day = dropOffDay;
     if (day == null) return null;
-    final dayStart = DateTime.utc(day.year, day.month, day.day)
-        .subtract(const Duration(hours: 8));
+    final dayStart = DateTime.utc(
+      day.year,
+      day.month,
+      day.day,
+    ).subtract(const Duration(hours: 8));
     final open = hours.firstOpenMinuteOn(day);
     return open == null ? dayStart : dayStart.add(Duration(minutes: open));
   }
@@ -801,7 +825,8 @@ class HubPassReservation {
       reservedAt = hubDate(json['reserved_at']),
       expiresAt = hubDate(json['expires_at']),
       dropOffDay =
-          hubParseDay(json['dropoff_date']) ?? hubDropOffDayOf(hubDate(json['expires_at'])),
+          hubParseDay(json['dropoff_date']) ??
+          hubDropOffDayOf(hubDate(json['expires_at'])),
       receivedAt = hubDate(json['received_at']),
       receivedKg = json['received_weight_kg'] == null
           ? null
@@ -960,14 +985,13 @@ class HubService {
       'needs_lockable_storeroom,needs_vehicle_access';
 
   /// Active categories with the storage each needs. Also works before log-in (hub sign-up).
-  static Future<List<DonationCategoryInfo>> categories() async =>
-      hubRows(
-        await _db
-            .from('donation_categories')
-            .select(_categoryColumns)
-            .eq('active_flag', true)
-            .order('category_name'),
-      ).map(DonationCategoryInfo.fromJson).toList();
+  static Future<List<DonationCategoryInfo>> categories() async => hubRows(
+    await _db
+        .from('donation_categories')
+        .select(_categoryColumns)
+        .eq('active_flag', true)
+        .order('category_name'),
+  ).map(DonationCategoryInfo.fromJson).toList();
 
   static const _facilityColumns =
       'has_food_safe_storage,has_fragile_shelving,'
@@ -1021,6 +1045,19 @@ class HubService {
   ) async => hubObject(
     await _db.rpc(
       'get_my_hub_donation_detail',
+      params: {'p_hub': hubId, 'p_donation': donationId},
+    ),
+  );
+
+  /// The donation's items with their own photos, in item order. Authorized
+  /// exactly like [donationDetail]; a photo path is returned only where
+  /// Storage would also allow this hub to read the photo.
+  static Future<List<Map<String, dynamic>>> donationItems(
+    String hubId,
+    String donationId,
+  ) async => hubRows(
+    await _db.rpc(
+      'get_my_hub_donation_items',
       params: {'p_hub': hubId, 'p_donation': donationId},
     ),
   );
@@ -1159,7 +1196,9 @@ class HubService {
       try {
         return await _aiRankedHubOptions(base, donationId, date);
       } catch (error) {
-        debugPrint('[HubRanking] AI ranking failed, using nearest hubs: $error');
+        debugPrint(
+          '[HubRanking] AI ranking failed, using nearest hubs: $error',
+        );
         _workingApi = null; // look for it again next time
       }
     }
@@ -1273,14 +1312,19 @@ class HubService {
   /// Cancels the donor's own donation before the hub has received it. The database
   /// releases an active hub booking in the same transaction, so the space is freed at
   /// once. Reuse the same [requestId] when retrying the same tap.
-  static Future<void> cancelDonation(String donationId, String requestId) async {
+  static Future<void> cancelDonation(
+    String donationId,
+    String requestId,
+  ) async {
     final response = await _db.rpc(
       'cancel_donation',
       params: {'p_donation': donationId, 'p_request': requestId},
     );
     final result = hubObject(response);
     if (result['outcome'] != 'SUCCESS') {
-      throw StateError(result['reason_code']?.toString() ?? 'CANCELLATION_NOT_PERMITTED');
+      throw StateError(
+        result['reason_code']?.toString() ?? 'CANCELLATION_NOT_PERMITTED',
+      );
     }
   }
 

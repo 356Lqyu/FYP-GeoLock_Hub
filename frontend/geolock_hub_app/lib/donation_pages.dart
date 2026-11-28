@@ -361,8 +361,9 @@ class NgoListingCardContent extends StatelessWidget {
         'Road distance': ?distance,
         if (listing['listing_total_item_quantity'] case final int quantity)
           (listing['source_type'] == 'HUB_BATCH'
-              ? 'Batch total quantity'
-              : 'Total quantity'): '$quantity',
+                  ? 'Batch total quantity'
+                  : 'Total quantity'):
+              '$quantity',
         'Listing created': donationCardDate(listing['listing_created_at']),
       },
       trailing: showChevron ? const Icon(Icons.chevron_right) : null,
@@ -2319,8 +2320,16 @@ class _NgoListingDetailsPageState extends State<NgoListingDetailsPage> {
           ? {'p_batch': row['batch_id']}
           : {'p_donation': row['donation_id']},
     );
+    // Items with their own photos. The reader authorizes exactly the
+    // donations of get_eligible_listing_constituents_v2 and, like the photo
+    // reads above, is optional.
+    final items = await _loadOptionalListingImages(
+      'get_eligible_listing_items',
+      {'p_listing': row['listing_id']},
+    );
     return {
       'images': images,
+      'items': items,
       'constituents': constituents,
       // discover_eligible_listings() returned this row only while it was
       // available and eligible. The claim RPC rechecks that state atomically.
@@ -2428,6 +2437,9 @@ class _NgoListingDetailsPageState extends State<NgoListingDetailsPage> {
         final constituents = _availabilityVerified
             ? (data['constituents'] as List).cast<Map<String, dynamic>>()
             : <Map<String, dynamic>>[];
+        final listingItems = _availabilityVerified
+            ? (data['items'] as List? ?? const []).cast<Map<String, dynamic>>()
+            : <Map<String, dynamic>>[];
         final cover = _availabilityVerified
             ? _currentListing['primary_image_path']?.toString()
             : null;
@@ -2441,6 +2453,11 @@ class _NgoListingDetailsPageState extends State<NgoListingDetailsPage> {
           if (path != null && path.isNotEmpty) imagePaths.add(path);
         }
         final uniqueImagePaths = imagePaths.toSet().toList();
+        // Item photos are shown beside their items, not again in the gallery.
+        final galleryPaths = DonationItemPhotoRules.legacyGalleryPaths(
+          uniqueImagePaths,
+          listingItems,
+        );
         return ListView(
           padding: const EdgeInsets.all(16),
           children: [
@@ -2511,8 +2528,10 @@ class _NgoListingDetailsPageState extends State<NgoListingDetailsPage> {
                   'This state is present in the eligible discovery response. Historical status timestamps are not provided on this screen.',
             ),
             const SizedBox(height: 12),
-            DonationPhotoCarousel(paths: uniqueImagePaths),
-            const SizedBox(height: 12),
+            if (galleryPaths != null) ...[
+              DonationPhotoCarousel(paths: galleryPaths),
+              const SizedBox(height: 12),
+            ],
             Text(
               'Routing: ${roadStatusLine(widget.listing['routing_status'])}',
             ),
@@ -2540,7 +2559,8 @@ class _NgoListingDetailsPageState extends State<NgoListingDetailsPage> {
                         '${donation['total_weight_kg']} kg · ${friendlyWorkflowStatus(donation['donation_status'])}',
                       ),
                       if (snapshot.connectionState == ConnectionState.done)
-                        if (_donationDescription(donation) case final String text)
+                        if (_donationDescription(donation)
+                            case final String text)
                           _DonationDescription(text),
                     ],
                   ),
@@ -2554,6 +2574,20 @@ class _NgoListingDetailsPageState extends State<NgoListingDetailsPage> {
                     ),
                   ),
                 ),
+            ],
+            if (listingItems.isNotEmpty) ...[
+              const Divider(),
+              Text(
+                'Items (${listingItems.length})',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              _DonationItemList(
+                items: listingItems,
+                donationTitles: {
+                  for (final donation in constituents)
+                    '${donation['donation_id']}': '${donation['title']}',
+                },
+              ),
             ],
             const SizedBox(height: 8),
           ],
@@ -2726,6 +2760,23 @@ class _ClaimPickupDetailPageState extends State<ClaimPickupDetailPage>
         }
       }
       result['donation_images'] = images;
+      // Items with their own photos. The reader authorizes exactly the
+      // donations of get_claimed_listing_constituents_v2 for this claim.
+      try {
+        final itemRows = await _reader.rpc(
+          'get_claimed_listing_items',
+          params: {'p_claim': widget.claimId},
+        );
+        result['items'] = itemRows is List
+            ? itemRows
+                  .whereType<Map>()
+                  .map((row) => Map<String, dynamic>.from(row))
+                  .toList()
+            : <Map<String, dynamic>>[];
+      } catch (_) {
+        // Optional item photos must never hide claim details or custody actions.
+        result['items'] = <Map<String, dynamic>>[];
+      }
     }
     result['claim_card'] = claimCard;
     result['presentation'] = presentation;
@@ -2847,6 +2898,19 @@ class _ClaimPickupDetailPageState extends State<ClaimPickupDetailPage>
         final data = snapshot.data!;
         final constituents = (data['constituents'] as List? ?? const [])
             .cast<Map<String, dynamic>>();
+        final claimItems = (data['items'] as List? ?? const [])
+            .cast<Map<String, dynamic>>();
+        final claimGalleryPaths = DonationItemPhotoRules.legacyGalleryPaths({
+          for (final donation in constituents) ...[
+            if (donation['batch_cover_path'] is String)
+              donation['batch_cover_path'] as String,
+            if (donation['primary_image_path'] is String)
+              donation['primary_image_path'] as String,
+          ],
+          for (final image in (data['donation_images'] as List? ?? const []))
+            if (image['storage_path'] is String)
+              image['storage_path'] as String,
+        }, claimItems);
         final presentation = data['presentation'] as ClaimCard;
         final card = data['claim_card'] as Map<String, dynamic>;
         final auditRows = (data['audit_events'] as List? ?? const [])
@@ -3034,25 +3098,28 @@ class _ClaimPickupDetailPageState extends State<ClaimPickupDetailPage>
               _section(context, 'Donation photos and summary', [
                 if (data['photo_error'] != null)
                   Text(data['photo_error'].toString()),
-                DonationPhotoCarousel(
-                  paths: {
-                    for (final donation in constituents) ...[
-                      if (donation['batch_cover_path'] is String)
-                        donation['batch_cover_path'] as String,
-                      if (donation['primary_image_path'] is String)
-                        donation['primary_image_path'] as String,
-                    ],
-                    for (final image
-                        in (data['donation_images'] as List? ?? const []))
-                      if (image['storage_path'] is String)
-                        image['storage_path'] as String,
-                  }.where((path) => path.isNotEmpty).toList(),
-                  urlResolver: widget.photoUrlResolver,
-                  showLoadErrors: true,
-                  emptyMessage: data['photo_error'] == null
-                      ? 'No donation photos available to your account'
-                      : 'Donation photos could not be loaded',
-                ),
+                // Item photos are shown beside their items, not again here.
+                if (claimGalleryPaths != null)
+                  DonationPhotoCarousel(
+                    paths: claimGalleryPaths,
+                    urlResolver: widget.photoUrlResolver,
+                    showLoadErrors: true,
+                    emptyMessage: data['photo_error'] == null
+                        ? 'No donation photos available to your account'
+                        : 'Donation photos could not be loaded',
+                  ),
+                if (claimItems.isNotEmpty) ...[
+                  const Divider(),
+                  Text('Items (${claimItems.length})'),
+                  _DonationItemList(
+                    items: claimItems,
+                    donationTitles: {
+                      for (final donation in constituents)
+                        '${donation['donation_id']}': '${donation['title']}',
+                    },
+                    urlResolver: widget.photoUrlResolver,
+                  ),
+                ],
                 if (data['source_type'] == 'HUB_BATCH') ...[
                   const Divider(),
                   const Text('Whole donations in this batch'),
@@ -3190,6 +3257,9 @@ class DonationItemInput {
   String? category;
   String condition = 'GOOD';
 
+  /// The item's own photo (optional). At least one item needs one.
+  DonationPhotoSelection? photo;
+
   String? nameError(String value) =>
       value.trim().isEmpty ? 'Enter item name' : null;
   String? quantityError(String value) => parseDonationQuantity(value) == null
@@ -3217,9 +3287,68 @@ class DonationPhotoSelection {
   const DonationPhotoSelection({required this.id, required this.file});
 }
 
+/// The optional photo of one item in the Create Donation form.
+class _ItemPhotoField extends StatelessWidget {
+  final DonationPhotoSelection? photo;
+  final bool enabled;
+  final VoidCallback onPick;
+  final VoidCallback onRemove;
+  const _ItemPhotoField({
+    required this.photo,
+    required this.enabled,
+    required this.onPick,
+    required this.onRemove,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final selected = photo;
+    if (selected == null) {
+      return Align(
+        alignment: Alignment.centerLeft,
+        child: OutlinedButton.icon(
+          onPressed: enabled ? onPick : null,
+          icon: const Icon(Icons.add_photo_alternate_outlined),
+          label: const Text('Add item photo'),
+        ),
+      );
+    }
+    return ListTile(
+      key: ValueKey(selected.id),
+      contentPadding: EdgeInsets.zero,
+      leading: ClipRRect(
+        borderRadius: BorderRadius.circular(8),
+        child: Image.file(
+          File(selected.file.path),
+          width: 56,
+          height: 56,
+          fit: BoxFit.cover,
+        ),
+      ),
+      title: const Text('Item photo'),
+      subtitle: Text(selected.file.name),
+      trailing: Wrap(
+        children: [
+          IconButton(
+            tooltip: 'Replace item photo',
+            onPressed: enabled ? onPick : null,
+            icon: const Icon(Icons.refresh),
+          ),
+          IconButton(
+            tooltip: 'Remove item photo',
+            onPressed: enabled ? onRemove : null,
+            icon: const Icon(Icons.close),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class CreateDonationPage extends StatefulWidget {
-  /// A cancelled donation (get_my_donation_detail plus 'images') to copy into the
-  /// form for "Donate again". The donor checks it and submits a new donation.
+  /// A cancelled donation (get_my_donation_detail; each item carries its
+  /// 'photo_path' when it has its own photo) to copy into the form for
+  /// "Donate again". The donor checks it and submits a new donation.
   final Map<String, dynamic>? copyFrom;
   final Future<List<DonationPhotoSelection>> Function(List<String>)?
   photoCopier;
@@ -3238,9 +3367,12 @@ class _CreateDonationPageState extends State<CreateDonationPage> {
   bool busy = false;
   String progressMessage = '';
   String createRequestId = const Uuid().v4();
-  final photos = <DonationPhotoSelection>[];
   bool copiedFromCancelled = false;
   bool copyingPhotos = false;
+
+  /// Donate Again from a donation without item photos: its donation-level
+  /// photos belong to no item, so the donor chooses item photos again.
+  bool earlierPhotosNotCopied = false;
 
   @override
   void initState() {
@@ -3267,6 +3399,7 @@ class _CreateDonationPageState extends State<CreateDonationPage> {
       );
     }
     final rows = (source['items'] as List? ?? const []).whereType<Map>();
+    final photoCopies = <(DonationItemInput, String)>[];
     if (rows.isNotEmpty) {
       for (final item in items) {
         item.dispose();
@@ -3282,44 +3415,52 @@ class _CreateDonationPageState extends State<CreateDonationPage> {
         if (const {'NEW', 'GOOD', 'FAIR'}.contains(condition)) {
           input.condition = condition!;
         }
+        final photoPath = row['photo_path']?.toString().trim() ?? '';
+        if (photoPath.isNotEmpty) photoCopies.add((input, photoPath));
         items.add(input);
       }
     }
-    final paths = (source['images'] as List? ?? const [])
-        .whereType<Map>()
-        .map((image) => image['storage_path']?.toString() ?? '')
-        .where((path) => path.isNotEmpty)
-        .take(3)
-        .toList();
-    if (paths.isNotEmpty) {
+    if (photoCopies.isNotEmpty) {
       copyingPhotos = true;
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) _copyPhotos(paths);
+        if (mounted) _copyItemPhotos(photoCopies);
       });
+    } else {
+      earlierPhotosNotCopied = true;
     }
   }
 
-  /// Downloads the cancelled donation's photos to temporary files so they
-  /// upload as new photos of the new donation.
-  Future<void> _copyPhotos(List<String> paths) async {
-    List<DonationPhotoSelection> copied;
-    try {
-      copied = await (widget.photoCopier ?? _downloadCopiedPhotos)(paths);
-    } catch (_) {
-      copied = const [];
+  /// Downloads each item photo of the cancelled donation to a temporary file,
+  /// so it uploads as a new photo of the same item in the new donation.
+  Future<void> _copyItemPhotos(List<(DonationItemInput, String)> copies) async {
+    final copier = widget.photoCopier ?? _downloadCopiedPhotos;
+    final copied = <(DonationItemInput, DonationPhotoSelection)>[];
+    var failed = 0;
+    for (final (item, path) in copies) {
+      try {
+        final result = await copier([path]);
+        if (result.isEmpty) {
+          failed++;
+        } else {
+          copied.add((item, result.first));
+        }
+      } catch (_) {
+        failed++;
+      }
     }
     if (!mounted) return;
-    final failed = paths.length - copied.length;
     setState(() {
       copyingPhotos = false;
-      photos.addAll(copied.take(3 - photos.length));
+      for (final (item, photo) in copied) {
+        if (items.contains(item) && item.photo == null) item.photo = photo;
+      }
       _resetCreateRequest();
     });
     if (failed > 0) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            '$failed photo${failed == 1 ? '' : 's'} could not be copied. '
+            '$failed item photo${failed == 1 ? '' : 's'} could not be copied. '
             'Add ${failed == 1 ? 'it' : 'them'} again before submitting.',
           ),
         ),
@@ -3351,42 +3492,9 @@ class _CreateDonationPageState extends State<CreateDonationPage> {
     return copied;
   }
 
-  Future<void> _pickDonationImages() async {
-    try {
-      final remaining = 3 - photos.length;
-      if (remaining <= 0) return;
-      final picked = await ImagePicker().pickMultiImage(
-        imageQuality: 82,
-        maxWidth: 1600,
-        limit: remaining,
-      );
-      if (!mounted || picked.isEmpty) return;
-      final accepted = <DonationPhotoSelection>[];
-      for (final file in picked.take(remaining)) {
-        final extension = file.path.split('.').last.toLowerCase();
-        if (!const {'jpg', 'jpeg', 'png', 'webp'}.contains(extension)) {
-          throw StateError('Choose JPG, PNG or WebP photos.');
-        }
-        if (await file.length() > 5 * 1024 * 1024) {
-          throw StateError('Each resized photo must be 5 MB or smaller.');
-        }
-        accepted.add(DonationPhotoSelection(id: const Uuid().v4(), file: file));
-      }
-      if (!mounted || busy) return;
-      setState(() {
-        photos.addAll(accepted);
-        _resetCreateRequest();
-      });
-    } catch (error) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Image could not be selected: $error')),
-        );
-      }
-    }
-  }
-
-  Future<void> _replaceDonationImage(int index) async {
+  /// Picks (or replaces) the one photo of [item], with the same type and size
+  /// checks as before. Photos are resized before upload.
+  Future<void> _pickItemPhoto(DonationItemInput item) async {
     try {
       final picked = await ImagePicker().pickImage(
         source: ImageSource.gallery,
@@ -3399,9 +3507,9 @@ class _CreateDonationPageState extends State<CreateDonationPage> {
           await picked.length() > 5 * 1024 * 1024) {
         throw StateError('Choose a JPG, PNG or WebP photo up to 5 MB.');
       }
-      if (!mounted || busy) return;
+      if (!mounted || busy || !items.contains(item)) return;
       setState(() {
-        photos[index] = DonationPhotoSelection(
+        item.photo = DonationPhotoSelection(
           id: const Uuid().v4(),
           file: picked,
         );
@@ -3410,27 +3518,25 @@ class _CreateDonationPageState extends State<CreateDonationPage> {
     } catch (error) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Photo could not be replaced: $error')),
+          SnackBar(content: Text('Photo could not be selected: $error')),
         );
       }
     }
   }
 
+  void _removeItemPhoto(DonationItemInput item) => setState(() {
+    item.photo = null;
+    _resetCreateRequest();
+  });
+
   void _resetCreateRequest() => createRequestId = const Uuid().v4();
   void _onInputChanged(String _) => setState(_resetCreateRequest);
 
-  void _makeCover(int index) {
-    if (index == 0) return;
-    final ordered = DonationPhotoRules.withCoverFirst(photos, index);
-    setState(() {
-      photos
-        ..clear()
-        ..addAll(ordered);
-      _resetCreateRequest();
-    });
-  }
-
-  Future<List<Map<String, dynamic>>> _uploadDonationImages() async {
+  /// Uploads each item's photo to this request's private pending folder and
+  /// returns its photo metadata, one entry per item in form order (null for
+  /// an item without a photo). A retry with the same request ID skips photos
+  /// that are already uploaded.
+  Future<List<Map<String, dynamic>?>> _uploadItemPhotos() async {
     final userId = _db.auth.currentUser?.id;
     if (userId == null) {
       throw StateError('Your session has expired. Sign in again.');
@@ -3439,19 +3545,25 @@ class _CreateDonationPageState extends State<CreateDonationPage> {
     final folder = '$userId/pending/$createRequestId';
     final existing = await storage.list(path: folder);
     final existingNames = existing.map((object) => object.name).toSet();
-    final imagePayload = <Map<String, dynamic>>[];
-    for (var index = 0; index < photos.length; index++) {
-      final selection = photos[index];
+    final total = items.where((item) => item.photo != null).length;
+    final photoPayload = <Map<String, dynamic>?>[];
+    var uploaded = 0;
+    for (final item in items) {
+      final selection = item.photo;
+      if (selection == null) {
+        photoPayload.add(null);
+        continue;
+      }
       final file = selection.file;
       final ext = file.path.split('.').last.toLowerCase();
       final mime = ext == 'png'
           ? 'image/png'
           : (ext == 'webp' ? 'image/webp' : 'image/jpeg');
       final path = '$folder/${selection.id}.$ext';
+      uploaded++;
       if (mounted) {
         setState(
-          () => progressMessage =
-              'Uploading photo ${index + 1} of ${photos.length}…',
+          () => progressMessage = 'Uploading photo $uploaded of $total…',
         );
       }
       if (!existingNames.contains('${selection.id}.$ext')) {
@@ -3461,13 +3573,13 @@ class _CreateDonationPageState extends State<CreateDonationPage> {
           fileOptions: FileOptions(contentType: mime, upsert: false),
         );
       }
-      imagePayload.add({
+      photoPayload.add({
         'storage_path': path,
         'content_type': mime,
         'size_bytes': await file.length(),
       });
     }
-    return imagePayload;
+    return photoPayload;
   }
 
   void retryCategories() => setState(() => categories = _loadCategories());
@@ -3523,7 +3635,9 @@ class _CreateDonationPageState extends State<CreateDonationPage> {
         itemTotal != null &&
         DonationPhotoRules.titleError(title.text) == null &&
         DonationPhotoRules.descriptionError(description.text) == null &&
-        DonationPhotoRules.validPhotoCount(photos.length) &&
+        DonationItemPhotoRules.validItemPhotos([
+          for (final item in items) item.photo != null,
+        ]) &&
         location != null &&
         location.address.trim().isNotEmpty &&
         location.roadAccess?.routable == true;
@@ -3567,13 +3681,17 @@ class _CreateDonationPageState extends State<CreateDonationPage> {
       progressMessage = 'Preparing photo uploads…';
     });
     try {
-      final imagePayload = await _uploadDonationImages();
+      final photoPayload = await _uploadItemPhotos();
+      for (var index = 0; index < payload.length; index++) {
+        final photo = photoPayload[index];
+        if (photo != null) payload[index]['photo'] = photo;
+      }
       if (mounted) {
         setState(() => progressMessage = 'Saving donation securely…');
       }
       final id = await _db.rpc(
-        'create_donation_with_images',
-        params: DonationPhotoRules.createRpcPayload(
+        'create_donation_with_item_photos',
+        params: DonationItemPhotoRules.createRpcPayload(
           requestId: createRequestId,
           title: title.text,
           description: description.text,
@@ -3583,8 +3701,8 @@ class _CreateDonationPageState extends State<CreateDonationPage> {
           // Never send a client node: trg_donation_road_node snaps the stored
           // pickup point to the nearest drivable road node in the database.
           pickupRoadNodeId: null,
+          // Items keep their form order; positions 1..n come from it.
           items: payload,
-          images: imagePayload,
         ),
       );
       final donationId = id?.toString().trim() ?? '';
@@ -3715,11 +3833,17 @@ class _CreateDonationPageState extends State<CreateDonationPage> {
                     padding: const EdgeInsets.all(12),
                     child: Text(
                       copyingPhotos
-                          ? 'Copied from your cancelled donation. Copying photos…'
-                          : 'Copied from your cancelled donation. Confirm the pickup '
-                                'location again, check the items and photos, then submit. '
+                          ? 'Copied from your cancelled donation. Copying item photos…'
+                          : earlierPhotosNotCopied
+                          ? 'Copied from your cancelled donation. Its photos are not '
+                                'copied: add a photo to at least one item. Confirm the '
+                                'pickup location again, check the items, then submit. '
                                 'This creates a new donation; you choose a hub and day '
-                                'after it is saved.',
+                                'after it is saved.'
+                          : 'Copied from your cancelled donation. Confirm the pickup '
+                                'location again, check the items and their photos, then '
+                                'submit. This creates a new donation; you choose a hub '
+                                'and day after it is saved.',
                     ),
                   ),
                 ),
@@ -3742,73 +3866,6 @@ class _CreateDonationPageState extends State<CreateDonationPage> {
                 autovalidateMode: AutovalidateMode.onUserInteraction,
                 onChanged: _onInputChanged,
               ),
-              const SizedBox(height: 10),
-              Row(
-                children: [
-                  Expanded(child: Text('Donation photos (${photos.length}/3)')),
-                  TextButton.icon(
-                    onPressed: busy || photos.length >= 3
-                        ? null
-                        : _pickDonationImages,
-                    icon: const Icon(Icons.add_photo_alternate_outlined),
-                    label: const Text('Add photos'),
-                  ),
-                ],
-              ),
-              Text(
-                'Select 1–3 photos. The first is the cover; choose another photo as cover to move it first. Photos are resized before upload.',
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
-              if (photos.isEmpty)
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 12),
-                  child: Text('At least one photo is required.'),
-                ),
-              for (var i = 0; i < photos.length; i++)
-                Card(
-                  key: ValueKey(photos[i].id),
-                  child: ListTile(
-                    leading: ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: Image.file(
-                        File(photos[i].file.path),
-                        width: 56,
-                        height: 56,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                    title: Text(i == 0 ? 'Cover photo' : 'Photo ${i + 1}'),
-                    subtitle: Text(photos[i].file.name),
-                    trailing: Wrap(
-                      spacing: 0,
-                      children: [
-                        if (i > 0)
-                          IconButton(
-                            tooltip: 'Set as cover',
-                            onPressed: busy ? null : () => _makeCover(i),
-                            icon: const Icon(Icons.star_outline),
-                          ),
-                        IconButton(
-                          tooltip: 'Replace photo',
-                          onPressed: busy
-                              ? null
-                              : () => _replaceDonationImage(i),
-                          icon: const Icon(Icons.refresh),
-                        ),
-                        IconButton(
-                          tooltip: 'Remove photo',
-                          onPressed: busy
-                              ? null
-                              : () => setState(() {
-                                  photos.removeAt(i);
-                                  _resetCreateRequest();
-                                }),
-                          icon: const Icon(Icons.delete_outline),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
               const SizedBox(height: 10),
               Text(
                 'Pickup location',
@@ -3844,6 +3901,18 @@ class _CreateDonationPageState extends State<CreateDonationPage> {
               ],
               const SizedBox(height: 12),
               const Divider(),
+              Text('Items', style: Theme.of(context).textTheme.titleSmall),
+              Text(
+                'Each item can have one photo. Add a photo to at least one '
+                'item; the first photographed item is the donation cover. '
+                'Photos are resized before upload.',
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+              if (!copyingPhotos && !items.any((item) => item.photo != null))
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 8),
+                  child: Text('At least one item photo is required.'),
+                ),
               ...items.asMap().entries.map((entry) {
                 final i = entry.key;
                 final item = entry.value;
@@ -3949,6 +4018,13 @@ class _CreateDonationPageState extends State<CreateDonationPage> {
                                   item.condition = value ?? 'GOOD';
                                   _resetCreateRequest();
                                 }),
+                        ),
+                        const SizedBox(height: 8),
+                        _ItemPhotoField(
+                          photo: item.photo,
+                          enabled: !busy && !copyingPhotos,
+                          onPick: () => _pickItemPhoto(item),
+                          onRemove: () => _removeItemPhoto(item),
                         ),
                       ],
                     ),
@@ -4235,6 +4311,25 @@ class _DonationDetailPageState extends State<DonationDetailPage> {
       // The current donation state remains usable if a legacy deployment lacks
       // the role-scoped audit read or an older row has incomplete history.
       auditError = 'Recorded progress history could not be loaded.';
+    }
+    // Each item's own photo, matched to the items above. Donations made before
+    // item photos have none; a failed read keeps the items without photos.
+    try {
+      final itemRows = await _db.rpc(
+        'get_my_donation_items',
+        params: {'p_donation': widget.donationId},
+      );
+      if (itemRows is List) {
+        detail['items'] = DonationItemPhotoRules.attachPhotos(
+          (detail['items'] as List? ?? const []).whereType<Map>(),
+          itemRows.whereType<Map>(),
+        );
+      }
+    } catch (error) {
+      _photoDebug(
+        'DonationDetailPage get_my_donation_items failed: '
+        '${_safePhotoDiagnostic(error)}',
+      );
     }
     List<Map<String, dynamic>> imageRows = [];
     try {
@@ -4544,6 +4639,11 @@ class _DonationDetailPageState extends State<DonationDetailPage> {
             .map((image) => image['storage_path']?.toString() ?? '')
             .where((path) => path.isNotEmpty)
             .toList();
+        // Item photos are shown beside their items, not again in the gallery.
+        final galleryPaths = DonationItemPhotoRules.legacyGalleryPaths(
+          photos,
+          items,
+        );
 
         return Column(
           children: [
@@ -4554,8 +4654,10 @@ class _DonationDetailPageState extends State<DonationDetailPage> {
                   child: ListView(
                     padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
                     children: [
-                      DonationPhotoCarousel(paths: photos),
-                      const SizedBox(height: 20),
+                      if (galleryPaths != null) ...[
+                        DonationPhotoCarousel(paths: galleryPaths),
+                        const SizedBox(height: 20),
+                      ],
                       Text(
                         d['title']?.toString() ?? 'Donation',
                         style: Theme.of(context).textTheme.headlineSmall
@@ -5624,14 +5726,7 @@ class _DonorItemRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final condition = switch (item['item_condition']?.toString()) {
-      'NEW' => 'New',
-      'GOOD' => 'Good condition',
-      'FAIR' => 'Fair condition',
-      'POOR' => 'Needs repair',
-      final value? => value.replaceAll('_', ' ').toLowerCase(),
-      _ => null,
-    };
+    final condition = _itemConditionLabel(item['item_condition']);
     return Column(
       children: [
         if (!isLast) const Divider(height: 1, color: Color(0xffedf1ee)),
@@ -5640,19 +5735,22 @@ class _DonorItemRow extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                width: 38,
-                height: 38,
-                decoration: BoxDecoration(
-                  color: const Color(0xffe9f4ef),
-                  borderRadius: BorderRadius.circular(12),
+              if (DonationItemPhotoRules.photoPath(item) case final String path)
+                _ItemPhotoThumbnail(path: path)
+              else
+                Container(
+                  width: 38,
+                  height: 38,
+                  decoration: BoxDecoration(
+                    color: const Color(0xffe9f4ef),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(
+                    Icons.volunteer_activism_outlined,
+                    size: 20,
+                    color: Color(0xff287764),
+                  ),
                 ),
-                child: const Icon(
-                  Icons.volunteer_activism_outlined,
-                  size: 20,
-                  color: Color(0xff287764),
-                ),
-              ),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
@@ -5686,6 +5784,106 @@ class _DonorItemRow extends StatelessWidget {
             ],
           ),
         ),
+      ],
+    );
+  }
+}
+
+String? _itemConditionLabel(Object? value) => switch (value?.toString()) {
+  'NEW' => 'New',
+  'GOOD' => 'Good condition',
+  'FAIR' => 'Fair condition',
+  'POOR' => 'Needs repair',
+  final text? => text.replaceAll('_', ' ').toLowerCase(),
+  _ => null,
+};
+
+/// An item's own photo beside the item; tap to view it larger.
+class _ItemPhotoThumbnail extends StatelessWidget {
+  final String path;
+  final Future<String> Function(String path)? urlResolver;
+  const _ItemPhotoThumbnail({required this.path, this.urlResolver});
+
+  @override
+  Widget build(BuildContext context) => Semantics(
+    button: true,
+    label: 'View item photo',
+    child: InkWell(
+      borderRadius: BorderRadius.circular(10),
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => Scaffold(
+            appBar: AppBar(title: const Text('Item photo')),
+            body: Padding(
+              padding: const EdgeInsets.all(16),
+              child: DonationPhotoCarousel(
+                paths: [path],
+                urlResolver: urlResolver,
+              ),
+            ),
+          ),
+        ),
+      ),
+      child: _StoredImageThumbnail(path: path, urlResolver: urlResolver),
+    ),
+  );
+}
+
+/// Authorized items with their own photos, for NGO listing and claim details:
+/// name, category, quantity, condition and photo. The NGO item readers return
+/// no donor identity and no item description.
+class _DonationItemList extends StatelessWidget {
+  final List<Map<String, dynamic>> items;
+  final Map<String, String> donationTitles;
+  final Future<String> Function(String path)? urlResolver;
+  const _DonationItemList({
+    required this.items,
+    this.donationTitles = const {},
+    this.urlResolver,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final donationIds = <String>[
+      ...{for (final item in items) '${item['donation_id']}'},
+    ];
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        for (final donationId in donationIds) ...[
+          if (donationIds.length > 1)
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: Text(
+                donationTitles[donationId] ?? 'Donation',
+                style: Theme.of(context).textTheme.titleSmall,
+              ),
+            ),
+          for (final item in items)
+            if ('${item['donation_id']}' == donationId)
+              ListTile(
+                key: ValueKey('donation-item-${item['item_id']}'),
+                contentPadding: EdgeInsets.zero,
+                leading: switch (DonationItemPhotoRules.photoPath(item)) {
+                  final String path => _ItemPhotoThumbnail(
+                    path: path,
+                    urlResolver: urlResolver,
+                  ),
+                  _ => const _StoredImageThumbnail(),
+                },
+                title: Text(item['item_name']?.toString() ?? 'Donation item'),
+                subtitle: Text(
+                  [
+                    item['category_name']?.toString() ?? 'Item',
+                    'Qty ${item['quantity'] ?? '—'}',
+                    if (_itemConditionLabel(item['item_condition'])
+                        case final String condition)
+                      condition,
+                  ].join(' · '),
+                ),
+              ),
+        ],
       ],
     );
   }

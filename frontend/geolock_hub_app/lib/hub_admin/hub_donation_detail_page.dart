@@ -1,6 +1,7 @@
 // One donation as the hub sees it. An awaited drop-off can be received here.
 import 'package:flutter/material.dart';
 
+import '../donation_photo_rules.dart';
 import 'hub_admin_controller.dart';
 import 'hub_dropoff_page.dart';
 import 'hub_service.dart';
@@ -10,10 +11,16 @@ class HubDonationDetailPage extends StatefulWidget {
   final HubAdminController controller;
   final String donationId;
 
+  /// Test hooks; default to the live hub RPCs.
+  final Future<Map<String, dynamic>> Function()? detailLoader;
+  final Future<List<Map<String, dynamic>>> Function()? itemsLoader;
+
   const HubDonationDetailPage({
     super.key,
     required this.controller,
     required this.donationId,
+    this.detailLoader,
+    this.itemsLoader,
   });
 
   @override
@@ -23,8 +30,44 @@ class HubDonationDetailPage extends StatefulWidget {
 class _HubDonationDetailPageState extends State<HubDonationDetailPage> {
   late Future<Map<String, dynamic>> _detail = _load();
 
-  Future<Map<String, dynamic>> _load() =>
-      HubService.donationDetail(widget.controller.hubId, widget.donationId);
+  Future<Map<String, dynamic>> _load() async {
+    final detail =
+        await (widget.detailLoader?.call() ??
+            HubService.donationDetail(
+              widget.controller.hubId,
+              widget.donationId,
+            ));
+    // Items with their own photos. Older donations have none; if the read
+    // fails, the page keeps the detail items and the photo strip.
+    try {
+      final rows =
+          await (widget.itemsLoader?.call() ??
+              HubService.donationItems(
+                widget.controller.hubId,
+                widget.donationId,
+              ));
+      if (rows.isNotEmpty) {
+        detail['items'] = [
+          for (final row in rows)
+            {
+              'item_name': row['item_name'],
+              'category': row['category_name'],
+              'item_condition': row['item_condition'],
+              'description': row['item_description'],
+              'quantity': row['quantity'],
+              'unit_label': row['unit_label'],
+              'unit_weight_kg': row['unit_weight_kg'],
+              'photo_image_id': row['photo_image_id'],
+              'photo_path': row['photo_path'],
+            },
+        ];
+        detail['item_photo_mode'] = DonationItemPhotoRules.hasItemPhotos(rows);
+      }
+    } catch (_) {
+      // Optional item photos must never hide the hub record or receiving.
+    }
+    return detail;
+  }
 
   Future<void> _refresh() async {
     setState(() => _detail = _load());
@@ -63,7 +106,9 @@ class _HubDonationDetailPageState extends State<HubDonationDetailPage> {
             ? null
             : HubDropOff.fromDonationDetail(d);
         return [
-          if (photos.isNotEmpty) _PhotoStrip(paths: photos),
+          // Item-photo donations show each photo beside its item instead.
+          if (photos.isNotEmpty && d['item_photo_mode'] != true)
+            _PhotoStrip(paths: photos),
           const SizedBox(height: 12),
           Row(
             children: [
@@ -182,10 +227,24 @@ class _HubDonationDetailPageState extends State<HubDonationDetailPage> {
               padding: const EdgeInsets.all(12),
               child: Row(
                 children: [
-                  const Icon(
-                    Icons.inventory_2_outlined,
-                    color: HubColors.green,
-                  ),
+                  if (hubText(item['photo_path']) case final String path)
+                    GestureDetector(
+                      onTap: () => showDialog<void>(
+                        context: context,
+                        builder: (_) => Dialog(
+                          child: Padding(
+                            padding: const EdgeInsets.all(12),
+                            child: HubPhoto(path, size: 280),
+                          ),
+                        ),
+                      ),
+                      child: HubPhoto(path, size: 56),
+                    )
+                  else
+                    const Icon(
+                      Icons.inventory_2_outlined,
+                      color: HubColors.green,
+                    ),
                   const SizedBox(width: 10),
                   Expanded(
                     child: Column(
