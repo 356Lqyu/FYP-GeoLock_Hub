@@ -4,10 +4,10 @@ This file only records what produced the results in this folder, so the run can 
 
 | Item | Value |
 | --- | --- |
-| Run at | 2026-11-10 03:09 +08 |
-| Benchmark | GEOLOCK-BENCHMARK-DATASET (generation_manifest.json SHA-256 139c823a20753e16...; every input CSV was checked against this manifest) |
-| Script | `direct_household_pickup_baseline.py` (SHA-256 260467701d680135...) |
-| Python | 3.13.18 |
+| Run at | 2026-11-28 21:42 Malay Peninsula Standard Time |
+| Benchmark | GEOLOCK-BENCHMARK-DATASET (generation_manifest.json SHA-256 5fdafca9baa69c4e...; every input CSV was checked against this manifest) |
+| Script | `direct_household_pickup_baseline.py` (SHA-256 f02a746495449bc1...) |
+| Python | 3.12.10 |
 | Command to repeat | `python direct_household_pickup_baseline.py` |
 | Scenarios run | 100 (all) |
 | Planning input | built from the benchmark (same snapshots as the other route baselines) |

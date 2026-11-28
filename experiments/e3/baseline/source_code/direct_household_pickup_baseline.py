@@ -452,7 +452,7 @@ def common_run_rows(manifest_path, script, command):
 def save_route_outputs(args, data, configuration, results, route_rows, task_rows, snapshots):
     """Write the result CSV files and run_info.md."""
     out = args.output_dir
-    (out / 'details').mkdir(parents=True, exist_ok=True)
+    out.mkdir(parents=True, exist_ok=True)
     fleet = {s['scenario_id']: len(s['fleet']) for s in snapshots}
     longest = defaultdict(float)
     for r in route_rows:
@@ -482,7 +482,7 @@ def save_route_outputs(args, data, configuration, results, route_rows, task_rows
                              longest_route_min=round(longest[sid], 1), all_rules_passed=yes(r['constraint_valid']),
                              planning_time_ms=r['planning_runtime_ms']))
     write_csv(out / 'results_per_scenario.csv', rows, list(rows[0]))
-    write_csv(out / 'details' / 'routes.csv',
+    write_csv(out / 'routes.csv',
               [dict(scenario_id=r['scenario_id'], vehicle_id=r['vehicle_id'],
                     stops_in_order=' > '.join(r['stop_task_ids'].split('|')), stops=len(r['stop_task_ids'].split('|')),
                     load_kg=round(r['load_kg'], 2), distance_km=round(r['road_distance_km'], 3),
@@ -490,15 +490,6 @@ def save_route_outputs(args, data, configuration, results, route_rows, task_rows
                for r in route_rows],
               ['scenario_id', 'vehicle_id', 'stops_in_order', 'stops', 'load_kg', 'distance_km', 'driving_time_min',
                'route_time_min'])
-    write_csv(out / 'details' / 'tasks.csv',
-              [dict(scenario_id=r['scenario_id'], task_id=r['task_id'], donation_id=r['source_id'], status=r['status'],
-                    reason=r['reason'], vehicle_id=r['vehicle_id'], stop_number=r['stop_order'],
-                    arrives_min_after_start=round(r['arrival_elapsed_min'], 1) if r['arrival_elapsed_min'] != '' else '',
-                    finished_min_after_start=round(r['completion_elapsed_min'], 1) if r['completion_elapsed_min'] != '' else '')
-               for r in sorted(task_rows, key=lambda r: (r['scenario_id'], {'SERVED': 0, 'UNSERVED': 1}.get(r['status'], 2),
-                                                         r['vehicle_id'], r['stop_order'] or 0, r['task_id']))],
-              ['scenario_id', 'task_id', 'donation_id', 'status', 'reason', 'vehicle_id', 'stop_number',
-               'arrives_min_after_start', 'finished_min_after_start'])
     if SAVE_SNAPSHOTS:
         write_json(out / 'details' / 'planning_snapshots.json', snapshots)
     served = sum(r['served_tasks'] for r in results)

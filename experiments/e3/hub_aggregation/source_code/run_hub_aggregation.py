@@ -10,7 +10,6 @@ A scenario that breaks a rule keeps its donations as home pickups and is reporte
 Run from the repository root: python experiments/e3/hub_aggregation/source_code/run_hub_aggregation.py
 """
 import importlib.util
-import statistics
 import sys
 import time
 from datetime import timedelta
@@ -130,7 +129,7 @@ def main():
         members.setdefault(r['batch_id'], []).append(r)
     feasible = {(r['donation_id'], r['hub_id']): r for r in rows('donation_hub_candidates')}
     scenarios = base.select_scenarios(data, ('HUB_AGGREGATION',), None)
-    results, route_rows, task_rows, integrity, donor_rows = [], [], [], [], []
+    results, route_rows, integrity = [], [], []
     for sc in scenarios:
         sid = sc['scenario_id']
         started = time.perf_counter()
@@ -196,8 +195,6 @@ def main():
                 go, back = data.arc(node, hub['road_node_id']), data.arc(hub['road_node_id'], node)
                 trip = (go[0] if go else float('nan')) + (back[0] if back else float('nan'))
                 donor_km += trip
-                donor_rows.append(dict(scenario_id=sid, donation_id=d['donation_id'], donor_id=d['donor_id'], hub_id=hub_id,
-                                       to_hub_km=go[0] if go else '', back_home_km=back[0] if back else '', round_trip_km=round(trip, 3)))
         else:  # a rule was broken: the donations stay home pickups
             for d in sorted(donated, key=lambda d: d['donation_id']):
                 node = data.donors[(d['donor_id'],)]['road_node_id']
@@ -225,7 +222,6 @@ def main():
             ngo_stops=sum(len(r['stops']) for r in routes),
             total_ngo_distance_km=round(m['ngo_road_distance_km'], 3), total_driving_time_min=round(m['travel_time_min'], 1),
             vehicle_trips=m['pickup_trips'], donor_travel_km=round(donor_km, 3),
-            total_travel_km=round(m['ngo_road_distance_km'] + donor_km, 3),
             donations_handled_at_hub=hub_donations, benchmark_cost=round(cost, 2),
             cost_per_donation=round(cost / len(donated), 2),
             longest_route_min=round(max((r['duration_min'] for r in routes), default=0), 1),
@@ -235,15 +231,9 @@ def main():
                                    stops_in_order=' > '.join(s['task_id'] for s in r['stops']), stops=len(r['stops']),
                                    load_kg=round(r['load_kg'], 3), distance_km=round(r['road_distance_km'], 3),
                                    driving_time_min=round(r['travel_time_min'], 1), route_time_min=round(r['duration_min'], 1)))
-        for t in snapshot['tasks']:
-            task_rows.append(dict(scenario_id=sid, task_id=t['task_id'], source_id=t['source_id'], weight_kg=t['weight_kg'],
-                                  status='UNSERVED' if t['task_id'] in unserved else 'SERVED',
-                                  reason=unserved.get(t['task_id'], '')))
     write_csv(out / 'results_per_scenario.csv', results)
-    write_csv(out / 'details' / 'routes.csv', route_rows)
-    write_csv(out / 'details' / 'tasks.csv', task_rows)
-    write_csv(out / 'details' / 'batch_integrity_checks.csv', integrity)
-    write_csv(out / 'details' / 'donor_trips_to_hub.csv', donor_rows)
+    write_csv(out / 'routes.csv', route_rows)
+    write_csv(out / 'batch_integrity_checks.csv', integrity)
     env = environment()
     agg = sum(r['aggregated'] == 'YES' for r in results)
     run_info(out / 'run_info.md', 'Community hub aggregation (E3 proposed)', [
@@ -255,12 +245,12 @@ def main():
         ('Settings', f'{args.route_minutes:g}-min route, {args.service_minutes:g} min per stop, {args.lease_minutes:g}-min lease, '
                      'one trip per vehicle, cutoff = last donation available'),
         ('Cost index', f'{COST_PER_KM} x NGO km + {COST_PER_TRIP} x trips + {COST_PER_HUB_DONATION} x donations handled at a hub'),
+        ('Donor travel', 'kept as one reference column (donor_travel_km), not compared'),
         ('Runner', f'{HERE.name} SHA-256 {sha256(HERE)[:16]}...'), ('Python', env['python'])])
-    write_json(out / 'run_manifest.json', dict(method='hub_aggregation', input_sha256={**data.hashes, **hashes}, environment=env))
     print(f"Hub aggregation: {agg}/{len(results)} aggregated, "
           f"{sum(r['donations_collected'] for r in results)}/{sum(r['donations'] for r in results)} donations collected, "
           f"{sum(r['total_ngo_distance_km'] for r in results):,.1f} NGO km, "
-          f"median donor travel {statistics.median(r['donor_travel_km'] for r in results):.1f} km per scenario -> {out}")
+          f"{sum(r['ngo_stops'] for r in results)} NGO stops -> {out}")
 
 
 if __name__ == '__main__':

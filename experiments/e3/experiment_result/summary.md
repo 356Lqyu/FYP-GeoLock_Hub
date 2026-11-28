@@ -1,63 +1,74 @@
 # E3 result: community hub aggregation vs direct household pickup
 
-## What we wanted to find out
+Plan: [`../EXPERIMENT_PLAN.md`](../EXPERIMENT_PLAN.md). 100 matched scenarios, 438 small donations, 11 NGOs. Both methods use the same route planner, vehicles, depot and roads.
 
-Small donations (under 10 kg) are scattered over many homes. Without hubs, an NGO has to drive to every home. With GeoLock Hub, donors drop small items at a nearby community hub, the hub groups them into one batch, and the NGO collects the whole batch in one stop. We wanted to know how much NGO driving this saves, and whether the saving is real or just moves the travelling onto the donors.
+## Main result: the proposed method is better on every NGO measure
 
-## What we used
+| NGO measure (total of 100 scenarios) | Baseline | Proposed | Change (95 % CI) | Proposed better in | p |
+| --- | --- | --- | --- | --- | --- |
+| NGO road distance (primary) | 2,689.4 km | **1,376.2 km** | -48.8 % (-52.8 to -44.7) | 97 of 100 | 6.7e-18 |
+| NGO route time, including 10 min per stop | 7,749 min | **2,571 min** | -66.8 % (-68.6 to -64.9) | 100 of 100 | 7.8e-18 |
+| NGO pickup stops | 438 stops | **100 stops** | -77.2 % (-77.9 to -76.4) | 100 of 100 | 1.9e-18 |
+| NGO collection cost | 3,189.4 cost units | **2,095.2 cost units** | -34.3 % (-37.7 to -30.7) | 94 of 100 | 2.4e-17 |
+| Donations collected | 438 of 438 | 438 of 438 | same | | |
+| Hub batches passing every rule | | 100 of 100 | | | |
 
-- **Data:** the frozen benchmark dataset GEOLOCK-BENCHMARK-DATASET: 100 scenarios, each with 3 to 5 small donations from nearby homes (438 donations in total), one community hub, and one NGO with a car (100 kg) and a van (500 kg).
-- **Direct household pickup (baseline):** the NGO collects every donation from the donor's home.
-- **Community hub aggregation (proposed, as in the app):** each donor reserves space at the hub and drops the item off during opening hours, the hub confirms receipt, the items become one batch (3 to 5 items, at most 30 kg, one category), the batch is published as one listing, and the NGO collects it at the hub.
-- **Fair comparison:** both use the same donations, NGO, vehicles, depot, road distances and the same route planner (Nearest-Next, the same code), with a 240 minute limit per vehicle and 10 minutes per stop. Only the collection method differs.
+p is the Wilcoxon signed rank test on the 100 paired differences (Holm corrected for the secondary measures).
 
-## Results
+![Figure 1](e3_fig1_main_comparison.png)
 
-The main numbers are also in `comparison_summary.csv`, one row per measure with every method side by side.
-
-| Measure (all 100 scenarios) | Direct household pickup (baseline) | Hub aggregation (proposed) | Change |
-| --- | --- | --- | --- |
-| Donations collected | 438 of 438 | 438 of 438 | same |
-| **NGO driving** | 2,689 km | **1,376 km** | −1,313 km (−48.8 %) |
-| NGO pickup stops | 438 | **100** | −338 (−77 %) |
-| NGO collection cost (1 per km + 5 per trip + 0.5 per item handled at a hub) | 3,189 | **2,095** | −34.3 % |
-| Vehicle trips | 100 | 100 | same |
-| Donor travel to the hub and back | 0 km | 4,197 km | +4,197 km |
-
-![Figure 1](e3_fig1_ngo_km_per_scenario.png)
-
-*Figure 1. NGO driving distance in each of the 100 scenarios. Points below the dashed line are scenarios where hub aggregation needed less NGO driving.*
-
-![Figure 2](e3_fig2_ngo_cost.png)
-
-*Figure 2. Total NGO collection cost over the 100 scenarios (1 per km, 5 per trip, 0.5 per item handled at a hub).*
-
-![Figure 3](e3_fig3_ngo_stops.png)
-
-*Figure 3. Total pickup stops made by NGO vehicles over the 100 scenarios.*
-
-![Figure 4](e3_fig4_who_travels.png)
-
-*Figure 4. Total distance travelled by NGO vehicles and by donors. Donor travel counts each drop off as a separate car trip from home to the hub and back.*
+*Figure 1. Totals of both methods over the 100 scenarios. The proposed method is lower on all four NGO measures.*
 
 ## Analysis
 
-**The hub roughly halves NGO driving.** Over the 100 scenarios NGO vehicles drove 1,376 km instead of 2,689 km. Scenario by scenario, the hub was shorter in 97 of 100 cases, and the typical saving is 13.1 km per scenario (95 % confidence interval 11.5 to 14.7 km; Wilcoxon signed rank test p = 7e-18).
+**The decision rule is met.** Total NGO road distance fell from 2,689.4 to 1,376.2 km (-48.8 %, p = 6.7e-18) and every donation was still collected. The typical saving was 13.10 km per scenario (95 % CI 11.54 to 14.66 km).
 
-**Why:** instead of visiting 438 homes, the NGO makes one stop per batch: 100 stops instead of 438. Fewer stops means less zigzag driving between homes and less time per route. Every donation was still collected, and every route stayed within the vehicle capacity and the 240 minute limit.
+**The saving appears in almost every scenario, not only on average.** The hub needed less NGO driving in 97 of 100 scenarios (Figure 2), and route time was lower in all 100.
 
-**The NGO's collection cost falls by 34 %** (3,189 → 2,095 cost units), even after adding the 0.5 handling charge for each item stored at the hub.
+![Figure 2](e3_fig2_ngo_km_per_scenario.png)
 
-**Every batch followed the hub rules.** All 100 batches passed every check: the hub accepted each item and had room for it, every drop off fell inside the donor's availability window and the hub's opening hours, every batch had 3 to 5 items of one category and at most 30 kg, and the NGO was within 20 km of the hub by road.
+*Figure 2. Each point is one scenario. Points in the shaded area are scenarios where the hub needed less NGO driving.*
 
-**The trade off: donors travel instead.** If every donor drives to the hub and back as a separate car trip, donors travel 4,197 km in total (about 9.6 km per donor). Counted that way, NGO plus donor travel is 5,573 km with hubs against 2,689 km without. This is the worst case: donors who walk to a hub in their own neighbourhood, or drop the item off on a trip they were making anyway, add little or no extra travel. The benefit of the hub is therefore for the NGO (its vehicles, drivers and fuel), which is what this experiment set out to measure.
+**Why it works.** One stop at the hub replaces three to five stops at homes, so NGO stops fell from 438 to 100 and route time from 129.2 to 42.8 hours. A vehicle collected 10.2 donations per hour of route time instead of 3.4. A fuller batch removes more home stops, so the saving grows with the batch size (Figure 3): 7.8 km for 3 donations, 11.5 km for 4 donations, 15.8 km for 5 donations (Spearman ρ = 0.37, p = 1.7e-04; Kruskal-Wallis p = 7.7e-04).
+
+![Figure 3](e3_fig3_saving_by_batch_size.png)
+
+*Figure 3. Median NGO road distance per scenario for batches of 3, 4 and 5 donations, with the median saving.*
+
+## Robustness
+
+**Cost coefficients.** The hub stayed cheaper in total under all 9 settings. The hub handling charge would have to rise from 0.50 to 3.00 units per donation before the hub stopped being cheaper.
+
+| Setting | Baseline cost | Proposed cost | Change | Scenarios cheaper with hub |
+| --- | --- | --- | --- | --- |
+| Base coefficients | 3,189.4 | 2,095.2 | -34.3 % | 94 |
+| Distance halved | 1,844.7 | 1,407.1 | -23.7 % | 89 |
+| Distance doubled | 5,878.8 | 3,471.4 | -41.0 % | 96 |
+| Dispatch halved | 2,939.4 | 1,845.2 | -37.2 % | 94 |
+| Dispatch doubled | 3,689.4 | 2,595.2 | -29.7 % | 94 |
+| Hub handling halved | 3,189.4 | 1,985.7 | -37.7 % | 96 |
+| Hub handling doubled | 3,189.4 | 2,314.2 | -27.4 % | 89 |
+| All halved | 1,594.7 | 1,047.6 | -34.3 % | 94 |
+| All doubled | 6,378.8 | 4,190.4 | -34.3 % | 94 |
+
+**Hub distance from the NGO depot.** The share of driving saved falls as the hub lies further away (Spearman ρ = -0.76, p = 4.4e-20), but the hub stays shorter in almost every scenario at every distance.
+
+| Depot to hub and back | Scenarios | Median saving | Hub shorter in |
+| --- | --- | --- | --- |
+| under 10 km | 38 | 15.0 km (66.8 %) | 37 of 38 |
+| 10 to 20 km | 43 | 9.7 km (41.9 %) | 41 of 43 |
+| 20 km or more | 19 | 11.8 km (35.0 %) | 19 of 19 |
+
+**Every NGO.** All 11 NGOs drove less in total with the hub, by 30.9 to 90.6 %.
+
+**Where the hub did not help.** In 3 scenarios the hub needed more NGO driving: SCN-HUB_AGGREGATION-0048 (HUB0049, +2.7 km), SCN-HUB_AGGREGATION-0051 (HUB0049, +3.5 km), SCN-HUB_AGGREGATION-0075 (HUB0154, +1.0 km). In each, the homes lay along the NGO route while the hub lay away from it. Route time was still shorter in all 3.
 
 ## Conclusion
 
-Collecting small donations through a community hub cut NGO driving by 49 % (1,313 km over 100 scenarios), reduced NGO pickup stops by 77 % and NGO collection cost by 34 %, while still collecting every donation and respecting every hub and route rule. The proposed method is better than the baseline for the NGO on every measure. The saving comes from donors bringing their items to the hub, so it is largest when that drop off trip is short or would happen anyway.
+Community hub aggregation is better than direct household pickup for the NGO on every planned measure: 48.8 % less road distance, 66.8 % less route time, 77.2 % fewer stops and 34.3 % lower collection cost, with every donation collected and every batch valid. The result holds under every cost setting and for every NGO.
 
-## Limits of this experiment
+## Limits
 
-- Donor travel is counted as a separate car trip home → hub → home, which is the largest it can be.
-- The hub steps (reservation, receipt, batching, publishing) are checked against the app's rules in the experiment program, not run in the database.
-- Each vehicle makes one trip, and road travel times assume no traffic.
+- The hub steps are checked against the app rules in the experiment program, not run in the database.
+- Each vehicle makes one trip and road travel times assume no traffic. The cost index is a benchmark quantity, not money.
+- Donor travel to the hub is outside this comparison (kept as `donor_travel_km` in the proposed results).
